@@ -1,0 +1,1140 @@
+/* =========================================
+   TWETE COACH DASHBOARD
+========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    background: #050505;
+    color: #ffffff;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+
+.coach-app {
+    min-height: 100vh;
+
+    display: flex;
+
+    background:
+        radial-gradient(
+            circle at 70% 10%,
+            rgba(198,255,0,0.025),
+            transparent 30%
+        ),
+        #050505;
+}
+
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar {
+    width: 215px;
+
+    min-height: 100vh;
+
+    padding: 35px 14px 22px;
+
+    border-right: 1px solid #181818;
+
+    display: flex;
+
+    flex-direction: column;
+
+    position: fixed;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+
+.brand {
+    text-align: center;
+
+    margin-bottom: 42px;
+}
+
+
+.brand-name {
+    color: #C6FF00;
+
+    font-size: 31px;
+
+    font-weight: 900;
+
+    font-style: italic;
+
+    letter-spacing: -1px;
+}
+
+
+.brand-role {
+    margin-top: 2px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+.sidebar-nav {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.nav-item {
+    width: 100%;
+
+    min-height: 54px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #bdbdbd;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 17px;
+
+    padding: 0 17px;
+
+    font-size: 14px;
+
+    text-align: left;
+
+    position: relative;
+}
+
+
+.nav-item:hover {
+    color: #ffffff;
+
+    background: #101010;
+}
+
+
+.nav-item.active {
+    color: #C6FF00;
+
+    background: #151515;
+}
+
+
+.nav-item.active::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: 8px;
+    bottom: 8px;
+
+    width: 3px;
+
+    background: #C6FF00;
+
+    border-radius: 0 4px 4px 0;
+}
+
+
+.nav-icon {
+    width: 22px;
+
+    text-align: center;
+
+    font-size: 22px;
+}
+
+
+.message-badge {
+    margin-left: auto;
+
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: #C6FF00;
+
+    color: #000000;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/* =========================================
+   SIDEBAR BOTTOM
+========================================= */
+
+.sidebar-bottom {
+    margin-top: auto;
+}
+
+
+.coach-profile {
+    border-top: 1px solid #282828;
+
+    padding: 18px 5px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.coach-avatar {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    background: #333;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #C6FF00;
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+
+.coach-profile strong {
+    display: block;
+
+    font-size: 12px;
+}
+
+
+.coach-profile span {
+    display: block;
+
+    color: #888;
+
+    font-size: 10px;
+
+    margin-top: 3px;
+}
+
+
+.profile-arrow {
+    margin-left: auto;
+
+    color: #888 !important;
+
+    font-size: 18px !important;
+}
+
+
+.logout-button {
+    width: 100%;
+
+    border: none;
+
+    background: transparent;
+
+    color: #aaa;
+
+    display: flex;
+
+    gap: 12px;
+
+    align-items: center;
+
+    padding: 13px 8px;
+
+    font-size: 13px;
+}
+
+
+.logout-button:hover {
+    color: #ffffff;
+}
+
+
+/* =========================================
+   MAIN
+========================================= */
+
+.main-content {
+    margin-left: 215px;
+
+    width: calc(100% - 215px);
+
+    max-width: 1200px;
+
+    padding: 35px 28px 50px;
+
+    margin-right: auto;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.dashboard-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    margin-bottom: 25px;
+}
+
+
+.dashboard-header h1 {
+    font-size: 29px;
+
+    letter-spacing: -0.8px;
+
+    margin-bottom: 8px;
+}
+
+
+.dashboard-header p {
+    color: #999;
+
+    font-size: 15px;
+}
+
+
+.current-date {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: #ddd;
+
+    font-size: 13px;
+}
+
+
+.calendar-symbol {
+    color: #C6FF00;
+
+    font-size: 22px;
+}
+
+
+/* =========================================
+   OVERVIEW
+========================================= */
+
+.overview-card {
+    min-height: 145px;
+
+    border: 1px solid #292929;
+
+    border-radius: 15px;
+
+    background: #0b0b0b;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr auto 1fr auto 1fr auto 1fr;
+
+    align-items: center;
+
+    padding: 22px 25px;
+
+    margin-bottom: 29px;
+}
+
+
+.overview-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+}
+
+
+.overview-icon {
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    border: 2px solid #617d00;
+
+    border-radius: 50%;
+
+    color: #C6FF00;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 27px;
+}
+
+
+.overview-item strong {
+    display: block;
+
+    font-size: 34px;
+
+    line-height: 1;
+
+    margin-bottom: 7px;
+}
+
+
+.overview-item h3 {
+    font-size: 15px;
+
+    font-weight: 500;
+
+    margin-bottom: 4px;
+}
+
+
+.overview-item p {
+    color: #777;
+
+    font-size: 12px;
+}
+
+
+.overview-divider {
+    height: 65px;
+
+    width: 1px;
+
+    background: #333;
+
+    margin: 0 20px;
+}
+
+
+.overview-item.ending .overview-icon {
+    color: #ffb400;
+
+    border-color: #805d00;
+}
+
+
+.overview-item.ending strong {
+    color: #ffb400;
+}
+
+
+/* =========================================
+   ENDING SECTION
+========================================= */
+
+.ending-section {
+    margin-bottom: 27px;
+}
+
+
+.section-header {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+
+.section-header h2 {
+    font-size: 20px;
+
+    margin-bottom: 6px;
+}
+
+
+.warning-icon {
+    color: #ff3131;
+
+    margin-right: 7px;
+}
+
+
+.section-header p {
+    color: #8b8b8b;
+
+    font-size: 13px;
+}
+
+
+.view-all-button {
+    border: 1px solid #C6FF00;
+
+    background: transparent;
+
+    color: #C6FF00;
+
+    border-radius: 7px;
+
+    padding: 11px 15px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.view-all-button:hover {
+    background: #C6FF00;
+
+    color: #000;
+}
+
+
+.view-all-button span,
+.activity-header button span {
+    font-size: 20px;
+
+    margin-left: 7px;
+}
+
+
+/* =========================================
+   ATHLETE ATTENTION CARDS
+========================================= */
+
+.ending-athlete {
+    min-height: 112px;
+
+    border: 1px solid #292929;
+
+    border-left: 3px solid #C6FF00;
+
+    border-radius: 13px;
+
+    background: #0d0d0d;
+
+    display: grid;
+
+    grid-template-columns:
+        1.7fr 1fr 0.7fr auto;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 15px 18px;
+
+    margin-bottom: 10px;
+}
+
+
+.ending-athlete.urgent {
+    border-left-color: #ff3131;
+}
+
+
+.ending-athlete.warning {
+    border-left-color: #ffb400;
+}
+
+
+.athlete-main {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+}
+
+
+.athlete-photo {
+    width: 66px;
+    height: 66px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #ddd 0 19%,
+            transparent 20%
+        ),
+        #292929;
+
+    flex-shrink: 0;
+}
+
+
+.athlete-main h3 {
+    font-size: 17px;
+
+    margin-bottom: 6px;
+}
+
+
+.athlete-goal {
+    color: #C6FF00;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    margin-bottom: 7px;
+}
+
+
+.athlete-pb {
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+.program-end span:first-child {
+    display: block;
+
+    color: #999;
+
+    font-size: 12px;
+
+    margin-bottom: 6px;
+}
+
+
+.program-date {
+    font-size: 17px;
+
+    margin-bottom: 7px;
+}
+
+
+.days-badge {
+    display: inline-block;
+
+    border: 1px solid #4f6500;
+
+    background: rgba(198,255,0,0.05);
+
+    color: #C6FF00;
+
+    border-radius: 5px;
+
+    padding: 5px 8px;
+
+    font-size: 10px;
+}
+
+
+.days-badge.urgent {
+    color: #ff4b4b;
+
+    border-color: #7b2222;
+
+    background: rgba(255,0,0,0.05);
+}
+
+
+.days-badge.warning {
+    color: #ffb400;
+
+    border-color: #745300;
+
+    background: rgba(255,180,0,0.05);
+}
+
+
+/* =========================================
+   PROGRESS
+========================================= */
+
+.progress-area {
+    text-align: center;
+}
+
+
+.progress-area > span {
+    display: block;
+
+    color: #999;
+
+    font-size: 11px;
+
+    margin-bottom: 5px;
+}
+
+
+.progress-circle {
+    width: 64px;
+    height: 64px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #0d0d0d 56%,
+            transparent 57%
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: auto;
+
+    position: relative;
+}
+
+
+.progress-circle::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            #C6FF00 var(--progress),
+            #303030 var(--progress)
+        );
+
+    z-index: -1;
+}
+
+
+.progress-circle strong {
+    font-size: 16px;
+}
+
+
+.edit-program {
+    height: 42px;
+
+    padding: 0 16px;
+
+    border: 1px solid #C6FF00;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #C6FF00;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.edit-program:hover {
+    background: #C6FF00;
+
+    color: #000;
+}
+
+
+/* =========================================
+   RECENT ACTIVITY
+========================================= */
+
+.activity-section {
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    background: #0b0b0b;
+
+    overflow: hidden;
+}
+
+
+.activity-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 18px 20px;
+
+    border-bottom: 1px solid #292929;
+}
+
+
+.activity-header h2 {
+    font-size: 17px;
+}
+
+
+.activity-header button {
+    border: none;
+
+    background: transparent;
+
+    color: #C6FF00;
+
+    font-size: 11px;
+}
+
+
+.activity-item {
+    min-height: 52px;
+
+    display: grid;
+
+    grid-template-columns: 35px 1fr auto;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 7px 20px;
+
+    border-bottom: 1px solid #202020;
+}
+
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+
+.activity-icon {
+    width: 27px;
+    height: 27px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 12px;
+}
+
+
+.activity-icon.completed {
+    background: rgba(198,255,0,0.1);
+
+    color: #C6FF00;
+}
+
+
+.activity-icon.message {
+    background: rgba(60,140,255,0.1);
+
+    color: #5599ff;
+}
+
+
+.activity-icon.edit {
+    background: rgba(255,180,0,0.1);
+
+    color: #ffb400;
+}
+
+
+.activity-text {
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+.activity-text strong {
+    color: #ddd;
+}
+
+
+.activity-item time {
+    color: #777;
+
+    font-size: 10px;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        width: 180px;
+    }
+
+
+    .main-content {
+        margin-left: 180px;
+
+        width: calc(100% - 180px);
+
+        padding: 25px 18px;
+    }
+
+
+    .overview-card {
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 18px;
+    }
+
+
+    .overview-divider {
+        display: none;
+    }
+
+
+    .ending-athlete {
+        grid-template-columns:
+            1.5fr 1fr 0.7fr;
+    }
+
+
+    .edit-program {
+        grid-column: 3;
+
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 650px) {
+
+    .coach-app {
+        display: block;
+    }
+
+
+    .sidebar {
+        position: static;
+
+        width: 100%;
+
+        min-height: auto;
+
+        padding: 15px;
+
+        border-right: none;
+
+        border-bottom: 1px solid #222;
+    }
+
+
+    .brand {
+        margin-bottom: 15px;
+    }
+
+
+    .brand-name {
+        font-size: 25px;
+    }
+
+
+    .sidebar-nav {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 4px;
+    }
+
+
+    .nav-item {
+        min-height: 45px;
+
+        padding: 4px;
+
+        justify-content: center;
+
+        flex-direction: column;
+
+        gap: 2px;
+
+        font-size: 9px;
+
+        text-align: center;
+    }
+
+
+    .nav-icon {
+        font-size: 17px;
+    }
+
+
+    .sidebar-bottom {
+        display: none;
+    }
+
+
+    .main-content {
+        margin-left: 0;
+
+        width: 100%;
+
+        padding: 20px 12px 35px;
+    }
+
+
+    .dashboard-header {
+        display: block;
+    }
+
+
+    .dashboard-header h1 {
+        font-size: 24px;
+    }
+
+
+    .current-date {
+        margin-top: 13px;
+    }
+
+
+    .overview-card {
+        grid-template-columns: 1fr 1fr;
+
+        padding: 15px;
+
+        gap: 20px;
+    }
+
+
+    .overview-item {
+        gap: 10px;
+    }
+
+
+    .overview-icon {
+        width: 42px;
+        height: 42px;
+
+        font-size: 19px;
+    }
+
+
+    .overview-item strong {
+        font-size: 25px;
+    }
+
+
+    .overview-item h3 {
+        font-size: 12px;
+    }
+
+
+    .section-header {
+        display: block;
+    }
+
+
+    .view-all-button {
+        margin-top: 12px;
+    }
+
+
+    .ending-athlete {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 12px;
+
+        padding: 13px;
+    }
+
+
+    .athlete-main {
+        width: 100%;
+    }
+
+
+    .program-end {
+        margin-left: 78px;
+    }
+
+
+    .progress-area {
+        margin-left: auto;
+    }
+
+
+    .edit-program {
+        margin-left: auto;
+    }
+
+
+    .activity-item {
+        grid-template-columns:
+            30px 1fr;
+
+        padding: 10px 12px;
+    }
+
+
+    .activity-item time {
+        grid-column: 2;
+    }
+
+}
