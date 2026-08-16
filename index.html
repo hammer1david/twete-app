@@ -4,365 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Twete | Train Smarter</title>
+    <title>Twete | Login</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            width: 100%;
-            min-height: 100%;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #050505;
-            color: #ffffff;
-            overflow-x: hidden;
-        }
-
-        /* =========================
-           APP BACKGROUND
-        ========================= */
-
-        .app {
-            min-height: 100vh;
-            min-height: 100dvh;
-            display: flex;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            background:
-                radial-gradient(
-                    circle at 50% 15%,
-                    rgba(198, 255, 0, 0.035),
-                    transparent 35%
-                ),
-                #050505;
-        }
-
-        /* Subtle diagonal light effects */
-
-        .glow-line {
-            position: absolute;
-            width: 240px;
-            height: 1px;
-            background: rgba(198, 255, 0, 0.45);
-            transform: rotate(-48deg);
-            filter: blur(1px);
-            pointer-events: none;
-        }
-
-        .glow-line.top {
-            top: 50px;
-            right: -110px;
-        }
-
-        .glow-line.bottom {
-            bottom: 90px;
-            left: -120px;
-        }
-
-        /* =========================
-           MAIN CONTENT
-        ========================= */
-
-        .container {
-            width: 100%;
-            max-width: 520px;
-            min-height: 100vh;
-            min-height: 100dvh;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            padding: 55px 24px 35px;
-
-            position: relative;
-            z-index: 2;
-        }
-
-        /* =========================
-           LOGO
-        ========================= */
-
-        .logo {
-            color: #C6FF00;
-            font-size: 52px;
-            font-weight: 900;
-            letter-spacing: -4px;
-            line-height: 1;
-            margin-bottom: 48px;
-        }
-
-        /* =========================
-           WELCOME
-        ========================= */
-
-        .welcome {
-            text-align: center;
-            margin-bottom: 38px;
-        }
-
-        .welcome h1 {
-            font-size: 34px;
-            line-height: 1.15;
-            font-weight: 700;
-            letter-spacing: -1px;
-            margin-bottom: 15px;
-        }
-
-        .welcome h1 span {
-            color: #C6FF00;
-        }
-
-        .welcome p {
-            color: #969696;
-            font-size: 17px;
-            line-height: 1.5;
-        }
-
-        /* =========================
-           LOGIN CARD
-        ========================= */
-
-        .login-card {
-            width: 100%;
-            padding: 30px 24px 27px;
-
-            background: rgba(12, 12, 12, 0.92);
-
-            border: 1px solid #303030;
-            border-radius: 24px;
-
-            box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                inset 0 0 30px rgba(255, 255, 255, 0.01);
-        }
-
-        /* =========================
-           INPUT GROUP
-        ========================= */
-
-        .input-group {
-            margin-bottom: 24px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 11px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 17px;
-            top: 50%;
-            transform: translateY(-50%);
-
-            width: 22px;
-            height: 22px;
-
-            color: #a0a0a0;
-            pointer-events: none;
-        }
-
-        .input-wrapper input {
-            width: 100%;
-            height: 62px;
-
-            padding: 0 48px 0 55px;
-
-            background: #080808;
-            color: #ffffff;
-
-            border: 1px solid #353535;
-            border-radius: 14px;
-
-            outline: none;
-
-            font-size: 16px;
-
-            transition: 0.2s ease;
-        }
-
-        .input-wrapper input::placeholder {
-            color: #777777;
-        }
-
-        .input-wrapper input:focus {
-            border-color: #C6FF00;
-            box-shadow: 0 0 0 2px rgba(198, 255, 0, 0.08);
-        }
-
-        /* =========================
-           PASSWORD VISIBILITY
-        ========================= */
-
-        .password-toggle {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-
-            border: none;
-            background: transparent;
-
-            color: #999999;
-
-            width: 28px;
-            height: 28px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            cursor: pointer;
-        }
-
-        .password-toggle:hover {
-            color: #C6FF00;
-        }
-
-        /* =========================
-           LOGIN BUTTON
-        ========================= */
-
-        .login-button {
-            width: 100%;
-            height: 62px;
-
-            margin-top: 4px;
-
-            border: none;
-            border-radius: 14px;
-
-            background: #C6FF00;
-            color: #000000;
-
-            font-size: 18px;
-            font-weight: 800;
-
-            cursor: pointer;
-
-            transition:
-                transform 0.15s ease,
-                box-shadow 0.15s ease,
-                background 0.15s ease;
-        }
-
-        .login-button:hover {
-            box-shadow: 0 0 25px rgba(198, 255, 0, 0.15);
-        }
-
-        .login-button:active {
-            transform: scale(0.98);
-        }
-
-        /* =========================
-           FORGOT PASSWORD
-        ========================= */
-
-        .forgot-password {
-            display: block;
-
-            margin-top: 24px;
-
-            text-align: center;
-
-            color: #C6FF00;
-
-            font-size: 15px;
-            font-weight: 500;
-
-            text-decoration: underline;
-            text-underline-offset: 4px;
-
-            cursor: pointer;
-        }
-
-        .forgot-password:hover {
-            opacity: 0.8;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 380px) {
-
-            .container {
-                padding: 40px 18px 25px;
-            }
-
-            .logo {
-                font-size: 45px;
-                margin-bottom: 38px;
-            }
-
-            .welcome h1 {
-                font-size: 29px;
-            }
-
-            .welcome p {
-                font-size: 15px;
-            }
-
-            .login-card {
-                padding: 24px 18px;
-            }
-
-            .input-wrapper input,
-            .login-button {
-                height: 58px;
-            }
-        }
-
-        @media (min-width: 700px) {
-
-            .container {
-                padding-top: 80px;
-            }
-
-            .logo {
-                font-size: 58px;
-            }
-
-            .welcome h1 {
-                font-size: 38px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="app">
+    <div class="app login-app">
 
-        <!-- Decorative background lines -->
         <div class="glow-line top"></div>
         <div class="glow-line bottom"></div>
 
-        <main class="container">
+        <main class="login-container">
 
-            <!-- TWETE LOGO -->
             <div class="logo">
                 TWETE
             </div>
 
-            <!-- WELCOME -->
             <section class="welcome">
 
                 <h1>
@@ -375,10 +34,10 @@
 
             </section>
 
-            <!-- LOGIN -->
             <section class="login-card">
 
-                <!-- USERNAME -->
+                <!-- Username -->
+
                 <div class="input-group">
 
                     <label for="username">
@@ -387,7 +46,6 @@
 
                     <div class="input-wrapper">
 
-                        <!-- User icon -->
                         <svg
                             class="input-icon"
                             viewBox="0 0 24 24"
@@ -412,7 +70,9 @@
 
                 </div>
 
-                <!-- PASSWORD -->
+
+                <!-- Password -->
+
                 <div class="input-group">
 
                     <label for="password">
@@ -421,7 +81,6 @@
 
                     <div class="input-wrapper">
 
-                        <!-- Lock icon -->
                         <svg
                             class="input-icon"
                             viewBox="0 0 24 24"
@@ -452,16 +111,13 @@
                             autocomplete="current-password"
                         >
 
-                        <!-- Show / hide password -->
                         <button
                             type="button"
                             class="password-toggle"
                             onclick="togglePassword()"
-                            aria-label="Show password"
                         >
 
                             <svg
-                                id="eyeIcon"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -481,7 +137,9 @@
 
                 </div>
 
-                <!-- LOGIN BUTTON -->
+
+                <!-- Login -->
+
                 <button
                     type="button"
                     class="login-button"
@@ -490,13 +148,16 @@
                     Log in
                 </button>
 
-                <!-- FORGOT PASSWORD -->
-                <a
+
+                <!-- Forgot password -->
+
+                <button
+                    type="button"
                     class="forgot-password"
                     onclick="forgotPassword()"
                 >
                     Forgot password?
-                </a>
+                </button>
 
             </section>
 
@@ -504,74 +165,7 @@
 
     </div>
 
-    <script>
-
-        function togglePassword() {
-
-            const password =
-                document.getElementById("password");
-
-            const button =
-                document.querySelector(".password-toggle");
-
-            if (password.type === "password") {
-
-                password.type = "text";
-
-                button.setAttribute(
-                    "aria-label",
-                    "Hide password"
-                );
-
-            } else {
-
-                password.type = "password";
-
-                button.setAttribute(
-                    "aria-label",
-                    "Show password"
-                );
-            }
-        }
-
-
-        function login() {
-
-            const username =
-                document.getElementById("username").value.trim();
-
-            const password =
-                document.getElementById("password").value;
-
-            if (!username || !password) {
-
-                alert("Please enter your username and password.");
-
-                return;
-            }
-
-            /*
-                IMPORTANT:
-
-                We will connect this button
-                to the real Twete authentication
-                system later.
-
-                For now it only checks that
-                both fields contain something.
-            */
-
-            alert("Login system will be connected next.");
-        }
-
-
-        function forgotPassword() {
-
-            alert("Password recovery will be connected later.");
-
-        }
-
-    </script>
+    <script src="app.js"></script>
 
 </body>
 </html>
