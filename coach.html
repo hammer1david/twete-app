@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Twete Coach | Dashboard</title>
+
+    <link rel="stylesheet" href="coach.css">
+</head>
+
+<body>
+
+<div class="coach-app">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-name">TWETE</div>
+            <div class="brand-role">COACH</div>
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <button class="nav-item active" onclick="showDashboard()">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </button>
+
+            <button class="nav-item" onclick="openAthletes()">
+                <span class="nav-icon">♙</span>
+                <span>Athletes</span>
+            </button>
+
+            <button class="nav-item" onclick="openMessages()">
+                <span class="nav-icon">▢</span>
+                <span>Messages</span>
+
+                <span class="message-badge">3</span>
+            </button>
+
+            <button class="nav-item" onclick="openPrograms()">
+                <span class="nav-icon">▣</span>
+                <span>Programs</span>
+            </button>
+
+            <button class="nav-item" onclick="openCalendar()">
+                <span class="nav-icon">□</span>
+                <span>Calendar</span>
+            </button>
+
+            <button class="nav-item" onclick="openAnalytics()">
+                <span class="nav-icon">▥</span>
+                <span>Analytics</span>
+            </button>
+
+            <button class="nav-item" onclick="openSettings()">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </button>
+
+        </nav>
+
+
+        <!-- Coach -->
+
+        <div class="sidebar-bottom">
+
+            <div class="coach-profile">
+
+                <div class="coach-avatar">
+                    CP
+                </div>
+
+                <div>
+                    <strong>Coach Peter</strong>
+                    <span>Head Coach</span>
+                </div>
+
+                <span class="profile-arrow">⌄</span>
+
+            </div>
+
+
+            <button class="logout-button" onclick="logout()">
+                <span>⇥</span>
+                Log out
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- Header -->
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>
+                    Good morning, Coach 👋
+                </h1>
+
+                <p>
+                    Here's what's happening with your team today.
+                </p>
+
+            </div>
+
+
+            <div class="current-date">
+
+                <span id="currentDate">
+                    Friday, May 30, 2026
+                </span>
+
+                <span class="calendar-symbol">
+                    ▣
+                </span>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =========================
+             TEAM OVERVIEW
+        ========================== -->
+
+        <section class="overview-card">
+
+            <div class="overview-item">
+
+                <div class="overview-icon">
+                    ♙
+                </div>
+
+                <div>
+                    <strong id="athleteCount">12</strong>
+
+                    <h3>Athletes</h3>
+
+                    <p>Total athletes</p>
+                </div>
+
+            </div>
+
+
+            <div class="overview-divider"></div>
+
+
+            <div class="overview-item">
+
+                <div class="overview-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <strong id="activePrograms">10</strong>
+
+                    <h3>Active Programs</h3>
+
+                    <p>Right now</p>
+                </div>
+
+            </div>
+
+
+            <div class="overview-divider"></div>
+
+
+            <div class="overview-item ending">
+
+                <div class="overview-icon">
+                    ◷
+                </div>
+
+                <div>
+                    <strong id="endingPrograms">2</strong>
+
+                    <h3>Ending Soon</h3>
+
+                    <p>≤ 7 days</p>
+                </div>
+
+            </div>
+
+
+            <div class="overview-divider"></div>
+
+
+            <div class="overview-item">
+
+                <div class="overview-icon">
+                    □
+                </div>
+
+                <div>
+                    <strong id="noProgram">0</strong>
+
+                    <h3>No Program</h3>
+
+                    <p>Assigned</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             PROGRAMS ENDING SOON
+        ========================== -->
+
+        <section class="ending-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        <span class="warning-icon">⚠</span>
+                        Programs ending soon
+                    </h2>
+
+                    <p>
+                        Athletes whose programs are ending soon need your attention.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="view-all-button"
+                    onclick="openAthletes()">
+
+                    View all athletes
+                    <span>›</span>
+
+                </button>
+
+            </div>
+
+
+            <!-- Athlete cards -->
+
+            <div id="endingAthletes"></div>
+
+        </section>
+
+
+
+        <!-- =========================
+             RECENT ACTIVITY
+        ========================== -->
+
+        <section class="activity-section">
+
+            <div class="activity-header">
+
+                <h2>
+                    Recent activity
+                </h2>
+
+                <button onclick="viewAllActivity()">
+                    View all activity
+                    <span>›</span>
+                </button>
+
+            </div>
+
+
+            <div class="activity-list">
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon completed">
+                        ✓
+                    </div>
+
+                    <div class="activity-text">
+                        <strong>David Gitonga</strong>
+                        completed Week 3 – Interval Session
+                    </div>
+
+                    <time>
+                        2 hours ago
+                    </time>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon message">
+                        ▢
+                    </div>
+
+                    <div class="activity-text">
+                        <strong>Joy Chepkemoi</strong>
+                        sent new feedback
+                    </div>
+
+                    <time>
+                        5 hours ago
+                    </time>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon edit">
+                        ✎
+                    </div>
+
+                    <div class="activity-text">
+                        <strong>Daniel Kip yego</strong>
+                        's program was updated
+                    </div>
+
+                    <time>
+                        Yesterday
+                    </time>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon completed">
+                        ✓
+                    </div>
+
+                    <div class="activity-text">
+                        <strong>Mercy Njeri</strong>
+                        completed today's workout
+                    </div>
+
+                    <time>
+                        Yesterday
+                    </time>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon message">
+                        ▢
+                    </div>
+
+                    <div class="activity-text">
+                        <strong>Victor Cheruiyot</strong>
+                        left a new note
+                    </div>
+
+                    <time>
+                        2 days ago
+                    </time>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<script src="coach.js"></script>
+
+</body>
+
+</html>
