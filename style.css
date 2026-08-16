@@ -571,3 +571,810 @@ body {
         font-size: 38px;
     }
 }
+
+
+/* =========================================
+   ATHLETE HOME
+========================================= */
+
+.athlete-app {
+    padding-bottom: 100px;
+}
+
+
+/* =========================================
+   ATHLETE PAGE
+========================================= */
+
+.athlete-page {
+    width: 100%;
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 30px 22px 110px;
+
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.athlete-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 65px;
+}
+
+
+.dashboard-logo {
+    color: #C6FF00;
+
+    font-size: 34px;
+    font-weight: 900;
+
+    letter-spacing: -3px;
+}
+
+
+.profile-button {
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    border: 2px solid #C6FF00;
+
+    background: #090909;
+
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.profile-button:hover {
+    background: rgba(198, 255, 0, 0.08);
+}
+
+
+/* =========================================
+   WELCOME
+========================================= */
+
+.athlete-welcome {
+    margin-bottom: 58px;
+}
+
+
+.athlete-welcome h1 {
+    font-size: 34px;
+
+    line-height: 1.15;
+
+    margin-bottom: 12px;
+
+    letter-spacing: -1px;
+}
+
+
+.athlete-welcome h1 span {
+    color: #ffffff;
+}
+
+
+.athlete-welcome p {
+    color: #929292;
+
+    font-size: 17px;
+}
+
+
+/* =========================================
+   SECTION TITLE
+========================================= */
+
+.goal-section {
+    margin-bottom: 55px;
+}
+
+
+.section-title {
+    font-size: 25px;
+
+    margin-bottom: 22px;
+
+    letter-spacing: -0.5px;
+}
+
+
+/* =========================================
+   CURRENT GOAL CARD
+========================================= */
+
+.current-goal-card {
+    width: 100%;
+
+    min-height: 330px;
+
+    padding: 28px 26px 25px;
+
+    border-radius: 24px;
+
+    border: 1.5px solid #C6FF00;
+
+    background:
+        radial-gradient(
+            circle at 75% 40%,
+            rgba(198, 255, 0, 0.075),
+            transparent 48%
+        ),
+        #080908;
+
+    color: #ffffff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    position: relative;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 0 35px rgba(198, 255, 0, 0.035);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.current-goal-card:hover {
+    box-shadow:
+        0 0 45px rgba(198, 255, 0, 0.09);
+}
+
+
+.current-goal-card:active {
+    transform: scale(0.985);
+}
+
+
+/* =========================================
+   GOAL MAIN
+========================================= */
+
+.goal-main {
+    display: flex;
+
+    align-items: flex-start;
+
+    position: relative;
+}
+
+
+/* =========================================
+   GOAL ICON
+========================================= */
+
+.goal-icon {
+    width: 116px;
+    height: 116px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    border: 1px solid #3d3d3d;
+
+    background: #080808;
+
+    color: #C6FF00;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 25px;
+}
+
+
+/* =========================================
+   GOAL INFORMATION
+========================================= */
+
+.goal-information {
+    padding-top: 2px;
+
+    padding-right: 35px;
+
+    flex: 1;
+}
+
+
+.goal-status {
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 8px;
+
+    border: 1px solid rgba(198, 255, 0, 0.35);
+
+    background: rgba(198, 255, 0, 0.08);
+
+    color: #C6FF00;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+
+    margin-bottom: 18px;
+}
+
+
+.goal-information h3 {
+    font-size: 31px;
+
+    line-height: 1.1;
+
+    margin-bottom: 13px;
+
+    letter-spacing: -1px;
+}
+
+
+.goal-pb {
+    color: #a4a4a4;
+
+    font-size: 17px;
+
+    margin-bottom: 24px;
+}
+
+
+/* =========================================
+   TARGET DATE
+========================================= */
+
+.target-date {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    color: #a7a7a7;
+
+    font-size: 15px;
+}
+
+
+.target-date svg {
+    color: #C6FF00;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   GOAL ARROW
+========================================= */
+
+.goal-arrow {
+    position: absolute;
+
+    right: 0;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #C6FF00;
+
+    font-size: 45px;
+
+    font-weight: 300;
+}
+
+
+/* =========================================
+   PROGRESS
+========================================= */
+
+.progress-area {
+    margin-top: 32px;
+}
+
+
+.progress-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    font-size: 16px;
+}
+
+
+.progress-header strong {
+    color: #C6FF00;
+
+    font-size: 18px;
+}
+
+
+.progress-bar {
+    width: 100%;
+
+    height: 13px;
+
+    border-radius: 20px;
+
+    background: #303030;
+
+    overflow: hidden;
+}
+
+
+.progress-fill {
+    height: 100%;
+
+    border-radius: inherit;
+
+    background: #C6FF00;
+
+    box-shadow:
+        0 0 12px rgba(198, 255, 0, 0.25);
+}
+
+
+/* =========================================
+   PAST GOALS
+========================================= */
+
+.past-goals {
+    margin-bottom: 30px;
+}
+
+
+.past-goal-card {
+    width: 100%;
+
+    min-height: 135px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 22px;
+
+    margin-bottom: 18px;
+
+    border-radius: 21px;
+
+    border: 1px solid #414141;
+
+    background: #070707;
+
+    color: #ffffff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+.past-goal-card:hover {
+    border-color: #666666;
+
+    background: #0c0c0c;
+}
+
+
+.past-goal-card:active {
+    transform: scale(0.985);
+}
+
+
+/* =========================================
+   PAST GOAL ICON
+========================================= */
+
+.past-goal-icon {
+    width: 78px;
+    height: 78px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    border: 1px solid #3e3e3e;
+
+    background: #0c0c0c;
+
+    color: #C6FF00;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 25px;
+}
+
+
+/* =========================================
+   PAST GOAL INFORMATION
+========================================= */
+
+.past-goal-information {
+    flex: 1;
+}
+
+
+.completed-label {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 7px;
+
+    border: 1px solid #3c3c3c;
+
+    background: #101010;
+
+    color: #aaaaaa;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+}
+
+
+.past-goal-information h3 {
+    font-size: 24px;
+
+    margin-bottom: 8px;
+}
+
+
+.past-goal-information p {
+    color: #969696;
+
+    font-size: 15px;
+}
+
+
+.past-goal-information p span {
+    color: #C6FF00;
+
+    margin: 0 5px;
+}
+
+
+.past-goal-arrow {
+    color: #C6FF00;
+
+    font-size: 40px;
+
+    font-weight: 300;
+
+    margin-left: 15px;
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.bottom-navigation {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 86px;
+
+    display: flex;
+
+    justify-content: space-around;
+
+    align-items: center;
+
+    background: rgba(7, 7, 7, 0.96);
+
+    border-top: 1px solid #303030;
+
+    backdrop-filter: blur(14px);
+
+    z-index: 20;
+}
+
+
+.nav-item {
+    width: 50%;
+
+    height: 100%;
+
+    border: none;
+
+    background: transparent;
+
+    color: #8a8a8a;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    position: relative;
+}
+
+
+.nav-item svg {
+    transition: 0.2s ease;
+}
+
+
+.nav-item.active {
+    color: #C6FF00;
+}
+
+
+.nav-item.active::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    width: 80px;
+    height: 4px;
+
+    border-radius: 0 0 5px 5px;
+
+    background: #C6FF00;
+}
+
+
+.nav-item:hover {
+    color: #C6FF00;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .athlete-page {
+        padding: 25px 18px 105px;
+    }
+
+
+    .athlete-header {
+        margin-bottom: 48px;
+    }
+
+
+    .dashboard-logo {
+        font-size: 31px;
+    }
+
+
+    .profile-button {
+        width: 47px;
+        height: 47px;
+    }
+
+
+    .athlete-welcome {
+        margin-bottom: 43px;
+    }
+
+
+    .athlete-welcome h1 {
+        font-size: 30px;
+    }
+
+
+    .athlete-welcome p {
+        font-size: 15px;
+    }
+
+
+    .section-title {
+        font-size: 22px;
+    }
+
+
+    .current-goal-card {
+        min-height: 310px;
+
+        padding: 22px 18px;
+    }
+
+
+    .goal-icon {
+        width: 82px;
+        height: 82px;
+
+        margin-right: 17px;
+    }
+
+
+    .goal-icon svg {
+        width: 37px;
+        height: 37px;
+    }
+
+
+    .goal-information {
+        padding-right: 25px;
+    }
+
+
+    .goal-status {
+        font-size: 10px;
+
+        padding: 6px 8px;
+
+        margin-bottom: 13px;
+    }
+
+
+    .goal-information h3 {
+        font-size: 23px;
+    }
+
+
+    .goal-pb {
+        font-size: 14px;
+
+        margin-bottom: 18px;
+    }
+
+
+    .target-date {
+        font-size: 12px;
+    }
+
+
+    .goal-arrow {
+        font-size: 34px;
+    }
+
+
+    .progress-area {
+        margin-top: 28px;
+    }
+
+
+    .past-goal-card {
+        min-height: 112px;
+
+        padding: 16px;
+    }
+
+
+    .past-goal-icon {
+        width: 62px;
+        height: 62px;
+
+        margin-right: 15px;
+    }
+
+
+    .past-goal-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+
+
+    .completed-label {
+        font-size: 9px;
+
+        padding: 5px 7px;
+
+        margin-bottom: 7px;
+    }
+
+
+    .past-goal-information h3 {
+        font-size: 18px;
+    }
+
+
+    .past-goal-information p {
+        font-size: 12px;
+    }
+
+
+    .past-goal-arrow {
+        font-size: 31px;
+
+        margin-left: 8px;
+    }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    .athlete-page {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+
+    .current-goal-card {
+        padding: 19px 14px;
+    }
+
+
+    .goal-icon {
+        width: 70px;
+        height: 70px;
+
+        margin-right: 12px;
+    }
+
+
+    .goal-information h3 {
+        font-size: 20px;
+    }
+
+
+    .target-date {
+        font-size: 11px;
+    }
+
+
+    .past-goal-icon {
+        width: 55px;
+        height: 55px;
+    }
+
+
+    .past-goal-information h3 {
+        font-size: 16px;
+    }
+}
