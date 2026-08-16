@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
+<head>
     <meta charset="UTF-8">
 
     <meta
@@ -9,106 +9,505 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Twete | Athlete</title>
+    <title>Twete | Home</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
-    <div class="app">
+<div class="app athlete-app">
 
-        <div class="glow-line top"></div>
-        <div class="glow-line bottom"></div>
-
-
-        <main class="dashboard">
-
-            <div class="dashboard-container">
+    <!-- Decorative background -->
+    <div class="glow-line top"></div>
+    <div class="glow-line bottom"></div>
 
 
-                <!-- HEADER -->
+    <main class="athlete-page">
 
-                <header class="dashboard-header">
+        <!-- =========================
+             HEADER
+        ========================== -->
 
-                    <div class="dashboard-logo">
-                        TWETE
-                    </div>
+        <header class="athlete-header">
+
+            <div class="dashboard-logo">
+                TWETE
+            </div>
+
+            <button
+                class="profile-button"
+                onclick="openProfile()"
+                aria-label="Open profile"
+            >
+
+                <svg
+                    width="25"
+                    height="25"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+
+                    <circle
+                        cx="12"
+                        cy="7"
+                        r="4"
+                    ></circle>
+
+                    <path
+                        d="M5.5 21a6.5 6.5 0 0 1 13 0"
+                    ></path>
+
+                </svg>
+
+            </button>
+
+        </header>
 
 
-                    <button
-                        class="profile-button"
-                        type="button"
-                    >
+        <!-- =========================
+             WELCOME
+        ========================== -->
+
+        <section class="athlete-welcome">
+
+            <h1>
+                Welcome, <span>David!</span>
+            </h1>
+
+            <p>
+                Your running journey starts here.
+            </p>
+
+        </section>
+
+
+        <!-- =========================
+             CURRENT GOAL
+        ========================== -->
+
+        <section class="goal-section">
+
+            <h2 class="section-title">
+                Current Goal
+            </h2>
+
+
+            <button
+                class="current-goal-card"
+                onclick="openGoal('current')"
+            >
+
+                <div class="goal-main">
+
+                    <!-- Goal icon -->
+
+                    <div class="goal-icon target-icon">
 
                         <svg
-                            width="22"
-                            height="22"
+                            width="48"
+                            height="48"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
+                            stroke-width="1.7"
                             stroke-linecap="round"
                             stroke-linejoin="round"
                         >
 
                             <circle
                                 cx="12"
-                                cy="7"
+                                cy="12"
+                                r="8"
+                            ></circle>
+
+                            <circle
+                                cx="12"
+                                cy="12"
                                 r="4"
                             ></circle>
 
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="1"
+                            ></circle>
+
                             <path
-                                d="M5.5 21a6.5 6.5 0 0 1 13 0"
+                                d="M16 8l4-4"
+                            ></path>
+
+                            <path
+                                d="M17 4h3v3"
                             ></path>
 
                         </svg>
 
-                    </button>
-
-                </header>
+                    </div>
 
 
-                <!-- WELCOME -->
+                    <div class="goal-information">
 
-                <section class="dashboard-welcome">
+                        <span class="goal-status">
+                            CURRENT GOAL
+                        </span>
 
-                    <h1>
-                        Welcome!
-                    </h1>
+                        <h3>
+                            10 km — 30:30
+                        </h3>
+
+                        <p class="goal-pb">
+                            Current PB: 31:20
+                        </p>
+
+
+                        <div class="target-date">
+
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+
+                                <rect
+                                    x="3"
+                                    y="4"
+                                    width="18"
+                                    height="18"
+                                    rx="2"
+                                ></rect>
+
+                                <line
+                                    x1="16"
+                                    y1="2"
+                                    x2="16"
+                                    y2="6"
+                                ></line>
+
+                                <line
+                                    x1="8"
+                                    y1="2"
+                                    x2="8"
+                                    y2="6"
+                                ></line>
+
+                                <line
+                                    x1="3"
+                                    y1="10"
+                                    x2="21"
+                                    y2="10"
+                                ></line>
+
+                            </svg>
+
+                            <span>
+                                Target date: Oct 18, 2026
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Arrow -->
+
+                    <div class="goal-arrow">
+                        →
+                    </div>
+
+                </div>
+
+
+                <!-- Progress -->
+
+                <div class="progress-area">
+
+                    <div class="progress-header">
+
+                        <span>
+                            Progress
+                        </span>
+
+                        <strong>
+                            65%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div
+                            class="progress-fill"
+                            style="width: 65%;"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             PAST GOALS
+        ========================== -->
+
+        <section class="goal-section past-goals">
+
+            <h2 class="section-title">
+                Past Goals
+            </h2>
+
+
+            <!-- Past Goal 1 -->
+
+            <button
+                class="past-goal-card"
+                onclick="openGoal('past-1')"
+            >
+
+                <div class="past-goal-icon">
+
+                    <svg
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path
+                            d="M8 21h8"
+                        ></path>
+
+                        <path
+                            d="M12 17v4"
+                        ></path>
+
+                        <path
+                            d="M7 4h10v4a5 5 0 0 1-10 0V4z"
+                        ></path>
+
+                        <path
+                            d="M7 6H4a4 4 0 0 0 4 4"
+                        ></path>
+
+                        <path
+                            d="M17 6h3a4 4 0 0 1-4 4"
+                        ></path>
+
+                    </svg>
+
+                </div>
+
+
+                <div class="past-goal-information">
+
+                    <span class="completed-label">
+                        COMPLETED
+                    </span>
+
+                    <h3>
+                        5 km — 14:40
+                    </h3>
 
                     <p>
-                        Your Twete athlete dashboard
+                        Completed
+                        <span>•</span>
+                        May 2026
                     </p>
 
-                </section>
+                </div>
 
 
-                <!-- EMPTY DASHBOARD -->
+                <div class="past-goal-arrow">
+                    →
+                </div>
 
-                <section class="empty-dashboard">
+            </button>
+
+
+            <!-- Past Goal 2 -->
+
+            <button
+                class="past-goal-card"
+                onclick="openGoal('past-2')"
+            >
+
+                <div class="past-goal-icon">
+
+                    <svg
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path
+                            d="M8 21h8"
+                        ></path>
+
+                        <path
+                            d="M12 17v4"
+                        ></path>
+
+                        <path
+                            d="M7 4h10v4a5 5 0 0 1-10 0V4z"
+                        ></path>
+
+                        <path
+                            d="M7 6H4a4 4 0 0 0 4 4"
+                        ></path>
+
+                        <path
+                            d="M17 6h3a4 4 0 0 1-4 4"
+                        ></path>
+
+                    </svg>
+
+                </div>
+
+
+                <div class="past-goal-information">
+
+                    <span class="completed-label">
+                        COMPLETED
+                    </span>
+
+                    <h3>
+                        10 km — 31:20
+                    </h3>
 
                     <p>
-                        Your training dashboard will appear here.
+                        Completed
+                        <span>•</span>
+                        July 2026
                     </p>
 
-                </section>
+                </div>
 
 
-            </div>
+                <div class="past-goal-arrow">
+                    →
+                </div>
 
-        </main>
+            </button>
 
-    </div>
+        </section>
 
 
-    <script src="app.js"></script>
+    </main>
+
+
+    <!-- =========================
+         BOTTOM NAVIGATION
+    ========================== -->
+
+    <nav class="bottom-navigation">
+
+        <button
+            class="nav-item active"
+            onclick="goHome()"
+        >
+
+            <svg
+                width="27"
+                height="27"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+
+                <path
+                    d="M3 10.5L12 3l9 7.5"
+                ></path>
+
+                <path
+                    d="M5 9.5V21h14V9.5"
+                ></path>
+
+                <path
+                    d="M9 21v-6h6v6"
+                ></path>
+
+            </svg>
+
+            <span>
+                Home
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item"
+            onclick="openMessages()"
+        >
+
+            <svg
+                width="27"
+                height="27"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+
+                <path
+                    d="M4 4h16v12H8l-4 4V4z"
+                ></path>
+
+                <line
+                    x1="8"
+                    y1="9"
+                    x2="16"
+                    y2="9"
+                ></line>
+
+                <line
+                    x1="8"
+                    y1="12"
+                    x2="14"
+                    y2="12"
+                ></line>
+
+            </svg>
+
+            <span>
+                Messages
+            </span>
+
+        </button>
+
+    </nav>
+
+</div>
+
+
+<script src="app.js"></script>
 
 </body>
-
 </html>
