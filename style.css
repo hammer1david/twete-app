@@ -1378,3 +1378,27 @@ body {
         font-size: 16px;
     }
 }
+
+.coach-login-button {
+    width: 100%;
+    height: 52px;
+
+    margin-top: 14px;
+
+    border: 1px solid #C6FF00;
+    border-radius: 14px;
+
+    background: transparent;
+    color: #C6FF00;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.coach-login-button:hover {
+    background: #C6FF00;
+    color: #000000;
+}
