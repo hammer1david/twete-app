@@ -1,0 +1,573 @@
+/* =========================================
+   TWETE APP
+   Main stylesheet
+========================================= */
+
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #050505;
+    color: #ffffff;
+}
+
+
+/* =========================================
+   GENERAL APP
+========================================= */
+
+.app {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 15%,
+            rgba(198, 255, 0, 0.04),
+            transparent 35%
+        ),
+        #050505;
+}
+
+
+/* =========================================
+   DECORATIVE LINES
+========================================= */
+
+.glow-line {
+    position: absolute;
+
+    width: 240px;
+    height: 1px;
+
+    background: rgba(198, 255, 0, 0.45);
+
+    transform: rotate(-48deg);
+
+    filter: blur(1px);
+
+    pointer-events: none;
+}
+
+
+.glow-line.top {
+    top: 50px;
+    right: -110px;
+}
+
+
+.glow-line.bottom {
+    bottom: 90px;
+    left: -120px;
+}
+
+
+/* =========================================
+   LOGIN PAGE
+========================================= */
+
+.login-container {
+    width: 100%;
+    max-width: 520px;
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    margin: 0 auto;
+
+    padding: 55px 24px 35px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================
+   LOGO
+========================================= */
+
+.logo {
+    color: #C6FF00;
+
+    font-size: 52px;
+    font-weight: 900;
+
+    letter-spacing: -4px;
+    line-height: 1;
+
+    margin-bottom: 48px;
+}
+
+
+/* =========================================
+   WELCOME
+========================================= */
+
+.welcome {
+    text-align: center;
+
+    margin-bottom: 38px;
+}
+
+
+.welcome h1 {
+    font-size: 34px;
+    line-height: 1.15;
+
+    font-weight: 700;
+
+    letter-spacing: -1px;
+
+    margin-bottom: 15px;
+}
+
+
+.welcome h1 span {
+    color: #C6FF00;
+}
+
+
+.welcome p {
+    color: #969696;
+
+    font-size: 17px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   LOGIN CARD
+========================================= */
+
+.login-card {
+    width: 100%;
+
+    padding: 30px 24px 27px;
+
+    background: rgba(12, 12, 12, 0.94);
+
+    border: 1px solid #303030;
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        inset 0 0 30px rgba(255, 255, 255, 0.01);
+}
+
+
+/* =========================================
+   INPUT GROUP
+========================================= */
+
+.input-group {
+    margin-bottom: 24px;
+}
+
+
+.input-group label {
+    display: block;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    margin-bottom: 11px;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.input-wrapper {
+    position: relative;
+
+    width: 100%;
+}
+
+
+.input-icon {
+    position: absolute;
+
+    left: 17px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 22px;
+    height: 22px;
+
+    color: #a0a0a0;
+
+    pointer-events: none;
+}
+
+
+.input-wrapper input {
+    width: 100%;
+    height: 62px;
+
+    padding: 0 48px 0 55px;
+
+    background: #080808;
+
+    color: #ffffff;
+
+    border: 1px solid #353535;
+
+    border-radius: 14px;
+
+    outline: none;
+
+    font-size: 16px;
+
+    transition: 0.2s ease;
+}
+
+
+.input-wrapper input::placeholder {
+    color: #777777;
+}
+
+
+.input-wrapper input:focus {
+    border-color: #C6FF00;
+
+    box-shadow:
+        0 0 0 2px rgba(198, 255, 0, 0.08);
+}
+
+
+/* =========================================
+   PASSWORD BUTTON
+========================================= */
+
+.password-toggle {
+    position: absolute;
+
+    right: 16px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background: transparent;
+
+    color: #999999;
+
+    cursor: pointer;
+}
+
+
+.password-toggle:hover {
+    color: #C6FF00;
+}
+
+
+/* =========================================
+   LOGIN BUTTON
+========================================= */
+
+.login-button {
+    width: 100%;
+    height: 62px;
+
+    margin-top: 4px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #C6FF00;
+
+    color: #000000;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.login-button:hover {
+    box-shadow:
+        0 0 25px rgba(198, 255, 0, 0.15);
+}
+
+
+.login-button:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================================
+   FORGOT PASSWORD
+========================================= */
+
+.forgot-password {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 24px;
+
+    text-align: center;
+
+    color: #C6FF00;
+
+    background: transparent;
+
+    border: none;
+
+    font-size: 15px;
+
+    text-decoration: underline;
+
+    text-underline-offset: 4px;
+
+    cursor: pointer;
+}
+
+
+.forgot-password:hover {
+    opacity: 0.8;
+}
+
+
+/* =========================================
+   ATHLETE DASHBOARD
+========================================= */
+
+.dashboard {
+    width: 100%;
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    padding: 28px 20px;
+
+    position: relative;
+    z-index: 2;
+}
+
+
+.dashboard-container {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   DASHBOARD HEADER
+========================================= */
+
+.dashboard-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 35px;
+}
+
+
+.dashboard-logo {
+    color: #C6FF00;
+
+    font-size: 30px;
+
+    font-weight: 900;
+
+    letter-spacing: -2px;
+}
+
+
+.profile-button {
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+
+    border: 1px solid #333;
+
+    background: #111;
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+.profile-button:hover {
+    border-color: #C6FF00;
+
+    color: #C6FF00;
+}
+
+
+/* =========================================
+   DASHBOARD WELCOME
+========================================= */
+
+.dashboard-welcome {
+    margin-bottom: 28px;
+}
+
+
+.dashboard-welcome h1 {
+    font-size: 30px;
+
+    margin-bottom: 8px;
+}
+
+
+.dashboard-welcome p {
+    color: #888;
+
+    font-size: 15px;
+}
+
+
+/* =========================================
+   EMPTY DASHBOARD CARD
+========================================= */
+
+.empty-dashboard {
+    width: 100%;
+
+    min-height: 180px;
+
+    border-radius: 20px;
+
+    border: 1px solid #292929;
+
+    background: #0d0d0d;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 30px;
+}
+
+
+.empty-dashboard p {
+    color: #666;
+
+    font-size: 15px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+
+    .login-container {
+        padding: 40px 18px 25px;
+    }
+
+
+    .logo {
+        font-size: 45px;
+
+        margin-bottom: 38px;
+    }
+
+
+    .welcome h1 {
+        font-size: 29px;
+    }
+
+
+    .welcome p {
+        font-size: 15px;
+    }
+
+
+    .login-card {
+        padding: 24px 18px;
+    }
+
+
+    .input-wrapper input,
+    .login-button {
+        height: 58px;
+    }
+}
+
+
+/* =========================================
+   TABLET / DESKTOP
+========================================= */
+
+@media (min-width: 700px) {
+
+    .login-container {
+        padding-top: 80px;
+    }
+
+
+    .logo {
+        font-size: 58px;
+    }
+
+
+    .welcome h1 {
+        font-size: 38px;
+    }
+}
