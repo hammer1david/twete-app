@@ -1,0 +1,1347 @@
+/* =========================================
+   TWETE GOAL PAGE
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #050505;
+
+    color: #ffffff;
+}
+
+
+button {
+    font-family: inherit;
+}
+
+
+.goal-app {
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    background:
+        radial-gradient(
+            circle at 80% 10%,
+            rgba(198,255,0,0.035),
+            transparent 30%
+        ),
+        #050505;
+
+    padding-bottom: 100px;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.goal-header {
+    height: 75px;
+
+    display: grid;
+
+    grid-template-columns: 1fr auto 1fr;
+
+    align-items: center;
+
+    padding: 0 28px;
+
+    border-bottom: 1px solid #161616;
+
+    position: relative;
+
+    z-index: 5;
+}
+
+
+.goal-header h1 {
+    font-size: 21px;
+
+    text-align: center;
+
+    font-weight: 700;
+}
+
+
+.back-button,
+.more-button {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+.back-button {
+    justify-self: start;
+}
+
+
+.more-button {
+    justify-self: end;
+
+    border: 1px solid #555;
+
+    border-radius: 50%;
+
+    gap: 3px;
+}
+
+
+.back-button svg {
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 2;
+}
+
+
+.more-button span {
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.goal-content {
+    width: 100%;
+
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 0 22px 40px;
+}
+
+
+/* =========================================
+   GOAL CARD
+========================================= */
+
+.goal-card {
+    margin-top: 22px;
+
+    padding: 22px 24px 17px;
+
+    border: 1px solid #C6FF00;
+
+    border-radius: 18px;
+
+    background:
+        radial-gradient(
+            circle at 85% 35%,
+            rgba(198,255,0,0.07),
+            transparent 45%
+        ),
+        #090909;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+.goal-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+    height: 250px;
+
+    right: -80px;
+    bottom: -120px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(198,255,0,0.05);
+
+    transform: rotate(-30deg);
+
+    pointer-events: none;
+}
+
+
+.goal-card-top {
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* =========================================
+   TARGET ICON
+========================================= */
+
+.target-icon {
+    width: 112px;
+    height: 112px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #303030;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #080808;
+}
+
+
+.target-icon svg {
+    width: 72px;
+    height: 72px;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 2.2;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+/* =========================================
+   GOAL INFORMATION
+========================================= */
+
+.goal-main-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.goal-label {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 7px;
+
+    border: 1px solid rgba(198,255,0,0.4);
+
+    background: rgba(198,255,0,0.08);
+
+    color: #C6FF00;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    margin-bottom: 11px;
+}
+
+
+.goal-main-info h2 {
+    font-size: 28px;
+
+    line-height: 1.1;
+
+    margin-bottom: 13px;
+
+    letter-spacing: -0.7px;
+
+    white-space: nowrap;
+}
+
+
+.goal-date {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #aaaaaa;
+
+    font-size: 14px;
+
+    margin-bottom: 9px;
+}
+
+
+.goal-date svg {
+    width: 19px;
+    height: 19px;
+
+    flex-shrink: 0;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 1.8;
+}
+
+
+.goal-main-info p {
+    color: #aaaaaa;
+
+    font-size: 14px;
+}
+
+
+.goal-main-info strong {
+    color: #dddddd;
+}
+
+
+/* =========================================
+   PROGRESS CIRCLE
+========================================= */
+
+.goal-progress {
+    width: 108px;
+
+    flex-shrink: 0;
+
+    text-align: center;
+
+    position: relative;
+}
+
+
+.progress-circle {
+    width: 92px;
+    height: 92px;
+
+    transform: rotate(-90deg);
+}
+
+
+.progress-background {
+    fill: none;
+
+    stroke: #282828;
+
+    stroke-width: 8;
+}
+
+
+.progress-circle-value {
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 8;
+
+    stroke-linecap: round;
+
+    stroke-dasharray: 314;
+
+    stroke-dashoffset: 110;
+}
+
+
+.progress-number {
+    position: absolute;
+
+    top: 23px;
+    left: 0;
+    right: 0;
+}
+
+
+.progress-number strong {
+    font-size: 22px;
+}
+
+
+.goal-progress > span {
+    display: block;
+
+    color: #aaaaaa;
+
+    font-size: 13px;
+
+    margin-top: -2px;
+}
+
+
+/* =========================================
+   DIVIDER
+========================================= */
+
+.goal-divider {
+    height: 1px;
+
+    background: #353535;
+
+    margin-top: 18px;
+}
+
+
+.goal-motivation {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 9px;
+
+    color: #b7b7b7;
+
+    font-size: 14px;
+
+    padding-top: 15px;
+
+    text-align: center;
+}
+
+
+.goal-motivation svg {
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 1.7;
+}
+
+
+/* =========================================
+   TRAINING PLAN
+========================================= */
+
+.training-section {
+    margin-top: 27px;
+}
+
+
+.section-heading {
+    font-size: 25px;
+
+    margin-bottom: 17px;
+
+    letter-spacing: -0.5px;
+}
+
+
+/* =========================================
+   WEEK SELECTOR
+========================================= */
+
+.week-selector {
+    display: flex;
+
+    gap: 12px;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+
+    padding: 0 4px 9px;
+}
+
+
+.week-selector::-webkit-scrollbar {
+    display: none;
+}
+
+
+.week-button {
+    flex: 0 0 auto;
+
+    height: 44px;
+
+    padding: 0 17px;
+
+    border-radius: 8px;
+
+    border: 1px solid #373737;
+
+    background: #111111;
+
+    color: #d0d0d0;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.week-button.active {
+    background: #C6FF00;
+
+    color: #000000;
+
+    border-color: #C6FF00;
+
+    box-shadow: 0 0 18px rgba(198,255,0,0.13);
+}
+
+
+/* =========================================
+   WEEK INDICATOR
+========================================= */
+
+.week-indicator {
+    height: 5px;
+
+    width: 100%;
+
+    background: #262626;
+
+    border-radius: 10px;
+
+    margin-bottom: 9px;
+
+    overflow: hidden;
+}
+
+
+.week-indicator-fill {
+    width: 50%;
+
+    height: 100%;
+
+    background: #C6FF00;
+
+    border-radius: inherit;
+}
+
+
+/* =========================================
+   WORKOUT CARD
+========================================= */
+
+.workout-card {
+    min-height: 94px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 10px 12px 10px 10px;
+
+    background: #0d0d0d;
+
+    border: 1px solid #292929;
+
+    border-radius: 15px;
+
+    margin-bottom: 1px;
+
+    position: relative;
+}
+
+
+.workout-card.active-workout {
+    border-left: 2px solid #C6FF00;
+}
+
+
+.workout-day {
+    width: 58px;
+
+    flex-shrink: 0;
+
+    text-align: center;
+}
+
+
+.workout-day strong {
+    display: block;
+
+    color: #C6FF00;
+
+    font-size: 13px;
+
+    margin-bottom: 4px;
+}
+
+
+.workout-card:not(.completed):not(.active-workout)
+.workout-day strong {
+    color: #777777;
+}
+
+
+.workout-day span {
+    color: #aaaaaa;
+
+    font-size: 12px;
+}
+
+
+/* =========================================
+   WORKOUT ICON
+========================================= */
+
+.workout-icon {
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #353535;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.workout-icon svg {
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 1.7;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+.workout-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.workout-info h3 {
+    font-size: 17px;
+
+    margin-bottom: 4px;
+}
+
+
+.workout-details {
+    color: #aaaaaa;
+
+    font-size: 13px;
+
+    margin-bottom: 4px;
+}
+
+
+.workout-details span {
+    color: #C6FF00;
+
+    padding: 0 4px;
+}
+
+
+.workout-description {
+    color: #8b8b8b;
+
+    font-size: 12px;
+}
+
+
+/* =========================================
+   STATUS BUTTON
+========================================= */
+
+.status-button {
+    width: 29px;
+    height: 29px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    border: 2px solid #555;
+
+    background: transparent;
+
+    color: #000000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+
+.completed-button {
+    background: #C6FF00;
+
+    border-color: #C6FF00;
+}
+
+
+.status-button.done {
+    background: #C6FF00;
+
+    border-color: #C6FF00;
+}
+
+
+/* =========================================
+   START WORKOUT
+========================================= */
+
+.start-button {
+    flex-shrink: 0;
+
+    height: 42px;
+
+    padding: 0 15px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #C6FF00;
+
+    color: #000000;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+
+.start-button:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================
+   FULL PLAN
+========================================= */
+
+.full-plan-button {
+    width: 100%;
+
+    height: 54px;
+
+    border: 1px solid #303030;
+
+    border-radius: 0 0 14px 14px;
+
+    background: #0d0d0d;
+
+    color: #C6FF00;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+
+.full-plan-button strong {
+    font-size: 25px;
+
+    line-height: 1;
+
+    font-weight: 400;
+}
+
+
+/* =========================================
+   INFO CARDS
+========================================= */
+
+.info-grid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 16px;
+
+    margin-top: 20px;
+}
+
+
+.info-card {
+    min-height: 185px;
+
+    padding: 17px;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    background: #0d0d0d;
+}
+
+
+.info-card-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 17px;
+}
+
+
+.info-card-header svg {
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 1.7;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+.info-card-header strong {
+    font-size: 14px;
+}
+
+
+.coach-content {
+    display: flex;
+
+    gap: 12px;
+}
+
+
+.coach-avatar {
+    width: 47px;
+    height: 47px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #eeeeee 0 20%,
+            transparent 21%
+        ),
+        linear-gradient(
+            135deg,
+            #333,
+            #111
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #C6FF00;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+.coach-content p {
+    color: #d0d0d0;
+
+    font-size: 13px;
+
+    line-height: 1.45;
+
+    margin-bottom: 9px;
+}
+
+
+.coach-content span,
+.coach-content small {
+    display: block;
+
+    color: #888;
+
+    font-size: 11px;
+
+    margin-bottom: 4px;
+}
+
+
+.add-feedback {
+    margin-left: auto;
+
+    border: none;
+
+    background: transparent;
+
+    color: #C6FF00;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+.feedback-text {
+    color: #d0d0d0;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    margin-bottom: 15px;
+}
+
+
+.feedback-date {
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+/* =========================================
+   PROGRESS OVERVIEW
+========================================= */
+
+.overview-card {
+    margin-top: 16px;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    background: #0d0d0d;
+
+    padding: 15px 10px 18px;
+}
+
+
+.overview-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 18px;
+
+    padding-left: 5px;
+}
+
+
+.overview-title svg {
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 1.7;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+.overview-title strong {
+    font-size: 14px;
+}
+
+
+.overview-stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+}
+
+
+.overview-stat {
+    text-align: center;
+
+    padding: 0 10px;
+
+    border-right: 1px solid #3a3a3a;
+}
+
+
+.overview-stat:last-child {
+    border-right: none;
+}
+
+
+.overview-stat svg {
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+
+    stroke: #888;
+
+    stroke-width: 1.5;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+
+    margin-bottom: 7px;
+}
+
+
+.overview-stat span {
+    display: block;
+
+    color: #999;
+
+    font-size: 11px;
+
+    margin-bottom: 5px;
+}
+
+
+.overview-stat strong {
+    color: #C6FF00;
+
+    font-size: 17px;
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 82px;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 100px;
+
+    background: rgba(7,7,7,0.98);
+
+    border-top: 1px solid #303030;
+
+    z-index: 20;
+}
+
+
+.bottom-nav-item {
+    width: 90px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #888;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    cursor: pointer;
+}
+
+
+.bottom-nav-item svg {
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+.bottom-nav-item span {
+    font-size: 12px;
+}
+
+
+.bottom-nav-item.active {
+    color: #C6FF00;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (min-width: 700px) {
+
+    .goal-content {
+        max-width: 1000px;
+
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .goal-header {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .goal-header {
+        padding: 0 18px;
+    }
+
+
+    .goal-content {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+
+    .goal-card {
+        padding: 19px 14px 15px;
+    }
+
+
+    .goal-card-top {
+        gap: 11px;
+    }
+
+
+    .target-icon {
+        width: 92px;
+        height: 92px;
+    }
+
+
+    .target-icon svg {
+        width: 60px;
+        height: 60px;
+    }
+
+
+    .goal-main-info h2 {
+        font-size: 21px;
+    }
+
+
+    .goal-date {
+        font-size: 11px;
+    }
+
+
+    .goal-main-info p {
+        font-size: 12px;
+    }
+
+
+    .goal-progress {
+        width: 82px;
+    }
+
+
+    .progress-circle {
+        width: 76px;
+        height: 76px;
+    }
+
+
+    .progress-number {
+        top: 20px;
+    }
+
+
+    .progress-number strong {
+        font-size: 18px;
+    }
+
+
+    .goal-progress > span {
+        font-size: 11px;
+    }
+
+
+    .goal-motivation {
+        font-size: 11px;
+    }
+
+
+    .workout-card {
+        gap: 8px;
+
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+
+
+    .workout-day {
+        width: 42px;
+    }
+
+
+    .workout-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+
+    .workout-icon svg {
+        width: 23px;
+        height: 23px;
+    }
+
+
+    .workout-info h3 {
+        font-size: 14px;
+    }
+
+
+    .workout-details {
+        font-size: 11px;
+    }
+
+
+    .workout-description {
+        font-size: 10px;
+    }
+
+
+    .start-button {
+        height: 38px;
+
+        padding: 0 10px;
+
+        font-size: 10px;
+    }
+
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .overview-stats {
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        row-gap: 18px;
+    }
+
+
+    .overview-stat:nth-child(2) {
+        border-right: none;
+    }
+
+
+    .overview-stat:nth-child(1),
+    .overview-stat:nth-child(2) {
+        padding-bottom: 12px;
+    }
+
+
+    .bottom-nav {
+        gap: 65px;
+    }
+
+}
