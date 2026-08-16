@@ -118,6 +118,7 @@ function openGoal(goalId) {
 }
 
 
+
 /* =========================================
    MESSAGES
 ========================================= */
@@ -126,4 +127,7 @@ function openMessages() {
 
     window.location.href = "messages.html";
 
+}
+function loginAsCoach() {
+    window.location.href = "coach.html";
 }
