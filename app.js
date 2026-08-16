@@ -63,3 +63,67 @@ function forgotPassword() {
     alert("Password recovery will be available soon.");
 
 }
+
+/* =========================================
+   ATHLETE HOME
+========================================= */
+
+function goHome() {
+
+    window.location.href = "athlete.html";
+
+}
+
+
+/* =========================================
+   PROFILE
+========================================= */
+
+function openProfile() {
+
+    window.location.href = "profile.html";
+
+}
+
+
+/* =========================================
+   GOALS
+========================================= */
+
+function openGoal(goalId) {
+
+    if (goalId === "current") {
+
+        window.location.href = "goal.html";
+
+        return;
+    }
+
+
+    if (goalId === "past-1") {
+
+        window.location.href = "goal.html?goal=5k";
+
+        return;
+    }
+
+
+    if (goalId === "past-2") {
+
+        window.location.href = "goal.html?goal=10k";
+
+        return;
+    }
+
+}
+
+
+/* =========================================
+   MESSAGES
+========================================= */
+
+function openMessages() {
+
+    window.location.href = "messages.html";
+
+}
