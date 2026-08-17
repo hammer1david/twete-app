@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Twete Coach | Calendar</title>
+
+    <link rel="stylesheet" href="coach-calendar.css">
+</head>
+
+<body>
+
+<div class="calendar-app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-name">TWETE</div>
+            <div class="brand-role">COACH</div>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <button class="nav-item" onclick="goTo('coach.html')">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </button>
+
+            <button class="nav-item" onclick="goTo('coach-athletes.html')">
+                <span class="nav-icon">♙</span>
+                <span>Athletes</span>
+            </button>
+
+            <button class="nav-item" onclick="goTo('coach-messages.html')">
+                <span class="nav-icon">▢</span>
+                <span>Messages</span>
+                <span class="message-badge">3</span>
+            </button>
+
+            <button class="nav-item" onclick="goTo('coach-programs.html')">
+                <span class="nav-icon">▣</span>
+                <span>Programs</span>
+            </button>
+
+            <button class="nav-item active">
+                <span class="nav-icon">□</span>
+                <span>Calendar</span>
+            </button>
+
+            <button class="nav-item" onclick="goTo('coach-analytics.html')">
+                <span class="nav-icon">▥</span>
+                <span>Analytics</span>
+            </button>
+
+            <button class="nav-item" onclick="goTo('coach-settings.html')">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="coach-profile">
+
+                <div class="coach-avatar">
+                    CP
+                </div>
+
+                <div>
+                    <strong>Coach Peter</strong>
+                    <span>Head Coach</span>
+                </div>
+
+            </div>
+
+            <button class="logout-button" onclick="logout()">
+                ⇥ &nbsp; Log out
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <header class="page-header">
+
+            <div>
+                <h1>Calendar</h1>
+
+                <p>
+                    Your personal coaching calendar.
+                </p>
+            </div>
+
+            <button
+                class="google-button"
+                onclick="connectGoogleCalendar()">
+
+                <span class="google-icon">G</span>
+
+                Connect Google Calendar
+
+            </button>
+
+        </header>
+
+
+        <!-- GOOGLE CONNECTION STATUS -->
+
+        <div
+            id="connectionMessage"
+            class="connection-message hidden">
+
+            <span class="connection-dot"></span>
+
+            Google Calendar is connected.
+
+            <button onclick="disconnectGoogleCalendar()">
+                Disconnect
+            </button>
+
+        </div>
+
+
+        <!-- CALENDAR TOOLBAR -->
+
+        <section class="calendar-container">
+
+            <div class="calendar-toolbar">
+
+                <div class="calendar-navigation">
+
+                    <button
+                        class="today-button"
+                        onclick="goToday()">
+
+                        Today
+
+                    </button>
+
+                    <button
+                        class="arrow-button"
+                        onclick="previousMonth()">
+
+                        ‹
+
+                    </button>
+
+                    <button
+                        class="arrow-button"
+                        onclick="nextMonth()">
+
+                        ›
+
+                    </button>
+
+                    <h2 id="monthTitle">
+                        August 2026
+                    </h2>
+
+                </div>
+
+
+                <div class="calendar-views">
+
+                    <button
+                        class="view-button active"
+                        onclick="changeView('month')">
+
+                        Month
+
+                    </button>
+
+                    <button
+                        class="view-button"
+                        onclick="changeView('week')">
+
+                        Week
+
+                    </button>
+
+                    <button
+                        class="view-button"
+                        onclick="changeView('day')">
+
+                        Day
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CALENDAR -->
+
+            <div class="calendar-grid">
+
+                <div class="day-header">MON</div>
+                <div class="day-header">TUE</div>
+                <div class="day-header">WED</div>
+                <div class="day-header">THU</div>
+                <div class="day-header">FRI</div>
+                <div class="day-header">SAT</div>
+                <div class="day-header">SUN</div>
+
+                <div id="calendarDays"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- UPCOMING EVENTS -->
+
+        <section class="upcoming-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Upcoming</h2>
+
+                    <p>
+                        Your next calendar events.
+                    </p>
+                </div>
+
+                <button onclick="addEvent()">
+                    + Add event
+                </button>
+
+            </div>
+
+
+            <div class="event-list">
+
+                <div class="event-card">
+
+                    <div class="event-date">
+                        <strong>18</strong>
+                        <span>AUG</span>
+                    </div>
+
+                    <div class="event-color lime"></div>
+
+                    <div class="event-info">
+
+                        <h3>
+                            Athlete Review
+                        </h3>
+
+                        <p>
+                            David Gitonga · 10:00 AM
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-card">
+
+                    <div class="event-date">
+                        <strong>20</strong>
+                        <span>AUG</span>
+                    </div>
+
+                    <div class="event-color blue"></div>
+
+                    <div class="event-info">
+
+                        <h3>
+                            Training Plan Review
+                        </h3>
+
+                        <p>
+                            Team · 14:00 PM
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-card">
+
+                    <div class="event-date">
+                        <strong>22</strong>
+                        <span>AUG</span>
+                    </div>
+
+                    <div class="event-color orange"></div>
+
+                    <div class="event-info">
+
+                        <h3>
+                            Athlete Meeting
+                        </h3>
+
+                        <p>
+                            Joy Chepkemoi · 09:30 AM
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="coach-calendar.js"></script>
+
+</body>
+</html>
