@@ -34,11 +34,12 @@
             <div class="dashboard-logo">
                 TWETE
             </div>
+
             <span
-    id="athleteHeaderName"
-    class="athlete-header-name"
->
-</span>
+                id="athleteHeaderName"
+                class="athlete-header-name"
+            >
+            </span>
 
             <button
                 class="profile-button"
@@ -46,34 +47,37 @@
                 aria-label="Open profile"
                 id="athleteProfileButton"
             >
+
                 <div
                     id="athleteProfileAvatar"
                     class="athlete-profile-avatar"
-                    >
-                    
-                <svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
                 >
 
-                    <circle
-                        cx="12"
-                        cy="7"
-                        r="4"
-                    ></circle>
+                    <svg
+                        width="25"
+                        height="25"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
 
-                    <path
-                        d="M5.5 21a6.5 6.5 0 0 1 13 0"
-                    ></path>
+                        <circle
+                            cx="12"
+                            cy="7"
+                            r="4"
+                        ></circle>
+
+                        <path
+                            d="M5.5 21a6.5 6.5 0 0 1 13 0"
+                        ></path>
 
                     </svg>
+
                 </div>
+
             </button>
 
         </header>
@@ -85,138 +89,153 @@
 
         <section class="athlete-welcome">
 
-    <div
-        class="motivation-quote"
-        id="motivationQuote"
-    >
-        Trust the process. Your work will show.
-    </div>
+            <div
+                class="motivation-quote"
+                id="motivationQuote"
+            >
+                Trust the process. Your work will show.
+            </div>
 
-</section>
+        </section>
 
 
         <!-- =========================
-             CURRENT Goals
-        ================================ -->
-        
-<section class="goal-section">
+             CURRENT GOAL
+        ========================== -->
 
-    <h2 class="section-title">
-        Current Goal
-    </h2>
+        <section class="goal-section">
 
-    <div class="current-goal-card no-goal-card">
+            <h2 class="section-title">
+                Current Goal
+            </h2>
 
-        <div class="goal-main">
 
-            <div class="goal-icon target-icon">
+            <div
+                class="current-goal-card no-goal-card"
+                id="currentGoalCard"
+            >
 
-                <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.7"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <circle
-                        cx="12"
-                        cy="12"
-                        r="8"
-                    ></circle>
+                <div class="goal-main">
 
-                    <circle
-                        cx="12"
-                        cy="12"
-                        r="4"
-                    ></circle>
+                    <div class="goal-icon target-icon">
 
-                    <circle
-                        cx="12"
-                        cy="12"
-                        r="1"
-                    ></circle>
-                </svg>
+                        <svg
+                            width="48"
+                            height="48"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="8"
+                            ></circle>
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="4"
+                            ></circle>
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="1"
+                            ></circle>
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="goal-information">
+
+                        <span class="goal-status">
+                            CURRENT GOAL
+                        </span>
+
+                        <h3 id="currentGoalTitle">
+                            No current goal
+                        </h3>
+
+                        <p
+                            class="goal-pb"
+                            id="currentGoalDetails"
+                        >
+                            Your coach hasn't assigned a goal yet.
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
 
-            <div class="goal-information">
+        </section>
 
-                <span class="goal-status">
-                    CURRENT GOAL
-                </span>
-
-                <h3>
-                    No current goal
-                </h3>
-
-                <p class="goal-pb">
-                    Your coach hasn't assigned a goal yet.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
 
         <!-- =========================
              PAST GOALS
-        =========================== -->
-    
-    <section class="goal-section past-goals">
+        ========================== -->
 
-    <h2 class="section-title">
-        Past Goals
-    </h2>
+        <section class="goal-section past-goals">
 
-    <div class="past-goal-card no-goal-card">
+            <h2 class="section-title">
+                Past Goals
+            </h2>
 
-        <div class="past-goal-icon">
 
-            <svg
-                width="34"
-                height="34"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            >
-                <path d="M8 21h8"></path>
-                <path d="M12 17v4"></path>
-                <path d="M7 4h10"></path>
-                <path d="M8 4v5"></path>
-                <path d="M16 4v5"></path>
-                <path d="M8 9l4 4 4-4"></path>
-            </svg>
+            <div class="past-goal-card no-goal-card">
 
-        </div>
+                <div class="past-goal-icon">
 
-        <div class="past-goal-information">
+                    <svg
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
 
-            <span class="goal-status">
-                PAST GOALS
-            </span>
+                        <path d="M8 21h8"></path>
+                        <path d="M12 17v4"></path>
+                        <path d="M7 4h10"></path>
+                        <path d="M8 4v5"></path>
+                        <path d="M16 4v5"></path>
+                        <path d="M8 9l4 4 4-4"></path>
 
-            <h3>
-                No past goals yet
-            </h3>
+                    </svg>
 
-            <p>
-                Completed goals from your coach will appear here.
-            </p>
+                </div>
 
-        </div>
 
-    </div>
+                <div class="past-goal-information">
 
-    </section>
+                    <span class="goal-status">
+                        PAST GOALS
+                    </span>
+
+                    <h3>
+                        No past goals yet
+                    </h3>
+
+                    <p>
+                        Completed goals from your coach will appear here.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
 
 
     </main>
@@ -320,7 +339,195 @@
 
 <script>
     protectPage("athlete");
+
+
+    /* =========================================
+       LOAD CURRENT GOAL
+    ========================================= */
+
+    async function loadCurrentGoal() {
+
+        const card =
+            document.getElementById(
+                "currentGoalCard"
+            );
+
+        const title =
+            document.getElementById(
+                "currentGoalTitle"
+            );
+
+        const details =
+            document.getElementById(
+                "currentGoalDetails"
+            );
+
+
+        if (
+            !card ||
+            !title ||
+            !details
+        ) {
+            return;
+        }
+
+
+        try {
+
+            const {
+                data: {
+                    user
+                }
+            } =
+                await supabaseClient
+                    .auth
+                    .getUser();
+
+
+            if (!user) {
+                return;
+            }
+
+
+            const {
+                data: goal,
+                error
+            } =
+                await supabaseClient
+                    .from("goals")
+                    .select(`
+                        id,
+                        athlete_id,
+                        program_id,
+                        goal_name,
+                        distance,
+                        target_time,
+                        target_date,
+                        created_at
+                    `)
+                    .eq(
+                        "athlete_id",
+                        user.id
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    )
+                    .limit(1)
+                    .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    "Goal loading error:",
+                    error
+                );
+
+                return;
+            }
+
+
+            if (!goal) {
+                return;
+            }
+
+
+            title.textContent =
+                goal.goal_name ||
+                "Current Goal";
+
+
+            const parts = [];
+
+
+            if (goal.distance) {
+
+                parts.push(
+                    goal.distance
+                );
+
+            }
+
+
+            if (goal.target_time) {
+
+                parts.push(
+                    goal.target_time
+                );
+
+            }
+
+
+            if (goal.target_date) {
+
+                parts.push(
+                    "Target: " +
+                    new Date(
+                        goal.target_date +
+                        "T00:00:00"
+                    ).toLocaleDateString(
+                        "en-US",
+                        {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric"
+                        }
+                    )
+                );
+
+            }
+
+
+            details.textContent =
+                parts.length
+                    ?
+                    parts.join(
+                        " • "
+                    )
+                    :
+                    "Training goal assigned by your coach.";
+
+
+            card.classList.remove(
+                "no-goal-card"
+            );
+
+
+            card.style.cursor =
+                "pointer";
+
+
+            card.onclick =
+                function() {
+
+                    window.location.href =
+                        "goal.html?goal_id=" +
+                        encodeURIComponent(
+                            goal.id
+                        );
+
+                };
+
+
+        } catch (error) {
+
+            console.error(
+                "Current goal error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    loadCurrentGoal();
+
 </script>
+
 
 </body>
 </html>
