@@ -871,28 +871,32 @@ function createSessionCard(
     }
 
     ${
-        session.notes
-        ?
-        `
-        <div style="
-    margin-top:10px;
-    padding:10px;
-    background:#0b0b0b;
-    border:1px solid #292929;
-    border-radius:7px;
-    color:#bdbdbd;
-    font-size:13px;
-    line-height:1.5;
-">
-
-    ${escapeHtml(
-        session.notes
-    )}
-
-</div>
-        `
-        :
-        ""
+    session.notes
+    ?
+    `
+    <div style="
+        margin-top:8px;
+        padding:8px 10px;
+        background:#0b0b0b;
+        border:1px solid #292929;
+        border-radius:7px;
+        color:#bdbdbd;
+        font-size:13px;
+        line-height:1.5;
+        width:100%;
+        max-width:100%;
+        min-height:0;
+        height:auto;
+        overflow-wrap:anywhere;
+        word-break:break-word;
+        white-space:pre-wrap;
+    ">
+        ${escapeHtml(session.notes)}
+    </div>
+    `
+    :
+    ""
+}
     }
 
 </div>
