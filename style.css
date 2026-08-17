@@ -629,9 +629,9 @@ body {
 
     border-radius: 50%;
 
-    border: 2px solid #C6FF00;
+    border: none;
 
-    background: #090909;
+    background: transparent;
 
     color: #ffffff;
 
@@ -1404,8 +1404,8 @@ body {
 }
 
 .athlete-profile-avatar {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     overflow: hidden;
 
@@ -1414,7 +1414,7 @@ body {
     justify-content: center;
 
     background: #171717;
-    border: 2px solid rgba(198, 255, 0, 0.7);
+    border: 2px solid #C6FF00;
 
     color: #C6FF00;
 }
