@@ -2,144 +2,308 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Twete Coach | Dashboard</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="coach.css">
+    <title>Twete Coach - Athletes</title>
 
     <style>
-        /* =========================================
-           ATHLETE SELECTION
-        ========================================= */
 
-        .athlete-selection-section {
-            margin-bottom: 30px;
+        * {
+            box-sizing: border-box;
         }
 
-        .athlete-selection-header {
+
+        body {
+
+            margin: 0;
+
+            background: #050505;
+
+            color: white;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+        }
+
+
+        .page {
+
+            max-width: 1100px;
+
+            margin: 0 auto;
+
+            padding: 40px 20px;
+
+        }
+
+
+        /* ================================
+           HEADER
+        ================================= */
+
+        header {
+
             display: flex;
+
             justify-content: space-between;
-            align-items: flex-end;
-            gap: 20px;
-            margin-bottom: 18px;
+
+            align-items: center;
+
+            margin-bottom: 45px;
+
         }
 
-        .athlete-selection-header h2 {
-            font-size: 20px;
-            margin-bottom: 6px;
+
+        .logo {
+
+            font-size: 28px;
+
+            font-weight: 900;
+
+            letter-spacing: 2px;
+
+            color: #C6FF00;
+
         }
 
-        .athlete-selection-header p {
-            color: #8b8b8b;
-            font-size: 13px;
+
+        .coach-label {
+
+            font-size: 12px;
+
+            letter-spacing: 2px;
+
+            color: #888;
+
+            margin-top: 4px;
+
         }
 
-        .athlete-search {
-            width: 260px;
-            max-width: 100%;
-            padding: 11px 14px;
-            border: 1px solid #292929;
-            border-radius: 8px;
-            background: #0b0b0b;
-            color: #ffffff;
-            outline: none;
+
+        h1 {
+
+            font-size: 32px;
+
+            margin: 0 0 8px 0;
+
         }
 
-        .athlete-search:focus {
-            border-color: #C6FF00;
+
+        .subtitle {
+
+            color: #888;
+
+            font-size: 14px;
+
         }
 
-        .athlete-selection-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(auto-fill, minmax(280px, 1fr));
 
-            gap: 12px;
-        }
+        /* ================================
+           ATHLETES
+        ================================= */
 
-        .athlete-selection-card {
-            border: 1px solid #292929;
-            border-radius: 13px;
-            background: #0d0d0d;
-
-            padding: 16px;
+        .athletes-header {
 
             display: flex;
+
+            justify-content: space-between;
+
             align-items: center;
-            gap: 14px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .athletes-header h2 {
+
+            margin: 0;
+
+            font-size: 21px;
+
+        }
+
+
+        .athlete-count {
+
+            color: #C6FF00;
+
+            font-size: 14px;
+
+        }
+
+
+        .athletes-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fill,
+                    minmax(280px, 1fr)
+                );
+
+            gap: 15px;
+
+        }
+
+
+        /* ================================
+           ATHLETE CARD
+        ================================= */
+
+        .athlete-card {
+
+            background: #101010;
+
+            border: 1px solid #252525;
+
+            border-radius: 14px;
+
+            padding: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
 
             cursor: pointer;
 
             transition:
-                transform 0.15s ease,
-                border-color 0.15s ease,
-                background 0.15s ease;
+                border-color .2s,
+                transform .2s,
+                background .2s;
+
         }
 
-        .athlete-selection-card:hover {
+
+        .athlete-card:hover {
+
             border-color: #C6FF00;
-            background: #111111;
+
+            background: #151515;
+
             transform: translateY(-2px);
+
         }
 
-        .selection-avatar {
-            width: 62px;
-            height: 62px;
 
-            flex: 0 0 62px;
+        .avatar {
+
+            width: 64px;
+
+            height: 64px;
+
+            min-width: 64px;
 
             border-radius: 50%;
 
             object-fit: cover;
 
-            background: #292929;
+            background: #222;
+
         }
 
-        .selection-avatar-placeholder {
+
+        .avatar-placeholder {
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             color: #C6FF00;
 
+            font-size: 18px;
+
             font-weight: 800;
-            font-size: 17px;
+
         }
 
-        .selection-info {
+
+        .athlete-info {
+
             min-width: 0;
+
             flex: 1;
+
         }
 
-        .selection-info h3 {
-            font-size: 16px;
-            margin-bottom: 5px;
+
+        .athlete-name {
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .athlete-email {
+
+            font-size: 12px;
+
+            color: #777;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
 
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+
         }
 
-        .selection-info p {
-            color: #888;
+
+        .athlete-details {
+
+            margin-top: 5px;
+
             font-size: 11px;
-            margin-bottom: 4px;
+
+            color: #999;
+
         }
 
-        .selection-email {
-            color: #666;
-            font-size: 10px;
-        }
 
-        .selection-arrow {
+        .arrow {
+
             color: #C6FF00;
-            font-size: 24px;
+
+            font-size: 25px;
+
         }
 
-        .empty-athletes {
+
+        /* ================================
+           STATES
+        ================================= */
+
+        .loading {
+
+            color: #888;
+
+            padding: 30px 0;
+
+        }
+
+
+        .empty {
+
             border: 1px dashed #333;
+
             border-radius: 12px;
 
             padding: 30px;
@@ -147,34 +311,52 @@
             text-align: center;
 
             color: #777;
-        }
 
-        .loading-athletes {
-            color: #888;
-            padding: 20px 0;
-        }
-
-        .database-error {
-            color: #ff6b6b;
         }
 
 
-        /* =========================================
+        .error {
+
+            color: #ff6666;
+
+        }
+
+
+        /* ================================
            MOBILE
-        ========================================= */
+        ================================= */
 
-        @media (max-width: 700px) {
+        @media (max-width: 600px) {
 
-            .athlete-selection-header {
-                flex-direction: column;
-                align-items: stretch;
+            .page {
+
+                padding: 25px 15px;
+
             }
 
-            .athlete-search {
-                width: 100%;
+
+            header {
+
+                margin-bottom: 35px;
+
+            }
+
+
+            h1 {
+
+                font-size: 27px;
+
+            }
+
+
+            .athletes-grid {
+
+                grid-template-columns: 1fr;
+
             }
 
         }
+
     </style>
 
 </head>
@@ -183,521 +365,70 @@
 <body>
 
 
-<div class="coach-app">
+<div class="page">
 
 
-    <!-- =========================================
-         SIDEBAR
-    ========================================= -->
+    <!-- HEADER -->
 
-    <aside class="sidebar">
+    <header>
 
-        <div class="brand">
+        <div>
 
-            <div class="brand-name">
+            <div class="logo">
                 TWETE
             </div>
 
-            <div class="brand-role">
+            <div class="coach-label">
                 COACH
             </div>
 
         </div>
 
+    </header>
 
-        <nav class="sidebar-nav">
 
-            <button
-                class="nav-item active"
-                onclick="showDashboard()"
+
+    <main>
+
+
+        <h1>
+            Athletes
+        </h1>
+
+        <div class="subtitle">
+            Select an athlete to manage their training.
+        </div>
+
+
+        <br>
+
+
+        <div class="athletes-header">
+
+            <h2>
+                Registered athletes
+            </h2>
+
+            <div
+                class="athlete-count"
+                id="athleteCount"
             >
-
-                <span class="nav-icon">
-                    ⌂
-                </span>
-
-                <span>
-                    Dashboard
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-item"
-                onclick="openAthletes()"
-            >
-
-                <span class="nav-icon">
-                    ♙
-                </span>
-
-                <span>
-                    Athletes
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-item"
-                onclick="openMessages()"
-            >
-
-                <span class="nav-icon">
-                    ▢
-                </span>
-
-                <span>
-                    Messages
-                </span>
-
-                <span
-                    class="message-badge"
-                    id="messageBadge"
-                >
-                    0
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-item"
-                onclick="openPrograms()"
-            >
-
-                <span class="nav-icon">
-                    ▣
-                </span>
-
-                <span>
-                    Programs
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-item"
-                onclick="openCalendar()"
-            >
-
-                <span class="nav-icon">
-                    □
-                </span>
-
-                <span>
-                    Calendar
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-item"
-                onclick="openAnalytics()"
-            >
-
-                <span class="nav-icon">
-                    ▥
-                </span>
-
-                <span>
-                    Analytics
-                </span>
-
-            </button>
-
-
-            <button
-                class="nav-item"
-                onclick="openSettings()"
-            >
-
-                <span class="nav-icon">
-                    ⚙
-                </span>
-
-                <span>
-                    Settings
-                </span>
-
-            </button>
-
-        </nav>
-
-
-        <!-- COACH -->
-
-        <div class="sidebar-bottom">
-
-            <div class="coach-profile">
-
-                <div
-                    class="coach-avatar"
-                    id="coachAvatar"
-                >
-                    CO
-                </div>
-
-
-                <div>
-
-                    <strong id="coachName">
-                        Coach
-                    </strong>
-
-                    <span>
-                        Coach
-                    </span>
-
-                </div>
-
-
-                <span class="profile-arrow">
-                    ⌄
-                </span>
-
+                0 athletes
             </div>
-
-
-            <button
-                class="logout-button"
-                onclick="logout()"
-            >
-
-                <span>
-                    ⇥
-                </span>
-
-                Log out
-
-            </button>
 
         </div>
 
-    </aside>
 
+        <div
+            class="athletes-grid"
+            id="athletesGrid"
+        >
 
-
-    <!-- =========================================
-         MAIN
-    ========================================= -->
-
-    <main class="main-content">
-
-
-        <!-- HEADER -->
-
-        <header class="dashboard-header">
-
-            <div>
-
-                <h1>
-                    Good morning, Coach 👋
-                </h1>
-
-                <p>
-                    Select an athlete to manage their goals and training program.
-                </p>
-
+            <div class="loading">
+                Loading athletes...
             </div>
 
-
-            <div class="current-date">
-
-                <span id="currentDate">
-                </span>
-
-                <span class="calendar-symbol">
-                    ▣
-                </span>
-
-            </div>
-
-        </header>
-
-
-
-        <!-- =========================================
-             OVERVIEW
-        ========================================= -->
-
-        <section class="overview-card">
-
-
-            <div class="overview-item">
-
-                <div class="overview-icon">
-                    ♙
-                </div>
-
-                <div>
-
-                    <strong id="athleteCount">
-                        0
-                    </strong>
-
-                    <h3>
-                        Athletes
-                    </h3>
-
-                    <p>
-                        Registered athletes
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="overview-divider"></div>
-
-
-            <div class="overview-item">
-
-                <div class="overview-icon">
-                    ✓
-                </div>
-
-                <div>
-
-                    <strong id="activePrograms">
-                        0
-                    </strong>
-
-                    <h3>
-                        Active Programs
-                    </h3>
-
-                    <p>
-                        Currently active
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="overview-divider"></div>
-
-
-            <div class="overview-item ending">
-
-                <div class="overview-icon">
-                    ◷
-                </div>
-
-                <div>
-
-                    <strong id="endingPrograms">
-                        0
-                    </strong>
-
-                    <h3>
-                        Ending Soon
-                    </h3>
-
-                    <p>
-                        Within 7 days
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="overview-divider"></div>
-
-
-            <div class="overview-item">
-
-                <div class="overview-icon">
-                    □
-                </div>
-
-                <div>
-
-                    <strong id="noProgram">
-                        0
-                    </strong>
-
-                    <h3>
-                        No Program
-                    </h3>
-
-                    <p>
-                        No active program
-                    </p>
-
-                </div>
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =========================================
-             ATHLETE SELECTION
-        ========================================= -->
-
-        <section class="athlete-selection-section">
-
-
-            <div class="athlete-selection-header">
-
-                <div>
-
-                    <h2>
-                        Select an athlete
-                    </h2>
-
-                    <p>
-                        Choose an athlete to manage their goals and training.
-                    </p>
-
-                </div>
-
-
-                <input
-                    id="athleteSearch"
-                    class="athlete-search"
-                    type="search"
-                    placeholder="Search athletes..."
-                    autocomplete="off"
-                >
-
-            </div>
-
-
-            <div
-                id="athleteSelectionGrid"
-                class="athlete-selection-grid"
-            >
-
-                <div class="loading-athletes">
-                    Loading athlete...
-                </div>
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =========================================
-             PROGRAMS ENDING SOON
-        ========================================= -->
-
-        <section class="ending-section">
-
-
-            <div class="section-header">
-
-                <div>
-
-                    <h2>
-
-                        <span class="warning-icon">
-                            ⚠
-                        </span>
-
-                        Programs ending soon
-
-                    </h2>
-
-
-                    <p>
-                        Programs from the database that need your attention.
-                    </p>
-
-                </div>
-
-
-                <button
-                    class="view-all-button"
-                    onclick="openAthletes()"
-                >
-
-                    View all athletes
-
-                    <span>
-                        ›
-                    </span>
-
-                </button>
-
-            </div>
-
-
-            <div id="endingAthletes">
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =========================================
-             RECENT ACTIVITY
-        ========================================= -->
-
-        <section class="activity-section">
-
-
-            <div class="activity-header">
-
-                <h2>
-                    Recent activity
-                </h2>
-
-
-                <button
-                    onclick="viewAllActivity()"
-                >
-
-                    View all activity
-
-                    <span>
-                        ›
-                    </span>
-
-                </button>
-
-            </div>
-
-
-            <div
-                id="activityList"
-                class="activity-list"
-            >
-
-                <div class="activity-item">
-
-                    <div class="activity-icon edit">
-                        •
-                    </div>
-
-                    <div class="activity-text">
-
-                        Database activity will appear here.
-
-                    </div>
-
-                    <time>
-                        —
-                    </time>
-
-                </div>
-
-            </div>
-
-
-        </section>
+        </div>
 
 
     </main>
@@ -706,27 +437,14 @@
 
 
 
-<!-- =========================================
-     SUPABASE
-========================================= -->
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-<!-- =========================================
-     TWETE APP
-========================================= -->
-
-<script src="app.js"></script>
+<!-- OUR JAVASCRIPT -->
 
 <script src="coach.js"></script>
-
-<script src="auth-guard.js"></script>
-
-
-<script>
-    protectPage("coach");
-</script>
 
 
 </body>
