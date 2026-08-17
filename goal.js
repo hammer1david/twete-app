@@ -30,8 +30,6 @@ document.addEventListener(
     "DOMContentLoaded",
     async function () {
 
-        injectAthleteGoalStyles();
-
         await loadGoalPage();
 
     }
@@ -59,7 +57,7 @@ function openMessages() {
 
 
 /* =========================================
-   LOAD GOAL
+   LOAD PAGE
 ========================================= */
 
 async function loadGoalPage() {
@@ -77,11 +75,6 @@ async function loadGoalPage() {
 
         let goal = null;
 
-
-        /*
-         * If goal_id is in the URL,
-         * load exactly that goal.
-         */
 
         if (goalId) {
 
@@ -112,17 +105,10 @@ async function loadGoalPage() {
                 throw error;
             }
 
-
             goal = data;
 
         }
 
-
-        /*
-         * Fallback:
-         * newest goal belonging to
-         * the logged-in athlete.
-         */
 
         if (!goal) {
 
@@ -180,7 +166,6 @@ async function loadGoalPage() {
                 throw error;
             }
 
-
             goal = data;
 
         }
@@ -199,26 +184,9 @@ async function loadGoalPage() {
         currentGoal = goal;
 
 
-        /*
-         * Load program first because
-         * progress depends on its start date.
-         */
-
         await loadProgram();
 
-
-        /*
-         * Load weeks and sessions
-         * belonging to this program.
-         */
-
         await loadWeeks();
-
-
-        /*
-         * Render after all data has
-         * been loaded.
-         */
 
         renderGoal();
 
@@ -231,7 +199,6 @@ async function loadGoalPage() {
             "Goal page error:",
             error
         );
-
 
         showError(
             "Could not load your training plan."
@@ -302,7 +269,7 @@ async function loadProgram() {
 
 
 /* =========================================
-   LOAD WEEKS
+   LOAD WEEKS + SESSIONS
 ========================================= */
 
 async function loadWeeks() {
@@ -365,10 +332,6 @@ async function loadWeeks() {
         weeks || [];
 
 
-    /*
-     * No weeks.
-     */
-
     if (!currentWeeks.length) {
 
         currentSessions = [];
@@ -380,17 +343,10 @@ async function loadWeeks() {
     const weekIds =
         currentWeeks.map(
             function (week) {
-
                 return week.id;
-
             }
         );
 
-
-    /*
-     * Load only sessions belonging
-     * to the loaded weeks.
-     */
 
     const {
         data: sessions,
@@ -453,13 +409,6 @@ function renderGoal() {
     }
 
 
-    /*
-     * GOAL NAME
-     *
-     * Example:
-     * Berlin
-     */
-
     const title =
         document.querySelector(
             ".goal-main-info h2"
@@ -474,11 +423,6 @@ function renderGoal() {
 
     }
 
-
-    /*
-     * Show distance and target time
-     * below the Goal Name.
-     */
 
     const description =
         document.querySelector(
@@ -515,7 +459,7 @@ function renderGoal() {
             parts.push(
                 String(
                     currentGoal.target_time
-                )
+                ) + " min"
             );
 
         }
@@ -530,10 +474,6 @@ function renderGoal() {
 
     }
 
-
-    /*
-     * Target date.
-     */
 
     const date =
         document.querySelector(
@@ -594,17 +534,13 @@ function renderGoal() {
     }
 
 
-    /*
-     * Calculate progress.
-     */
-
     updateGoalProgress();
 
 }
 
 
 /* =========================================
-   PROGRESS
+   GOAL PROGRESS
 ========================================= */
 
 function updateGoalProgress() {
@@ -627,12 +563,10 @@ function updateGoalProgress() {
             currentProgram.start_date
         );
 
-
     const end =
         parseDate(
             currentGoal.target_date
         );
-
 
     const today =
         startOfToday();
@@ -647,15 +581,6 @@ function updateGoalProgress() {
             86400000
         );
 
-
-    /*
-     * Same calculation as agreed:
-     *
-     * 5 days = 20% per day
-     * 100 days = 1% per day
-     *
-     * On the start date = 0%.
-     */
 
     if (totalDays <= 0) {
 
@@ -711,7 +636,6 @@ function setProgress(
             ".progress-circle-value"
         );
 
-
     const number =
         document.querySelector(
             ".progress-number strong"
@@ -742,7 +666,6 @@ function setProgress(
 
         circle.style.strokeDasharray =
             circumference;
-
 
         circle.style.strokeDashoffset =
             circumference -
@@ -788,45 +711,17 @@ function renderWeeks() {
     if (!currentWeeks.length) {
 
         selector.innerHTML = `
-
             <div class="athlete-empty">
-
                 No training weeks yet.
-
             </div>
-
         `;
 
 
-        const list =
-            document.getElementById(
-                "workoutList"
-            );
-
-
-        if (list) {
-
-            list.innerHTML = `
-
-                <div class="athlete-empty">
-
-                    No training sessions yet.
-
-                </div>
-
-            `;
-
-        }
-
+        renderSessions([]);
 
         return;
     }
 
-
-    /*
-     * Automatically select the
-     * week containing today's date.
-     */
 
     selectedWeekId =
         chooseCurrentWeek();
@@ -867,31 +762,25 @@ function renderWeeks() {
                         >
 
                             <span>
-
                                 WEEK
                                 ${escapeHtml(
                                     week.week_number
                                 )}
-
                             </span>
-
 
                             ${
                                 week.week_label
                                 ?
                                 `
                                 <small>
-
                                     ${escapeHtml(
                                         week.week_label
                                     )}
-
                                 </small>
                                 `
                                 :
                                 ""
                             }
-
 
                             ${
                                 week.weekly_km !== null &&
@@ -900,19 +789,16 @@ function renderWeeks() {
                                 ?
                                 `
                                 <small class="weekly-mileage">
-
                                     ${escapeHtml(
                                         formatWeeklyKm(
                                             week.weekly_km
                                         )
                                     )}
-
                                 </small>
                                 `
                                 :
                                 ""
                             }
-
 
                             ${
                                 week.start_date &&
@@ -920,7 +806,6 @@ function renderWeeks() {
                                 ?
                                 `
                                 <small class="week-dates">
-
                                     ${escapeHtml(
                                         formatShortDate(
                                             week.start_date
@@ -932,7 +817,6 @@ function renderWeeks() {
                                             week.end_date
                                         )
                                     )}
-
                                 </small>
                                 `
                                 :
@@ -973,7 +857,6 @@ function chooseCurrentWeek() {
                     !week.start_date ||
                     !week.end_date
                 ) {
-
                     return false;
                 }
 
@@ -982,7 +865,6 @@ function chooseCurrentWeek() {
                     parseDate(
                         week.start_date
                     );
-
 
                 const end =
                     parseDate(
@@ -999,78 +881,34 @@ function chooseCurrentWeek() {
         );
 
 
-    return current
-        ?
-        current.id
-        :
-        currentWeeks[0].id;
-
-}
-
-
-/* =========================================
-   WEEK STATE
-========================================= */
-
-function getWeekState(
-    week
-) {
-
-    const today =
-        startOfToday();
-
-
-    if (
-        week.end_date
-    ) {
-
-        const end =
-            parseDate(
-                week.end_date
-            );
-
-
-        if (
-            today > end
-        ) {
-
-            return "past-week";
-
-        }
-
+    if (current) {
+        return current.id;
     }
 
 
-    if (
-        week.start_date &&
-        week.end_date
-    ) {
+    const future =
+        currentWeeks.find(
+            function (week) {
 
-        const start =
-            parseDate(
-                week.start_date
-            );
+                return (
+                    week.start_date &&
+                    parseDate(
+                        week.start_date
+                    ) > today
+                );
 
-
-        const end =
-            parseDate(
-                week.end_date
-            );
+            }
+        );
 
 
-        if (
-            today >= start &&
-            today <= end
-        ) {
-
-            return "current-week";
-
-        }
-
+    if (future) {
+        return future.id;
     }
 
 
-    return "";
+    return currentWeeks[
+        currentWeeks.length - 1
+    ].id;
 
 }
 
@@ -1102,43 +940,123 @@ function selectWeek(
         );
 
 
-    const index =
-        currentWeeks.findIndex(
-            function (week) {
+    const week =
+        currentWeeks.find(
+            function (item) {
+                return item.id === weekId;
+            }
+        );
 
-                return (
-                    String(
-                        week.id
-                    ) ===
-                    String(
-                        weekId
-                    )
+
+    if (!week) {
+        return;
+    }
+
+
+    renderWeeksOnly();
+
+    renderSelectedWeek();
+
+}
+
+
+function renderWeeksOnly() {
+
+    const selector =
+        document.querySelector(
+            ".week-selector"
+        );
+
+
+    if (!selector) {
+        return;
+    }
+
+
+    selector
+        .querySelectorAll(
+            ".week-button"
+        )
+        .forEach(
+            function (button) {
+
+                button.classList.remove(
+                    "active"
                 );
 
             }
         );
 
 
+    const index =
+        currentWeeks.findIndex(
+            function (week) {
+                return week.id === selectedWeekId;
+            }
+        );
+
+
     const buttons =
-        document.querySelectorAll(
+        selector.querySelectorAll(
             ".week-button"
         );
 
 
     if (
+        index >= 0 &&
         buttons[index]
     ) {
 
-        buttons[index]
-            .classList
-            .add("active");
+        buttons[index].classList.add(
+            "active"
+        );
 
     }
 
 
     updateWeekIndicator();
 
-    renderSelectedWeek();
+}
+
+
+/* =========================================
+   SELECTED WEEK
+========================================= */
+
+function renderSelectedWeek() {
+
+    const week =
+        currentWeeks.find(
+            function (item) {
+                return item.id === selectedWeekId;
+            }
+        );
+
+
+    if (!week) {
+
+        renderSessions([]);
+
+        return;
+    }
+
+
+    const sessions =
+        currentSessions.filter(
+            function (session) {
+
+                return (
+                    session.week_id ===
+                    week.id
+                );
+
+            }
+        );
+
+
+    renderSessions(
+        sessions
+    );
 
 }
 
@@ -1149,13 +1067,13 @@ function selectWeek(
 
 function updateWeekIndicator() {
 
-    const indicator =
+    const fill =
         document.querySelector(
             ".week-indicator-fill"
         );
 
 
-    if (!indicator) {
+    if (!fill || !currentWeeks.length) {
         return;
     }
 
@@ -1165,36 +1083,44 @@ function updateWeekIndicator() {
             function (week) {
 
                 return (
-                    String(
-                        week.id
-                    ) ===
-                    String(
-                        selectedWeekId
-                    )
+                    week.id ===
+                    selectedWeekId
                 );
 
             }
         );
 
 
+    if (index < 0) {
+
+        fill.style.width =
+            "0%";
+
+        return;
+    }
+
+
     const percentage =
-        currentWeeks.length > 0
+        currentWeeks.length === 1
             ?
-            (
-                (
-                    index + 1
-                ) /
-                currentWeeks.length
-            ) *
             100
             :
-            0;
+            (
+                index /
+                (
+                    currentWeeks.length - 1
+                )
+            ) *
+            100;
 
 
-    indicator.style.width =
+    fill.style.width =
         Math.max(
             0,
-            percentage
+            Math.min(
+                100,
+                percentage
+            )
         ) +
         "%";
 
@@ -1202,10 +1128,64 @@ function updateWeekIndicator() {
 
 
 /* =========================================
-   SELECTED WEEK SESSIONS
+   WEEK STATE
 ========================================= */
 
-function renderSelectedWeek() {
+function getWeekState(
+    week
+) {
+
+    if (
+        !week.end_date
+    ) {
+
+        return "";
+
+    }
+
+
+    const today =
+        startOfToday();
+
+    const end =
+        parseDate(
+            week.end_date
+        );
+
+
+    if (end < today) {
+
+        return "past-week";
+
+    }
+
+
+    if (
+        week.start_date &&
+        today >=
+        parseDate(
+            week.start_date
+        ) &&
+        today <= end
+    ) {
+
+        return "current-week";
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================
+   SESSIONS
+========================================= */
+
+function renderSessions(
+    sessions
+) {
 
     const list =
         document.getElementById(
@@ -1218,72 +1198,24 @@ function renderSelectedWeek() {
     }
 
 
-    const week =
-        currentWeeks.find(
-            function (item) {
-
-                return (
-                    String(
-                        item.id
-                    ) ===
-                    String(
-                        selectedWeekId
-                    )
-                );
-
-            }
-        );
-
-
-    if (!week) {
+    if (!sessions.length) {
 
         list.innerHTML = `
-
             <div class="athlete-empty">
-
-                No training week selected.
-
+                No training sessions in this week yet.
             </div>
-
         `;
 
         return;
     }
 
 
-    const sessions =
-        currentSessions.filter(
-            function (session) {
-
-                return (
-                    String(
-                        session.week_id
-                    ) ===
-                    String(
-                        week.id
-                    )
-                );
-
-            }
-        );
-
-
     list.innerHTML =
-        sessions.length
-            ?
-            sessions
-                .map(
-                    createSessionCard
-                )
-                .join("")
-            :
-            `
-                <div class="athlete-empty">
-
-                    No sessions in this week yet.
-
-                </div>
-            `;
+        sessions
+            .map(
+                createSessionCard
+            )
+            .join("");
 
 }
 
@@ -1296,19 +1228,21 @@ function createSessionCard(
     session
 ) {
 
-    const today =
-        startOfToday();
-
-
     const sessionDate =
         parseDate(
             session.workout_date
         );
 
 
+    const today =
+        startOfToday();
+
+
     const isToday =
-        sessionDate.getTime() ===
-        today.getTime();
+        sameDay(
+            sessionDate,
+            today
+        );
 
 
     const isPast =
@@ -1316,103 +1250,20 @@ function createSessionCard(
         today;
 
 
-    let stateClass = "";
-
-
-    if (isToday) {
-
-        stateClass =
-            " today-workout";
-
-    } else if (isPast) {
-
-        stateClass =
-            " past-workout";
-
-    }
-
-
-    const day =
-        sessionDate.toLocaleDateString(
-            "en-US",
-            {
-                weekday: "short"
-            }
+    const details =
+        formatSessionDetails(
+            session
         );
 
-
-    const date =
-        sessionDate.toLocaleDateString(
-            "en-US",
-            {
-                month: "short",
-                day: "numeric"
-            }
-        );
-
-
-    /*
-     * Session details:
-     *
-     * 10 km
-     * 45 min
-     * 4:30 /km
-     */
-
-    const details = [];
-
-
-    if (
-        session.distance_km !== null &&
-        session.distance_km !== undefined &&
-        session.distance_km !== ""
-    ) {
-
-        details.push(
-            formatDistance(
-                session.distance_km
-            )
-        );
-
-    }
-
-
-    if (
-        session.duration_minutes !== null &&
-        session.duration_minutes !== undefined &&
-        session.duration_minutes !== ""
-    ) {
-
-        details.push(
-            formatMinutes(
-                session.duration_minutes
-            )
-        );
-
-    }
-
-
-    if (
-        session.pace !== null &&
-        session.pace !== undefined &&
-        session.pace !== ""
-    ) {
-
-        details.push(
-            formatPace(
-                session.pace
-            )
-        );
-
-    }
-
-
-    /*
-     * Coach note.
-     */
 
     const coachNote =
         getCoachNote(
+            session.notes
+        );
+
+
+    const athleteFeedback =
+        getAthleteFeedback(
             session.notes
         );
 
@@ -1422,120 +1273,95 @@ function createSessionCard(
         <article
             class="
                 workout-card
-                ${stateClass}
+                ${isToday ? "today-workout" : ""}
+                ${isPast ? "past-workout" : ""}
             "
         >
-
-
-            <!-- DATE -->
 
             <div class="workout-day">
 
                 <strong>
-
                     ${escapeHtml(
-                        day
+                        formatDay(
+                            session.workout_date
+                        )
                     )}
-
                 </strong>
 
-
                 <span>
-
                     ${escapeHtml(
-                        date
+                        formatShortDate(
+                            session.workout_date
+                        )
                     )}
-
                 </span>
 
-            </div>
-
-
-
-            <!-- RUN ICON -->
-
-            <div class="workout-icon run-icon">
-
-                <svg viewBox="0 0 24 24">
-
-                    <path
-                        d="M13 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
-                    ></path>
-
-                    <path
-                        d="M9 8l4-2 3 4"
-                    ></path>
-
-                    <path
-                        d="M8 22l3-7 4-3"
-                    ></path>
-
-                    <path
-                        d="M5 14l4-2"
-                    ></path>
-
-                </svg>
+                ${
+                    isToday
+                    ?
+                    `
+                    <span class="today-label">
+                        TODAY
+                    </span>
+                    `
+                    :
+                    ""
+                }
 
             </div>
 
 
+            <div class="workout-icon">
 
-            <!-- SESSION INFORMATION -->
+                ${getWorkoutIcon(
+                    session.workout_type
+                )}
+
+            </div>
+
 
             <div class="workout-info">
 
-
                 <h3>
-
                     ${escapeHtml(
                         session.title ||
                         session.workout_type ||
                         "Training"
                     )}
-
                 </h3>
 
 
-
                 ${
-                    details.length
+                    details
                     ?
                     `
-                    <p class="workout-details">
-
+                    <div class="workout-details">
                         ${escapeHtml(
-                            details.join(
-                                " • "
-                            )
+                            details
                         )}
-
-                    </p>
+                    </div>
                     `
                     :
                     ""
                 }
 
 
-
                 ${
-                    session.workout_type
+                    session.notes &&
+                    !coachNote &&
+                    !athleteFeedback
                     ?
                     `
-                    <p class="workout-description">
-
+                    <div class="workout-description">
                         ${escapeHtml(
-                            session.workout_type
+                            session.notes
                         )}
-
-                    </p>
+                    </div>
                     `
                     :
                     ""
                 }
 
-
-
-                <!-- COACH NOTE -->
 
                 ${
                     coachNote
@@ -1544,21 +1370,16 @@ function createSessionCard(
                     <div class="coach-note">
 
                         <span class="coach-note-label">
-
                             COACH NOTE
-
                         </span>
 
-
                         <div class="coach-note-text">
-
                             ${escapeHtml(
                                 coachNote
                             ).replaceAll(
                                 "\n",
                                 "<br>"
                             )}
-
                         </div>
 
                     </div>
@@ -1568,32 +1389,37 @@ function createSessionCard(
                 }
 
 
-
-                <!-- TODAY -->
-
                 ${
-                    isToday
+                    athleteFeedback
                     ?
                     `
-                    <span class="today-label">
+                    <div class="athlete-feedback">
 
-                        TODAY
+                        <span class="athlete-feedback-label">
+                            YOUR FEEDBACK
+                        </span>
 
-                    </span>
+                        <div class="athlete-feedback-text">
+                            ${escapeHtml(
+                                athleteFeedback
+                            ).replaceAll(
+                                "\n",
+                                "<br>"
+                            )}
+                        </div>
+
+                    </div>
                     `
                     :
                     ""
                 }
 
 
-
-                <!-- FEEDBACK -->
-
                 <button
-                    class="feedback-button"
                     type="button"
+                    class="feedback-button"
                     onclick="
-                        addSessionFeedback(
+                        addFeedback(
                             '${escapeAttribute(
                                 session.id
                             )}'
@@ -1602,9 +1428,7 @@ function createSessionCard(
                 >
 
                     ${
-                        hasAthleteFeedback(
-                            session.notes
-                        )
+                        athleteFeedback
                         ?
                         "Edit Feedback"
                         :
@@ -1612,7 +1436,6 @@ function createSessionCard(
                     }
 
                 </button>
-
 
             </div>
 
@@ -1624,95 +1447,67 @@ function createSessionCard(
 
 
 /* =========================================
-   COACH NOTE
+   SESSION DETAILS
 ========================================= */
 
-function getCoachNote(
-    notes
+function formatSessionDetails(
+    session
 ) {
 
+    const parts = [];
+
+
     if (
-        !notes ||
-        typeof notes !== "string"
+        session.distance_km !== null &&
+        session.distance_km !== undefined &&
+        session.distance_km !== ""
     ) {
 
-        return "";
+        parts.push(
+            `${session.distance_km} km`
+        );
 
     }
 
 
-    /*
-     * The Coach Note is everything
-     * before Athlete feedback.
-     */
-
     if (
-        notes.includes(
-            "Athlete feedback:"
-        )
+        session.duration_minutes !== null &&
+        session.duration_minutes !== undefined &&
+        session.duration_minutes !== ""
     ) {
 
-        return notes
-            .split(
-                "Athlete feedback:"
-            )[0]
-            .trim();
+        parts.push(
+            `${session.duration_minutes} min`
+        );
 
     }
 
 
-    return notes.trim();
+    if (
+        session.pace !== null &&
+        session.pace !== undefined &&
+        session.pace !== ""
+    ) {
 
-}
+        parts.push(
+            `${session.pace} /km`
+        );
+
+    }
 
 
-/* =========================================
-   ATHLETE FEEDBACK
-========================================= */
-
-function hasAthleteFeedback(
-    notes
-) {
-
-    return (
-        typeof notes === "string" &&
-        notes.includes(
-            "Athlete feedback:"
-        )
+    return parts.join(
+        " • "
     );
 
 }
 
 
-function getAthleteFeedback(
-    notes
-) {
-
-    if (
-        !hasAthleteFeedback(
-            notes
-        )
-    ) {
-
-        return "";
-
-    }
-
-
-    return notes
-        .split(
-            "Athlete feedback:"
-        )[1]
-        .trim();
-
-}
-
-
 /* =========================================
-   ADD FEEDBACK
+   FEEDBACK
 ========================================= */
 
-async function addSessionFeedback(
+async function addFeedback(
     sessionId
 ) {
 
@@ -1721,12 +1516,8 @@ async function addSessionFeedback(
             function (item) {
 
                 return (
-                    String(
-                        item.id
-                    ) ===
-                    String(
-                        sessionId
-                    )
+                    String(item.id) ===
+                    String(sessionId)
                 );
 
             }
@@ -1738,294 +1529,429 @@ async function addSessionFeedback(
     }
 
 
-    const existingFeedback =
+    const existing =
         getAthleteFeedback(
             session.notes
         );
 
 
-    const feedback =
-        prompt(
-            "Write your feedback for this session:",
-            existingFeedback
+    const modal =
+        document.createElement(
+            "div"
         );
 
 
-    if (
-        feedback === null
-    ) {
+    modal.className =
+        "feedback-modal";
 
-        return;
+
+    modal.innerHTML = `
+
+        <div class="feedback-modal-box">
+
+            <h3>
+                ${existing
+                    ? "Edit Feedback"
+                    : "Add Feedback"
+                }
+            </h3>
+
+
+            <textarea
+                id="feedbackInput"
+                placeholder="How did the session feel?"
+            >${escapeHtml(
+                existing
+            )}</textarea>
+
+
+            <div class="feedback-modal-buttons">
+
+                <button
+                    type="button"
+                    class="feedback-cancel"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="button"
+                    class="feedback-save"
+                >
+                    Save Feedback
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    const textarea =
+        modal.querySelector(
+            "#feedbackInput"
+        );
+
+
+    textarea.focus();
+
+
+    modal
+        .querySelector(
+            ".feedback-cancel"
+        )
+        .onclick =
+        function () {
+
+            modal.remove();
+
+        };
+
+
+    modal
+        .querySelector(
+            ".feedback-save"
+        )
+        .onclick =
+        async function () {
+
+            const feedback =
+                textarea.value.trim();
+
+
+            if (!feedback) {
+
+                alert(
+                    "Please enter some feedback."
+                );
+
+                return;
+            }
+
+
+            const newNotes =
+                setAthleteFeedback(
+                    session.notes,
+                    feedback
+                );
+
+
+            const {
+                data,
+                error
+            } =
+                await goalSupabase
+                    .from("workouts")
+                    .update({
+                        notes: newNotes
+                    })
+                    .eq(
+                        "id",
+                        session.id
+                    )
+                    .select(`
+                        id,
+                        athlete_id,
+                        week_id,
+                        workout_date,
+                        workout_type,
+                        title,
+                        distance_km,
+                        duration_minutes,
+                        pace,
+                        notes,
+                        completed
+                    `)
+                    .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    "Feedback save error:",
+                    error
+                );
+
+                alert(
+                    "Could not save feedback."
+                );
+
+                return;
+            }
+
+
+            if (data) {
+
+                const index =
+                    currentSessions.findIndex(
+                        function (item) {
+
+                            return (
+                                String(
+                                    item.id
+                                ) ===
+                                String(
+                                    session.id
+                                )
+                            );
+
+                        }
+                    );
+
+
+                if (index >= 0) {
+
+                    currentSessions[index] =
+                        data;
+
+                }
+
+            }
+
+
+            modal.remove();
+
+
+            renderSelectedWeek();
+
+        };
+
+}
+
+
+/* =========================================
+   NOTES FORMAT
+========================================= */
+
+function getCoachNote(
+    notes
+) {
+
+    if (!notes) {
+        return "";
     }
 
 
-    const cleaned =
-        feedback.trim();
+    const text =
+        String(
+            notes
+        );
+
+
+    const match =
+        text.match(
+            /\[COACH_NOTE\]([\s\S]*?)(?=\[ATHLETE_FEEDBACK\]|$)/
+        );
+
+
+    if (match) {
+
+        return match[1].trim();
+
+    }
 
 
     /*
-     * Preserve the Coach Note.
+     * Backwards compatibility:
+     * notes without our markers are
+     * treated as coach notes.
      */
 
-    const coachNote =
-        getCoachNote(
-            session.notes
-        );
-
-
-    let newNotes =
-        coachNote;
-
-
-    if (cleaned) {
-
-        newNotes =
-            coachNote
-                ?
-                (
-                    coachNote +
-                    "\n\nAthlete feedback:\n" +
-                    cleaned
-                )
-                :
-                "Athlete feedback:\n" +
-                cleaned;
-
-    }
-
-
-    const {
-        error
-    } =
-        await goalSupabase
-            .from("workouts")
-            .update({
-                notes:
-                    newNotes ||
-                    null
-            })
-            .eq(
-                "id",
-                sessionId
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Feedback error:",
-            error
-        );
-
-
-        alert(
-            "Could not save your feedback."
-        );
-
-        return;
-    }
-
-
-    session.notes =
-        newNotes ||
-        null;
-
-
-    renderSelectedWeek();
-
-}
-
-
-/* =========================================
-   EXISTING BUTTON FUNCTIONS
-========================================= */
-
-function toggleWorkout() {
-
-    return;
-
-}
-
-
-function startWorkout() {
-
-    return;
-
-}
-
-
-function viewFullPlan() {
-
     if (
-        currentGoal &&
-        currentGoal.id
-    ) {
-
-        window.location.href =
-            "goal.html?goal_id=" +
-            encodeURIComponent(
-                currentGoal.id
-            );
-
-    }
-
-}
-
-
-function addFeedback() {
-
-    alert(
-        "Please add feedback directly to the session you want to comment on."
-    );
-
-}
-
-
-/* =========================================
-   FORMATTING
-========================================= */
-
-function formatDistance(
-    value
-) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-
-        return "";
-
-    }
-
-
-    const number =
-        Number(
-            value
-        );
-
-
-    if (
-        Number.isFinite(
-            number
+        !text.includes(
+            "[ATHLETE_FEEDBACK]"
         )
     ) {
 
-        return (
-            number % 1 === 0
-                ?
-                number.toString()
-                :
-                number.toFixed(2)
-                    .replace(
-                        /0+$/,
-                        ""
-                    )
-                    .replace(
-                        /\.$/,
-                        ""
-                    )
-        ) +
-        " km";
+        return text.trim();
 
     }
 
 
-    return String(
-        value
-    ) +
-    " km";
+    return "";
 
 }
 
 
-function formatMinutes(
-    value
+function getAthleteFeedback(
+    notes
 ) {
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-
+    if (!notes) {
         return "";
-
     }
+
+
+    const text =
+        String(
+            notes
+        );
+
+
+    const match =
+        text.match(
+            /\[ATHLETE_FEEDBACK\]([\s\S]*)$/
+        );
+
+
+    return match
+        ?
+        match[1].trim()
+        :
+        "";
+
+}
+
+
+function setAthleteFeedback(
+    notes,
+    feedback
+) {
+
+    const existingCoachNote =
+        getCoachNote(
+            notes
+        );
+
+
+    const cleanCoachNote =
+        existingCoachNote
+            .replace(
+                /^\[COACH_NOTE\]/,
+                ""
+            )
+            .trim();
 
 
     return (
-        String(
-            value
-        ) +
-        " min"
-    );
+        "[COACH_NOTE]\n" +
+        cleanCoachNote +
+        "\n\n" +
+        "[ATHLETE_FEEDBACK]\n" +
+        feedback
+    ).trim();
 
 }
 
 
-function formatPace(
-    value
+/* =========================================
+   ICONS
+========================================= */
+
+function getWorkoutIcon(
+    type
 ) {
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-
-        return "";
-
-    }
-
-
-    const pace =
+    const value =
         String(
-            value
-        ).trim();
+            type || ""
+        ).toLowerCase();
 
-
-    /*
-     * Do not add /km twice.
-     */
 
     if (
-        pace.toLowerCase()
-            .includes(
-                "/km"
-            )
+        value.includes("interval")
     ) {
 
-        return pace;
+        return `
+
+            <svg
+                viewBox="0 0 24 24"
+            >
+
+                <rect
+                    x="4"
+                    y="8"
+                    width="16"
+                    height="8"
+                    rx="2"
+                ></rect>
+
+                <path
+                    d="M8 12h8"
+                ></path>
+
+                <path
+                    d="M10 10l-2 2 2 2"
+                ></path>
+
+                <path
+                    d="M14 10l2 2-2 2"
+                ></path>
+
+            </svg>
+
+        `;
 
     }
 
 
-    return pace +
-        " /km";
-
-}
-
-
-function formatWeeklyKm(
-    value
-) {
-
     if (
-        value === null ||
-        value === undefined ||
-        value === ""
+        value.includes("strength")
     ) {
 
-        return "";
+        return `
+
+            <svg
+                viewBox="0 0 24 24"
+            >
+
+                <path
+                    d="M6 9v6"
+                ></path>
+
+                <path
+                    d="M4 10v4"
+                ></path>
+
+                <path
+                    d="M18 9v6"
+                ></path>
+
+                <path
+                    d="M20 10v4"
+                ></path>
+
+                <path
+                    d="M6 12h12"
+                ></path>
+
+            </svg>
+
+        `;
 
     }
 
 
-    return formatDistance(
-        value
-    );
+    return `
+
+        <svg
+            viewBox="0 0 24 24"
+        >
+
+            <circle
+                cx="12"
+                cy="12"
+                r="8"
+            ></circle>
+
+            <path
+                d="M12 4c2 3 2 6 0 9"
+            ></path>
+
+            <path
+                d="M12 13l4 4"
+            ></path>
+
+        </svg>
+
+    `;
 
 }
 
@@ -2038,64 +1964,76 @@ function parseDate(
     value
 ) {
 
+    if (!value) {
+        return new Date(
+            NaN
+        );
+    }
+
+
+    const parts =
+        String(
+            value
+        ).split("-");
+
+
     if (
-        value instanceof Date
+        parts.length === 3
     ) {
 
-        const result =
-            new Date(
-                value
-            );
-
-        result.setHours(
-            0,
-            0,
-            0,
-            0
+        return new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2])
         );
-
-        return result;
 
     }
 
 
     const date =
         new Date(
-            String(
-                value
-            ) +
-            "T00:00:00"
+            value
         );
 
 
-    date.setHours(
-        0,
-        0,
-        0,
-        0
+    return new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
     );
-
-
-    return date;
 
 }
 
 
 function startOfToday() {
 
-    const today =
+    const now =
         new Date();
 
-
-    today.setHours(
-        0,
-        0,
-        0,
-        0
+    return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
     );
 
+}
 
-    return today;
+
+function sameDay(
+    a,
+    b
+) {
+
+    return (
+        a &&
+        b &&
+        a.getFullYear() ===
+            b.getFullYear() &&
+        a.getMonth() ===
+            b.getMonth() &&
+        a.getDate() ===
+            b.getDate()
+    );
 
 }
 
@@ -2104,14 +2042,24 @@ function formatDate(
     value
 ) {
 
-    if (!value) {
-        return "";
+    const date =
+        parseDate(
+            value
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "Not set";
+
     }
 
 
-    return parseDate(
-        value
-    ).toLocaleDateString(
+    return date.toLocaleDateString(
         "en-US",
         {
             month: "short",
@@ -2127,14 +2075,24 @@ function formatShortDate(
     value
 ) {
 
-    if (!value) {
+    const date =
+        parseDate(
+            value
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
         return "";
+
     }
 
 
-    return parseDate(
-        value
-    ).toLocaleDateString(
+    return date.toLocaleDateString(
         "en-US",
         {
             month: "short",
@@ -2145,8 +2103,80 @@ function formatShortDate(
 }
 
 
+function formatDay(
+    value
+) {
+
+    const date =
+        parseDate(
+            value
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    return date
+        .toLocaleDateString(
+            "en-US",
+            {
+                weekday: "short"
+            }
+        )
+        .toUpperCase();
+
+}
+
+
 /* =========================================
-   SECURITY / TEXT
+   FORMAT
+========================================= */
+
+function formatDistance(
+    distance
+) {
+
+    const value =
+        Number(
+            distance
+        );
+
+
+    if (
+        !Number.isNaN(
+            value
+        )
+    ) {
+
+        return `${value} km`;
+
+    }
+
+
+    return `${distance} km`;
+
+}
+
+
+function formatWeeklyKm(
+    km
+) {
+
+    return `${km} km`;
+
+}
+
+
+/* =========================================
+   SECURITY HELPERS
 ========================================= */
 
 function escapeHtml(
@@ -2156,24 +2186,24 @@ function escapeHtml(
     return String(
         value ?? ""
     )
-        .replaceAll(
-            "&",
+        .replace(
+            /&/g,
             "&amp;"
         )
-        .replaceAll(
-            "<",
+        .replace(
+            /</g,
             "&lt;"
         )
-        .replaceAll(
-            ">",
+        .replace(
+            />/g,
             "&gt;"
         )
-        .replaceAll(
-            '"',
+        .replace(
+            /"/g,
             "&quot;"
         )
-        .replaceAll(
-            "'",
+        .replace(
+            /'/g,
             "&#039;"
         );
 
@@ -2187,13 +2217,13 @@ function escapeAttribute(
     return String(
         value ?? ""
     )
-        .replaceAll(
-            "\\",
-            "\\\\"
-        )
-        .replaceAll(
-            "'",
+        .replace(
+            /'/g,
             "\\'"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
         );
 
 }
@@ -2206,20 +2236,6 @@ function escapeAttribute(
 function showError(
     message
 ) {
-
-    const title =
-        document.querySelector(
-            ".goal-main-info h2"
-        );
-
-
-    if (title) {
-
-        title.textContent =
-            message;
-
-    }
-
 
     const list =
         document.getElementById(
@@ -2243,277 +2259,4 @@ function showError(
 
     }
 
-}
-
-
-/* =========================================
-   DYNAMIC STYLES
-========================================= */
-
-function injectAthleteGoalStyles() {
-
-    if (
-        document.getElementById(
-            "athleteGoalDynamicStyles"
-        )
-    ) {
-
-        return;
-    }
-
-
-    const style =
-        document.createElement(
-            "style"
-        );
-
-
-    style.id =
-        "athleteGoalDynamicStyles";
-
-
-    style.textContent = `
-
-        /* EMPTY */
-
-        .athlete-empty {
-
-            color: #777;
-
-            padding: 22px 4px;
-
-            font-size: 13px;
-
-        }
-
-
-        /* WEEK */
-
-        .week-button {
-
-            position: relative;
-
-        }
-
-
-        .week-button small {
-
-            display: block;
-
-            margin-top: 3px;
-
-            color: #888;
-
-            font-size: 8px;
-
-            text-transform: uppercase;
-
-            letter-spacing: .4px;
-
-        }
-
-
-        /* WEEKLY MILEAGE */
-
-        .week-button .weekly-mileage {
-
-            color: #C6FF00 !important;
-
-            font-size: 9px !important;
-
-            font-weight: 700;
-
-            margin-top: 4px;
-
-        }
-
-
-        /* WEEK DATES */
-
-        .week-button .week-dates {
-
-            color: #777;
-
-            font-size: 8px;
-
-            font-weight: 400;
-
-            text-transform: none;
-
-            letter-spacing: 0;
-
-        }
-
-
-        /* CURRENT WEEK */
-
-        .week-button.current-week {
-
-            border-color:
-                #C6FF00 !important;
-
-        }
-
-
-        /* PAST WEEK */
-
-        .week-button.past-week {
-
-            opacity: .42;
-
-            filter: grayscale(.7);
-
-        }
-
-
-        /* PAST SESSION */
-
-        .workout-card.past-workout {
-
-            opacity: .42;
-
-            filter: grayscale(.65);
-
-            transition:
-                opacity .25s ease;
-
-        }
-
-
-        /* TODAY */
-
-        .workout-card.today-workout {
-
-            border-color:
-                #C6FF00 !important;
-
-            box-shadow:
-                0 0 0 1px
-                rgba(
-                    198,
-                    255,
-                    0,
-                    .12
-                );
-
-        }
-
-
-        .today-label {
-
-            display: inline-block;
-
-            margin-top: 7px;
-
-            color: #C6FF00;
-
-            font-size: 9px;
-
-            font-weight: 800;
-
-            letter-spacing: 1px;
-
-        }
-
-
-        /* COACH NOTE */
-
-        .coach-note {
-
-            margin-top: 10px;
-
-            padding: 10px 12px;
-
-            background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    .035
-                );
-
-            border-left:
-                2px solid
-                #C6FF00;
-
-            border-radius: 5px;
-
-        }
-
-
-        .coach-note-label {
-
-            display: block;
-
-            margin-bottom: 5px;
-
-            color: #C6FF00;
-
-            font-size: 8px;
-
-            font-weight: 800;
-
-            letter-spacing: 1px;
-
-        }
-
-
-        .coach-note-text {
-
-            color: #aaa;
-
-            font-size: 11px;
-
-            line-height: 1.5;
-
-            white-space: normal;
-
-            overflow-wrap: anywhere;
-
-            word-break: break-word;
-
-        }
-
-
-        /* FEEDBACK */
-
-        .feedback-button {
-
-            display: block;
-
-            margin-top: 10px;
-
-            background: transparent;
-
-            color: #C6FF00;
-
-            border:
-                1px solid
-                #333;
-
-            border-radius: 7px;
-
-            padding: 7px 10px;
-
-            font-size: 10px;
-
-            cursor: pointer;
-
-        }
-
-
-        .feedback-button:hover {
-
-            border-color:
-                #C6FF00;
-
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        style
-    );
-
-                               }
+                   }
