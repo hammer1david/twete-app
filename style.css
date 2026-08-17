@@ -1481,3 +1481,20 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+
+/* Empty Past Goals */
+.past-goals {
+    display: block;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 55px;
+}
+
+.past-goal-card.no-goal-card {
+    display: flex;
+    width: 100%;
+    min-height: 135px;
+    visibility: visible;
+    opacity: 1;
+}
