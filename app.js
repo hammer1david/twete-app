@@ -390,8 +390,19 @@ async function redirectUser(user) {
         } =
             await supabaseClient
                 .from("profiles")
-                .select("role")
-                .eq("id", user.id)
+                .select(`
+                    role,
+                    full_name,
+                    birthday,
+                    country,
+                    discipline,
+                    preferred_distance,
+                    experience_level
+                `)
+                .eq(
+                    "id",
+                    user.id
+                )
                 .maybeSingle();
 
 
@@ -409,6 +420,10 @@ async function redirectUser(user) {
         }
 
 
+        /* =========================
+           COACH
+        ========================= */
+
         if (
             data &&
             data.role === "coach"
@@ -421,8 +436,42 @@ async function redirectUser(user) {
         }
 
 
+        /* =========================
+           ATHLETE
+        ========================= */
+
+        if (
+            data &&
+            data.role === "athlete"
+        ) {
+
+            const profileComplete =
+                data.full_name &&
+                data.birthday &&
+                data.country &&
+                data.discipline &&
+                data.preferred_distance &&
+                data.experience_level;
+
+
+            if (!profileComplete) {
+
+                window.location.href =
+                    "onboarding.html";
+
+                return;
+            }
+
+
+            window.location.href =
+                "athlete.html";
+
+            return;
+        }
+
+
         window.location.href =
-            "athlete.html";
+            "onboarding.html";
 
 
     } catch (error) {
