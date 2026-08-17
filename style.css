@@ -604,14 +604,26 @@ body {
 ========================================= */
 
 .athlete-header {
-    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
 
+    z-index: 1000;
+
+    display: flex;
     align-items: center;
     justify-content: space-between;
 
-    margin-bottom: 65px;
+    padding: 18px 24px;
+
+    background: rgba(5, 5, 5, 0.92);
+    backdrop-filter: blur(12px);
 }
 
+.athlete-page {
+    padding-top: 90px;
+}
 
 .dashboard-logo {
     color: #C6FF00;
