@@ -1348,9 +1348,7 @@ async function saveSession() {
                 pace:
                     pace || null,
 
-                rest:
-                    rest || null,
-
+                
                 notes:
                     notes || null
 
@@ -1432,10 +1430,6 @@ async function saveSession() {
                     pace ||
                     null,
 
-                rest:
-                    rest ||
-                    null,
-
                 notes:
                     notes ||
                     null,
@@ -1506,6 +1500,8 @@ async function saveSession() {
 
 }
 
+
+   
 async function editSession(sessionId) {
 
     const session =
@@ -1562,12 +1558,6 @@ async function editSession(sessionId) {
         "sessionPace"
     ).value =
         session.pace || "";
-
-
-    document.getElementById(
-        "sessionRest"
-    ).value =
-        session.rest || "";
 
 
     document.getElementById(
