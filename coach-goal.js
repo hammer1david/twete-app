@@ -1288,7 +1288,86 @@ async function saveSession() {
         return;
     }
 
+    if (currentEditingSessionId) {
 
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("workouts")
+            .update({
+
+                athlete_id:
+                    goal.athlete_id,
+
+                week_id:
+                    currentWeekId,
+
+                workout_date:
+                    date,
+
+                workout_type:
+                    type,
+
+                title:
+                    title,
+
+                distance_km:
+                    distance
+                    ?
+                    Number(distance)
+                    :
+                    null,
+
+                duration_minutes:
+                    duration
+                    ?
+                    Number(duration)
+                    :
+                    null,
+
+                pace:
+                    pace || null,
+
+                rest:
+                    rest || null,
+
+                notes:
+                    notes || null
+
+            })
+            .eq(
+                "id",
+                currentEditingSessionId
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Update session error:",
+            error
+        );
+
+        alert(
+            "Could not update session:\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    currentEditingSessionId =
+        null;
+
+    closeSessionModal();
+
+    await loadWeeks();
+
+    return;
+}
+   
     const {
         data,
         error
