@@ -644,8 +644,6 @@ function openProfile() {
     window.location.href = "profile.html";
 }
 
-();
-
 async function loadAthleteProfilePicture() {
 
     const avatar =
