@@ -1,1143 +1,475 @@
 /* =========================================
-   TWETE ATHLETE GOAL PAGE
+   TWETE GOAL PAGE
 ========================================= */
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-const GOAL_SUPABASE_URL =
-    "https://uhbhsyuodizauwhhdffu.supabase.co";
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
 
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #050505;
+    color: #ffffff;
+}
 
-const GOAL_SUPABASE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
+button {
+    font-family: inherit;
+}
 
+.goal-app {
+    min-height: 100vh;
+    min-height: 100dvh;
 
-const goalSupabase =
-    window.supabase.createClient(
-        GOAL_SUPABASE_URL,
-        GOAL_SUPABASE_KEY
-    );
+    background:
+        radial-gradient(
+            circle at 80% 10%,
+            rgba(198,255,0,0.035),
+            transparent 30%
+        ),
+        #050505;
 
-
-let currentGoal = null;
-
-let currentProgram = null;
-
-let currentWeeks = [];
-
-let currentSessions = [];
-
-let selectedWeekId = null;
-
-
-/* =========================================
-   START
-========================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
-
-        injectAthleteGoalStyles();
-
-        await loadGoalPage();
-
-    }
-);
-
-
-/* =========================================
-   HOME
-========================================= */
-
-function goHome() {
-
-    window.location.href =
-        "athlete.html";
-
+    padding-bottom: 100px;
 }
 
 
 /* =========================================
-   MESSAGES
+   HEADER
 ========================================= */
 
-function openMessages() {
+.goal-header {
+    height: 75px;
 
-    window.location.href =
-        "messages.html";
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
 
+    padding: 0 28px;
+
+    border-bottom: 1px solid #161616;
+
+    position: relative;
+    z-index: 5;
+}
+
+.goal-header h1 {
+    font-size: 21px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.back-button,
+.more-button {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    background: transparent;
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.back-button {
+    justify-self: start;
+}
+
+.more-button {
+    justify-self: end;
+
+    border: 1px solid #555;
+    border-radius: 50%;
+
+    gap: 3px;
+}
+
+.back-button svg {
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.more-button span {
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+    background: currentColor;
 }
 
 
 /* =========================================
-   LOAD GOAL
+   CONTENT
 ========================================= */
 
-async function loadGoalPage() {
+.goal-content {
+    width: 100%;
+    max-width: 850px;
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+    margin: 0 auto;
 
-
-    const goalId =
-        params.get(
-            "goal_id"
-        );
-
-
-    try {
-
-        let goal = null;
-
-
-        /*
-         * If a specific goal_id exists,
-         * load exactly that goal.
-         */
-
-        if (goalId) {
-
-            const {
-                data,
-                error
-            } =
-                await goalSupabase
-                    .from("goals")
-                    .select(`
-                        id,
-                        athlete_id,
-                        program_id,
-                        goal_name,
-                        distance,
-                        target_time,
-                        target_date,
-                        created_at
-                    `)
-                    .eq(
-                        "id",
-                        goalId
-                    )
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            goal =
-                data;
-
-        }
-
-
-        /*
-         * Fallback:
-         * load the athlete's newest goal.
-         */
-
-        if (!goal) {
-
-            const {
-                data: {
-                    user
-                }
-            } =
-                await goalSupabase
-                    .auth
-                    .getUser();
-
-
-            if (!user) {
-
-                showError(
-                    "Please log in again."
-                );
-
-                return;
-            }
-
-
-            const {
-                data,
-                error
-            } =
-                await goalSupabase
-                    .from("goals")
-                    .select(`
-                        id,
-                        athlete_id,
-                        program_id,
-                        goal_name,
-                        distance,
-                        target_time,
-                        target_date,
-                        created_at
-                    `)
-                    .eq(
-                        "athlete_id",
-                        user.id
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending: false
-                        }
-                    )
-                    .limit(1)
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            goal =
-                data;
-
-        }
-
-
-        if (!goal) {
-
-            showError(
-                "No current goal has been assigned yet."
-            );
-
-            return;
-        }
-
-
-        currentGoal =
-            goal;
-
-
-        /*
-         * Load the exact program
-         * connected to this goal.
-         */
-
-        await loadProgram();
-
-
-        /*
-         * Render goal information.
-         */
-
-        renderGoal();
-
-
-        /*
-         * Load exact weeks and sessions
-         * belonging to this program.
-         */
-
-        await loadWeeks();
-
-
-        renderWeeks();
-
-
-    } catch (error) {
-
-        console.error(
-            "Goal page error:",
-            error
-        );
-
-
-        showError(
-            "Could not load your training plan."
-        );
-
-    }
-
+    padding: 0 22px 40px;
 }
 
 
 /* =========================================
-   LOAD PROGRAM
+   GOAL CARD
 ========================================= */
 
-async function loadProgram() {
+.goal-card {
+    margin-top: 22px;
 
-    if (
-        !currentGoal ||
-        !currentGoal.program_id
-    ) {
+    padding: 22px 24px 17px;
 
-        currentProgram =
-            null;
+    border: 1px solid #C6FF00;
+    border-radius: 18px;
 
-        return;
-    }
+    background:
+        radial-gradient(
+            circle at 85% 35%,
+            rgba(198,255,0,0.07),
+            transparent 45%
+        ),
+        #090909;
 
+    position: relative;
+    overflow: hidden;
+}
 
-    const {
-        data,
-        error
-    } =
-        await goalSupabase
-            .from("programs")
-            .select(`
-                id,
-                athlete_id,
-                name,
-                start_date,
-                end_date,
-                status,
-                coach_update_at,
-                athlete_received_at,
-                updated_at
-            `)
-            .eq(
-                "id",
-                currentGoal.program_id
-            )
-            .maybeSingle();
+.goal-card::after {
+    content: "";
 
+    position: absolute;
 
-    if (error) {
+    width: 250px;
+    height: 250px;
 
-        console.error(
-            "Program loading error:",
-            error
-        );
+    right: -80px;
+    bottom: -120px;
 
-        currentProgram =
-            null;
+    border-radius: 50%;
 
-        return;
-    }
+    border: 1px solid rgba(198,255,0,0.05);
 
+    transform: rotate(-30deg);
 
-    currentProgram =
-        data;
+    pointer-events: none;
+}
 
+.goal-card-top {
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    position: relative;
+    z-index: 2;
 }
 
 
 /* =========================================
-   LOAD WEEKS + SESSIONS
+   TARGET ICON
 ========================================= */
 
-async function loadWeeks() {
+.target-icon {
+    width: 112px;
+    height: 112px;
 
-    if (
-        !currentGoal ||
-        !currentGoal.program_id
-    ) {
+    flex-shrink: 0;
 
-        currentWeeks = [];
+    border: 1px solid #303030;
+    border-radius: 50%;
 
-        currentSessions = [];
+    display: flex;
 
-        return;
-    }
+    align-items: center;
+    justify-content: center;
 
+    background: #080808;
+}
 
-    /*
-     * Load only weeks belonging
-     * to this exact program.
-     */
+.target-icon svg {
+    width: 72px;
+    height: 72px;
 
-    const {
-        data: weeks,
-        error: weeksError
-    } =
-        await goalSupabase
-            .from("training_weeks")
-            .select(`
-                id,
-                program_id,
-                week_number,
-                start_date,
-                end_date,
-                weekly_km,
-                week_label,
-                created_at
-            `)
-            .eq(
-                "program_id",
-                currentGoal.program_id
-            )
-            .order(
-                "week_number",
-                {
-                    ascending: true
-                }
-            );
+    fill: none;
 
+    stroke: #C6FF00;
 
-    if (weeksError) {
+    stroke-width: 2.2;
 
-        console.error(
-            "Weeks loading error:",
-            weeksError
-        );
-
-        currentWeeks = [];
-
-        currentSessions = [];
-
-        return;
-    }
-
-
-    currentWeeks =
-        weeks ||
-        [];
-
-
-    if (!currentWeeks.length) {
-
-        currentSessions = [];
-
-        return;
-    }
-
-
-    const weekIds =
-        currentWeeks.map(
-            function (week) {
-
-                return week.id;
-
-            }
-        );
-
-
-    /*
-     * Load only workouts belonging
-     * to the loaded weeks.
-     */
-
-    const {
-        data: sessions,
-        error: sessionsError
-    } =
-        await goalSupabase
-            .from("workouts")
-            .select(`
-                id,
-                athlete_id,
-                week_id,
-                workout_date,
-                workout_type,
-                title,
-                distance_km,
-                duration_minutes,
-                pace,
-                notes,
-                completed
-            `)
-            .in(
-                "week_id",
-                weekIds
-            )
-            .order(
-                "workout_date",
-                {
-                    ascending: true
-                }
-            );
-
-
-    if (sessionsError) {
-
-        console.error(
-            "Sessions loading error:",
-            sessionsError
-        );
-
-        currentSessions = [];
-
-        return;
-    }
-
-
-    currentSessions =
-        sessions ||
-        [];
-
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 
 /* =========================================
-   GOAL DISPLAY
+   GOAL INFORMATION
 ========================================= */
 
-function renderGoal() {
+.goal-main-info {
+    flex: 1;
+    min-width: 0;
+}
 
-    if (!currentGoal) {
-        return;
-    }
+.goal-label {
+    display: inline-block;
 
+    padding: 6px 10px;
 
-    /*
-     * IMPORTANT:
-     * Show the actual Goal Name first.
-     *
-     * Example:
-     * Berlin
-     */
+    border-radius: 7px;
 
-    const title =
-        document.querySelector(
-            ".goal-main-info h2"
-        );
+    border: 1px solid rgba(198,255,0,0.4);
 
+    background: rgba(198,255,0,0.08);
 
-    if (title) {
+    color: #C6FF00;
 
-        title.textContent =
-            currentGoal.goal_name ||
-            (
-                currentGoal.distance &&
-                currentGoal.target_time
-                    ?
-                    currentGoal.distance +
-                    " — " +
-                    currentGoal.target_time
-                    :
-                    "Current Goal"
-            );
+    font-size: 11px;
+    font-weight: 700;
 
-    }
+    margin-bottom: 11px;
+}
 
+.goal-main-info h2 {
+    font-size: 28px;
 
-    /*
-     * Target date.
-     */
+    line-height: 1.1;
 
-    const date =
-        document.querySelector(
-            ".goal-date"
-        );
+    margin-bottom: 13px;
 
+    letter-spacing: -0.7px;
 
-    if (date) {
+    white-space: nowrap;
+}
 
-        date.innerHTML = `
+.goal-date {
+    display: flex;
 
-            <svg viewBox="0 0 24 24">
+    align-items: center;
 
-                <rect
-                    x="3"
-                    y="4"
-                    width="18"
-                    height="17"
-                    rx="2"
-                >
-                </rect>
+    gap: 7px;
 
-                <line
-                    x1="8"
-                    y1="2"
-                    x2="8"
-                    y2="6"
-                >
-                </line>
+    color: #aaaaaa;
 
-                <line
-                    x1="16"
-                    y1="2"
-                    x2="16"
-                    y2="6"
-                >
-                </line>
+    font-size: 14px;
 
-                <line
-                    x1="3"
-                    y1="10"
-                    x2="21"
-                    y2="10"
-                >
-                </line>
+    margin-bottom: 9px;
+}
 
-            </svg>
+.goal-date svg {
+    width: 19px;
+    height: 19px;
 
-            Target date:
+    flex-shrink: 0;
 
-            ${escapeHtml(
-                currentGoal.target_date
-                    ?
-                    formatDate(
-                        currentGoal.target_date
-                    )
-                    :
-                    "Not set"
-            )}
+    fill: none;
 
-        `;
+    stroke: #C6FF00;
 
-    }
+    stroke-width: 1.8;
+}
 
+.goal-main-info p {
+    color: #aaaaaa;
+    font-size: 14px;
+}
 
-    /*
-     * Small description.
-     */
-
-    const description =
-        document.querySelector(
-            ".goal-main-info p"
-        );
-
-
-    if (description) {
-
-        description.textContent =
-            "Training goal assigned by your coach.";
-
-    }
-
-
-    /*
-     * Calculate progress.
-     */
-
-    updateGoalProgress();
-
+.goal-main-info strong {
+    color: #dddddd;
 }
 
 
 /* =========================================
-   GOAL PROGRESS
+   PROGRESS CIRCLE
 ========================================= */
 
-function updateGoalProgress() {
+.goal-progress {
+    width: 108px;
 
-    if (
-        !currentProgram ||
-        !currentProgram.start_date ||
-        !currentGoal ||
-        !currentGoal.target_date
-    ) {
+    flex-shrink: 0;
 
-        setProgress(
-            0
-        );
+    text-align: center;
 
-        return;
-    }
+    position: relative;
+}
 
+.progress-circle {
+    width: 92px;
+    height: 92px;
 
-    const start =
-        new Date(
-            currentProgram.start_date +
-            "T00:00:00"
-        );
+    transform: rotate(-90deg);
+}
 
+.progress-background {
+    fill: none;
 
-    const end =
-        new Date(
-            currentGoal.target_date +
-            "T00:00:00"
-        );
+    stroke: #282828;
 
+    stroke-width: 8;
+}
 
-    const today =
-        startOfToday();
+.progress-circle-value {
+    fill: none;
 
+    stroke: #C6FF00;
 
-    /*
-     * Number of days between
-     * start and target date.
-     */
+    stroke-width: 8;
 
-    const totalDays =
-        Math.round(
-            (
-                end -
-                start
-            ) /
-            86400000
-        );
+    stroke-linecap: round;
 
+    stroke-dasharray: 314;
 
-    if (
-        totalDays <= 0
-    ) {
+    stroke-dashoffset: 110;
+}
 
-        setProgress(
-            today >= end
-                ?
-                100
-                :
-                0
-        );
+.progress-number {
+    position: absolute;
 
-        return;
+    top: 23px;
 
-    }
+    left: 0;
+    right: 0;
+}
 
+.progress-number strong {
+    font-size: 22px;
+}
 
-    /*
-     * Number of days already passed.
-     */
+.goal-progress > span {
+    display: block;
 
-    const elapsedDays =
-        Math.max(
-            0,
-            Math.min(
-                totalDays,
-                Math.round(
-                    (
-                        today -
-                        start
-                    ) /
-                    86400000
-                )
-            )
-        );
+    color: #aaaaaa;
 
+    font-size: 13px;
 
-    const percentage =
-        (
-            elapsedDays /
-            totalDays
-        ) *
-        100;
-
-
-    setProgress(
-        Math.max(
-            0,
-            Math.min(
-                100,
-                percentage
-            )
-        )
-    );
-
+    margin-top: -2px;
 }
 
 
 /* =========================================
-   SET PROGRESS
+   DIVIDER
 ========================================= */
 
-function setProgress(
-    percentage
-) {
+.goal-divider {
+    height: 1px;
 
-    const circle =
-        document.querySelector(
-            ".progress-circle-value"
-        );
+    background: #353535;
 
+    margin-top: 18px;
+}
 
-    const number =
-        document.querySelector(
-            ".progress-number strong"
-        );
+.goal-motivation {
+    display: flex;
 
+    justify-content: center;
+    align-items: center;
 
-    if (circle) {
+    gap: 9px;
 
-        const radius =
-            50;
+    color: #b7b7b7;
 
+    font-size: 14px;
 
-        const circumference =
-            2 *
-            Math.PI *
-            radius;
+    padding-top: 15px;
 
+    text-align: center;
+}
 
-        circle.style.strokeDasharray =
-            circumference;
+.goal-motivation svg {
+    width: 19px;
+    height: 19px;
 
+    fill: none;
 
-        circle.style.strokeDashoffset =
-            circumference -
-            (
-                percentage /
-                100
-            ) *
-            circumference;
+    stroke: #C6FF00;
 
-    }
-
-
-    if (number) {
-
-        number.textContent =
-            Math.round(
-                percentage
-            ) +
-            "%";
-
-    }
-
+    stroke-width: 1.7;
 }
 
 
 /* =========================================
-   WEEKS
+   TRAINING PLAN
 ========================================= */
 
-function renderWeeks() {
+.training-section {
+    margin-top: 27px;
+}
 
-    const selector =
-        document.querySelector(
-            ".week-selector"
-        );
+.section-heading {
+    font-size: 25px;
 
+    margin-bottom: 17px;
 
-    if (!selector) {
-        return;
-    }
-
-
-    /*
-     * No weeks.
-     */
-
-    if (!currentWeeks.length) {
-
-        selector.innerHTML = `
-
-            <div class="athlete-empty">
-
-                No training weeks yet.
-
-            </div>
-
-        `;
-
-
-        const list =
-            document.getElementById(
-                "workoutList"
-            );
-
-
-        if (list) {
-
-            list.innerHTML =
-                "";
-
-        }
-
-
-        return;
-    }
-
-
-    /*
-     * Automatically select
-     * the current week.
-     */
-
-    selectedWeekId =
-        chooseCurrentWeek();
-
-
-    /*
-     * Create week buttons.
-     */
-
-    selector.innerHTML =
-        currentWeeks
-            .map(
-                function (week) {
-
-                    const active =
-                        week.id ===
-                        selectedWeekId;
-
-
-                    const state =
-                        getWeekState(
-                            week
-                        );
-
-
-                    return `
-
-                        <button
-                            class="
-                                week-button
-                                ${active ? "active" : ""}
-                                ${state}
-                            "
-                            onclick="
-                                selectWeek(
-                                    '${week.id}'
-                                )
-                            "
-                        >
-
-                            <span>
-
-                                WEEK
-                                ${escapeHtml(
-                                    week.week_number
-                                )}
-
-                            </span>
-
-
-                            ${
-                                week.week_label
-                                ?
-                                `
-                                <small>
-
-                                    ${escapeHtml(
-                                        week.week_label
-                                    )}
-
-                                </small>
-                                `
-                                :
-                                ""
-                            }
-
-
-                            ${
-                                week.weekly_km !== null &&
-                                week.weekly_km !== undefined &&
-                                week.weekly_km !== ""
-                                ?
-                                `
-                                <small class="weekly-mileage">
-
-                                    ${escapeHtml(
-                                        week.weekly_km
-                                    )}
-                                    km
-
-                                </small>
-                                `
-                                :
-                                ""
-                            }
-
-                        </button>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-
-    updateWeekIndicator();
-
-    renderSelectedWeek();
-
+    letter-spacing: -0.5px;
 }
 
 
 /* =========================================
-   CHOOSE CURRENT WEEK
+   WEEK SELECTOR
 ========================================= */
 
-function chooseCurrentWeek() {
+.week-selector {
+    display: flex;
 
-    const today =
-        startOfToday();
+    gap: 12px;
 
+    overflow-x: auto;
 
-    const current =
-        currentWeeks.find(
-            function (week) {
+    scrollbar-width: none;
 
-                if (
-                    !week.start_date ||
-                    !week.end_date
-                ) {
-
-                    return false;
-
-                }
-
-
-                const start =
-                    new Date(
-                        week.start_date +
-                        "T00:00:00"
-                    );
-
-
-                const end =
-                    new Date(
-                        week.end_date +
-                        "T23:59:59"
-                    );
-
-
-                return (
-                    today >= start &&
-                    today <= end
-                );
-
-            }
-        );
-
-
-    /*
-     * If today's date is inside
-     * a week, use that week.
-     *
-     * Otherwise use the first week.
-     */
-
-    return current
-        ?
-        current.id
-        :
-        currentWeeks[0].id;
-
+    padding: 0 4px 9px;
 }
 
-
-/* =========================================
-   WEEK STATE
-========================================= */
-
-function getWeekState(
-    week
-) {
-
-    const today =
-        startOfToday();
-
-
-    /*
-     * Past week.
-     */
-
-    if (
-        week.end_date
-    ) {
-
-        const end =
-            new Date(
-                week.end_date +
-                "T23:59:59"
-            );
-
-
-        if (
-            today > end
-        ) {
-
-            return "past-week";
-
-        }
-
-    }
-
-
-    /*
-     * Current week.
-     */
-
-    if (
-        week.start_date &&
-        week.end_date
-    ) {
-
-        const start =
-            new Date(
-                week.start_date +
-                "T00:00:00"
-            );
-
-
-        const end =
-            new Date(
-                week.end_date +
-                "T23:59:59"
-            );
-
-
-        if (
-            today >= start &&
-            today <= end
-        ) {
-
-            return "current-week";
-
-        }
-
-    }
-
-
-    return "";
-
+.week-selector::-webkit-scrollbar {
+    display: none;
 }
 
+.week-button {
+    flex: 0 0 auto;
 
-/* =========================================
-   SELECT WEEK
-========================================= */
+    height: 44px;
 
-function selectWeek(
-    weekId
-) {
+    padding: 0 17px;
 
-    selectedWeekId =
-        weekId;
+    border-radius: 8px;
 
+    border: 1px solid #373737;
 
-    document
-        .querySelectorAll(
-            ".week-button"
-        )
-        .forEach(
-            function (button) {
+    background: #111111;
 
-                button.classList.remove(
-                    "active"
-                );
+    color: #d0d0d0;
 
-            }
-        );
+    font-size: 12px;
 
+    font-weight: 700;
 
-    const index =
-        currentWeeks.findIndex(
-            function (week) {
+    cursor: pointer;
+}
 
-                return (
-                    week.id ===
-                    weekId
-                );
+.week-button.active {
+    background: #C6FF00;
 
-            }
-        );
+    color: #000000;
 
+    border-color: #C6FF00;
 
-    const buttons =
-        document.querySelectorAll(
-            ".week-button"
-        );
-
-
-    if (
-        buttons[index]
-    ) {
-
-        buttons[index]
-            .classList
-            .add(
-                "active"
-            );
-
-    }
-
-
-    updateWeekIndicator();
-
-    renderSelectedWeek();
-
+    box-shadow: 0 0 18px rgba(198,255,0,0.13);
 }
 
 
@@ -1145,1153 +477,737 @@ function selectWeek(
    WEEK INDICATOR
 ========================================= */
 
-function updateWeekIndicator() {
+.week-indicator {
+    height: 5px;
 
-    const indicator =
-        document.querySelector(
-            ".week-indicator-fill"
-        );
+    width: 100%;
 
+    background: #262626;
 
-    if (!indicator) {
-        return;
-    }
+    border-radius: 10px;
 
+    margin-bottom: 9px;
 
-    const index =
-        currentWeeks.findIndex(
-            function (week) {
+    overflow: hidden;
+}
 
-                return (
-                    week.id ===
-                    selectedWeekId
-                );
+.week-indicator-fill {
+    width: 50%;
 
-            }
-        );
+    height: 100%;
 
+    background: #C6FF00;
 
-    const percentage =
-        currentWeeks.length
-            ?
-            (
-                (
-                    index + 1
-                ) /
-                currentWeeks.length
-            ) *
-            100
-            :
-            0;
-
-
-    indicator.style.width =
-        percentage +
-        "%";
-
+    border-radius: inherit;
 }
 
 
 /* =========================================
-   RENDER SELECTED WEEK
+   WORKOUT CARD
 ========================================= */
 
-function renderSelectedWeek() {
+.workout-card {
+    min-height: 94px;
 
-    const list =
-        document.getElementById(
-            "workoutList"
-        );
+    display: flex;
 
+    align-items: center;
 
-    if (!list) {
-        return;
-    }
+    gap: 13px;
 
+    padding: 10px 12px 10px 10px;
 
-    const week =
-        currentWeeks.find(
-            function (item) {
+    background: #0d0d0d;
 
-                return (
-                    item.id ===
-                    selectedWeekId
-                );
+    border: 1px solid #292929;
 
-            }
-        );
+    border-radius: 15px;
 
+    margin-bottom: 1px;
 
-    if (!week) {
+    position: relative;
+}
 
-        list.innerHTML =
-            "";
+.workout-card.active-workout {
+    border-left: 2px solid #C6FF00;
+}
 
-        return;
+.workout-day {
+    width: 58px;
 
-    }
+    flex-shrink: 0;
 
+    text-align: center;
+}
 
-    const sessions =
-        currentSessions.filter(
-            function (session) {
+.workout-day strong {
+    display: block;
 
-                return (
-                    session.week_id ===
-                    week.id
-                );
+    color: #C6FF00;
 
-            }
-        );
+    font-size: 13px;
 
+    margin-bottom: 4px;
+}
 
-    list.innerHTML =
-        sessions.length
-            ?
-            sessions
-                .map(
-                    createSessionCard
-                )
-                .join("")
-            :
-            `
-                <div class="athlete-empty">
+.workout-card:not(.completed):not(.active-workout)
+.workout-day strong {
+    color: #777777;
+}
 
-                    No sessions in this week yet.
+.workout-day span {
+    color: #aaaaaa;
 
-                </div>
-            `;
-
+    font-size: 12px;
 }
 
 
 /* =========================================
-   SESSION CARD
+   WORKOUT ICON
 ========================================= */
 
-function createSessionCard(
-    session
-) {
+.workout-icon {
+    width: 58px;
+    height: 58px;
 
-    const today =
-        startOfToday();
+    flex-shrink: 0;
 
+    border: 1px solid #353535;
 
-    const sessionDate =
-        new Date(
-            session.workout_date +
-            "T00:00:00"
-        );
+    border-radius: 50%;
 
+    display: flex;
 
-    const isToday =
-        sessionDate.getTime() ===
-        today.getTime();
+    align-items: center;
+    justify-content: center;
+}
 
+.workout-icon svg {
+    width: 27px;
+    height: 27px;
 
-    const isPast =
-        sessionDate <
-        today;
+    fill: none;
 
+    stroke: #C6FF00;
 
-    const stateClass =
-        isToday
-            ?
-            " today-workout"
-            :
-            (
-                isPast
-                    ?
-                    " past-workout"
-                    :
-                    ""
-            );
+    stroke-width: 1.7;
 
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 
-    const day =
-        sessionDate.toLocaleDateString(
-            "en-US",
-            {
-                weekday: "short"
-            }
-        );
+.workout-info {
+    flex: 1;
+    min-width: 0;
+}
 
+.workout-info h3 {
+    font-size: 17px;
 
-    const date =
-        sessionDate.toLocaleDateString(
-            "en-US",
-            {
-                month: "short",
-                day: "numeric"
-            }
-        );
+    margin-bottom: 4px;
+}
 
+.workout-details {
+    color: #aaaaaa;
 
-    /*
-     * Session details.
-     */
+    font-size: 13px;
 
-    const details = [];
+    margin-bottom: 4px;
+}
 
+.workout-details span {
+    color: #C6FF00;
 
-    if (
-        session.distance_km !== null &&
-        session.distance_km !== undefined &&
-        session.distance_km !== ""
-    ) {
+    padding: 0 4px;
+}
 
-        details.push(
-            session.distance_km +
-            " km"
-        );
+.workout-description {
+    color: #8b8b8b;
 
-    }
-
-
-    if (
-        session.duration_minutes !== null &&
-        session.duration_minutes !== undefined &&
-        session.duration_minutes !== ""
-    ) {
-
-        details.push(
-            session.duration_minutes +
-            " min"
-        );
-
-    }
-
-
-    if (session.pace) {
-
-        details.push(
-            session.pace +
-            " /km"
-        );
-
-    }
-
-
-    /*
-     * Extract only the Coach Note.
-     *
-     * Athlete feedback is kept separate.
-     */
-
-    const coachNote =
-        getCoachNote(
-            session.notes
-        );
-
-
-    return `
-
-        <article
-            class="
-                workout-card
-                ${stateClass}
-            "
-        >
-
-
-            <!-- Date -->
-
-            <div class="workout-day">
-
-                <strong>
-
-                    ${escapeHtml(
-                        day
-                    )}
-
-                </strong>
-
-
-                <span>
-
-                    ${escapeHtml(
-                        date
-                    )}
-
-                </span>
-
-            </div>
-
-
-
-            <!-- Icon -->
-
-            <div class="workout-icon run-icon">
-
-                <svg viewBox="0 0 24 24">
-
-                    <path
-                        d="M13 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
-                    >
-                    </path>
-
-
-                    <path
-                        d="M9 8l4-2 3 4"
-                    >
-                    </path>
-
-
-                    <path
-                        d="M8 22l3-7 4-3"
-                    >
-                    </path>
-
-
-                    <path
-                        d="M5 14l4-2"
-                    >
-                    </path>
-
-                </svg>
-
-            </div>
-
-
-
-            <!-- Session information -->
-
-            <div class="workout-info">
-
-
-                <h3>
-
-                    ${escapeHtml(
-                        session.title ||
-                        session.workout_type ||
-                        "Training"
-                    )}
-
-                </h3>
-
-
-
-                ${
-                    details.length
-                    ?
-                    `
-                    <p class="workout-details">
-
-                        ${escapeHtml(
-                            details.join(
-                                " • "
-                            )
-                        )}
-
-                    </p>
-                    `
-                    :
-                    ""
-                }
-
-
-
-                ${
-                    session.workout_type
-                    ?
-                    `
-                    <p class="workout-description">
-
-                        ${escapeHtml(
-                            session.workout_type
-                        )}
-
-                    </p>
-                    `
-                    :
-                    ""
-                }
-
-
-
-                <!-- Coach Note -->
-
-                ${
-                    coachNote
-                    ?
-                    `
-                    <div class="coach-note">
-
-                        <span class="coach-note-label">
-
-                            COACH NOTE
-
-                        </span>
-
-
-                        <div class="coach-note-text">
-
-                            ${escapeHtml(
-                                coachNote
-                            ).replaceAll(
-                                "\n",
-                                "<br>"
-                            )}
-
-                        </div>
-
-                    </div>
-                    `
-                    :
-                    ""
-                }
-
-
-
-                <!-- Today -->
-
-                ${
-                    isToday
-                    ?
-                    `
-                    <span class="today-label">
-
-                        TODAY
-
-                    </span>
-                    `
-                    :
-                    ""
-                }
-
-
-
-                <!-- Feedback -->
-
-                <button
-                    class="feedback-button"
-                    type="button"
-                    onclick="
-                        addSessionFeedback(
-                            '${session.id}'
-                        )
-                    "
-                >
-
-                    ${
-                        hasAthleteFeedback(
-                            session.notes
-                        )
-                        ?
-                        "Edit Feedback"
-                        :
-                        "Add Feedback"
-                    }
-
-                </button>
-
-
-            </div>
-
-        </article>
-
-    `;
-
+    font-size: 12px;
 }
 
 
 /* =========================================
-   GET COACH NOTE
+   STATUS BUTTON
 ========================================= */
 
-function getCoachNote(
-    notes
-) {
+.status-button {
+    width: 29px;
+    height: 29px;
 
-    if (
-        !notes ||
-        typeof notes !== "string"
-    ) {
+    flex-shrink: 0;
 
-        return "";
+    border-radius: 50%;
 
-    }
+    border: 2px solid #555;
 
+    background: transparent;
 
-    /*
-     * If athlete feedback exists,
-     * everything before it is the
-     * original Coach Note.
-     */
+    color: #000000;
 
-    if (
-        notes.includes(
-            "Athlete feedback:"
-        )
-    ) {
+    display: flex;
 
-        return notes
-            .split(
-                "Athlete feedback:"
-            )[0]
-            .trim();
+    align-items: center;
+    justify-content: center;
 
-    }
+    font-size: 18px;
 
+    font-weight: 900;
 
-    /*
-     * Otherwise the entire notes field
-     * is the Coach Note.
-     */
+    cursor: pointer;
+}
 
-    return notes.trim();
+.completed-button {
+    background: #C6FF00;
 
+    border-color: #C6FF00;
+}
+
+.status-button.done {
+    background: #C6FF00;
+
+    border-color: #C6FF00;
 }
 
 
 /* =========================================
-   ATHLETE FEEDBACK
+   START WORKOUT
 ========================================= */
 
-function hasAthleteFeedback(
-    notes
-) {
+.start-button {
+    flex-shrink: 0;
 
-    return (
-        typeof notes === "string" &&
-        notes.includes(
-            "Athlete feedback:"
-        )
-    );
+    height: 42px;
 
+    padding: 0 15px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #C6FF00;
+
+    color: #000000;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.start-button:active {
+    transform: scale(0.97);
 }
 
 
 /* =========================================
-   GET ATHLETE FEEDBACK
+   FULL PLAN
 ========================================= */
 
-function getAthleteFeedback(
-    notes
-) {
+.full-plan-button {
+    width: 100%;
 
-    if (
-        !hasAthleteFeedback(
-            notes
-        )
-    ) {
+    height: 54px;
 
-        return "";
+    border: 1px solid #303030;
 
-    }
+    border-radius: 0 0 14px 14px;
 
+    background: #0d0d0d;
 
-    return notes
-        .split(
-            "Athlete feedback:"
-        )[1]
-        .trim();
+    color: #C6FF00;
 
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.full-plan-button strong {
+    font-size: 25px;
+
+    line-height: 1;
+
+    font-weight: 400;
 }
 
 
 /* =========================================
-   ADD SESSION FEEDBACK
+   INFO CARDS
 ========================================= */
 
-async function addSessionFeedback(
-    sessionId
-) {
+.info-grid {
+    display: grid;
 
-    const session =
-        currentSessions.find(
-            function (item) {
+    grid-template-columns: 1fr 1fr;
 
-                return (
-                    item.id ===
-                    sessionId
-                );
+    gap: 16px;
 
-            }
+    margin-top: 20px;
+}
+
+.info-card {
+    min-height: 185px;
+
+    padding: 17px;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    background: #0d0d0d;
+}
+
+.info-card-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 17px;
+}
+
+.info-card-header svg {
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 1.7;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.info-card-header strong {
+    font-size: 14px;
+}
+
+.coach-content {
+    display: flex;
+
+    gap: 12px;
+}
+
+.coach-avatar {
+    width: 47px;
+    height: 47px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #eeeeee 0 20%,
+            transparent 21%
+        ),
+        linear-gradient(
+            135deg,
+            #333,
+            #111
         );
 
+    display: flex;
 
-    if (!session) {
-        return;
-    }
+    align-items: center;
+    justify-content: center;
 
+    color: #C6FF00;
 
-    const existingFeedback =
-        getAthleteFeedback(
-            session.notes
-        );
+    font-size: 10px;
 
+    font-weight: 800;
+}
 
-    const feedback =
-        prompt(
-            "Write your feedback for this session:",
-            existingFeedback
-        );
+.coach-content p {
+    color: #d0d0d0;
 
+    font-size: 13px;
 
-    if (
-        feedback ===
-        null
-    ) {
+    line-height: 1.45;
 
-        return;
+    margin-bottom: 9px;
+}
 
-    }
+.coach-content span,
+.coach-content small {
+    display: block;
 
+    color: #888;
 
-    const cleaned =
-        feedback.trim();
+    font-size: 11px;
 
+    margin-bottom: 4px;
+}
 
-    /*
-     * Keep the Coach Note.
-     */
+.add-feedback {
+    margin-left: auto;
 
-    let coachNote =
-        getCoachNote(
-            session.notes
-        );
+    border: none;
 
+    background: transparent;
 
-    /*
-     * Build the new notes field.
-     */
+    color: #C6FF00;
 
-    let newNotes =
-        coachNote;
+    font-size: 12px;
 
+    cursor: pointer;
+}
 
-    if (cleaned) {
+.feedback-text {
+    color: #d0d0d0;
 
-        newNotes =
-            coachNote
-                ?
-                (
-                    coachNote +
-                    "\n\nAthlete feedback:\n" +
-                    cleaned
-                )
-                :
-                "Athlete feedback:\n" +
-                cleaned;
+    font-size: 13px;
 
-    }
+    line-height: 1.5;
 
+    margin-bottom: 15px;
+}
 
-    /*
-     * Save feedback.
-     */
+.feedback-date {
+    color: #777;
 
-    const {
-        error
-    } =
-        await goalSupabase
-            .from("workouts")
-            .update({
-
-                notes:
-                    newNotes ||
-                    null
-
-            })
-            .eq(
-                "id",
-                sessionId
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Feedback error:",
-            error
-        );
-
-
-        alert(
-            "Could not save your feedback."
-        );
-
-
-        return;
-
-    }
-
-
-    /*
-     * Update local session.
-     */
-
-    session.notes =
-        newNotes ||
-        null;
-
-
-    renderSelectedWeek();
-
+    font-size: 11px;
 }
 
 
 /* =========================================
-   OLD FUNCTIONS
-   Kept so existing HTML does not break.
+   PROGRESS OVERVIEW
 ========================================= */
 
-function toggleWorkout() {
+.overview-card {
+    margin-top: 16px;
 
-    return;
+    border: 1px solid #292929;
 
+    border-radius: 14px;
+
+    background: #0d0d0d;
+
+    padding: 15px 10px 18px;
+}
+
+.overview-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 18px;
+
+    padding-left: 5px;
+}
+
+.overview-title svg {
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+
+    stroke: #C6FF00;
+
+    stroke-width: 1.7;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.overview-title strong {
+    font-size: 14px;
+}
+
+.overview-stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+}
+
+.overview-stat {
+    text-align: center;
+
+    padding: 0 10px;
+
+    border-right: 1px solid #3a3a3a;
+}
+
+.overview-stat:last-child {
+    border-right: none;
+}
+
+.overview-stat svg {
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+
+    stroke: #888;
+
+    stroke-width: 1.5;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    margin-bottom: 7px;
+}
+
+.overview-stat span {
+    display: block;
+
+    color: #999;
+
+    font-size: 11px;
+
+    margin-bottom: 5px;
+}
+
+.overview-stat strong {
+    color: #C6FF00;
+
+    font-size: 17px;
 }
 
 
-function startWorkout() {
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
 
-    return;
+.bottom-nav {
+    position: fixed;
 
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 82px;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 100px;
+
+    background: rgba(7,7,7,0.98);
+
+    border-top: 1px solid #303030;
+
+    z-index: 20;
+}
+
+.bottom-nav-item {
+    width: 90px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #888;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    cursor: pointer;
+}
+
+.bottom-nav-item svg {
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.bottom-nav-item span {
+    font-size: 12px;
+}
+
+.bottom-nav-item.active {
+    color: #C6FF00;
 }
 
 
-function viewFullPlan() {
+/* =========================================
+   TABLET
+========================================= */
 
-    if (
-        currentGoal &&
-        currentGoal.id
-    ) {
+@media (min-width: 700px) {
 
-        window.location.href =
-            "goal.html?goal_id=" +
-            encodeURIComponent(
-                currentGoal.id
-            );
+    .goal-content {
+        max-width: 1000px;
 
+        padding-left: 30px;
+        padding-right: 30px;
     }
 
-}
-
-
-function addFeedback() {
-
-    alert(
-        "Please add feedback directly to the session you want to comment on."
-    );
-
-}
-
-
-/* =========================================
-   HELPERS
-========================================= */
-
-function startOfToday() {
-
-    const today =
-        new Date();
-
-
-    today.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    return today;
-
-}
-
-
-/* =========================================
-   FORMAT DATE
-========================================= */
-
-function formatDate(
-    value
-) {
-
-    if (!value) {
-        return "";
-    }
-
-
-    return new Date(
-        value +
-        "T00:00:00"
-    ).toLocaleDateString(
-        "en-US",
-        {
-            month: "short",
-            day: "numeric",
-            year: "numeric"
-        }
-    );
-
-}
-
-
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHtml(
-    value
-) {
-
-    return String(
-        value ??
-        ""
-    )
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}
-
-
-/* =========================================
-   SHOW ERROR
-========================================= */
-
-function showError(
-    message
-) {
-
-    const title =
-        document.querySelector(
-            ".goal-main-info h2"
-        );
-
-
-    if (title) {
-
-        title.textContent =
-            message;
-
-    }
-
-
-    const list =
-        document.getElementById(
-            "workoutList"
-        );
-
-
-    if (list) {
-
-        list.innerHTML = `
-
-            <div class="athlete-empty">
-
-                ${escapeHtml(
-                    message
-                )}
-
-            </div>
-
-        `;
-
+    .goal-header {
+        padding-left: 40px;
+        padding-right: 40px;
     }
 
 }
 
 
 /* =========================================
-   DYNAMIC STYLES
+   MOBILE
 ========================================= */
 
-function injectAthleteGoalStyles() {
+@media (max-width: 600px) {
 
-    if (
-        document.getElementById(
-            "athleteGoalDynamicStyles"
-        )
-    ) {
-
-        return;
-
+    .goal-header {
+        padding: 0 18px;
     }
 
+    .goal-content {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .goal-card {
+        padding: 19px 14px 15px;
+    }
+
+    .goal-card-top {
+        gap: 11px;
+    }
 
-    const style =
-        document.createElement(
-            "style"
-        );
+    .target-icon {
+        width: 92px;
+        height: 92px;
+    }
+
+    .target-icon svg {
+        width: 60px;
+        height: 60px;
+    }
+
+    .goal-main-info h2 {
+        font-size: 21px;
+    }
+
+    .goal-date {
+        font-size: 11px;
+    }
+
+    .goal-main-info p {
+        font-size: 12px;
+    }
+
+    .goal-progress {
+        width: 82px;
+    }
+
+    .progress-circle {
+        width: 76px;
+        height: 76px;
+    }
+
+    .progress-number {
+        top: 20px;
+    }
+
+    .progress-number strong {
+        font-size: 18px;
+    }
+
+    .goal-progress > span {
+        font-size: 11px;
+    }
+
+    .goal-motivation {
+        font-size: 11px;
+    }
+
+    .workout-card {
+        gap: 8px;
+
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+
+    .workout-day {
+        width: 42px;
+    }
+
+    .workout-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .workout-icon svg {
+        width: 23px;
+        height: 23px;
+    }
+
+    .workout-info h3 {
+        font-size: 14px;
+    }
+
+    .workout-details {
+        font-size: 11px;
+    }
+
+    .workout-description {
+        font-size: 10px;
+    }
+
+    .start-button {
+        height: 38px;
+
+        padding: 0 10px;
+
+        font-size: 10px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
 
+    .overview-stats {
+        grid-template-columns:
+            repeat(2, 1fr);
 
-    style.id =
-        "athleteGoalDynamicStyles";
+        row-gap: 18px;
+    }
 
+    .overview-stat:nth-child(2) {
+        border-right: none;
+    }
 
-    style.textContent = `
+    .overview-stat:nth-child(1),
+    .overview-stat:nth-child(2) {
+        padding-bottom: 12px;
+    }
 
+    .bottom-nav {
+        gap: 65px;
+    }
 
-        /* =================================
-           EMPTY STATE
-        ================================= */
-
-        .athlete-empty {
-
-            color: #777;
-
-            padding: 22px 4px;
-
-            font-size: 13px;
-
-        }
-
-
-
-        /* =================================
-           WEEK BUTTON
-        ================================= */
-
-        .week-button {
-
-            position: relative;
-
-        }
-
-
-        .week-button small {
-
-            display: block;
-
-            margin-top: 3px;
-
-            color: #888;
-
-            font-size: 8px;
-
-            text-transform: uppercase;
-
-            letter-spacing: .4px;
-
-        }
-
-
-
-        /* =================================
-           WEEKLY MILEAGE
-        ================================= */
-
-        .week-button .weekly-mileage {
-
-            color: #C6FF00 !important;
-
-            font-size: 9px !important;
-
-            font-weight: 700;
-
-            margin-top: 4px;
-
-        }
-
-
-
-        /* =================================
-           CURRENT WEEK
-        ================================= */
-
-        .week-button.current-week {
-
-            border-color:
-                #C6FF00 !important;
-
-        }
-
-
-
-        /* =================================
-           PAST WEEK
-        ================================= */
-
-        .week-button.past-week {
-
-            opacity: .42;
-
-            filter: grayscale(.7);
-
-        }
-
-
-
-        /* =================================
-           PAST SESSION
-        ================================= */
-
-        .workout-card.past-workout {
-
-            opacity: .42;
-
-            filter: grayscale(.65);
-
-            transition:
-                opacity .25s ease;
-
-        }
-
-
-
-        /* =================================
-           TODAY
-        ================================= */
-
-        .workout-card.today-workout {
-
-            border-color:
-                #C6FF00 !important;
-
-            box-shadow:
-                0 0 0 1px
-                rgba(
-                    198,
-                    255,
-                    0,
-                    .12
-                );
-
-        }
-
-
-
-        .today-label {
-
-            display: inline-block;
-
-            margin-top: 7px;
-
-            color: #C6FF00;
-
-            font-size: 9px;
-
-            font-weight: 800;
-
-            letter-spacing: 1px;
-
-        }
-
-
-
-        /* =================================
-           COACH NOTE
-        ================================= */
-
-        .coach-note {
-
-            margin-top: 10px;
-
-            padding: 10px 12px;
-
-            background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    .035
-                );
-
-            border-left:
-                2px solid
-                #C6FF00;
-
-            border-radius: 5px;
-
-        }
-
-
-        .coach-note-label {
-
-            display: block;
-
-            margin-bottom: 5px;
-
-            color: #C6FF00;
-
-            font-size: 8px;
-
-            font-weight: 800;
-
-            letter-spacing: 1px;
-
-        }
-
-
-        .coach-note-text {
-
-            color: #aaa;
-
-            font-size: 11px;
-
-            line-height: 1.5;
-
-            white-space: normal;
-
-            overflow-wrap: anywhere;
-
-            word-break: break-word;
-
-        }
-
-
-
-        /* =================================
-           FEEDBACK BUTTON
-        ================================= */
-
-        .feedback-button {
-
-            display: block;
-
-            margin-top: 10px;
-
-            background: transparent;
-
-            color: #C6FF00;
-
-            border:
-                1px solid
-                #333;
-
-            border-radius: 7px;
-
-            padding: 7px 10px;
-
-            font-size: 10px;
-
-            cursor: pointer;
-
-        }
-
-
-        .feedback-button:hover {
-
-            border-color:
-                #C6FF00;
-
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        style
-    );
-
-                       }
+}
