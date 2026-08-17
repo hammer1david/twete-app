@@ -2,17 +2,17 @@
    TWETE MESSAGES
 ========================================= */
 
-const SUPABASE_URL =
+const MESSAGES_SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
-const SUPABASE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSN";
+const MESSAGES_SUPABASE_KEY =
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
 
 
-const supabaseClient =
+const messagesSupabase =
     window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
+        MESSAGES_SUPABASE_URL,
+        MESSAGES_SUPABASE_KEY
     );
 
 
@@ -31,11 +31,7 @@ let realtimeChannel = null;
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function () {
-
-        await initialiseMessages();
-
-    }
+    initialiseMessages
 );
 
 
@@ -47,25 +43,54 @@ async function initialiseMessages() {
 
     try {
 
+        /*
+           Give Supabase a moment to restore
+           the existing browser session.
+        */
+
         const {
             data: {
-                user
-            }
+                session
+            },
+            error
         } =
-            await supabaseClient.auth.getUser();
+            await messagesSupabase.auth.getSession();
 
 
-        if (!user) {
+        if (error) {
 
-            window.location.href =
-                "index.html";
+            console.error(
+                "Session error:",
+                error
+            );
+
+            showError(
+                "Could not check your login session."
+            );
+
+            return;
+        }
+
+
+        /*
+           IMPORTANT:
+           Do NOT redirect to index.html here.
+           The athlete is already coming from
+           an authenticated page.
+        */
+
+        if (!session || !session.user) {
+
+            showError(
+                "Your login session could not be found. Please return to Home and try again."
+            );
 
             return;
         }
 
 
         currentUser =
-            user;
+            session.user;
 
 
         await loadCurrentProfile();
@@ -82,12 +107,12 @@ async function initialiseMessages() {
     } catch (error) {
 
         console.error(
-            "Messages error:",
+            "Messages initialisation error:",
             error
         );
 
         showError(
-            "Could not load messages."
+            "Could not load Messages."
         );
 
     }
@@ -105,7 +130,7 @@ async function loadCurrentProfile() {
         data,
         error
     } =
-        await supabaseClient
+        await messagesSupabase
             .from("profiles")
             .select(`
                 id,
@@ -148,15 +173,8 @@ async function loadCurrentProfile() {
 async function loadConversationUser() {
 
     /*
-       ATHLETE:
-       Find coach through coach_athletes.
-
-       COACH:
-       For now select the first connected
-       athlete. We will later turn this into
-       an athlete list.
+       ATHLETE → COACH
     */
-
 
     if (
         currentRole ===
@@ -168,6 +186,10 @@ async function loadConversationUser() {
         return;
     }
 
+
+    /*
+       COACH → ATHLETE
+    */
 
     if (
         currentRole ===
@@ -182,7 +204,7 @@ async function loadConversationUser() {
 
     /*
        Fallback:
-       Try athlete relationship first.
+       Try athlete → coach relationship.
     */
 
     await loadCoachForAthlete();
@@ -200,7 +222,7 @@ async function loadCoachForAthlete() {
         data,
         error
     } =
-        await supabaseClient
+        await messagesSupabase
             .from("coach_athletes")
             .select(`
                 coach_id,
@@ -263,7 +285,7 @@ async function loadAthleteForCoach() {
         data,
         error
     } =
-        await supabaseClient
+        await messagesSupabase
             .from("coach_athletes")
             .select(`
                 coach_id,
@@ -317,7 +339,7 @@ async function loadAthleteForCoach() {
 
 
 /* =========================================
-   PROFILE HEADER
+   LOAD OTHER PROFILE
 ========================================= */
 
 async function loadProfileHeader(
@@ -328,7 +350,7 @@ async function loadProfileHeader(
         data,
         error
     } =
-        await supabaseClient
+        await messagesSupabase
             .from("profiles")
             .select(`
                 id,
@@ -390,7 +412,7 @@ async function loadProfileHeader(
 
 
 /* =========================================
-   SET PROFILE HEADER
+   PROFILE HEADER
 ========================================= */
 
 function setProfileHeader(
@@ -501,7 +523,7 @@ async function loadMessages() {
         data,
         error
     } =
-        await supabaseClient
+        await messagesSupabase
             .from("messages")
             .select(`
                 id,
@@ -550,7 +572,7 @@ async function loadMessages() {
 
 
 /* =========================================
-   RENDER
+   RENDER MESSAGES
 ========================================= */
 
 function renderMessages(
@@ -576,7 +598,7 @@ function renderMessages(
 
                 No messages yet.<br><br>
 
-                Start the conversation.
+                Start the conversation with your coach.
 
             </div>
 
@@ -683,7 +705,7 @@ async function sendMessage() {
     if (!conversationUserId) {
 
         alert(
-            "No conversation is available yet."
+            "No coach connection is available yet."
         );
 
         return;
@@ -703,7 +725,7 @@ async function sendMessage() {
         const {
             error
         } =
-            await supabaseClient
+            await messagesSupabase
                 .from("messages")
                 .insert({
 
@@ -722,7 +744,7 @@ async function sendMessage() {
         if (error) {
 
             console.error(
-                "Send error:",
+                "Send message error:",
                 error
             );
 
@@ -737,15 +759,6 @@ async function sendMessage() {
         input.value = "";
 
         resizeComposer();
-
-
-        /*
-           Realtime will normally update
-           the conversation, but loading
-           immediately also makes the
-           sender see the message without
-           waiting.
-        */
 
         await loadMessages();
 
@@ -781,7 +794,7 @@ function subscribeToMessages() {
 
     if (realtimeChannel) {
 
-        supabaseClient
+        messagesSupabase
             .removeChannel(
                 realtimeChannel
             );
@@ -790,7 +803,7 @@ function subscribeToMessages() {
 
 
     realtimeChannel =
-        supabaseClient
+        messagesSupabase
             .channel(
                 "twete-messages-" +
                 currentUser.id
@@ -894,7 +907,7 @@ async function markMessagesRead(
     }
 
 
-    await supabaseClient
+    await messagesSupabase
         .from("messages")
         .update({
 
@@ -1002,7 +1015,7 @@ function goBack() {
 
 
 /* =========================================
-   EMPTY STATE
+   EMPTY / ERROR
 ========================================= */
 
 function showNoConversation() {
@@ -1152,4 +1165,4 @@ function escapeHtml(
             "&#039;"
         );
 
-}
+       }
