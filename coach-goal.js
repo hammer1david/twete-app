@@ -1179,12 +1179,6 @@ function openSessionModal(
         "sessionPace"
     ).value = "";
 
-
-    document.getElementById(
-        "sessionRest"
-    ).value = "";
-
-
     document.getElementById(
         "sessionNotes"
     ).value = "";
