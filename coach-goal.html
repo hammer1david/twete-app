@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Twete Coach | Goal</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            background: #050505;
+            color: #ffffff;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+
+        .page {
+            max-width: 1000px;
+            margin: auto;
+            padding: 25px 20px 70px;
+        }
+
+
+        /* =================================
+           TOP BAR
+        ================================= */
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+
+        .logo {
+            color: #C6FF00;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+
+        .coach-label {
+            color: #777;
+            font-size: 10px;
+            letter-spacing: 3px;
+            margin-top: 3px;
+        }
+
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+
+        .back-button {
+            padding: 10px 15px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+        }
+
+
+        .back-button:hover {
+            border-color: #C6FF00;
+        }
+
+
+        /* =================================
+           GOAL HEADER
+        ================================= */
+
+        .goal-header {
+            background: #101010;
+            border: 1px solid #292929;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+
+        .goal-top {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+
+        .goal-title-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+
+        .goal-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: #182000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C6FF00;
+            font-size: 25px;
+        }
+
+
+        .goal-name {
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+
+        .edit-goal-button {
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 7px;
+        }
+
+
+        .delete-goal-button {
+            background: #111;
+            border: 1px solid #702222;
+            color: #ff5555;
+            padding: 10px 14px;
+            border-radius: 7px;
+        }
+
+
+        .goal-info {
+            border-top: 1px solid #292929;
+            padding: 20px 24px;
+        }
+
+
+        .goal-details {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+            gap: 20px;
+        }
+
+
+        .detail-label {
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+
+        .detail-value {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+
+        /* =================================
+           PROGRESS
+        ================================= */
+
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #292929;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+
+        .progress-fill {
+            height: 100%;
+            background: #C6FF00;
+            border-radius: 10px;
+        }
+
+
+        .progress-number {
+            color: #C6FF00;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+
+        /* =================================
+           TRAINING WEEKS HEADER
+        ================================= */
+
+        .weeks-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+
+        .weeks-heading h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+
+        .add-week-button {
+            border: none;
+            background: #C6FF00;
+            color: #050505;
+            padding: 11px 17px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+
+
+        /* =================================
+           WEEK
+        ================================= */
+
+        .weeks-list {
+            display: grid;
+            gap: 10px;
+        }
+
+
+        .week-card {
+            background: #101010;
+            border: 1px solid #292929;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+
+        .week-header {
+            min-height: 65px;
+            padding: 12px 15px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            cursor: pointer;
+        }
+
+
+        .week-header:hover {
+            background: #141414;
+        }
+
+
+        .week-arrow {
+            width: 22px;
+            color: #C6FF00;
+            font-size: 20px;
+            text-align: center;
+        }
+
+
+        .week-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+
+        .week-dates {
+            color: #777;
+            font-size: 12px;
+            flex: 1;
+        }
+
+
+        .week-actions {
+            display: flex;
+            gap: 7px;
+        }
+
+
+        .add-session-button {
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            padding: 8px 11px;
+            border-radius: 7px;
+        }
+
+
+        .add-session-button:hover {
+            border-color: #C6FF00;
+        }
+
+
+        .delete-week-button {
+            background: #111;
+            border: 1px solid #702222;
+            color: #ff5555;
+            padding: 8px 11px;
+            border-radius: 7px;
+        }
+
+
+        /* =================================
+           SESSIONS
+        ================================= */
+
+        .sessions {
+            display: none;
+            padding: 0 10px 10px;
+        }
+
+
+        .week-card.open .sessions {
+            display: grid;
+            gap: 6px;
+        }
+
+
+        .week-card.open .week-arrow {
+            transform: rotate(90deg);
+        }
+
+
+        .session-card {
+            background: #151515;
+            border: 1px solid #252525;
+            border-radius: 8px;
+
+            padding: 12px;
+
+            display: grid;
+            grid-template-columns:
+                95px 1fr auto;
+
+            align-items: center;
+            gap: 15px;
+        }
+
+
+        .session-date {
+            border-right: 1px solid #292929;
+            padding-right: 12px;
+        }
+
+
+        .session-day {
+            color: #777;
+            font-size: 11px;
+        }
+
+
+        .session-date-number {
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+
+        .session-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+
+        .session-details {
+            color: #888;
+            font-size: 11px;
+        }
+
+
+        .delete-session-button {
+            background: #111;
+            border: 1px solid #5b2525;
+            color: #ff5555;
+            padding: 8px 10px;
+            border-radius: 7px;
+            font-size: 11px;
+        }
+
+
+        .no-sessions {
+            padding: 18px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+
+        /* =================================
+           MODAL
+        ================================= */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(
+                0,
+                0,
+                0,
+                0.78
+            );
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            z-index: 100;
+        }
+
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+
+        .modal {
+            width: 100%;
+            max-width: 620px;
+
+            background: #111;
+            border: 1px solid #333;
+
+            border-radius: 14px;
+
+            padding: 24px;
+        }
+
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+
+        .close-button {
+            border: none;
+            background: none;
+            color: #888;
+            font-size: 24px;
+        }
+
+
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                1fr 1fr;
+            gap: 15px;
+        }
+
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .form-group label {
+            display: block;
+            color: #999;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+
+            background: #080808;
+            color: white;
+
+            border: 1px solid #333;
+            border-radius: 7px;
+
+            padding: 11px;
+
+            outline: none;
+        }
+
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #C6FF00;
+        }
+
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+
+        .cancel-button {
+            background: #181818;
+            border: 1px solid #333;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 7px;
+        }
+
+
+        .save-button {
+            background: #C6FF00;
+            border: none;
+            color: #050505;
+            padding: 10px 17px;
+            border-radius: 7px;
+            font-weight: 800;
+        }
+
+
+        /* =================================
+           STATES
+        ================================= */
+
+        .loading {
+            color: #888;
+            padding: 25px;
+        }
+
+
+        .empty {
+            border: 1px dashed #333;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            color: #777;
+        }
+
+
+        .error {
+            color: #ff6666;
+        }
+
+
+        /* =================================
+           MOBILE
+        ================================= */
+
+        @media (max-width: 700px) {
+
+            .goal-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+
+            .goal-actions {
+                width: 100%;
+            }
+
+
+            .goal-actions button {
+                flex: 1;
+            }
+
+
+            .goal-details {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .week-header {
+                flex-wrap: wrap;
+            }
+
+
+            .week-dates {
+                width: 100%;
+                flex: auto;
+                padding-left: 34px;
+            }
+
+
+            .week-actions {
+                width: 100%;
+                padding-left: 34px;
+            }
+
+
+            .week-actions button {
+                flex: 1;
+            }
+
+
+            .session-card {
+                grid-template-columns:
+                    70px 1fr;
+            }
+
+
+            .delete-session-button {
+                grid-column: 2;
+                justify-self: start;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .page {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+
+            .goal-details {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+
+            .goal-name {
+                font-size: 22px;
+            }
+
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- =================================
+         TOP BAR
+    ================================= -->
+
+    <div class="topbar">
+
+        <div>
+
+            <div class="logo">
+                TWETE
+            </div>
+
+            <div class="coach-label">
+                COACH
+            </div>
+
+        </div>
+
+
+        <button
+            class="back-button"
+            onclick="goBack()"
+        >
+            ← Back to Athlete
+        </button>
+
+    </div>
+
+
+
+    <!-- =================================
+         GOAL
+    ================================= -->
+
+    <section
+        class="goal-header"
+        id="goalHeader"
+    >
+
+        <div class="loading">
+            Loading goal...
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================
+         WEEKS
+    ================================= -->
+
+    <div class="weeks-heading">
+
+        <h2>
+            Training Weeks
+        </h2>
+
+
+        <button
+            class="add-week-button"
+            onclick="addWeek()"
+        >
+            + Add Week
+        </button>
+
+    </div>
+
+
+    <div
+        class="weeks-list"
+        id="weeksList"
+    >
+
+        <div class="loading">
+            Loading weeks...
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================
+     SESSION MODAL
+===================================== -->
+
+<div
+    class="modal-overlay"
+    id="sessionModal"
+>
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <h2>
+                New Session
+            </h2>
+
+
+            <button
+                class="close-button"
+                onclick="closeSessionModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Date *
+                </label>
+
+                <input
+                    type="date"
+                    id="sessionDate"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Session title *
+                </label>
+
+                <input
+                    type="text"
+                    id="sessionTitle"
+                    placeholder="e.g. Easy Run"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Workout type
+                </label>
+
+                <select
+                    id="sessionType"
+                >
+
+                    <option value="Easy Run">
+                        Easy Run
+                    </option>
+
+                    <option value="Long Run">
+                        Long Run
+                    </option>
+
+                    <option value="Intervals">
+                        Intervals
+                    </option>
+
+                    <option value="Tempo">
+                        Tempo
+                    </option>
+
+                    <option value="Threshold">
+                        Threshold
+                    </option>
+
+                    <option value="Recovery">
+                        Recovery
+                    </option>
+
+                    <option value="Race">
+                        Race
+                    </option>
+
+                    <option value="Rest">
+                        Rest
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Distance (km)
+                </label>
+
+                <input
+                    type="number"
+                    step="0.1"
+                    id="sessionDistance"
+                    placeholder="10"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Duration (minutes)
+                </label>
+
+                <input
+                    type="number"
+                    id="sessionDuration"
+                    placeholder="45"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Pace
+                </label>
+
+                <input
+                    type="text"
+                    id="sessionPace"
+                    placeholder="4:30/km"
+                >
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    Rest
+                </label>
+
+                <input
+                    type="text"
+                    id="sessionRest"
+                    placeholder="2 min jog"
+                >
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    Notes
+                </label>
+
+                <textarea
+                    id="sessionNotes"
+                    placeholder="Describe the workout..."
+                ></textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="cancel-button"
+                onclick="closeSessionModal()"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                class="save-button"
+                onclick="saveSession()"
+            >
+                Save Session
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="coach-goal.js"></script>
+
+
+</body>
+
+</html>
