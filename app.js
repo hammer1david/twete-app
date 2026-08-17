@@ -711,3 +711,122 @@ async function loadAthleteProfilePicture() {
 
 
 loadAthleteProfilePicture();
+
+
+
+/* =========================================
+   MOTIVATIONAL QUOTES
+========================================= */
+
+const motivationQuotes = [
+
+    "Trust the process. Your work will show.",
+
+    "Consistency beats motivation.",
+
+    "Small steps every day create big results.",
+
+    "Your next breakthrough may be one workout away.",
+
+    "Train with purpose. Race with confidence.",
+
+    "The days you don't feel like training matter too.",
+
+    "Don't chase perfection. Chase progress.",
+
+    "Your limits are often further away than you think.",
+
+    "Strong athletes are built one session at a time.",
+
+    "Be patient. Great performances take time.",
+
+    "Every kilometer is a step toward your goal.",
+
+    "Work quietly. Let your results speak.",
+
+    "You don't have to be perfect. You just have to keep going.",
+
+    "Believe in the work you put in when nobody is watching.",
+
+    "Hard training today builds confidence for race day.",
+
+    "Stay focused. Stay patient. Stay hungry.",
+
+    "Progress isn't always visible, but the work is never wasted.",
+
+    "Run your own race.",
+
+    "Dream big. Train smart. Stay consistent.",
+
+    "The goal is waiting. Keep moving toward it."
+
+];
+
+
+let currentMotivationIndex = -1;
+
+
+function showNextMotivation() {
+
+    const quoteElement =
+        document.getElementById(
+            "motivationQuote"
+        );
+
+    if (!quoteElement) {
+        return;
+    }
+
+
+    let nextIndex;
+
+
+    do {
+
+        nextIndex =
+            Math.floor(
+                Math.random() *
+                motivationQuotes.length
+            );
+
+    } while (
+        nextIndex ===
+        currentMotivationIndex
+    );
+
+
+    currentMotivationIndex =
+        nextIndex;
+
+
+    quoteElement.classList.add(
+        "fade-out"
+    );
+
+
+    setTimeout(
+        function () {
+
+            quoteElement.textContent =
+                motivationQuotes[
+                    currentMotivationIndex
+                ];
+
+            quoteElement.classList.remove(
+                "fade-out"
+            );
+
+        },
+        800
+    );
+}
+
+
+/*
+   Change quote every 3 minutes.
+*/
+
+setInterval(
+    showNextMotivation,
+    3 * 60 * 1000
+);
