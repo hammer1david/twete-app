@@ -520,57 +520,90 @@ function closeGoalModal() {
 /* =========================================
    SAVE GOAL
 ========================================= */
-
 async function saveGoal() {
 
     if (!athleteId) {
+
+        alert("No athlete selected.");
+
         return;
     }
 
 
+    const goalName =
+        document
+            .getElementById("goalName")
+            .value
+            .trim();
+
+
     const distance =
         document
-            .getElementById(
-                "goalDistance"
-            )
-            .value;
-
-
-    const currentPB =
-        document
-            .getElementById(
-                "goalCurrentPB"
-            )
+            .getElementById("goalDistance")
             .value
             .trim();
 
 
     const targetTime =
         document
-            .getElementById(
-                "goalTargetTime"
-            )
+            .getElementById("goalTargetTime")
             .value
             .trim();
 
 
     const targetDate =
         document
-            .getElementById(
-                "goalTargetDate"
-            )
+            .getElementById("goalTargetDate")
             .value;
 
 
-    if (!targetTime) {
+    /* =========================
+       VALIDATION
+    ========================= */
+
+    if (!goalName) {
 
         alert(
-            "Please enter a target time."
+            "Please enter a goal name."
         );
 
         return;
     }
 
+
+    if (!distance) {
+
+        alert(
+            "Please enter a distance."
+        );
+
+        return;
+    }
+
+
+    if (!targetTime) {
+
+        alert(
+            "Please enter a goal time."
+        );
+
+        return;
+    }
+
+
+    if (!targetDate) {
+
+        alert(
+            "Please select a date."
+        );
+
+        return;
+    }
+
+
+    /* =========================
+       SAVE TO SUPABASE
+    ========================= */
 
     const {
         data,
@@ -583,19 +616,17 @@ async function saveGoal() {
                 athlete_id:
                     athleteId,
 
+                goal_name:
+                    goalName,
+
                 distance:
                     distance,
-
-                current_pb:
-                    currentPB ||
-                    null,
 
                 target_time:
                     targetTime,
 
                 target_date:
-                    targetDate ||
-                    null,
+                    targetDate,
 
                 progress:
                     0
@@ -608,13 +639,13 @@ async function saveGoal() {
     if (error) {
 
         console.error(
-            "Save goal error:",
+            "SAVE GOAL ERROR:",
             error
         );
 
 
         alert(
-            "Could not save goal:\n\n" +
+            "Could not save the goal:\n\n" +
             error.message
         );
 
@@ -623,38 +654,45 @@ async function saveGoal() {
 
 
     console.log(
-        "Goal created:",
+        "Goal saved:",
         data
     );
 
 
+    /* =========================
+       CLOSE MODAL
+    ========================= */
+
     closeGoalModal();
 
 
-    /*
-       Clear form
-    */
+    /* =========================
+       CLEAR FORM
+    ========================= */
 
     document
-        .getElementById(
-            "goalCurrentPB"
-        )
+        .getElementById("goalName")
         .value = "";
 
 
     document
-        .getElementById(
-            "goalTargetTime"
-        )
+        .getElementById("goalDistance")
         .value = "";
 
 
     document
-        .getElementById(
-            "goalTargetDate"
-        )
+        .getElementById("goalTargetTime")
         .value = "";
 
+
+    document
+        .getElementById("goalTargetDate")
+        .value = "";
+
+
+    /* =========================
+       RELOAD GOALS
+    ========================= */
 
     await loadGoals();
 
