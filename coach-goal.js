@@ -1,9 +1,3 @@
-/* =========================================
-   TWETE COACH
-   GOAL + WEEKS + SESSIONS
-========================================= */
-
-
 const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
@@ -17,10 +11,6 @@ const supabaseClient =
     );
 
 
-/* =========================================
-   STATE
-========================================= */
-
 const params =
     new URLSearchParams(
         window.location.search
@@ -29,15 +19,22 @@ const params =
 const goalId =
     params.get("goal_id");
 
+
 let goal = null;
-
 let weeks = [];
-
 let sessions = [];
 
 let currentWeekId = null;
-
 let currentEditingSessionId = null;
+let currentEditingWeekId = null;
+
+
+/* =========================================
+   OPEN WEEKS
+========================================= */
+
+let openWeekIds =
+    new Set();
 
 
 /* =========================================
@@ -94,11 +91,6 @@ async function loadGoal() {
 
     if (error) {
 
-        console.error(
-            "Goal loading error:",
-            error
-        );
-
         showError(
             error.message
         );
@@ -119,11 +111,6 @@ async function loadGoal() {
 
     goal = data;
 
-
-    /*
-       Create a program automatically
-       if the goal does not have one.
-    */
 
     if (!goal.program_id) {
 
@@ -188,13 +175,7 @@ async function createProgramForGoal() {
 
     if (error) {
 
-        console.error(
-            "Program creation error:",
-            error
-        );
-
         showError(
-            "Could not create training program: " +
             error.message
         );
 
@@ -219,11 +200,6 @@ async function createProgramForGoal() {
 
     if (updateError) {
 
-        console.error(
-            "Goal update error:",
-            updateError
-        );
-
         showError(
             updateError.message
         );
@@ -242,16 +218,10 @@ async function createProgramForGoal() {
 
 
 /* =========================================
-   RENDER GOAL
+   GOAL
 ========================================= */
 
 function renderGoal() {
-
-    const container =
-        document.getElementById(
-            "goalHeader"
-        );
-
 
     const progress =
         Math.max(
@@ -265,7 +235,9 @@ function renderGoal() {
         );
 
 
-    container.innerHTML = `
+    document.getElementById(
+        "goalHeader"
+    ).innerHTML = `
 
         <div class="goal-top">
 
@@ -276,12 +248,10 @@ function renderGoal() {
                 </div>
 
                 <div class="goal-name">
-
                     ${escapeHtml(
                         goal.goal_name ||
                         "Goal"
                     )}
-
                 </div>
 
             </div>
@@ -349,7 +319,6 @@ function renderGoal() {
                     </div>
 
                     <div class="detail-value">
-
                         ${
                             goal.target_date
                             ?
@@ -359,7 +328,6 @@ function renderGoal() {
                             :
                             "Not set"
                         }
-
                     </div>
 
                 </div>
@@ -386,9 +354,7 @@ function renderGoal() {
 
                     <div
                         class="progress-fill"
-                        style="
-                            width:${progress}%;
-                        "
+                        style="width:${progress}%"
                     ></div>
 
                 </div>
@@ -412,19 +378,6 @@ function renderGoal() {
 
 async function loadWeeks() {
 
-    const container =
-        document.getElementById(
-            "weeksList"
-        );
-
-
-    container.innerHTML = `
-        <div class="loading">
-            Loading training weeks...
-        </div>
-    `;
-
-
     const {
         data: weekData,
         error: weekError
@@ -437,6 +390,7 @@ async function loadWeeks() {
                 week_number,
                 start_date,
                 end_date,
+                weekly_km,
                 created_at
             `)
             .eq(
@@ -452,11 +406,6 @@ async function loadWeeks() {
 
 
     if (weekError) {
-
-        console.error(
-            "Week loading error:",
-            weekError
-        );
 
         showWeeksError(
             weekError.message
@@ -510,11 +459,6 @@ async function loadWeeks() {
 
 
         if (sessionError) {
-
-            console.error(
-                "Session loading error:",
-                sessionError
-            );
 
             showWeeksError(
                 sessionError.message
@@ -580,11 +524,45 @@ function renderWeeks() {
             )
             .join("");
 
+
+    /*
+       Restore the open/closed state
+       after every reload.
+    */
+
+    weeks.forEach(
+        function(week) {
+
+            if (
+                openWeekIds.has(
+                    week.id
+                )
+            ) {
+
+                const element =
+                    document.getElementById(
+                        "week-" +
+                        week.id
+                    );
+
+                if (element) {
+
+                    element.classList.add(
+                        "open"
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
 }
 
 
 /* =========================================
-   CREATE WEEK CARD
+   CREATE WEEK
 ========================================= */
 
 function createWeekCard(
@@ -609,10 +587,45 @@ function createWeekCard(
             );
 
 
-    const dates =
-        getWeekDateRange(
-            weekSessions
-        );
+    let weekDateText =
+        "Dates not set";
+
+
+    if (
+        week.start_date &&
+        week.end_date
+    ) {
+
+        weekDateText =
+            formatDate(
+                week.start_date
+            ) +
+            " – " +
+            formatDate(
+                week.end_date
+            );
+
+    } else if (
+        week.start_date
+    ) {
+
+        weekDateText =
+            formatDate(
+                week.start_date
+            );
+
+    }
+
+
+    const kmText =
+        week.weekly_km !== null &&
+        week.weekly_km !== undefined &&
+        week.weekly_km !== ""
+        ?
+        week.weekly_km +
+        " km"
+        :
+        "— km";
 
 
     return `
@@ -621,6 +634,7 @@ function createWeekCard(
             class="week-card"
             id="week-${week.id}"
         >
+
 
             <div
                 class="week-header"
@@ -642,7 +656,16 @@ function createWeekCard(
 
 
                 <div class="week-dates">
-                    ${dates}
+                    ${escapeHtml(
+                        weekDateText
+                    )}
+                </div>
+
+
+                <div class="week-km">
+                    ${escapeHtml(
+                        String(kmText)
+                    )}
                 </div>
 
 
@@ -666,6 +689,18 @@ function createWeekCard(
 
 
                     <button
+                        class="edit-week-button"
+                        onclick="
+                            editWeek(
+                                '${week.id}'
+                            )
+                        "
+                    >
+                        ✎ Edit
+                    </button>
+
+
+                    <button
                         class="delete-week-button"
                         onclick="
                             deleteWeek(
@@ -673,7 +708,7 @@ function createWeekCard(
                             )
                         "
                     >
-                        🗑 Delete Week
+                        🗑 Delete
                     </button>
 
                 </div>
@@ -774,7 +809,6 @@ function createSessionCard(
 
         <div class="session-card">
 
-
             <div class="session-date">
 
                 <div class="session-day">
@@ -810,7 +844,9 @@ function createSessionCard(
                         details
                         ?
                         " • " +
-                        escapeHtml(details)
+                        escapeHtml(
+                            details
+                        )
                         :
                         ""
                     }
@@ -870,7 +906,6 @@ function createSessionCard(
 
             </div>
 
-
         </div>
 
     `;
@@ -882,67 +917,196 @@ function createSessionCard(
    ADD WEEK
 ========================================= */
 
-async function addWeek() {
+function addWeek() {
 
-    if (!goal.program_id) {
+    currentEditingWeekId =
+        null;
+
+
+    document.getElementById(
+        "weekModalTitle"
+    ).textContent =
+        "New Week";
+
+
+    document.getElementById(
+        "weekStartDate"
+    ).value = "";
+
+
+    document.getElementById(
+        "weekEndDate"
+    ).value = "";
+
+
+    document.getElementById(
+        "weekKm"
+    ).value = "";
+
+
+    document
+        .getElementById(
+            "weekModal"
+        )
+        .classList.add(
+            "show"
+        );
+
+}
+
+
+/* =========================================
+   SAVE WEEK
+========================================= */
+
+async function saveWeek() {
+
+    const startDate =
+        document.getElementById(
+            "weekStartDate"
+        ).value;
+
+
+    const endDate =
+        document.getElementById(
+            "weekEndDate"
+        ).value;
+
+
+    const weeklyKm =
+        document.getElementById(
+            "weekKm"
+        ).value;
+
+
+    if (!startDate) {
 
         alert(
-            "This goal does not have a training program yet."
+            "Please select a start date."
         );
 
         return;
     }
 
 
-    const nextNumber =
-        weeks.length
-        ?
-        Math.max(
-            ...weeks.map(
-                week =>
-                    Number(
-                        week.week_number
-                    )
-            )
-        ) + 1
-        :
-        1;
+    if (!endDate) {
+
+        alert(
+            "Please select an end date."
+        );
+
+        return;
+    }
 
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("training_weeks")
-            .insert({
+    if (
+        new Date(startDate) >
+        new Date(endDate)
+    ) {
 
-                program_id:
-                    goal.program_id,
+        alert(
+            "The end date must be after the start date."
+        );
 
-                week_number:
-                    nextNumber,
+        return;
+    }
 
-                start_date:
-                    null,
 
-                end_date:
-                    null
+    const weekData = {
 
-            })
-            .select()
-            .single();
+        start_date:
+            startDate,
+
+        end_date:
+            endDate,
+
+        weekly_km:
+            weeklyKm !== ""
+            ?
+            Number(weeklyKm)
+            :
+            null
+
+    };
+
+
+    let error = null;
+
+    let newWeekId = null;
+
+
+    if (currentEditingWeekId) {
+
+        const result =
+            await supabaseClient
+                .from("training_weeks")
+                .update(
+                    weekData
+                )
+                .eq(
+                    "id",
+                    currentEditingWeekId
+                );
+
+        error =
+            result.error;
+
+        newWeekId =
+            currentEditingWeekId;
+
+    } else {
+
+        const nextNumber =
+            weeks.length
+            ?
+            Math.max(
+                ...weeks.map(
+                    week =>
+                        Number(
+                            week.week_number
+                        )
+                )
+            ) + 1
+            :
+            1;
+
+
+        const result =
+            await supabaseClient
+                .from("training_weeks")
+                .insert({
+
+                    program_id:
+                        goal.program_id,
+
+                    week_number:
+                        nextNumber,
+
+                    ...weekData
+
+                })
+                .select()
+                .single();
+
+
+        error =
+            result.error;
+
+
+        if (result.data) {
+
+            newWeekId =
+                result.data.id;
+
+        }
+
+    }
 
 
     if (error) {
 
-        console.error(
-            "Add week error:",
-            error
-        );
-
         alert(
-            "Could not add week:\n\n" +
+            "Could not save week:\n\n" +
             error.message
         );
 
@@ -950,12 +1114,103 @@ async function addWeek() {
     }
 
 
+    closeWeekModal();
+
+
+    if (newWeekId) {
+
+        openWeekIds.add(
+            newWeekId
+        );
+
+    }
+
+
     await loadWeeks();
 
+}
 
-    openWeek(
-        data.id
-    );
+
+/* =========================================
+   EDIT WEEK
+========================================= */
+
+function editWeek(
+    weekId
+) {
+
+    const week =
+        weeks.find(
+            item =>
+                item.id ===
+                weekId
+        );
+
+
+    if (!week) {
+        return;
+    }
+
+
+    currentEditingWeekId =
+        weekId;
+
+
+    document.getElementById(
+        "weekModalTitle"
+    ).textContent =
+        "Edit Week";
+
+
+    document.getElementById(
+        "weekStartDate"
+    ).value =
+        week.start_date ||
+        "";
+
+
+    document.getElementById(
+        "weekEndDate"
+    ).value =
+        week.end_date ||
+        "";
+
+
+    document.getElementById(
+        "weekKm"
+    ).value =
+        week.weekly_km ??
+        "";
+
+
+    document
+        .getElementById(
+            "weekModal"
+        )
+        .classList.add(
+            "show"
+        );
+
+}
+
+
+/* =========================================
+   CLOSE WEEK MODAL
+========================================= */
+
+function closeWeekModal() {
+
+    document
+        .getElementById(
+            "weekModal"
+        )
+        .classList.remove(
+            "show"
+        );
+
+
+    currentEditingWeekId =
+        null;
 
 }
 
@@ -994,13 +1249,6 @@ async function deleteWeek(
     }
 
 
-    /*
-       Delete sessions first.
-       This makes the action work even if
-       the database foreign key is not
-       configured with ON DELETE CASCADE.
-    */
-
     const {
         error: sessionError
     } =
@@ -1015,13 +1263,7 @@ async function deleteWeek(
 
     if (sessionError) {
 
-        console.error(
-            "Delete week sessions error:",
-            sessionError
-        );
-
         alert(
-            "Could not delete sessions:\n\n" +
             sessionError.message
         );
 
@@ -1043,17 +1285,97 @@ async function deleteWeek(
 
     if (error) {
 
-        console.error(
-            "Delete week error:",
-            error
-        );
-
         alert(
-            "Could not delete week:\n\n" +
             error.message
         );
 
         return;
+    }
+
+
+    openWeekIds.delete(
+        weekId
+    );
+
+
+    /*
+       Renumber remaining weeks:
+       1, 2, 3, 4...
+    */
+
+    const {
+        data: remainingWeeks,
+        error: loadError
+    } =
+        await supabaseClient
+            .from("training_weeks")
+            .select("id, week_number")
+            .eq(
+                "program_id",
+                goal.program_id
+            )
+            .order(
+                "week_number",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (loadError) {
+
+        alert(
+            loadError.message
+        );
+
+        return;
+    }
+
+
+    for (
+        let i = 0;
+        i < remainingWeeks.length;
+        i++
+    ) {
+
+        const newNumber =
+            i + 1;
+
+
+        if (
+            Number(
+                remainingWeeks[i].week_number
+            ) !== newNumber
+        ) {
+
+            const {
+                error: renameError
+            } =
+                await supabaseClient
+                    .from("training_weeks")
+                    .update({
+
+                        week_number:
+                            newNumber
+
+                    })
+                    .eq(
+                        "id",
+                        remainingWeeks[i].id
+                    );
+
+
+            if (renameError) {
+
+                alert(
+                    renameError.message
+                );
+
+                return;
+            }
+
+        }
+
     }
 
 
@@ -1082,9 +1404,31 @@ function toggleWeek(
     }
 
 
-    element.classList.toggle(
-        "open"
-    );
+    if (
+        openWeekIds.has(
+            weekId
+        )
+    ) {
+
+        openWeekIds.delete(
+            weekId
+        );
+
+        element.classList.remove(
+            "open"
+        );
+
+    } else {
+
+        openWeekIds.add(
+            weekId
+        );
+
+        element.classList.add(
+            "open"
+        );
+
+    }
 
 }
 
@@ -1093,6 +1437,11 @@ function openWeek(
     weekId
 ) {
 
+    openWeekIds.add(
+        weekId
+    );
+
+
     const element =
         document.getElementById(
             "week-" +
@@ -1100,31 +1449,30 @@ function openWeek(
         );
 
 
-    if (!element) {
-        return;
+    if (element) {
+
+        element.classList.add(
+            "open"
+        );
+
     }
-
-
-    element.classList.add(
-        "open"
-    );
 
 }
 
 
 /* =========================================
-   OPEN SESSION MODAL
+   SESSION MODAL
 ========================================= */
 
 function openSessionModal(
     weekId
 ) {
 
-    currentEditingSessionId =
-        null;
-
     currentWeekId =
         weekId;
+
+    currentEditingSessionId =
+        null;
 
 
     document.getElementById(
@@ -1186,10 +1534,6 @@ function openSessionModal(
 }
 
 
-/* =========================================
-   CLOSE SESSION MODAL
-========================================= */
-
 function closeSessionModal() {
 
     document
@@ -1225,12 +1569,6 @@ async function saveSession() {
         return;
     }
 
-
-    /*
-       IMPORTANT:
-       Save the week ID before closing
-       the modal / reloading data.
-    */
 
     const savedWeekId =
         currentWeekId;
@@ -1372,8 +1710,12 @@ async function saveSession() {
             await supabaseClient
                 .from("workouts")
                 .insert({
+
                     ...sessionData,
-                    completed: false
+
+                    completed:
+                        false
+
                 });
 
         error =
@@ -1383,11 +1725,6 @@ async function saveSession() {
 
 
     if (error) {
-
-        console.error(
-            "Save session error:",
-            error
-        );
 
         alert(
             "Could not save session:\n\n" +
@@ -1401,17 +1738,12 @@ async function saveSession() {
     closeSessionModal();
 
 
-    await loadWeeks();
-
-
-    /*
-       Always reopen the week in which
-       the session was created/edited.
-    */
-
-    openWeek(
+    openWeekIds.add(
         savedWeekId
     );
+
+
+    await loadWeeks();
 
 }
 
@@ -1443,6 +1775,11 @@ function editSession(
 
     currentEditingSessionId =
         session.id;
+
+
+    openWeekIds.add(
+        session.week_id
+    );
 
 
     document.getElementById(
@@ -1550,13 +1887,7 @@ async function deleteSession(
 
     if (error) {
 
-        console.error(
-            "Delete session error:",
-            error
-        );
-
         alert(
-            "Could not delete session:\n\n" +
             error.message
         );
 
@@ -1570,84 +1901,7 @@ async function deleteSession(
 
 
 /* =========================================
-   WEEK DATE RANGE
-========================================= */
-
-function getWeekDateRange(
-    weekSessions
-) {
-
-    if (!weekSessions.length) {
-        return "No sessions yet";
-    }
-
-
-    const dates =
-        weekSessions
-            .map(
-                session =>
-                    new Date(
-                        session.workout_date +
-                        "T00:00:00"
-                    )
-            )
-            .sort(
-                (a, b) =>
-                    a - b
-            );
-
-
-    const first =
-        dates[0];
-
-    const last =
-        dates[
-            dates.length - 1
-        ];
-
-
-    const firstText =
-        first.toLocaleDateString(
-            "en-US",
-            {
-                day: "numeric",
-                month: "short"
-            }
-        );
-
-
-    const lastText =
-        last.toLocaleDateString(
-            "en-US",
-            {
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            }
-        );
-
-
-    if (
-        first.toDateString() ===
-        last.toDateString()
-    ) {
-
-        return firstText;
-
-    }
-
-
-    return (
-        firstText +
-        " – " +
-        lastText
-    );
-
-}
-
-
-/* =========================================
-   EDIT GOAL
+   GOAL EDIT
 ========================================= */
 
 function editGoal() {
@@ -1691,10 +1945,6 @@ function editGoal() {
 }
 
 
-/* =========================================
-   CLOSE GOAL MODAL
-========================================= */
-
 function closeGoalModal() {
 
     document
@@ -1707,10 +1957,6 @@ function closeGoalModal() {
 
 }
 
-
-/* =========================================
-   SAVE GOAL
-========================================= */
 
 async function saveGoal() {
 
@@ -1784,13 +2030,7 @@ async function saveGoal() {
 
     if (error) {
 
-        console.error(
-            "Goal update error:",
-            error
-        );
-
         alert(
-            "Could not update goal:\n\n" +
             error.message
         );
 
@@ -1826,16 +2066,11 @@ async function deleteGoal() {
     }
 
 
-    /*
-       Delete sessions belonging to
-       this goal's program first.
-    */
-
     if (goal.program_id) {
 
         const {
             data: goalWeeks,
-            error: weekLoadError
+            error: weekError
         } =
             await supabaseClient
                 .from("training_weeks")
@@ -1846,10 +2081,10 @@ async function deleteGoal() {
                 );
 
 
-        if (weekLoadError) {
+        if (weekError) {
 
             alert(
-                weekLoadError.message
+                weekError.message
             );
 
             return;
@@ -1865,7 +2100,7 @@ async function deleteGoal() {
 
 
             const {
-                error: workoutDeleteError
+                error: workoutError
             } =
                 await supabaseClient
                     .from("workouts")
@@ -1876,10 +2111,10 @@ async function deleteGoal() {
                     );
 
 
-            if (workoutDeleteError) {
+            if (workoutError) {
 
                 alert(
-                    workoutDeleteError.message
+                    workoutError.message
                 );
 
                 return;
@@ -1887,7 +2122,7 @@ async function deleteGoal() {
 
 
             const {
-                error: weekDeleteError
+                error: deleteWeekError
             } =
                 await supabaseClient
                     .from("training_weeks")
@@ -1898,10 +2133,10 @@ async function deleteGoal() {
                     );
 
 
-            if (weekDeleteError) {
+            if (deleteWeekError) {
 
                 alert(
-                    weekDeleteError.message
+                    deleteWeekError.message
                 );
 
                 return;
@@ -1910,25 +2145,13 @@ async function deleteGoal() {
         }
 
 
-        const {
-            error: programDeleteError
-        } =
-            await supabaseClient
-                .from("programs")
-                .delete()
-                .eq(
-                    "id",
-                    goal.program_id
-                );
-
-
-        if (programDeleteError) {
-
-            console.error(
-                programDeleteError
+        await supabaseClient
+            .from("programs")
+            .delete()
+            .eq(
+                "id",
+                goal.program_id
             );
-
-        }
 
     }
 
@@ -1947,13 +2170,7 @@ async function deleteGoal() {
 
     if (error) {
 
-        console.error(
-            "Delete goal error:",
-            error
-        );
-
         alert(
-            "Could not delete goal:\n\n" +
             error.message
         );
 
@@ -1993,7 +2210,7 @@ function goBack() {
 
 
 /* =========================================
-   DATE FORMAT
+   HELPERS
 ========================================= */
 
 function formatDate(
@@ -2019,10 +2236,6 @@ function formatDate(
 
 }
 
-
-/* =========================================
-   ESCAPE HTML
-========================================= */
 
 function escapeHtml(
     value
@@ -2055,10 +2268,6 @@ function escapeHtml(
 }
 
 
-/* =========================================
-   ERROR
-========================================= */
-
 function showError(
     message
 ) {
@@ -2083,10 +2292,6 @@ function showError(
 }
 
 
-/* =========================================
-   WEEK ERROR
-========================================= */
-
 function showWeeksError(
     message
 ) {
@@ -2105,4 +2310,4 @@ function showWeeksError(
 
     `;
 
-}
+           }
