@@ -383,103 +383,92 @@ function renderGoals() {
 
     container.innerHTML =
         goals
-            .map(
-                function(goal) {
+            .map(function(goal) {
 
-                    return `
+                return `
+
+                    <div
+                        class="goal-card"
+                    >
 
                         <div
-                            class="goal-card"
+                            class="goal-main"
                         >
 
                             <div
-                                class="goal-main"
+                                class="goal-distance"
                             >
 
-                                <div
-                                    class="goal-distance"
-                                >
-
-                                    ${escapeHtml(
-                                        goal.distance
-                                    )}
-
-                                </div>
-
-
-                                <div
-                                    class="goal-target"
-                                >
-
-                                    Target:
-                                    <strong>
-                                        ${escapeHtml(
-                                            goal.target_time
-                                        )}
-                                    </strong>
-
-                                </div>
-
-
-                                <div
-                                    class="goal-info"
-                                >
-
-                                    Current PB:
-                                    ${
-                                        escapeHtml(
-                                            goal.current_pb ||
-                                            "Not set"
-                                        )
-                                    }
-
-                                    ${
-                                        goal.target_date
-                                        ?
-                                        `
-                                        &nbsp; • &nbsp;
-
-                                        Target date:
-                                        ${formatDate(
-                                            goal.target_date
-                                        )}
-                                        `
-                                        :
-                                        ""
-                                    }
-
-                                </div>
+                                ${escapeHtml(
+                                    goal.goal_name ||
+                                    "Goal"
+                                )}
 
                             </div>
 
 
                             <div
-                                class="goal-actions"
+                                class="goal-target"
                             >
 
-                                <button
-                                    class="delete-button"
-                                    onclick="
-                                        deleteGoal(
-                                            '${goal.id}'
-                                        )
-                                    "
-                                >
+                                ${escapeHtml(
+                                    goal.distance
+                                )}
 
-                                    Delete
+                                &nbsp; • &nbsp;
 
-                                </button>
+                                <strong>
+                                    ${escapeHtml(
+                                        goal.target_time
+                                    )}
+                                </strong>
+
+                            </div>
+
+
+                            <div
+                                class="goal-info"
+                            >
+
+                                Target date:
+
+                                ${goal.target_date
+                                    ? formatDate(
+                                        goal.target_date
+                                    )
+                                    : "Not set"
+                                }
 
                             </div>
 
                         </div>
 
-                    `;
 
-                }
-            )
+                        <div
+                            class="goal-actions"
+                        >
+
+                            <button
+                                class="delete-button"
+                                onclick="
+                                    deleteGoal(
+                                        '${goal.id}'
+                                    )
+                                "
+                            >
+
+                                Delete
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
             .join("");
-
 }
 
 
