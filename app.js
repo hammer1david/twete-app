@@ -644,6 +644,8 @@ function openProfile() {
     window.location.href = "profile.html";
 }
 
+();
+
 async function loadAthleteProfilePicture() {
 
     const avatar =
@@ -679,10 +681,12 @@ async function loadAthleteProfilePicture() {
                 .maybeSingle();
 
         if (error) {
+
             console.error(
                 "Could not load profile picture:",
                 error
             );
+
             return;
         }
 
@@ -704,5 +708,6 @@ async function loadAthleteProfilePicture() {
         );
     }
 }
+
 
 loadAthleteProfilePicture();
