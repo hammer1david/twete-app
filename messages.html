@@ -36,9 +36,7 @@
         >
 
             <svg viewBox="0 0 24 24">
-
                 <path d="M15 18l-6-6 6-6"></path>
-
             </svg>
 
         </button>
@@ -55,27 +53,26 @@
 
 
 
-    <!-- COACH / ATHLETE HEADER -->
+    <!-- COACH ATHLETE LIST -->
 
-    <section class="conversation-header">
+    <section
+        id="athleteListSection"
+        class="athlete-list-section hidden"
+    >
 
-        <div
-            class="profile-avatar"
-            id="profileAvatar"
-        >
-            C
+        <div class="section-title">
+            Your Athletes
         </div>
 
 
-        <div class="profile-info">
+        <div
+            id="athleteList"
+            class="athlete-list"
+        >
 
-            <h2 id="profileName">
-                Loading...
-            </h2>
-
-            <span id="profileRole">
-                Coach
-            </span>
+            <div class="messages-loading">
+                Loading athletes...
+            </div>
 
         </div>
 
@@ -83,53 +80,104 @@
 
 
 
-    <!-- MESSAGE AREA -->
+    <!-- ACTIVE CONVERSATION -->
 
-    <main
-        class="messages-list"
-        id="messagesList"
+    <section
+        id="conversationSection"
+        class="conversation-section hidden"
     >
 
-        <div class="messages-loading">
-            Loading messages...
+
+        <div class="conversation-header">
+
+            <button
+                id="conversationBack"
+                class="conversation-back"
+                onclick="showAthleteList()"
+                aria-label="Back to athletes"
+            >
+
+                <svg viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+
+            </button>
+
+
+            <div
+                class="profile-avatar"
+                id="profileAvatar"
+            >
+                T
+            </div>
+
+
+            <div class="profile-info">
+
+                <h2 id="profileName">
+                    Loading...
+                </h2>
+
+                <span id="profileRole">
+                    Coach
+                </span>
+
+            </div>
+
         </div>
 
-    </main>
 
 
+        <!-- MESSAGES -->
 
-    <!-- MESSAGE COMPOSER -->
-
-    <div class="message-composer">
-
-        <textarea
-            id="messageInput"
-            placeholder="Write a message..."
-            rows="1"
-        ></textarea>
-
-
-        <button
-            id="sendButton"
-            onclick="sendMessage()"
-            aria-label="Send message"
+        <main
+            class="messages-list"
+            id="messagesList"
         >
 
-            <svg viewBox="0 0 24 24">
+            <div class="messages-loading">
+                Loading messages...
+            </div>
 
-                <path
-                    d="M22 2L11 13"
-                ></path>
+        </main>
 
-                <path
-                    d="M22 2L15 22L11 13L2 9L22 2Z"
-                ></path>
 
-            </svg>
 
-        </button>
+        <!-- COMPOSER -->
 
-    </div>
+        <div class="message-composer">
+
+            <textarea
+                id="messageInput"
+                placeholder="Write a message..."
+                rows="1"
+            ></textarea>
+
+
+            <button
+                id="sendButton"
+                onclick="sendMessage()"
+                aria-label="Send message"
+            >
+
+                <svg viewBox="0 0 24 24">
+
+                    <path
+                        d="M22 2L11 13"
+                    ></path>
+
+                    <path
+                        d="M22 2L15 22L11 13L2 9L22 2Z"
+                    ></path>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+
+    </section>
 
 
 
