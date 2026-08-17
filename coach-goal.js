@@ -4,6 +4,7 @@
 ========================================= */
 
 
+
 const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
