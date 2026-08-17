@@ -4,14 +4,11 @@
 ========================================= */
 
 
-
 const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
-
 const SUPABASE_KEY =
     "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
-
 
 const supabaseClient =
     window.supabase.createClient(
@@ -21,7 +18,7 @@ const supabaseClient =
 
 
 /* =========================================
-   GET GOAL ID
+   STATE
 ========================================= */
 
 const params =
@@ -29,10 +26,8 @@ const params =
         window.location.search
     );
 
-
 const goalId =
     params.get("goal_id");
-
 
 let goal = null;
 
@@ -43,6 +38,7 @@ let sessions = [];
 let currentWeekId = null;
 
 let currentEditingSessionId = null;
+
 
 /* =========================================
    START
@@ -60,7 +56,6 @@ document.addEventListener(
 
             return;
         }
-
 
         await loadGoal();
 
@@ -126,17 +121,14 @@ async function loadGoal() {
 
 
     /*
-       Every goal gets its own program.
-
-       If this goal doesn't have one yet,
-       create it automatically.
+       Create a program automatically
+       if the goal does not have one.
     */
 
     if (!goal.program_id) {
 
         const program =
             await createProgramForGoal();
-
 
         if (!program) {
             return;
@@ -153,7 +145,7 @@ async function loadGoal() {
 
 
 /* =========================================
-   CREATE PROGRAM FOR GOAL
+   CREATE PROGRAM
 ========================================= */
 
 async function createProgramForGoal() {
@@ -201,20 +193,14 @@ async function createProgramForGoal() {
             error
         );
 
-
         showError(
             "Could not create training program: " +
             error.message
         );
 
-
         return null;
     }
 
-
-    /*
-       Connect program to goal.
-    */
 
     const {
         error: updateError
@@ -238,11 +224,9 @@ async function createProgramForGoal() {
             updateError
         );
 
-
         showError(
             updateError.message
         );
-
 
         return null;
     }
@@ -285,13 +269,11 @@ function renderGoal() {
 
         <div class="goal-top">
 
-
             <div class="goal-title-area">
 
                 <div class="goal-icon">
                     ◎
                 </div>
-
 
                 <div class="goal-name">
 
@@ -314,7 +296,6 @@ function renderGoal() {
                     ✎ Edit Goal
                 </button>
 
-
                 <button
                     class="delete-goal-button"
                     onclick="deleteGoal()"
@@ -331,7 +312,6 @@ function renderGoal() {
 
             <div class="goal-details">
 
-
                 <div>
 
                     <div class="detail-label">
@@ -339,12 +319,9 @@ function renderGoal() {
                     </div>
 
                     <div class="detail-value">
-
                         ${escapeHtml(
-                            goal.distance ||
-                            ""
+                            goal.distance || ""
                         )}
-
                     </div>
 
                 </div>
@@ -357,12 +334,9 @@ function renderGoal() {
                     </div>
 
                     <div class="detail-value">
-
                         ${escapeHtml(
-                            goal.target_time ||
-                            ""
+                            goal.target_time || ""
                         )}
-
                     </div>
 
                 </div>
@@ -398,13 +372,10 @@ function renderGoal() {
                     </div>
 
                     <div class="detail-value">
-
                         ${progress}%
-
                     </div>
 
                 </div>
-
 
             </div>
 
@@ -422,11 +393,8 @@ function renderGoal() {
 
                 </div>
 
-
                 <div class="progress-number">
-
                     ${progress}%
-
                 </div>
 
             </div>
@@ -490,7 +458,6 @@ async function loadWeeks() {
             weekError
         );
 
-
         showWeeksError(
             weekError.message
         );
@@ -502,10 +469,6 @@ async function loadWeeks() {
     weeks =
         weekData || [];
 
-
-    /*
-       Load all sessions for all weeks.
-    */
 
     if (weeks.length) {
 
@@ -531,7 +494,6 @@ async function loadWeeks() {
                     distance_km,
                     duration_minutes,
                     pace,
-                    rest,
                     notes,
                     completed
                 `)
@@ -553,7 +515,6 @@ async function loadWeeks() {
                 "Session loading error:",
                 sessionError
             );
-
 
             showWeeksError(
                 sessionError.message
@@ -638,18 +599,13 @@ function createWeekCard(
                     week.id
             )
             .sort(
-                function(a, b) {
-
-                    return (
-                        new Date(
-                            a.workout_date
-                        ) -
-                        new Date(
-                            b.workout_date
-                        )
-                    );
-
-                }
+                (a, b) =>
+                    new Date(
+                        a.workout_date
+                    ) -
+                    new Date(
+                        b.workout_date
+                    )
             );
 
 
@@ -666,7 +622,6 @@ function createWeekCard(
             id="week-${week.id}"
         >
 
-
             <div
                 class="week-header"
                 onclick="
@@ -682,23 +637,20 @@ function createWeekCard(
 
 
                 <div class="week-title">
-
-                    Week
-                    ${week.week_number}
-
+                    Week ${week.week_number}
                 </div>
 
 
                 <div class="week-dates">
-
                     ${dates}
-
                 </div>
 
 
                 <div
                     class="week-actions"
-                    onclick="event.stopPropagation()"
+                    onclick="
+                        event.stopPropagation()
+                    "
                 >
 
                     <button
@@ -742,9 +694,7 @@ function createWeekCard(
                     :
                     `
                     <div class="no-sessions">
-
                         No sessions in this week yet.
-
                     </div>
                     `
                 }
@@ -810,7 +760,8 @@ function createSessionCard(
 
         session.pace
             ?
-            session.pace + "/km"
+            session.pace +
+            "/km"
             :
             null
 
@@ -827,101 +778,97 @@ function createSessionCard(
             <div class="session-date">
 
                 <div class="session-day">
-
                     ${day}
-
                 </div>
 
                 <div class="session-date-number">
-
                     ${dateText}
-
                 </div>
 
             </div>
 
 
-      <div>
+            <div class="session-content">
 
-    <div class="session-title">
+                <div class="session-title">
 
-        ${escapeHtml(
-            session.title
-        )}
+                    ${escapeHtml(
+                        session.title
+                    )}
 
-    </div>
-
-
-    <div class="session-details">
-
-        ${escapeHtml(
-            session.workout_type || ""
-        )}
-
-        ${
-            details
-            ?
-            " • " +
-            escapeHtml(details)
-            :
-            ""
-        }
-
-    </div>
+                </div>
 
 
-    ${
-        session.notes
-        ?
-        `
-        <div class="session-notes">
+                <div class="session-details">
 
-            <div class="session-notes-label">
-                Notes
-            </div>
+                    ${escapeHtml(
+                        session.workout_type ||
+                        ""
+                    )}
 
-            <div class="session-notes-box">
-                ${escapeHtml(session.notes)}
-            </div>
+                    ${
+                        details
+                        ?
+                        " • " +
+                        escapeHtml(details)
+                        :
+                        ""
+                    }
+
+                </div>
 
 
-        </div>
-        `
-        :
-        ""
-    }
+                ${
+                    session.notes
+                    ?
+                    `
+                    <div class="session-notes">
 
-</div>
-               
+                        <div class="session-notes-label">
+                            Notes
+                        </div>
+
+                        <div class="session-notes-box">
+                            ${escapeHtml(
+                                session.notes
+                            )}
+                        </div>
+
+                    </div>
+                    `
+                    :
+                    ""
+                }
 
             </div>
 
 
             <div class="session-actions">
 
-    <button
-        class="edit-session-button"
-        onclick="
-            editSession(
-                '${session.id}'
-            )
-        "
-    >
-        ✎ Edit
-    </button>
+                <button
+                    class="edit-session-button"
+                    onclick="
+                        editSession(
+                            '${session.id}'
+                        )
+                    "
+                >
+                    ✎ Edit
+                </button>
 
-    <button
-        class="delete-session-button"
-        onclick="
-            deleteSession(
-                '${session.id}'
-            )
-        "
-    >
-        🗑 Delete
-    </button>
 
-</div>
+                <button
+                    class="delete-session-button"
+                    onclick="
+                        deleteSession(
+                            '${session.id}'
+                        )
+                    "
+                >
+                    🗑 Delete
+                </button>
+
+            </div>
 
 
         </div>
@@ -994,7 +941,6 @@ async function addWeek() {
             error
         );
 
-
         alert(
             "Could not add week:\n\n" +
             error.message
@@ -1007,30 +953,8 @@ async function addWeek() {
     await loadWeeks();
 
 
-    /*
-       Automatically open the new week.
-    */
-
-    setTimeout(
-        function() {
-
-            const element =
-                document.getElementById(
-                    "week-" +
-                    data.id
-                );
-
-
-            if (element) {
-
-                element.classList.add(
-                    "open"
-                );
-
-            }
-
-        },
-        100
+    openWeek(
+        data.id
     );
 
 }
@@ -1070,6 +994,41 @@ async function deleteWeek(
     }
 
 
+    /*
+       Delete sessions first.
+       This makes the action work even if
+       the database foreign key is not
+       configured with ON DELETE CASCADE.
+    */
+
+    const {
+        error: sessionError
+    } =
+        await supabaseClient
+            .from("workouts")
+            .delete()
+            .eq(
+                "week_id",
+                weekId
+            );
+
+
+    if (sessionError) {
+
+        console.error(
+            "Delete week sessions error:",
+            sessionError
+        );
+
+        alert(
+            "Could not delete sessions:\n\n" +
+            sessionError.message
+        );
+
+        return;
+    }
+
+
     const {
         error
     } =
@@ -1088,7 +1047,6 @@ async function deleteWeek(
             "Delete week error:",
             error
         );
-
 
         alert(
             "Could not delete week:\n\n" +
@@ -1131,6 +1089,29 @@ function toggleWeek(
 }
 
 
+function openWeek(
+    weekId
+) {
+
+    const element =
+        document.getElementById(
+            "week-" +
+            weekId
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.classList.add(
+        "open"
+    );
+
+}
+
+
 /* =========================================
    OPEN SESSION MODAL
 ========================================= */
@@ -1139,11 +1120,17 @@ function openSessionModal(
     weekId
 ) {
 
+    currentEditingSessionId =
+        null;
 
-   currentEditingSessionId = null;
-   
     currentWeekId =
         weekId;
+
+
+    document.getElementById(
+        "sessionModalTitle"
+    ).textContent =
+        "New Session";
 
 
     document.getElementById(
@@ -1176,16 +1163,18 @@ function openSessionModal(
         "sessionPace"
     ).value = "";
 
+
     document.getElementById(
         "sessionNotes"
     ).value = "";
 
 
-
     document.querySelector(
-    "#sessionModal .save-button"
-).textContent = "Save Session";
-   
+        "#sessionModal .save-button"
+    ).textContent =
+        "Save Session";
+
+
     document
         .getElementById(
             "sessionModal"
@@ -1215,6 +1204,9 @@ function closeSessionModal() {
     currentWeekId =
         null;
 
+    currentEditingSessionId =
+        null;
+
 }
 
 
@@ -1232,6 +1224,20 @@ async function saveSession() {
 
         return;
     }
+
+
+    /*
+       IMPORTANT:
+       Save the week ID before closing
+       the modal / reloading data.
+    */
+
+    const savedWeekId =
+        currentWeekId;
+
+
+    const editingId =
+        currentEditingSessionId;
 
 
     const date =
@@ -1272,7 +1278,7 @@ async function saveSession() {
         .trim();
 
 
-   const notes =
+    const notes =
         document.getElementById(
             "sessionNotes"
         ).value
@@ -1298,139 +1304,82 @@ async function saveSession() {
         return;
     }
 
-    if (currentEditingSessionId) {
 
-    const {
-        error
-    } =
-        await supabaseClient
-            .from("workouts")
-            .update({
+    const sessionData = {
 
-                athlete_id:
-                    goal.athlete_id,
+        athlete_id:
+            goal.athlete_id,
 
-                week_id:
-                    currentWeekId,
+        week_id:
+            savedWeekId,
 
-                workout_date:
-                    date,
+        workout_date:
+            date,
 
-                workout_type:
-                    type,
+        workout_type:
+            type,
 
-                title:
-                    title,
+        title:
+            title,
 
-                distance_km:
-                    distance
-                    ?
-                    Number(distance)
-                    :
-                    null,
+        distance_km:
+            distance
+            ?
+            Number(distance)
+            :
+            null,
 
-                duration_minutes:
-                    duration
-                    ?
-                    Number(duration)
-                    :
-                    null,
+        duration_minutes:
+            duration
+            ?
+            Number(duration)
+            :
+            null,
 
-                pace:
-                    pace || null,
+        pace:
+            pace ||
+            null,
 
-                
-                notes:
-                    notes || null
+        notes:
+            notes ||
+            null
 
-            })
-            .eq(
-                "id",
-                currentEditingSessionId
-            );
+    };
 
 
-    if (error) {
+    let error = null;
 
-        console.error(
-            "Update session error:",
-            error
-        );
 
-        alert(
-            "Could not update session:\n\n" +
-            error.message
-        );
+    if (editingId) {
 
-        return;
+        const result =
+            await supabaseClient
+                .from("workouts")
+                .update(
+                    sessionData
+                )
+                .eq(
+                    "id",
+                    editingId
+                );
+
+        error =
+            result.error;
+
+    } else {
+
+        const result =
+            await supabaseClient
+                .from("workouts")
+                .insert({
+                    ...sessionData,
+                    completed: false
+                });
+
+        error =
+            result.error;
+
     }
-
-
-    currentEditingSessionId =
-        null;
-
-    closeSessionModal();
-
-    await loadWeeks();
-
-    return;
-}
-   
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("workouts")
-            .insert({
-
-                athlete_id:
-                    goal.athlete_id,
-
-                week_id:
-                    currentWeekId,
-
-                workout_date:
-                    date,
-
-                workout_type:
-                    type,
-
-                title:
-                    title,
-
-                distance_km:
-                    distance
-                    ?
-                    Number(
-                        distance
-                    )
-                    :
-                    null,
-
-                duration_minutes:
-                    duration
-                    ?
-                    Number(
-                        duration
-                    )
-                    :
-                    null,
-
-                pace:
-                    pace ||
-                    null,
-
-                notes:
-                    notes ||
-                    null,
-
-                completed:
-                    false
-
-            })
-            .select()
-            .single();
 
 
     if (error) {
@@ -1439,7 +1388,6 @@ async function saveSession() {
             "Save session error:",
             error
         );
-
 
         alert(
             "Could not save session:\n\n" +
@@ -1450,12 +1398,6 @@ async function saveSession() {
     }
 
 
-    console.log(
-        "Session created:",
-        data
-    );
-
-
     closeSessionModal();
 
 
@@ -1463,43 +1405,32 @@ async function saveSession() {
 
 
     /*
-       Re-open the week containing
-       the newly-created session.
+       Always reopen the week in which
+       the session was created/edited.
     */
 
-    setTimeout(
-        function() {
-
-            const element =
-                document.getElementById(
-                    "week-" +
-                    currentWeekId
-                );
-
-
-            if (element) {
-
-                element.classList.add(
-                    "open"
-                );
-
-            }
-
-        },
-        100
+    openWeek(
+        savedWeekId
     );
 
 }
 
 
-   
-async function editSession(sessionId) {
+/* =========================================
+   EDIT SESSION
+========================================= */
+
+function editSession(
+    sessionId
+) {
 
     const session =
         sessions.find(
             item =>
-                item.id === sessionId
+                item.id ===
+                sessionId
         );
+
 
     if (!session) {
         return;
@@ -1511,19 +1442,27 @@ async function editSession(sessionId) {
 
 
     currentEditingSessionId =
-        sessionId;
+        session.id;
+
+
+    document.getElementById(
+        "sessionModalTitle"
+    ).textContent =
+        "Edit Session";
 
 
     document.getElementById(
         "sessionDate"
     ).value =
-        session.workout_date || "";
+        session.workout_date ||
+        "";
 
 
     document.getElementById(
         "sessionTitle"
     ).value =
-        session.title || "";
+        session.title ||
+        "";
 
 
     document.getElementById(
@@ -1536,25 +1475,29 @@ async function editSession(sessionId) {
     document.getElementById(
         "sessionDistance"
     ).value =
-        session.distance_km ?? "";
+        session.distance_km ??
+        "";
 
 
     document.getElementById(
         "sessionDuration"
     ).value =
-        session.duration_minutes ?? "";
+        session.duration_minutes ??
+        "";
 
 
     document.getElementById(
         "sessionPace"
     ).value =
-        session.pace || "";
+        session.pace ||
+        "";
 
 
     document.getElementById(
         "sessionNotes"
     ).value =
-        session.notes || "";
+        session.notes ||
+        "";
 
 
     document.querySelector(
@@ -1572,7 +1515,6 @@ async function editSession(sessionId) {
         );
 
 }
-
 
 
 /* =========================================
@@ -1613,7 +1555,6 @@ async function deleteSession(
             error
         );
 
-
         alert(
             "Could not delete session:\n\n" +
             error.message
@@ -1629,7 +1570,7 @@ async function deleteSession(
 
 
 /* =========================================
-   GET WEEK DATE RANGE
+   WEEK DATE RANGE
 ========================================= */
 
 function getWeekDateRange(
@@ -1637,9 +1578,7 @@ function getWeekDateRange(
 ) {
 
     if (!weekSessions.length) {
-
         return "No sessions yet";
-
     }
 
 
@@ -1660,7 +1599,6 @@ function getWeekDateRange(
 
     const first =
         dates[0];
-
 
     const last =
         dates[
@@ -1714,9 +1652,159 @@ function getWeekDateRange(
 
 function editGoal() {
 
-    alert(
-        "Goal editing can be added next."
-    );
+    document.getElementById(
+        "goalNameInput"
+    ).value =
+        goal.goal_name ||
+        "";
+
+
+    document.getElementById(
+        "goalDistanceInput"
+    ).value =
+        goal.distance ||
+        "";
+
+
+    document.getElementById(
+        "goalTimeInput"
+    ).value =
+        goal.target_time ||
+        "";
+
+
+    document.getElementById(
+        "goalDateInput"
+    ).value =
+        goal.target_date ||
+        "";
+
+
+    document
+        .getElementById(
+            "goalModal"
+        )
+        .classList.add(
+            "show"
+        );
+
+}
+
+
+/* =========================================
+   CLOSE GOAL MODAL
+========================================= */
+
+function closeGoalModal() {
+
+    document
+        .getElementById(
+            "goalModal"
+        )
+        .classList.remove(
+            "show"
+        );
+
+}
+
+
+/* =========================================
+   SAVE GOAL
+========================================= */
+
+async function saveGoal() {
+
+    const goalName =
+        document.getElementById(
+            "goalNameInput"
+        ).value
+        .trim();
+
+
+    const distance =
+        document.getElementById(
+            "goalDistanceInput"
+        ).value
+        .trim();
+
+
+    const targetTime =
+        document.getElementById(
+            "goalTimeInput"
+        ).value
+        .trim();
+
+
+    const targetDate =
+        document.getElementById(
+            "goalDateInput"
+        ).value;
+
+
+    if (!goalName) {
+
+        alert(
+            "Please enter a goal name."
+        );
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("goals")
+            .update({
+
+                goal_name:
+                    goalName,
+
+                distance:
+                    distance,
+
+                target_time:
+                    targetTime ||
+                    null,
+
+                target_date:
+                    targetDate ||
+                    null
+
+            })
+            .eq(
+                "id",
+                goal.id
+            )
+            .select()
+            .single();
+
+
+    if (error) {
+
+        console.error(
+            "Goal update error:",
+            error
+        );
+
+        alert(
+            "Could not update goal:\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    goal =
+        data;
+
+
+    closeGoalModal();
+
+    renderGoal();
 
 }
 
@@ -1738,6 +1826,113 @@ async function deleteGoal() {
     }
 
 
+    /*
+       Delete sessions belonging to
+       this goal's program first.
+    */
+
+    if (goal.program_id) {
+
+        const {
+            data: goalWeeks,
+            error: weekLoadError
+        } =
+            await supabaseClient
+                .from("training_weeks")
+                .select("id")
+                .eq(
+                    "program_id",
+                    goal.program_id
+                );
+
+
+        if (weekLoadError) {
+
+            alert(
+                weekLoadError.message
+            );
+
+            return;
+        }
+
+
+        if (goalWeeks?.length) {
+
+            const ids =
+                goalWeeks.map(
+                    week => week.id
+                );
+
+
+            const {
+                error: workoutDeleteError
+            } =
+                await supabaseClient
+                    .from("workouts")
+                    .delete()
+                    .in(
+                        "week_id",
+                        ids
+                    );
+
+
+            if (workoutDeleteError) {
+
+                alert(
+                    workoutDeleteError.message
+                );
+
+                return;
+            }
+
+
+            const {
+                error: weekDeleteError
+            } =
+                await supabaseClient
+                    .from("training_weeks")
+                    .delete()
+                    .in(
+                        "id",
+                        ids
+                    );
+
+
+            if (weekDeleteError) {
+
+                alert(
+                    weekDeleteError.message
+                );
+
+                return;
+            }
+
+        }
+
+
+        const {
+            error: programDeleteError
+        } =
+            await supabaseClient
+                .from("programs")
+                .delete()
+                .eq(
+                    "id",
+                    goal.program_id
+                );
+
+
+        if (programDeleteError) {
+
+            console.error(
+                programDeleteError
+            );
+
+        }
+
+    }
+
+
     const {
         error
     } =
@@ -1756,7 +1951,6 @@ async function deleteGoal() {
             "Delete goal error:",
             error
         );
-
 
         alert(
             "Could not delete goal:\n\n" +
