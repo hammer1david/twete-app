@@ -8,11 +8,44 @@ const AUTH_SUPABASE_URL =
 const AUTH_SUPABASE_KEY =
     "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
 
-const authSupabase =
-    window.supabase.createClient(
-        AUTH_SUPABASE_URL,
-        AUTH_SUPABASE_KEY
-    );
+
+/* =========================================
+   GET SUPABASE CLIENT
+========================================= */
+
+function getAuthClient() {
+
+    /*
+       Use the existing Supabase client
+       if app.js already created it.
+    */
+
+    if (
+        typeof supabaseClient !== "undefined" &&
+        supabaseClient
+    ) {
+        return supabaseClient;
+    }
+
+
+    /*
+       Otherwise create one.
+    */
+
+    if (
+        window.supabase &&
+        window.supabase.createClient
+    ) {
+
+        return window.supabase.createClient(
+            AUTH_SUPABASE_URL,
+            AUTH_SUPABASE_KEY
+        );
+    }
+
+
+    return null;
+}
 
 
 /* =========================================
@@ -21,15 +54,45 @@ const authSupabase =
 
 async function protectPage(requiredRole = null) {
 
+    console.log(
+        "Twete Auth Guard starting..."
+    );
+
+
     try {
 
+        const client =
+            getAuthClient();
+
+
+        /* =========================
+           SUPABASE NOT AVAILABLE
+        ========================= */
+
+        if (!client) {
+
+            console.error(
+                "Supabase library is not loaded."
+            );
+
+            /*
+               Do NOT redirect to login here.
+               This prevents a false logout.
+            */
+
+            return;
+        }
+
+
+        /* =========================
+           GET SESSION
+        ========================= */
+
         const {
-            data: {
-                session
-            },
+            data,
             error
         } =
-            await authSupabase.auth.getSession();
+            await client.auth.getSession();
 
 
         if (error) {
@@ -39,46 +102,25 @@ async function protectPage(requiredRole = null) {
                 error
             );
 
-            window.location.href =
-                "index.html";
-
             return;
         }
+
+
+        const session =
+            data?.session;
 
 
         /* =========================
            NOT LOGGED IN
         ========================= */
 
-        if (!session || !session.user) {
+        if (
+            !session ||
+            !session.user
+        ) {
 
-            window.location.href =
-                "index.html";
-
-            return;
-        }
-
-
-        /* =========================
-           GET USER ROLE
-        ========================= */
-
-        const {
-            data: profile,
-            error: profileError
-        } =
-            await authSupabase
-                .from("profiles")
-                .select("role")
-                .eq("id", session.user.id)
-                .maybeSingle();
-
-
-        if (profileError) {
-
-            console.error(
-                "Profile error:",
-                profileError
+            console.log(
+                "No active session."
             );
 
             window.location.href =
@@ -88,8 +130,89 @@ async function protectPage(requiredRole = null) {
         }
 
 
+        console.log(
+            "Authenticated user:",
+            session.user.email
+        );
+
+
+        /* =========================
+           NO ROLE REQUIRED
+        ========================= */
+
+        if (!requiredRole) {
+
+            console.log(
+                "Authentication verified."
+            );
+
+            return;
+        }
+
+
+        /* =========================
+           GET PROFILE ROLE
+        ========================= */
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await client
+                .from("profiles")
+                .select("role")
+                .eq(
+                    "id",
+                    session.user.id
+                )
+                .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                "Could not read profile:",
+                profileError
+            );
+
+            /*
+               IMPORTANT:
+               The user IS authenticated.
+
+               Do not send them to login just
+               because the profile query failed.
+            */
+
+            return;
+        }
+
+
         const role =
-            profile?.role || "athlete";
+            profile?.role;
+
+
+        console.log(
+            "Twete user role:",
+            role
+        );
+
+
+        /* =========================
+           PROFILE NOT FOUND
+        ========================= */
+
+        if (!role) {
+
+            console.warn(
+                "No profile role found."
+            );
+
+            /*
+               Don't pretend the user is logged out.
+            */
+
+            return;
+        }
 
 
         /* =========================
@@ -97,19 +220,28 @@ async function protectPage(requiredRole = null) {
         ========================= */
 
         if (
-            requiredRole &&
             role !== requiredRole
         ) {
 
-            if (role === "coach") {
+            console.log(
+                "Wrong page for user role:",
+                role
+            );
 
-                window.location.href =
-                    "coach.html";
+
+            if (
+                role === "coach"
+            ) {
+
+                window.location.replace(
+                    "coach.html"
+                );
 
             } else {
 
-                window.location.href =
-                    "athlete.html";
+                window.location.replace(
+                    "athlete.html"
+                );
             }
 
             return;
@@ -121,18 +253,23 @@ async function protectPage(requiredRole = null) {
         ========================= */
 
         console.log(
-            "Twete auth verified:",
+            "Twete access granted:",
             role
         );
 
     } catch (error) {
 
         console.error(
-            "Authentication error:",
+            "Auth guard error:",
             error
         );
 
-        window.location.href =
-            "index.html";
+        /*
+           Do not automatically redirect
+           on unexpected JavaScript errors.
+
+           Only an actual missing session
+           should redirect to login.
+        */
     }
 }
