@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Twete | My Profile</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .profile-page {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 25px 18px 60px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .back-button {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .profile-card {
+            background: rgba(20,20,20,.96);
+            border: 1px solid rgba(198,255,0,.18);
+            border-radius: 22px;
+            padding: 26px;
+        }
+
+        .avatar-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .avatar {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: #252525;
+            border: 2px solid rgba(198,255,0,.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C6FF00;
+            font-size: 38px;
+            font-weight: 800;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-upload {
+            color: #C6FF00;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        #avatarInput {
+            display: none;
+        }
+
+        .profile-email {
+            text-align: center;
+            color: #888;
+            margin-top: 6px;
+            margin-bottom: 28px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px;
+            border-radius: 11px;
+            border: 1px solid #333;
+            background: #111;
+            color: white;
+            font-size: 16px;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: #C6FF00;
+        }
+
+        .save-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: #C6FF00;
+            color: #090909;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .status {
+            text-align: center;
+            min-height: 22px;
+            margin-top: 14px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <div class="glow-line top"></div>
+    <div class="glow-line bottom"></div>
+
+
+    <main class="profile-page">
+
+        <header class="profile-header">
+
+            <button
+                class="back-button"
+                onclick="goBack()"
+            >
+                ←
+            </button>
+
+            <h2>
+                My Profile
+            </h2>
+
+        </header>
+
+
+        <section class="profile-card">
+
+
+            <div class="avatar-area">
+
+                <div
+                    class="avatar"
+                    id="avatar"
+                >
+                    T
+                </div>
+
+
+                <label
+                    class="avatar-upload"
+                    for="avatarInput"
+                >
+                    Change profile picture
+                </label>
+
+                <input
+                    id="avatarInput"
+                    type="file"
+                    accept="image/*"
+                >
+
+            </div>
+
+
+            <h1 id="profileName">
+                Athlete
+            </h1>
+
+
+            <div
+                class="profile-email"
+                id="profileEmail"
+            ></div>
+
+
+            <form id="profileForm">
+
+
+                <div class="field">
+
+                    <label for="fullName">
+                        Name
+                    </label>
+
+                    <input
+                        id="fullName"
+                        type="text"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="birthday">
+                        Birthday
+                    </label>
+
+                    <input
+                        id="birthday"
+                        type="date"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="country">
+                        Country
+                    </label>
+
+                    <input
+                        id="country"
+                        type="text"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="discipline">
+                        Preferred discipline
+                    </label>
+
+                    <select
+                        id="discipline"
+                        required
+                    >
+
+                        <option value="">
+                            Select
+                        </option>
+
+                        <option>
+                            Track
+                        </option>
+
+                        <option>
+                            Road
+                        </option>
+
+                        <option>
+                            Trail / Mountains
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="preferredDistance">
+                        Preferred distance
+                    </label>
+
+                    <input
+                        id="preferredDistance"
+                        type="text"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="experienceLevel">
+                        Running level
+                    </label>
+
+                    <select
+                        id="experienceLevel"
+                        required
+                    >
+
+                        <option value="beginner">
+                            Beginner
+                        </option>
+
+                        <option value="intermediate">
+                            Intermediate
+                        </option>
+
+                        <option value="advanced">
+                            Advanced
+                        </option>
+
+                        <option value="pro">
+                            Professional / Elite
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button
+                    class="save-button"
+                    type="submit"
+                    id="saveButton"
+                >
+                    Save changes
+                </button>
+
+
+                <div
+                    class="status"
+                    id="status"
+                ></div>
+
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="profile.js"></script>
+
+<script src="auth-guard.js"></script>
+
+<script>
+    protectPage("athlete");
+</script>
+
+</body>
+
+</html>
