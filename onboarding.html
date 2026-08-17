@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Twete | Athlete Setup</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+
+        .onboarding-page {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .onboarding-card {
+            background: rgba(20,20,20,.96);
+            border: 1px solid rgba(198,255,0,.18);
+            border-radius: 22px;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.35);
+        }
+
+        .onboarding-logo {
+            font-weight: 900;
+            letter-spacing: .14em;
+            font-size: 24px;
+            margin-bottom: 35px;
+            color: #C6FF00;
+        }
+
+        .onboarding-card h1 {
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        .intro {
+            color: #aaa;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select {
+
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background: #111;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .field input:focus,
+        .field select:focus {
+
+            outline: none;
+            border-color: #C6FF00;
+        }
+
+        .options {
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .option input {
+            display: none;
+        }
+
+        .option label {
+
+            display: block;
+            padding: 14px;
+            border: 1px solid #333;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            color: #ddd;
+        }
+
+        .option input:checked + label {
+
+            border-color: #C6FF00;
+            color: #C6FF00;
+            background: rgba(198,255,0,.06);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .save-button {
+
+            width: 100%;
+            padding: 15px;
+            border: 0;
+            border-radius: 12px;
+            background: #C6FF00;
+            color: #090909;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .save-button:disabled {
+
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        #onboardingMessage {
+
+            text-align: center;
+            min-height: 22px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        @media(max-width:500px) {
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .onboarding-card {
+                padding: 22px;
+            }
+
+            .onboarding-page {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <div class="glow-line top"></div>
+    <div class="glow-line bottom"></div>
+
+
+    <main class="onboarding-page">
+
+        <div class="onboarding-logo">
+            TWETE
+        </div>
+
+
+        <section class="onboarding-card">
+
+            <h1>
+                Tell us about you
+            </h1>
+
+            <p class="intro">
+                Set up your athlete profile so Twete can personalize your training experience.
+            </p>
+
+
+            <form id="onboardingForm">
+
+
+                <!-- NAME -->
+
+                <div class="field">
+
+                    <label for="fullName">
+                        Name
+                    </label>
+
+                    <input
+                        id="fullName"
+                        type="text"
+                        autocomplete="name"
+                        required
+                        placeholder="Your full name"
+                    >
+
+                </div>
+
+
+                <!-- BIRTHDAY -->
+
+                <div class="field">
+
+                    <label for="birthday">
+                        Birthday
+                    </label>
+
+                    <input
+                        id="birthday"
+                        type="date"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- COUNTRY -->
+
+                <div class="field">
+
+                    <label for="country">
+                        Country
+                    </label>
+
+                    <select
+                        id="country"
+                        required
+                    >
+
+                        <option value="">
+                            Select your country
+                        </option>
+
+                        <option>Austria</option>
+                        <option>Kenya</option>
+                        <option>Germany</option>
+                        <option>Switzerland</option>
+                        <option>United Kingdom</option>
+                        <option>United States</option>
+                        <option>France</option>
+                        <option>Italy</option>
+                        <option>Spain</option>
+                        <option>Netherlands</option>
+                        <option>Belgium</option>
+                        <option>Norway</option>
+                        <option>Sweden</option>
+                        <option>Denmark</option>
+                        <option>Ethiopia</option>
+                        <option>Uganda</option>
+                        <option>Tanzania</option>
+                        <option>South Africa</option>
+                        <option>Japan</option>
+                        <option>Australia</option>
+                        <option>Canada</option>
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DISCIPLINE -->
+
+                <div class="field">
+
+                    <label>
+                        Preferred discipline
+                    </label>
+
+
+                    <div class="options">
+
+                        <div class="option">
+
+                            <input
+                                type="radio"
+                                name="discipline"
+                                id="track"
+                                value="Track"
+                                required
+                            >
+
+                            <label for="track">
+                                Track
+                            </label>
+
+                        </div>
+
+
+                        <div class="option">
+
+                            <input
+                                type="radio"
+                                name="discipline"
+                                id="road"
+                                value="Road"
+                            >
+
+                            <label for="road">
+                                Road
+                            </label>
+
+                        </div>
+
+
+                        <div class="option">
+
+                            <input
+                                type="radio"
+                                name="discipline"
+                                id="trail"
+                                value="Trail / Mountains"
+                            >
+
+                            <label for="trail">
+                                Trail / Mountains
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DISTANCE -->
+
+                <div class="field">
+
+                    <label for="preferredDistance">
+                        Preferred distance
+                    </label>
+
+
+                    <select
+                        id="preferredDistance"
+                        required
+                    >
+
+                        <option value="">
+                            Select your distance
+                        </option>
+
+                        <option>800 m</option>
+                        <option>1500 m</option>
+                        <option>3000 m</option>
+                        <option>5000 m</option>
+                        <option>10 km</option>
+                        <option>Half Marathon</option>
+                        <option>Marathon</option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- OTHER DISTANCE -->
+
+                <div
+                    class="field hidden"
+                    id="otherDistanceField"
+                >
+
+                    <label for="otherDistance">
+                        Enter your preferred distance
+                    </label>
+
+                    <input
+                        id="otherDistance"
+                        type="text"
+                        placeholder="e.g. 50 km or 3000 m steeplechase"
+                    >
+
+                </div>
+
+
+                <!-- EXPERIENCE -->
+
+                <div class="field">
+
+                    <label>
+                        Running level
+                    </label>
+
+
+                    <div class="options">
+
+                        <div class="option">
+
+                            <input
+                                type="radio"
+                                name="experience"
+                                id="beginner"
+                                value="Beginner"
+                                required
+                            >
+
+                            <label for="beginner">
+                                Beginner
+                            </label>
+
+                        </div>
+
+
+                        <div class="option">
+
+                            <input
+                                type="radio"
+                                name="experience"
+                                id="intermediate"
+                                value="Intermediate"
+                            >
+
+                            <label for="intermediate">
+                                Intermediate
+                            </label>
+
+                        </div>
+
+
+                        <div class="option">
+
+                            <input
+                                type="radio"
+                                name="experience"
+                                id="advanced"
+                                value="Advanced"
+                            >
+
+                            <label for="advanced">
+                                Advanced
+                            </label>
+
+                        </div>
+
+
+                        <div class="option">
+
+                            <input
+                                type="radio"
+                                name="experience"
+                                id="professional"
+                                value="Professional / Elite"
+                            >
+
+                            <label for="professional">
+                                Professional / Elite
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="save-button"
+                    id="saveProfileButton"
+                    type="submit"
+                >
+                    Continue to Twete
+                </button>
+
+
+                <div id="onboardingMessage"></div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="onboarding.js"></script>
+
+<script src="auth-guard.js"></script>
+
+<script>
+    protectPage("athlete");
+</script>
+
+</body>
+
+</html>
