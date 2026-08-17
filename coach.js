@@ -1,58 +1,43 @@
 /* =========================================
    TWETE COACH DASHBOARD
+   REAL SUPABASE ATHLETE DATA
 ========================================= */
 
 
-/*
-    Example athlete data.
+/* =========================================
+   SUPABASE
+========================================= */
 
-    Later this will come from the
-    athlete database/backend.
-*/
+const COACH_SUPABASE_URL =
+    "https://uhbhsyuodizauwhhdffu.supabase.co";
 
-const athletes = [
+const COACH_SUPABASE_KEY =
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
 
-    {
-        name: "David Gitonga",
-        goal: "10 km — 30:30",
-        pb: "31:20",
-        endDate: "2026-08-21",
-        progress: 65
-    },
 
-    {
-        name: "Joy Chepkemoi",
-        goal: "5 km — 15:00",
-        pb: "15:22",
-        endDate: "2026-08-27",
-        progress: 78
-    },
+const coachSupabase =
+    window.supabase.createClient(
+        COACH_SUPABASE_URL,
+        COACH_SUPABASE_KEY
+    );
 
-    {
-        name: "Daniel Kipyego",
-        goal: "Half Marathon — 1:08:00",
-        pb: "1:09:15",
-        endDate: "2026-09-04",
-        progress: 40
-    },
 
-    {
-        name: "Mercy Njeri",
-        goal: "10 km — 32:00",
-        pb: "33:10",
-        endDate: "2026-09-16",
-        progress: 20
-    },
+/* =========================================
+   IMPORTANT
+   FOR NOW WE ONLY SHOW THIS ATHLETE
+========================================= */
 
-    {
-        name: "Victor Cheruiyot",
-        goal: "Marathon — 2:18:00",
-        pb: "2:19:45",
-        endDate: "2026-10-05",
-        progress: 55
-    }
+const TARGET_ATHLETE_EMAIL =
+    "gitonga.hammer@gmail.com";
 
-];
+
+/* =========================================
+   DATA
+========================================= */
+
+let athlete = null;
+
+let programs = [];
 
 
 /* =========================================
@@ -61,12 +46,21 @@ const athletes = [
 
 function updateDate() {
 
-    const dateElement =
-        document.getElementById("currentDate");
+    const element =
+        document.getElementById(
+            "currentDate"
+        );
 
-    const today = new Date();
+    if (!element) {
+        return;
+    }
 
-    dateElement.textContent =
+
+    const today =
+        new Date();
+
+
+    element.textContent =
         today.toLocaleDateString(
             "en-US",
             {
@@ -81,26 +75,604 @@ function updateDate() {
 
 
 /* =========================================
-   DAYS UNTIL PROGRAM END
+   INITIALS
 ========================================= */
 
-function daysUntil(dateString) {
+function getInitials(name) {
 
-    const today = new Date();
+    if (!name) {
+        return "A";
+    }
 
-    today.setHours(0, 0, 0, 0);
+
+    return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(
+            function(part) {
+                return part.charAt(0);
+            }
+        )
+        .join("")
+        .toUpperCase();
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================================
+   LOAD ATHLETE
+========================================= */
+
+async function loadAthlete() {
+
+    const grid =
+        document.getElementById(
+            "athleteSelectionGrid"
+        );
+
+
+    if (!grid) {
+        return;
+    }
+
+
+    grid.innerHTML = `
+        <div class="loading-athletes">
+            Loading athlete...
+        </div>
+    `;
+
+
+    /*
+       IMPORTANT:
+
+       The email is stored in profiles.email,
+       so we search for the real account.
+    */
+
+    const {
+        data,
+        error
+    } =
+        await coachSupabase
+            .from("profiles")
+            .select(`
+                id,
+                email,
+                full_name,
+                avatar_url,
+                country,
+                discipline,
+                preferred_distance,
+                experience_level,
+                role
+            `)
+            .eq(
+                "email",
+                TARGET_ATHLETE_EMAIL
+            )
+            .eq(
+                "role",
+                "athlete"
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Athlete loading error:",
+            error
+        );
+
+
+        grid.innerHTML = `
+            <div class="empty-athletes database-error">
+
+                Could not load the athlete.
+
+                <br><br>
+
+                ${escapeHtml(error.message)}
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    if (!data) {
+
+        grid.innerHTML = `
+            <div class="empty-athletes">
+
+                No athlete account was found for:
+
+                <br><br>
+
+                <strong>
+                    ${TARGET_ATHLETE_EMAIL}
+                </strong>
+
+            </div>
+        `;
+
+        document.getElementById(
+            "athleteCount"
+        ).textContent = "0";
+
+        return;
+    }
+
+
+    athlete = data;
+
+
+    document.getElementById(
+        "athleteCount"
+    ).textContent = "1";
+
+
+    renderAthlete();
+
+
+    await loadPrograms();
+
+}
+
+
+/* =========================================
+   RENDER ATHLETE
+========================================= */
+
+function renderAthlete() {
+
+    const grid =
+        document.getElementById(
+            "athleteSelectionGrid"
+        );
+
+
+    if (!grid || !athlete) {
+        return;
+    }
+
+
+    const name =
+        athlete.full_name ||
+        "Unnamed athlete";
+
+
+    const details = [
+
+        athlete.discipline,
+
+        athlete.preferred_distance,
+
+        athlete.experience_level
+
+    ]
+        .filter(Boolean)
+        .join(" • ");
+
+
+    let avatar;
+
+
+    if (athlete.avatar_url) {
+
+        avatar = `
+
+            <img
+                class="selection-avatar"
+                src="${escapeHtml(
+                    athlete.avatar_url
+                )}"
+                alt="${escapeHtml(name)}"
+            >
+
+        `;
+
+    } else {
+
+        avatar = `
+
+            <div
+                class="
+                    selection-avatar
+                    selection-avatar-placeholder
+                "
+            >
+
+                ${escapeHtml(
+                    getInitials(name)
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+
+    grid.innerHTML = `
+
+        <article
+            class="athlete-selection-card"
+            onclick="selectAthlete()"
+        >
+
+            ${avatar}
+
+
+            <div class="selection-info">
+
+                <h3>
+                    ${escapeHtml(name)}
+                </h3>
+
+
+                <p>
+                    ${escapeHtml(
+                        details ||
+                        "Athlete"
+                    )}
+                </p>
+
+
+                <div class="selection-email">
+
+                    ${escapeHtml(
+                        athlete.email
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="selection-arrow">
+                ›
+            </div>
+
+        </article>
+
+    `;
+
+
+    setupSearch();
+
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+function setupSearch() {
+
+    const search =
+        document.getElementById(
+            "athleteSearch"
+        );
+
+
+    if (!search) {
+        return;
+    }
+
+
+    search.addEventListener(
+        "input",
+        function() {
+
+            if (!athlete) {
+                return;
+            }
+
+
+            const query =
+                search.value
+                    .trim()
+                    .toLowerCase();
+
+
+            const name =
+                (
+                    athlete.full_name ||
+                    ""
+                ).toLowerCase();
+
+
+            const email =
+                (
+                    athlete.email ||
+                    ""
+                ).toLowerCase();
+
+
+            const grid =
+                document.getElementById(
+                    "athleteSelectionGrid"
+                );
+
+
+            if (
+                name.includes(query) ||
+                email.includes(query)
+            ) {
+
+                renderAthlete();
+
+            } else {
+
+                grid.innerHTML = `
+
+                    <div class="empty-athletes">
+
+                        No athlete found.
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   SELECT ATHLETE
+========================================= */
+
+function selectAthlete() {
+
+    if (!athlete) {
+        return;
+    }
+
+
+    /*
+       We use the UUID.
+
+       This is much safer than passing
+       the athlete's name.
+    */
+
+    const athleteId =
+        encodeURIComponent(
+            athlete.id
+        );
+
+
+    window.location.href =
+        "coach-athlete.html?athlete_id=" +
+        athleteId;
+
+}
+
+
+/* =========================================
+   LOAD PROGRAMS
+========================================= */
+
+async function loadPrograms() {
+
+    if (!athlete) {
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await coachSupabase
+            .from("programs")
+            .select(`
+                id,
+                athlete_id,
+                name,
+                start_date,
+                end_date,
+                status
+            `)
+            .eq(
+                "athlete_id",
+                athlete.id
+            )
+            .order(
+                "end_date",
+                {
+                    ascending: true,
+                    nullsFirst: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Program loading error:",
+            error
+        );
+
+        programs = [];
+
+    } else {
+
+        programs =
+            data || [];
+
+    }
+
+
+    updateProgramNumbers();
+
+    renderEndingPrograms();
+
+}
+
+
+/* =========================================
+   UPDATE DASHBOARD NUMBERS
+========================================= */
+
+function updateProgramNumbers() {
+
+    const active =
+        programs.filter(
+            function(program) {
+
+                return program.status ===
+                    "active";
+
+            }
+        );
+
+
+    const today =
+        new Date();
+
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const ending =
+        active.filter(
+            function(program) {
+
+                if (!program.end_date) {
+                    return false;
+                }
+
+
+                const end =
+                    new Date(
+                        program.end_date
+                    );
+
+
+                end.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+
+                const days =
+                    Math.ceil(
+                        (
+                            end - today
+                        ) /
+                        86400000
+                    );
+
+
+                return (
+                    days >= 0 &&
+                    days <= 7
+                );
+
+            }
+        );
+
+
+    document.getElementById(
+        "activePrograms"
+    ).textContent =
+        active.length;
+
+
+    document.getElementById(
+        "endingPrograms"
+    ).textContent =
+        ending.length;
+
+
+    document.getElementById(
+        "noProgram"
+    ).textContent =
+        active.length === 0
+            ? "1"
+            : "0";
+
+}
+
+
+/* =========================================
+   DAYS UNTIL
+========================================= */
+
+function daysUntil(
+    dateString
+) {
+
+    if (!dateString) {
+        return null;
+    }
+
+
+    const today =
+        new Date();
+
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
 
     const end =
-        new Date(dateString);
+        new Date(
+            dateString
+        );
 
-    end.setHours(0, 0, 0, 0);
 
-    const difference =
-        end - today;
+    end.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
 
     return Math.ceil(
-        difference /
-        (1000 * 60 * 60 * 24)
+        (
+            end - today
+        ) /
+        86400000
     );
 
 }
@@ -110,12 +682,18 @@ function daysUntil(dateString) {
    FORMAT DATE
 ========================================= */
 
-function formatDate(dateString) {
+function formatDate(
+    dateString
+) {
 
-    const date =
-        new Date(dateString);
+    if (!dateString) {
+        return "No end date";
+    }
 
-    return date.toLocaleDateString(
+
+    return new Date(
+        dateString
+    ).toLocaleDateString(
         "en-US",
         {
             month: "short",
@@ -128,142 +706,10 @@ function formatDate(dateString) {
 
 
 /* =========================================
-   CREATE ATHLETE CARD
+   RENDER ENDING PROGRAMS
 ========================================= */
 
-function createAthleteCard(athlete) {
-
-    const days =
-        daysUntil(athlete.endDate);
-
-
-    let urgencyClass = "";
-
-    if (days <= 7) {
-        urgencyClass = "warning";
-    }
-
-    if (days <= 3) {
-        urgencyClass = "urgent";
-    }
-
-
-    let dayText;
-
-    if (days < 0) {
-
-        dayText =
-            "Program expired";
-
-    } else if (days === 0) {
-
-        dayText =
-            "Ends today";
-
-    } else if (days === 1) {
-
-        dayText =
-            "1 day remaining";
-
-    } else {
-
-        dayText =
-            days + " days remaining";
-
-    }
-
-
-    const card =
-        document.createElement("article");
-
-    card.className =
-        "ending-athlete " +
-        urgencyClass;
-
-
-    card.innerHTML = `
-
-        <div class="athlete-main">
-
-            <div class="athlete-photo"></div>
-
-            <div>
-
-                <h3>
-                    ${athlete.name}
-                </h3>
-
-                <div class="athlete-goal">
-                    ${athlete.goal}
-                </div>
-
-                <div class="athlete-pb">
-                    PB: ${athlete.pb}
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="program-end">
-
-            <span>
-                Program ends
-            </span>
-
-            <div class="program-date">
-                ${formatDate(athlete.endDate)}
-            </div>
-
-            <span class="days-badge ${urgencyClass}">
-                ◷ ${dayText}
-            </span>
-
-        </div>
-
-
-        <div class="progress-area">
-
-            <span>
-                Progress
-            </span>
-
-            <div
-                class="progress-circle"
-                style="--progress: ${athlete.progress}%"
-            >
-
-                <strong>
-                    ${athlete.progress}%
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <button
-            class="edit-program"
-            onclick="editAthlete('${athlete.name}')"
-        >
-            Edit Program
-            <span>›</span>
-        </button>
-
-    `;
-
-
-    return card;
-
-}
-
-
-/* =========================================
-   LOAD ENDING ATHLETES
-========================================= */
-
-function loadEndingAthletes() {
+function renderEndingPrograms() {
 
     const container =
         document.getElementById(
@@ -271,120 +717,323 @@ function loadEndingAthletes() {
         );
 
 
-    container.innerHTML = "";
+    if (!container) {
+        return;
+    }
 
 
-    /*
-        Sort by program ending date.
-
-        The athlete whose program ends
-        first appears at the top.
-    */
-
-    const sorted =
-        [...athletes].sort(
-            function(a, b) {
-
-                return new Date(a.endDate)
-                    -
-                    new Date(b.endDate);
-
-            }
-        );
-
-
-    sorted.forEach(
-        function(athlete) {
-
-            const card =
-                createAthleteCard(
-                    athlete
-                );
-
-            container.appendChild(card);
-
-        }
-    );
-
-}
-
-
-/* =========================================
-   DASHBOARD NUMBERS
-========================================= */
-
-function updateDashboardNumbers() {
-
-    document.getElementById(
-        "athleteCount"
-    ).textContent =
-        12;
-
-
-    document.getElementById(
-        "activePrograms"
-    ).textContent =
-        10;
-
-
-    const endingSoon =
-        athletes.filter(
-            function(athlete) {
+    const ending =
+        programs.filter(
+            function(program) {
 
                 const days =
                     daysUntil(
-                        athlete.endDate
+                        program.end_date
                     );
 
-                return days >= 0 &&
-                       days <= 7;
+
+                return (
+                    program.status ===
+                    "active" &&
+                    days !== null &&
+                    days >= 0 &&
+                    days <= 7
+                );
 
             }
         );
 
 
-    document.getElementById(
-        "endingPrograms"
-    ).textContent =
-        endingSoon.length;
+    if (!ending.length) {
+
+        container.innerHTML = `
+
+            <div class="empty-athletes">
+
+                No programs are ending within
+                the next 7 days.
+
+            </div>
+
+        `;
+
+        return;
+    }
 
 
-    document.getElementById(
-        "noProgram"
-    ).textContent =
-        0;
+    container.innerHTML =
+        ending
+            .map(
+                function(program) {
+
+                    const days =
+                        daysUntil(
+                            program.end_date
+                        );
+
+
+                    const urgency =
+                        days <= 3
+                            ? "urgent"
+                            : "warning";
+
+
+                    const dayText =
+                        days === 0
+                            ? "Ends today"
+                            : days === 1
+                                ? "1 day remaining"
+                                : `${days} days remaining`;
+
+
+                    return `
+
+                        <article
+                            class="
+                                ending-athlete
+                                ${urgency}
+                            "
+                        >
+
+                            <div class="athlete-main">
+
+                                ${
+                                    athlete.avatar_url
+
+                                    ?
+
+                                    `
+                                    <img
+                                        class="selection-avatar"
+                                        src="${escapeHtml(
+                                            athlete.avatar_url
+                                        )}"
+                                        alt=""
+                                    >
+                                    `
+
+                                    :
+
+                                    `
+                                    <div
+                                        class="
+                                            selection-avatar
+                                            selection-avatar-placeholder
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            getInitials(
+                                                athlete.full_name
+                                            )
+                                        )}
+                                    </div>
+                                    `
+                                }
+
+
+                                <div>
+
+                                    <h3>
+                                        ${escapeHtml(
+                                            athlete.full_name
+                                        )}
+                                    </h3>
+
+
+                                    <div class="athlete-goal">
+
+                                        ${escapeHtml(
+                                            program.name ||
+                                            "Training Program"
+                                        )}
+
+                                    </div>
+
+
+                                    <div class="athlete-pb">
+
+                                        ${
+                                            escapeHtml(
+                                                athlete.email
+                                            )
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="program-end">
+
+                                <span>
+                                    Program ends
+                                </span>
+
+
+                                <div class="program-date">
+
+                                    ${formatDate(
+                                        program.end_date
+                                    )}
+
+                                </div>
+
+
+                                <span
+                                    class="
+                                        days-badge
+                                        ${urgency}
+                                    "
+                                >
+
+                                    ◷
+                                    ${dayText}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="progress-area">
+
+                                <span>
+                                    Status
+                                </span>
+
+                                <strong>
+                                    Active
+                                </strong>
+
+                            </div>
+
+
+                            <button
+                                class="edit-program"
+                                onclick="selectAthlete()"
+                            >
+
+                                Open Athlete
+
+                                <span>
+                                    ›
+                                </span>
+
+                            </button>
+
+                        </article>
+
+                    `;
+
+                }
+            )
+            .join("");
 
 }
 
 
 /* =========================================
-   EDIT ATHLETE PROGRAM
+   COACH PROFILE
 ========================================= */
 
-function editAthlete(name) {
+async function loadCoachProfile() {
 
-    /*
-        Later this will open:
-
-        coach-athlete.html?athlete=David%20Gitonga
-
-        where you can edit the athlete's
-        complete training program.
-    */
-
-    const encoded =
-        encodeURIComponent(name);
+    const {
+        data: {
+            user
+        }
+    } =
+        await coachSupabase.auth
+            .getUser();
 
 
-    window.location.href =
-        "coach-athlete.html?athlete=" +
-        encoded;
+    if (!user) {
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await coachSupabase
+            .from("profiles")
+            .select(`
+                full_name,
+                avatar_url,
+                role
+            `)
+            .eq(
+                "id",
+                user.id
+            )
+            .maybeSingle();
+
+
+    if (error || !data) {
+        return;
+    }
+
+
+    const nameElement =
+        document.getElementById(
+            "coachName"
+        );
+
+
+    const avatarElement =
+        document.getElementById(
+            "coachAvatar"
+        );
+
+
+    if (nameElement) {
+
+        nameElement.textContent =
+            data.full_name ||
+            "Coach";
+
+    }
+
+
+    if (
+        avatarElement &&
+        data.avatar_url
+    ) {
+
+        avatarElement.innerHTML = `
+
+            <img
+                src="${escapeHtml(
+                    data.avatar_url
+                )}"
+                alt="Coach"
+                style="
+                    width:100%;
+                    height:100%;
+                    border-radius:50%;
+                    object-fit:cover;
+                "
+            >
+
+        `;
+
+    } else if (avatarElement) {
+
+        avatarElement.textContent =
+            getInitials(
+                data.full_name ||
+                "Coach"
+            );
+
+    }
 
 }
 
 
 /* =========================================
-   SIDEBAR
+   NAVIGATION
 ========================================= */
 
 function showDashboard() {
@@ -460,17 +1109,9 @@ function viewAllActivity() {
    LOGOUT
 ========================================= */
 
-function logout() {
+async function logout() {
 
-    const confirmed =
-        confirm(
-            "Do you want to log out?"
-        );
-
-
-    if (!confirmed) {
-        return;
-    }
+    await coachSupabase.auth.signOut();
 
 
     localStorage.removeItem(
@@ -485,18 +1126,18 @@ function logout() {
 
 
 /* =========================================
-   INITIALIZE
+   START
 ========================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    async function() {
 
         updateDate();
 
-        loadEndingAthletes();
+        await loadCoachProfile();
 
-        updateDashboardNumbers();
+        await loadAthlete();
 
     }
 );
