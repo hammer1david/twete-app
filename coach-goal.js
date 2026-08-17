@@ -1400,6 +1400,93 @@ async function saveSession() {
 
 }
 
+async function editSession(sessionId) {
+
+    const session =
+        sessions.find(
+            item =>
+                item.id === sessionId
+        );
+
+    if (!session) {
+        return;
+    }
+
+
+    currentWeekId =
+        session.week_id;
+
+
+    currentEditingSessionId =
+        sessionId;
+
+
+    document.getElementById(
+        "sessionDate"
+    ).value =
+        session.workout_date || "";
+
+
+    document.getElementById(
+        "sessionTitle"
+    ).value =
+        session.title || "";
+
+
+    document.getElementById(
+        "sessionType"
+    ).value =
+        session.workout_type ||
+        "Easy Run";
+
+
+    document.getElementById(
+        "sessionDistance"
+    ).value =
+        session.distance_km ?? "";
+
+
+    document.getElementById(
+        "sessionDuration"
+    ).value =
+        session.duration_minutes ?? "";
+
+
+    document.getElementById(
+        "sessionPace"
+    ).value =
+        session.pace || "";
+
+
+    document.getElementById(
+        "sessionRest"
+    ).value =
+        session.rest || "";
+
+
+    document.getElementById(
+        "sessionNotes"
+    ).value =
+        session.notes || "";
+
+
+    document.querySelector(
+        "#sessionModal .save-button"
+    ).textContent =
+        "Update Session";
+
+
+    document
+        .getElementById(
+            "sessionModal"
+        )
+        .classList.add(
+            "show"
+        );
+
+}
+
+
 
 /* =========================================
    DELETE SESSION
