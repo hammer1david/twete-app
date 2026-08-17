@@ -1525,8 +1525,8 @@ body {
 .athlete-header-name {
     color: #ffffff;
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 700;
     margin-left: auto;
-    margin-right: 10px;
+    margin-right: 12px;
     white-space: nowrap;
 }
