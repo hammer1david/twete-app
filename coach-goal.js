@@ -1116,6 +1116,9 @@ function openSessionModal(
     weekId
 ) {
 
+
+   currentEditingSessionId = null;
+   
     currentWeekId =
         weekId;
 
