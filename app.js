@@ -13,6 +13,7 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
 
+
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
@@ -21,7 +22,15 @@ const supabaseClient =
 
 
 /* =========================================
-   MESSAGE
+   TWETE WEBSITE URL
+========================================= */
+
+const TWETE_URL =
+    "https://hammer1david.github.io/twete-app/";
+
+
+/* =========================================
+   SHOW MESSAGE
 ========================================= */
 
 function showMessage(message, type = "normal") {
@@ -34,15 +43,17 @@ function showMessage(message, type = "normal") {
     element.textContent = message;
 
     if (type === "error") {
+
         element.style.color = "#ff5555";
-    }
 
-    else if (type === "success") {
+    } else if (type === "success") {
+
         element.style.color = "#C6FF00";
-    }
 
-    else {
+    } else {
+
         element.style.color = "#ffffff";
+
     }
 }
 
@@ -94,7 +105,7 @@ async function login() {
         console.error(error);
 
         showMessage(
-            "Login failed. Please check your email and password.",
+            "Incorrect email or password.",
             "error"
         );
 
@@ -116,7 +127,7 @@ async function login() {
 
 
 /* =========================================
-   CHECK USER ROLE
+   REDIRECT USER ACCORDING TO ROLE
 ========================================= */
 
 async function redirectUser(user) {
@@ -172,123 +183,10 @@ async function redirectUser(user) {
 
 
 /* =========================================
-   COACH LOGIN
-========================================= */
-
-async function coachLogin() {
-
-    const email =
-        document.getElementById("email").value.trim();
-
-    const password =
-        document.getElementById("password").value;
-
-
-    if (!email || !password) {
-
-        showMessage(
-            "Enter your coach email and password.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const button =
-        document.getElementById("coachLoginButton");
-
-    button.disabled = true;
-
-    button.textContent = "Checking...";
-
-
-    const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-
-            email: email,
-
-            password: password
-
-        });
-
-
-    if (error) {
-
-        console.error(error);
-
-        showMessage(
-            "Login failed. Check your email and password.",
-            "error"
-        );
-
-        button.disabled = false;
-
-        button.textContent = "Coach Login";
-
-        return;
-    }
-
-
-    /* Check profile */
-
-    const { data: profile, error: profileError } =
-        await supabaseClient
-            .from("profiles")
-            .select("role")
-            .eq("id", data.user.id)
-            .single();
-
-
-    if (profileError) {
-
-        showMessage(
-            "Could not check your account.",
-            "error"
-        );
-
-        await supabaseClient.auth.signOut();
-
-        button.disabled = false;
-
-        button.textContent = "Coach Login";
-
-        return;
-    }
-
-
-    /* IMPORTANT:
-       Only a real coach account
-       can access coach.html.
-    */
-
-    if (profile.role !== "coach") {
-
-        showMessage(
-            "This account is not registered as a coach.",
-            "error"
-        );
-
-        await supabaseClient.auth.signOut();
-
-        button.disabled = false;
-
-        button.textContent = "Coach Login";
-
-        return;
-    }
-
-
-    window.location.href =
-        "coach.html";
-}
-
-
-/* =========================================
    CREATE ACCOUNT
 ========================================= */
 
-async function showSignup() {
+async function createAccount() {
 
     const email =
         document.getElementById("email").value.trim();
@@ -297,10 +195,21 @@ async function showSignup() {
         document.getElementById("password").value;
 
 
-    if (!email || !password) {
+    if (!email) {
 
         showMessage(
-            "Enter an email and password first.",
+            "Please enter your email address.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!password) {
+
+        showMessage(
+            "Please enter a password.",
             "error"
         );
 
@@ -319,18 +228,36 @@ async function showSignup() {
     }
 
 
-    showMessage(
-        "Creating your account...",
-        "normal"
-    );
+    const button =
+        document.getElementById("createAccountButton");
 
+    button.disabled = true;
+
+    button.textContent = "Creating account...";
+
+
+    /*
+       Check whether the email already has
+       an active session/account.
+
+       Supabase intentionally doesn't expose
+       arbitrary user existence checks from
+       browser JavaScript for security reasons.
+    */
 
     const { data, error } =
         await supabaseClient.auth.signUp({
 
             email: email,
 
-            password: password
+            password: password,
+
+            options: {
+
+                emailRedirectTo:
+                    TWETE_URL
+
+            }
 
         });
 
@@ -339,32 +266,68 @@ async function showSignup() {
 
         console.error(error);
 
-        showMessage(
-            error.message,
-            "error"
-        );
+
+        const message =
+            error.message.toLowerCase();
+
+
+        if (
+            message.includes("already registered") ||
+            message.includes("already exists") ||
+            message.includes("user already")
+        ) {
+
+            showMessage(
+                "This email is already registered.",
+                "error"
+            );
+
+        } else {
+
+            showMessage(
+                error.message,
+                "error"
+            );
+        }
+
+
+        button.disabled = false;
+
+        button.textContent = "Create a new account";
 
         return;
     }
 
 
-    if (data.session) {
+    /*
+       Supabase may return a user without a
+       session when email confirmation is required.
+    */
 
-        showMessage(
-            "Account created successfully!",
-            "success"
-        );
+    if (data.user) {
 
-        await redirectUser(data.user);
+        if (!data.session) {
 
-        return;
+            showMessage(
+                "Account created. Please check your email to confirm your account.",
+                "success"
+            );
+
+        } else {
+
+            showMessage(
+                "Account created successfully!",
+                "success"
+            );
+
+            await redirectUser(data.user);
+        }
     }
 
 
-    showMessage(
-        "Account created. Please check your email to confirm your account.",
-        "success"
-    );
+    button.disabled = false;
+
+    button.textContent = "Create a new account";
 }
 
 
@@ -406,7 +369,7 @@ async function forgotPassword() {
     if (!email) {
 
         showMessage(
-            "Enter your email first.",
+            "Please enter your email address first.",
             "error"
         );
 
@@ -416,11 +379,16 @@ async function forgotPassword() {
 
     const { error } =
         await supabaseClient.auth.resetPasswordForEmail(
-            email
+            email,
+            {
+                redirectTo: TWETE_URL
+            }
         );
 
 
     if (error) {
+
+        console.error(error);
 
         showMessage(
             error.message,
@@ -439,14 +407,14 @@ async function forgotPassword() {
 
 
 /* =========================================
-   ATHLETE HOME
+   LOGOUT
 ========================================= */
 
-function goHome() {
+async function logout() {
 
-    window.location.href =
-        "athlete.html";
+    await supabaseClient.auth.signOut();
 
+    window.location.href = "index.html";
 }
 
 
@@ -458,7 +426,6 @@ function openProfile() {
 
     window.location.href =
         "profile.html";
-
 }
 
 
@@ -493,7 +460,6 @@ function openGoal(goalId) {
 
         return;
     }
-
 }
 
 
@@ -505,12 +471,11 @@ function openMessages() {
 
     window.location.href =
         "messages.html";
-
 }
 
 
 /* =========================================
-   AUTO LOGIN CHECK
+   CHECK EXISTING SESSION
 ========================================= */
 
 async function checkExistingSession() {
@@ -524,14 +489,12 @@ async function checkExistingSession() {
     }
 
 
-    const user =
-        data.session.user;
-
-
     /*
-       We don't automatically redirect here yet.
-       This keeps the login page usable while
-       we're testing.
+       We intentionally don't automatically
+       redirect from the login page here.
+
+       The user can still see the login screen
+       while testing.
     */
 }
 
