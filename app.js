@@ -643,3 +643,66 @@ console.log(
 function openProfile() {
     window.location.href = "profile.html";
 }
+
+async function loadAthleteProfilePicture() {
+
+    const avatar =
+        document.getElementById(
+            "athleteProfileAvatar"
+        );
+
+    if (!avatar) {
+        return;
+    }
+
+    try {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabaseClient.auth.getUser();
+
+        if (!user) {
+            return;
+        }
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select("avatar_url")
+                .eq("id", user.id)
+                .maybeSingle();
+
+        if (error) {
+            console.error(
+                "Could not load profile picture:",
+                error
+            );
+            return;
+        }
+
+        if (data?.avatar_url) {
+
+            avatar.innerHTML = `
+                <img
+                    src="${data.avatar_url}?t=${Date.now()}"
+                    alt="Profile"
+                >
+            `;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Profile picture error:",
+            error
+        );
+    }
+}
+
+loadAthleteProfilePicture();
