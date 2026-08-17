@@ -2,14 +2,11 @@
    TWETE ATHLETE GOAL PAGE
 ========================================= */
 
-
 const GOAL_SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
-
 const GOAL_SUPABASE_KEY =
     "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
-
 
 const goalSupabase =
     window.supabase.createClient(
@@ -19,13 +16,9 @@ const goalSupabase =
 
 
 let currentGoal = null;
-
 let currentProgram = null;
-
 let currentWeeks = [];
-
 let currentSessions = [];
-
 let selectedWeekId = null;
 
 
@@ -46,7 +39,7 @@ document.addEventListener(
 
 
 /* =========================================
-   HOME
+   NAVIGATION
 ========================================= */
 
 function goHome() {
@@ -56,10 +49,6 @@ function goHome() {
 
 }
 
-
-/* =========================================
-   MESSAGES
-========================================= */
 
 function openMessages() {
 
@@ -80,17 +69,19 @@ async function loadGoalPage() {
             window.location.search
         );
 
-
     const goalId =
-        params.get(
-            "goal_id"
-        );
+        params.get("goal_id");
 
 
     try {
 
         let goal = null;
 
+
+        /*
+         * If goal_id is in the URL,
+         * load exactly that goal.
+         */
 
         if (goalId) {
 
@@ -122,11 +113,16 @@ async function loadGoalPage() {
             }
 
 
-            goal =
-                data;
+            goal = data;
 
         }
 
+
+        /*
+         * Fallback:
+         * newest goal belonging to
+         * the logged-in athlete.
+         */
 
         if (!goal) {
 
@@ -185,8 +181,7 @@ async function loadGoalPage() {
             }
 
 
-            goal =
-                data;
+            goal = data;
 
         }
 
@@ -201,13 +196,29 @@ async function loadGoalPage() {
         }
 
 
-        currentGoal =
-            goal;
+        currentGoal = goal;
 
+
+        /*
+         * Load program first because
+         * progress depends on its start date.
+         */
 
         await loadProgram();
 
+
+        /*
+         * Load weeks and sessions
+         * belonging to this program.
+         */
+
         await loadWeeks();
+
+
+        /*
+         * Render after all data has
+         * been loaded.
+         */
 
         renderGoal();
 
@@ -232,7 +243,7 @@ async function loadGoalPage() {
 
 
 /* =========================================
-   PROGRAM
+   LOAD PROGRAM
 ========================================= */
 
 async function loadProgram() {
@@ -242,8 +253,7 @@ async function loadProgram() {
         !currentGoal.program_id
     ) {
 
-        currentProgram =
-            null;
+        currentProgram = null;
 
         return;
     }
@@ -280,21 +290,19 @@ async function loadProgram() {
             error
         );
 
-        currentProgram =
-            null;
+        currentProgram = null;
 
         return;
     }
 
 
-    currentProgram =
-        data;
+    currentProgram = data;
 
 }
 
 
 /* =========================================
-   WEEKS + SESSIONS
+   LOAD WEEKS
 ========================================= */
 
 async function loadWeeks() {
@@ -305,7 +313,6 @@ async function loadWeeks() {
     ) {
 
         currentWeeks = [];
-
         currentSessions = [];
 
         return;
@@ -348,7 +355,6 @@ async function loadWeeks() {
         );
 
         currentWeeks = [];
-
         currentSessions = [];
 
         return;
@@ -356,9 +362,12 @@ async function loadWeeks() {
 
 
     currentWeeks =
-        weeks ||
-        [];
+        weeks || [];
 
+
+    /*
+     * No weeks.
+     */
 
     if (!currentWeeks.length) {
 
@@ -370,10 +379,18 @@ async function loadWeeks() {
 
     const weekIds =
         currentWeeks.map(
-            week =>
-                week.id
+            function (week) {
+
+                return week.id;
+
+            }
         );
 
+
+    /*
+     * Load only sessions belonging
+     * to the loaded weeks.
+     */
 
     const {
         data: sessions,
@@ -420,8 +437,7 @@ async function loadWeeks() {
 
 
     currentSessions =
-        sessions ||
-        [];
+        sessions || [];
 
 }
 
@@ -437,6 +453,13 @@ function renderGoal() {
     }
 
 
+    /*
+     * GOAL NAME
+     *
+     * Example:
+     * Berlin
+     */
+
     const title =
         document.querySelector(
             ".goal-main-info h2"
@@ -446,20 +469,71 @@ function renderGoal() {
     if (title) {
 
         title.textContent =
-            currentGoal.distance &&
-            currentGoal.target_time
-                ?
-                currentGoal.distance +
-                " — " +
-                currentGoal.target_time
-                :
-                (
-                    currentGoal.goal_name ||
-                    "Current Goal"
-                );
+            currentGoal.goal_name ||
+            "Current Goal";
 
     }
 
+
+    /*
+     * Show distance and target time
+     * below the Goal Name.
+     */
+
+    const description =
+        document.querySelector(
+            ".goal-main-info p"
+        );
+
+
+    if (description) {
+
+        const parts = [];
+
+
+        if (
+            currentGoal.distance !== null &&
+            currentGoal.distance !== undefined &&
+            currentGoal.distance !== ""
+        ) {
+
+            parts.push(
+                formatDistance(
+                    currentGoal.distance
+                )
+            );
+
+        }
+
+
+        if (
+            currentGoal.target_time !== null &&
+            currentGoal.target_time !== undefined &&
+            currentGoal.target_time !== ""
+        ) {
+
+            parts.push(
+                String(
+                    currentGoal.target_time
+                )
+            );
+
+        }
+
+
+        description.textContent =
+            parts.length
+                ?
+                parts.join(" — ")
+                :
+                "Training goal assigned by your coach.";
+
+    }
+
+
+    /*
+     * Target date.
+     */
 
     const date =
         document.querySelector(
@@ -479,32 +553,28 @@ function renderGoal() {
                     width="18"
                     height="17"
                     rx="2"
-                >
-                </rect>
+                ></rect>
 
                 <line
                     x1="8"
                     y1="2"
                     x2="8"
                     y2="6"
-                >
-                </line>
+                ></line>
 
                 <line
                     x1="16"
                     y1="2"
                     x2="16"
                     y2="6"
-                >
-                </line>
+                ></line>
 
                 <line
                     x1="3"
                     y1="10"
                     x2="21"
                     y2="10"
-                >
-                </line>
+                ></line>
 
             </svg>
 
@@ -524,19 +594,9 @@ function renderGoal() {
     }
 
 
-    const pb =
-        document.querySelector(
-            ".goal-main-info p"
-        );
-
-
-    if (pb) {
-
-        pb.textContent =
-            "Training goal assigned by your coach.";
-
-    }
-
+    /*
+     * Calculate progress.
+     */
 
     updateGoalProgress();
 
@@ -544,7 +604,7 @@ function renderGoal() {
 
 
 /* =========================================
-   GOAL PROGRESS
+   PROGRESS
 ========================================= */
 
 function updateGoalProgress() {
@@ -556,25 +616,21 @@ function updateGoalProgress() {
         !currentGoal.target_date
     ) {
 
-        setProgress(
-            0
-        );
+        setProgress(0);
 
         return;
     }
 
 
     const start =
-        new Date(
-            currentProgram.start_date +
-            "T00:00:00"
+        parseDate(
+            currentProgram.start_date
         );
 
 
     const end =
-        new Date(
-            currentGoal.target_date +
-            "T00:00:00"
+        parseDate(
+            currentGoal.target_date
         );
 
 
@@ -592,9 +648,16 @@ function updateGoalProgress() {
         );
 
 
-    if (
-        totalDays <= 0
-    ) {
+    /*
+     * Same calculation as agreed:
+     *
+     * 5 days = 20% per day
+     * 100 days = 1% per day
+     *
+     * On the start date = 0%.
+     */
+
+    if (totalDays <= 0) {
 
         setProgress(
             today >= end
@@ -605,7 +668,6 @@ function updateGoalProgress() {
         );
 
         return;
-
     }
 
 
@@ -614,7 +676,7 @@ function updateGoalProgress() {
             0,
             Math.min(
                 totalDays,
-                Math.round(
+                Math.floor(
                     (
                         today -
                         start
@@ -634,13 +696,7 @@ function updateGoalProgress() {
 
 
     setProgress(
-        Math.max(
-            0,
-            Math.min(
-                100,
-                percentage
-            )
-        )
+        percentage
     );
 
 }
@@ -662,11 +718,21 @@ function setProgress(
         );
 
 
+    const safePercentage =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                Number(
+                    percentage
+                ) || 0
+            )
+        );
+
+
     if (circle) {
 
-        const radius =
-            50;
-
+        const radius = 50;
 
         const circumference =
             2 *
@@ -681,7 +747,7 @@ function setProgress(
         circle.style.strokeDashoffset =
             circumference -
             (
-                percentage /
+                safePercentage /
                 100
             ) *
             circumference;
@@ -693,7 +759,7 @@ function setProgress(
 
         number.textContent =
             Math.round(
-                percentage
+                safePercentage
             ) +
             "%";
 
@@ -714,12 +780,6 @@ function renderWeeks() {
         );
 
 
-    const indicator =
-        document.querySelector(
-            ".week-indicator-fill"
-        );
-
-
     if (!selector) {
         return;
     }
@@ -730,7 +790,9 @@ function renderWeeks() {
         selector.innerHTML = `
 
             <div class="athlete-empty">
+
                 No training weeks yet.
+
             </div>
 
         `;
@@ -744,8 +806,15 @@ function renderWeeks() {
 
         if (list) {
 
-            list.innerHTML =
-                "";
+            list.innerHTML = `
+
+                <div class="athlete-empty">
+
+                    No training sessions yet.
+
+                </div>
+
+            `;
 
         }
 
@@ -754,6 +823,11 @@ function renderWeeks() {
     }
 
 
+    /*
+     * Automatically select the
+     * week containing today's date.
+     */
+
     selectedWeekId =
         chooseCurrentWeek();
 
@@ -761,7 +835,7 @@ function renderWeeks() {
     selector.innerHTML =
         currentWeeks
             .map(
-                function(week) {
+                function (week) {
 
                     const active =
                         week.id ===
@@ -777,6 +851,7 @@ function renderWeeks() {
                     return `
 
                         <button
+                            type="button"
                             class="
                                 week-button
                                 ${active ? "active" : ""}
@@ -784,7 +859,9 @@ function renderWeeks() {
                             "
                             onclick="
                                 selectWeek(
-                                    '${week.id}'
+                                    '${escapeAttribute(
+                                        week.id
+                                    )}'
                                 )
                             "
                         >
@@ -815,6 +892,53 @@ function renderWeeks() {
                                 ""
                             }
 
+
+                            ${
+                                week.weekly_km !== null &&
+                                week.weekly_km !== undefined &&
+                                week.weekly_km !== ""
+                                ?
+                                `
+                                <small class="weekly-mileage">
+
+                                    ${escapeHtml(
+                                        formatWeeklyKm(
+                                            week.weekly_km
+                                        )
+                                    )}
+
+                                </small>
+                                `
+                                :
+                                ""
+                            }
+
+
+                            ${
+                                week.start_date &&
+                                week.end_date
+                                ?
+                                `
+                                <small class="week-dates">
+
+                                    ${escapeHtml(
+                                        formatShortDate(
+                                            week.start_date
+                                        )
+                                    )}
+                                    –
+                                    ${escapeHtml(
+                                        formatShortDate(
+                                            week.end_date
+                                        )
+                                    )}
+
+                                </small>
+                                `
+                                :
+                                ""
+                            }
+
                         </button>
 
                     `;
@@ -831,6 +955,10 @@ function renderWeeks() {
 }
 
 
+/* =========================================
+   CURRENT WEEK
+========================================= */
+
 function chooseCurrentWeek() {
 
     const today =
@@ -839,7 +967,7 @@ function chooseCurrentWeek() {
 
     const current =
         currentWeeks.find(
-            function(week) {
+            function (week) {
 
                 if (
                     !week.start_date ||
@@ -847,21 +975,18 @@ function chooseCurrentWeek() {
                 ) {
 
                     return false;
-
                 }
 
 
                 const start =
-                    new Date(
-                        week.start_date +
-                        "T00:00:00"
+                    parseDate(
+                        week.start_date
                     );
 
 
                 const end =
-                    new Date(
-                        week.end_date +
-                        "T23:59:59"
+                    parseDate(
+                        week.end_date
                     );
 
 
@@ -883,6 +1008,10 @@ function chooseCurrentWeek() {
 }
 
 
+/* =========================================
+   WEEK STATE
+========================================= */
+
 function getWeekState(
     week
 ) {
@@ -896,9 +1025,8 @@ function getWeekState(
     ) {
 
         const end =
-            new Date(
-                week.end_date +
-                "T23:59:59"
+            parseDate(
+                week.end_date
             );
 
 
@@ -919,16 +1047,14 @@ function getWeekState(
     ) {
 
         const start =
-            new Date(
-                week.start_date +
-                "T00:00:00"
+            parseDate(
+                week.start_date
             );
 
 
         const end =
-            new Date(
-                week.end_date +
-                "T23:59:59"
+            parseDate(
+                week.end_date
             );
 
 
@@ -949,6 +1075,10 @@ function getWeekState(
 }
 
 
+/* =========================================
+   SELECT WEEK
+========================================= */
+
 function selectWeek(
     weekId
 ) {
@@ -962,7 +1092,7 @@ function selectWeek(
             ".week-button"
         )
         .forEach(
-            function(button) {
+            function (button) {
 
                 button.classList.remove(
                     "active"
@@ -974,11 +1104,15 @@ function selectWeek(
 
     const index =
         currentWeeks.findIndex(
-            function(week) {
+            function (week) {
 
                 return (
-                    week.id ===
-                    weekId
+                    String(
+                        week.id
+                    ) ===
+                    String(
+                        weekId
+                    )
                 );
 
             }
@@ -997,9 +1131,7 @@ function selectWeek(
 
         buttons[index]
             .classList
-            .add(
-                "active"
-            );
+            .add("active");
 
     }
 
@@ -1010,6 +1142,10 @@ function selectWeek(
 
 }
 
+
+/* =========================================
+   WEEK INDICATOR
+========================================= */
 
 function updateWeekIndicator() {
 
@@ -1026,11 +1162,15 @@ function updateWeekIndicator() {
 
     const index =
         currentWeeks.findIndex(
-            function(week) {
+            function (week) {
 
                 return (
-                    week.id ===
-                    selectedWeekId
+                    String(
+                        week.id
+                    ) ===
+                    String(
+                        selectedWeekId
+                    )
                 );
 
             }
@@ -1038,7 +1178,7 @@ function updateWeekIndicator() {
 
 
     const percentage =
-        currentWeeks.length
+        currentWeeks.length > 0
             ?
             (
                 (
@@ -1052,14 +1192,17 @@ function updateWeekIndicator() {
 
 
     indicator.style.width =
-        percentage +
+        Math.max(
+            0,
+            percentage
+        ) +
         "%";
 
 }
 
 
 /* =========================================
-   SESSIONS
+   SELECTED WEEK SESSIONS
 ========================================= */
 
 function renderSelectedWeek() {
@@ -1077,11 +1220,15 @@ function renderSelectedWeek() {
 
     const week =
         currentWeeks.find(
-            function(item) {
+            function (item) {
 
                 return (
-                    item.id ===
-                    selectedWeekId
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        selectedWeekId
+                    )
                 );
 
             }
@@ -1090,21 +1237,31 @@ function renderSelectedWeek() {
 
     if (!week) {
 
-        list.innerHTML =
-            "";
+        list.innerHTML = `
+
+            <div class="athlete-empty">
+
+                No training week selected.
+
+            </div>
+
+        `;
 
         return;
-
     }
 
 
     const sessions =
         currentSessions.filter(
-            function(session) {
+            function (session) {
 
                 return (
-                    session.week_id ===
-                    week.id
+                    String(
+                        session.week_id
+                    ) ===
+                    String(
+                        week.id
+                    )
                 );
 
             }
@@ -1144,9 +1301,8 @@ function createSessionCard(
 
 
     const sessionDate =
-        new Date(
-            session.workout_date +
-            "T00:00:00"
+        parseDate(
+            session.workout_date
         );
 
 
@@ -1160,18 +1316,20 @@ function createSessionCard(
         today;
 
 
-    const stateClass =
-        isToday
-            ?
-            " today-workout"
-            :
-            (
-                isPast
-                    ?
-                    " past-workout"
-                    :
-                    ""
-            );
+    let stateClass = "";
+
+
+    if (isToday) {
+
+        stateClass =
+            " today-workout";
+
+    } else if (isPast) {
+
+        stateClass =
+            " past-workout";
+
+    }
 
 
     const day =
@@ -1193,17 +1351,27 @@ function createSessionCard(
         );
 
 
+    /*
+     * Session details:
+     *
+     * 10 km
+     * 45 min
+     * 4:30 /km
+     */
+
     const details = [];
 
 
     if (
         session.distance_km !== null &&
-        session.distance_km !== undefined
+        session.distance_km !== undefined &&
+        session.distance_km !== ""
     ) {
 
         details.push(
-            session.distance_km +
-            " km"
+            formatDistance(
+                session.distance_km
+            )
         );
 
     }
@@ -1211,25 +1379,42 @@ function createSessionCard(
 
     if (
         session.duration_minutes !== null &&
-        session.duration_minutes !== undefined
+        session.duration_minutes !== undefined &&
+        session.duration_minutes !== ""
     ) {
 
         details.push(
-            session.duration_minutes +
-            " min"
+            formatMinutes(
+                session.duration_minutes
+            )
         );
 
     }
 
 
-    if (session.pace) {
+    if (
+        session.pace !== null &&
+        session.pace !== undefined &&
+        session.pace !== ""
+    ) {
 
         details.push(
-            session.pace +
-            " /km"
+            formatPace(
+                session.pace
+            )
         );
 
     }
+
+
+    /*
+     * Coach note.
+     */
+
+    const coachNote =
+        getCoachNote(
+            session.notes
+        );
 
 
     return `
@@ -1241,22 +1426,33 @@ function createSessionCard(
             "
         >
 
+
+            <!-- DATE -->
+
             <div class="workout-day">
 
                 <strong>
+
                     ${escapeHtml(
                         day
                     )}
+
                 </strong>
 
+
                 <span>
+
                     ${escapeHtml(
                         date
                     )}
+
                 </span>
 
             </div>
 
+
+
+            <!-- RUN ICON -->
 
             <div class="workout-icon run-icon">
 
@@ -1264,30 +1460,30 @@ function createSessionCard(
 
                     <path
                         d="M13 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
-                    >
-                    </path>
+                    ></path>
 
                     <path
                         d="M9 8l4-2 3 4"
-                    >
-                    </path>
+                    ></path>
 
                     <path
                         d="M8 22l3-7 4-3"
-                    >
-                    </path>
+                    ></path>
 
                     <path
                         d="M5 14l4-2"
-                    >
-                    </path>
+                    ></path>
 
                 </svg>
 
             </div>
 
 
+
+            <!-- SESSION INFORMATION -->
+
             <div class="workout-info">
+
 
                 <h3>
 
@@ -1298,6 +1494,7 @@ function createSessionCard(
                     )}
 
                 </h3>
+
 
 
                 ${
@@ -1319,6 +1516,7 @@ function createSessionCard(
                 }
 
 
+
                 ${
                     session.workout_type
                     ?
@@ -1336,6 +1534,43 @@ function createSessionCard(
                 }
 
 
+
+                <!-- COACH NOTE -->
+
+                ${
+                    coachNote
+                    ?
+                    `
+                    <div class="coach-note">
+
+                        <span class="coach-note-label">
+
+                            COACH NOTE
+
+                        </span>
+
+
+                        <div class="coach-note-text">
+
+                            ${escapeHtml(
+                                coachNote
+                            ).replaceAll(
+                                "\n",
+                                "<br>"
+                            )}
+
+                        </div>
+
+                    </div>
+                    `
+                    :
+                    ""
+                }
+
+
+
+                <!-- TODAY -->
+
                 ${
                     isToday
                     ?
@@ -1351,12 +1586,17 @@ function createSessionCard(
                 }
 
 
+
+                <!-- FEEDBACK -->
+
                 <button
                     class="feedback-button"
                     type="button"
                     onclick="
                         addSessionFeedback(
-                            '${session.id}'
+                            '${escapeAttribute(
+                                session.id
+                            )}'
                         )
                     "
                 >
@@ -1373,6 +1613,7 @@ function createSessionCard(
 
                 </button>
 
+
             </div>
 
         </article>
@@ -1383,7 +1624,50 @@ function createSessionCard(
 
 
 /* =========================================
-   FEEDBACK
+   COACH NOTE
+========================================= */
+
+function getCoachNote(
+    notes
+) {
+
+    if (
+        !notes ||
+        typeof notes !== "string"
+    ) {
+
+        return "";
+
+    }
+
+
+    /*
+     * The Coach Note is everything
+     * before Athlete feedback.
+     */
+
+    if (
+        notes.includes(
+            "Athlete feedback:"
+        )
+    ) {
+
+        return notes
+            .split(
+                "Athlete feedback:"
+            )[0]
+            .trim();
+
+    }
+
+
+    return notes.trim();
+
+}
+
+
+/* =========================================
+   ATHLETE FEEDBACK
 ========================================= */
 
 function hasAthleteFeedback(
@@ -1424,17 +1708,25 @@ function getAthleteFeedback(
 }
 
 
+/* =========================================
+   ADD FEEDBACK
+========================================= */
+
 async function addSessionFeedback(
     sessionId
 ) {
 
     const session =
         currentSessions.find(
-            function(item) {
+            function (item) {
 
                 return (
-                    item.id ===
-                    sessionId
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        sessionId
+                    )
                 );
 
             }
@@ -1460,12 +1752,10 @@ async function addSessionFeedback(
 
 
     if (
-        feedback ===
-        null
+        feedback === null
     ) {
 
         return;
-
     }
 
 
@@ -1473,38 +1763,27 @@ async function addSessionFeedback(
         feedback.trim();
 
 
-    let originalNotes =
-        session.notes ||
-        "";
+    /*
+     * Preserve the Coach Note.
+     */
 
-
-    if (
-        hasAthleteFeedback(
-            originalNotes
-        )
-    ) {
-
-        originalNotes =
-            originalNotes
-                .split(
-                    "Athlete feedback:"
-                )[0]
-                .trim();
-
-    }
+    const coachNote =
+        getCoachNote(
+            session.notes
+        );
 
 
     let newNotes =
-        originalNotes;
+        coachNote;
 
 
     if (cleaned) {
 
         newNotes =
-            originalNotes
+            coachNote
                 ?
                 (
-                    originalNotes +
+                    coachNote +
                     "\n\nAthlete feedback:\n" +
                     cleaned
                 )
@@ -1521,11 +1800,9 @@ async function addSessionFeedback(
         await goalSupabase
             .from("workouts")
             .update({
-
                 notes:
                     newNotes ||
                     null
-
             })
             .eq(
                 "id",
@@ -1545,9 +1822,7 @@ async function addSessionFeedback(
             "Could not save your feedback."
         );
 
-
         return;
-
     }
 
 
@@ -1562,7 +1837,7 @@ async function addSessionFeedback(
 
 
 /* =========================================
-   OLD FUNCTIONS
+   EXISTING BUTTON FUNCTIONS
 ========================================= */
 
 function toggleWorkout() {
@@ -1607,8 +1882,204 @@ function addFeedback() {
 
 
 /* =========================================
-   HELPERS
+   FORMATTING
 ========================================= */
+
+function formatDistance(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "";
+
+    }
+
+
+    const number =
+        Number(
+            value
+        );
+
+
+    if (
+        Number.isFinite(
+            number
+        )
+    ) {
+
+        return (
+            number % 1 === 0
+                ?
+                number.toString()
+                :
+                number.toFixed(2)
+                    .replace(
+                        /0+$/,
+                        ""
+                    )
+                    .replace(
+                        /\.$/,
+                        ""
+                    )
+        ) +
+        " km";
+
+    }
+
+
+    return String(
+        value
+    ) +
+    " km";
+
+}
+
+
+function formatMinutes(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "";
+
+    }
+
+
+    return (
+        String(
+            value
+        ) +
+        " min"
+    );
+
+}
+
+
+function formatPace(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "";
+
+    }
+
+
+    const pace =
+        String(
+            value
+        ).trim();
+
+
+    /*
+     * Do not add /km twice.
+     */
+
+    if (
+        pace.toLowerCase()
+            .includes(
+                "/km"
+            )
+    ) {
+
+        return pace;
+
+    }
+
+
+    return pace +
+        " /km";
+
+}
+
+
+function formatWeeklyKm(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "";
+
+    }
+
+
+    return formatDistance(
+        value
+    );
+
+}
+
+
+/* =========================================
+   DATE HELPERS
+========================================= */
+
+function parseDate(
+    value
+) {
+
+    if (
+        value instanceof Date
+    ) {
+
+        const result =
+            new Date(
+                value
+            );
+
+        result.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+        return result;
+
+    }
+
+
+    const date =
+        new Date(
+            String(
+                value
+            ) +
+            "T00:00:00"
+        );
+
+
+    date.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    return date;
+
+}
+
 
 function startOfToday() {
 
@@ -1638,9 +2109,8 @@ function formatDate(
     }
 
 
-    return new Date(
-        value +
-        "T00:00:00"
+    return parseDate(
+        value
     ).toLocaleDateString(
         "en-US",
         {
@@ -1653,13 +2123,38 @@ function formatDate(
 }
 
 
+function formatShortDate(
+    value
+) {
+
+    if (!value) {
+        return "";
+    }
+
+
+    return parseDate(
+        value
+    ).toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric"
+        }
+    );
+
+}
+
+
+/* =========================================
+   SECURITY / TEXT
+========================================= */
+
 function escapeHtml(
     value
 ) {
 
     return String(
-        value ??
-        ""
+        value ?? ""
     )
         .replaceAll(
             "&",
@@ -1684,6 +2179,29 @@ function escapeHtml(
 
 }
 
+
+function escapeAttribute(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replaceAll(
+            "\\",
+            "\\\\"
+        )
+        .replaceAll(
+            "'",
+            "\\'"
+        );
+
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
 
 function showError(
     message
@@ -1729,7 +2247,7 @@ function showError(
 
 
 /* =========================================
-   DYNAMIC ATHLETE STYLES
+   DYNAMIC STYLES
 ========================================= */
 
 function injectAthleteGoalStyles() {
@@ -1741,7 +2259,6 @@ function injectAthleteGoalStyles() {
     ) {
 
         return;
-
     }
 
 
@@ -1757,6 +2274,8 @@ function injectAthleteGoalStyles() {
 
     style.textContent = `
 
+        /* EMPTY */
+
         .athlete-empty {
 
             color: #777;
@@ -1767,6 +2286,8 @@ function injectAthleteGoalStyles() {
 
         }
 
+
+        /* WEEK */
 
         .week-button {
 
@@ -1792,12 +2313,49 @@ function injectAthleteGoalStyles() {
         }
 
 
-        .week-button.current-week {
+        /* WEEKLY MILEAGE */
 
-            border-color: #C6FF00 !important;
+        .week-button .weekly-mileage {
+
+            color: #C6FF00 !important;
+
+            font-size: 9px !important;
+
+            font-weight: 700;
+
+            margin-top: 4px;
 
         }
 
+
+        /* WEEK DATES */
+
+        .week-button .week-dates {
+
+            color: #777;
+
+            font-size: 8px;
+
+            font-weight: 400;
+
+            text-transform: none;
+
+            letter-spacing: 0;
+
+        }
+
+
+        /* CURRENT WEEK */
+
+        .week-button.current-week {
+
+            border-color:
+                #C6FF00 !important;
+
+        }
+
+
+        /* PAST WEEK */
 
         .week-button.past-week {
 
@@ -1807,6 +2365,8 @@ function injectAthleteGoalStyles() {
 
         }
 
+
+        /* PAST SESSION */
 
         .workout-card.past-workout {
 
@@ -1820,6 +2380,8 @@ function injectAthleteGoalStyles() {
         }
 
 
+        /* TODAY */
+
         .workout-card.today-workout {
 
             border-color:
@@ -1827,7 +2389,12 @@ function injectAthleteGoalStyles() {
 
             box-shadow:
                 0 0 0 1px
-                rgba(198,255,0,.12);
+                rgba(
+                    198,
+                    255,
+                    0,
+                    .12
+                );
 
         }
 
@@ -1849,6 +2416,67 @@ function injectAthleteGoalStyles() {
         }
 
 
+        /* COACH NOTE */
+
+        .coach-note {
+
+            margin-top: 10px;
+
+            padding: 10px 12px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .035
+                );
+
+            border-left:
+                2px solid
+                #C6FF00;
+
+            border-radius: 5px;
+
+        }
+
+
+        .coach-note-label {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #C6FF00;
+
+            font-size: 8px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .coach-note-text {
+
+            color: #aaa;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+
+            white-space: normal;
+
+            overflow-wrap: anywhere;
+
+            word-break: break-word;
+
+        }
+
+
+        /* FEEDBACK */
+
         .feedback-button {
 
             display: block;
@@ -1859,7 +2487,9 @@ function injectAthleteGoalStyles() {
 
             color: #C6FF00;
 
-            border: 1px solid #333;
+            border:
+                1px solid
+                #333;
 
             border-radius: 7px;
 
@@ -1874,7 +2504,8 @@ function injectAthleteGoalStyles() {
 
         .feedback-button:hover {
 
-            border-color: #C6FF00;
+            border-color:
+                #C6FF00;
 
         }
 
@@ -1885,4 +2516,4 @@ function injectAthleteGoalStyles() {
         style
     );
 
-}
+                               }
