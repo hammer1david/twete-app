@@ -477,6 +477,73 @@ textarea {
     -webkit-backdrop-filter: blur(12px);
 }
 
+
+/* =========================================
+   ATTACHMENT BUTTON
+========================================= */
+
+.attachment-input {
+    display: none;
+}
+
+.attachment-button {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #333;
+
+    border-radius: 50%;
+
+    background: #111;
+
+    color: #aaa;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition:
+        border-color .2s ease,
+        color .2s ease,
+        background .2s ease;
+}
+
+.attachment-button:hover {
+    border-color: #C6FF00;
+
+    color: #C6FF00;
+
+    background: #151515;
+}
+
+.attachment-button:active {
+    transform: scale(.96);
+}
+
+.attachment-button svg {
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* =========================================
+   TEXTAREA
+========================================= */
+
 .message-composer textarea {
     flex: 1;
 
@@ -509,6 +576,11 @@ textarea {
 .message-composer textarea::placeholder {
     color: #666;
 }
+
+
+/* =========================================
+   SEND BUTTON
+========================================= */
 
 #sendButton {
     width: 43px;
@@ -663,4 +735,4 @@ textarea {
         gap: 45px;
     }
 
-    }
+}
