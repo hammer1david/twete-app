@@ -389,6 +389,7 @@ function renderGoals() {
 
                     <div
                         class="goal-card"
+                        onclick="openGoal('${goal.id}')"
                     >
 
                         <div
@@ -469,6 +470,22 @@ function renderGoals() {
 
             })
             .join("");
+}
+
+
+/* =========================================
+   OPEN GOAL
+========================================= */
+
+function openGoal(goalId) {
+
+    if (!goalId) {
+        return;
+    }
+
+    window.location.href =
+        "coach-goal.html?goal_id=" +
+        encodeURIComponent(goalId);
 }
 
 
