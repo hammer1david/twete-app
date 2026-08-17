@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Twete Coach | Athlete</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #050505;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+        /* HEADER */
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            color: #C6FF00;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .back-button {
+            border: 1px solid #333;
+            background: #101010;
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            border-color: #C6FF00;
+        }
+
+        /* ATHLETE PROFILE */
+
+        .profile-card {
+            background: #101010;
+            border: 1px solid #252525;
+            border-radius: 16px;
+            padding: 24px;
+
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            margin-bottom: 30px;
+        }
+
+        .profile-picture {
+            width: 90px;
+            height: 90px;
+            min-width: 90px;
+
+            border-radius: 50%;
+            object-fit: cover;
+
+            background: #222;
+        }
+
+        .profile-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #C6FF00;
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .profile-info h1 {
+            margin: 0 0 7px;
+            font-size: 28px;
+        }
+
+        .profile-email {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .profile-details {
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        /* GOALS */
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .add-goal-button {
+            border: none;
+            background: #C6FF00;
+            color: #050505;
+
+            padding: 11px 17px;
+
+            border-radius: 8px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        .add-goal-button:hover {
+            opacity: 0.9;
+        }
+
+        /* GOAL CARDS */
+
+        .goals-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .goal-card {
+            background: #101010;
+            border: 1px solid #252525;
+            border-radius: 13px;
+
+            padding: 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+        }
+
+        .goal-main {
+            flex: 1;
+        }
+
+        .goal-distance {
+            color: #C6FF00;
+            font-size: 18px;
+            font-weight: 800;
+
+            margin-bottom: 7px;
+        }
+
+        .goal-target {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .goal-info {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .delete-button {
+            border: 1px solid #333;
+            background: #181818;
+            color: #ff6b6b;
+
+            padding: 9px 12px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            border-color: #ff6b6b;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            border: 1px dashed #333;
+            border-radius: 12px;
+
+            padding: 30px;
+
+            text-align: center;
+
+            color: #777;
+        }
+
+        .loading {
+            color: #888;
+            padding: 30px 0;
+        }
+
+        .error {
+            color: #ff6666;
+        }
+
+        /* MODAL */
+
+        .modal-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            z-index: 100;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 480px;
+
+            background: #111111;
+
+            border: 1px solid #292929;
+
+            border-radius: 15px;
+
+            padding: 24px;
+        }
+
+        .modal h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+
+            color: #aaa;
+
+            font-size: 12px;
+
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+
+            padding: 12px;
+
+            background: #080808;
+
+            border: 1px solid #303030;
+
+            border-radius: 7px;
+
+            color: #ffffff;
+
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #C6FF00;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+        .cancel-button {
+            border: 1px solid #333;
+            background: #181818;
+            color: white;
+
+            padding: 10px 15px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+        }
+
+        .save-button {
+            border: none;
+            background: #C6FF00;
+            color: #050505;
+
+            padding: 10px 17px;
+
+            border-radius: 7px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 20px 15px 50px;
+            }
+
+            .profile-card {
+                align-items: flex-start;
+            }
+
+            .profile-picture {
+                width: 70px;
+                height: 70px;
+                min-width: 70px;
+            }
+
+            .profile-info h1 {
+                font-size: 22px;
+            }
+
+            .goal-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .goal-actions {
+                width: 100%;
+            }
+
+            .delete-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- HEADER -->
+
+    <div class="topbar">
+
+        <div class="logo">
+            TWETE
+        </div>
+
+        <button
+            class="back-button"
+            onclick="goBack()"
+        >
+            ← Athletes
+        </button>
+
+    </div>
+
+
+    <!-- ATHLETE -->
+
+    <div
+        class="profile-card"
+        id="athleteProfile"
+    >
+
+        <div class="loading">
+            Loading athlete...
+        </div>
+
+    </div>
+
+
+    <!-- GOALS -->
+
+    <section>
+
+        <div class="section-header">
+
+            <h2>
+                Goals
+            </h2>
+
+            <button
+                class="add-goal-button"
+                onclick="openGoalModal()"
+            >
+                + Add Goal
+            </button>
+
+        </div>
+
+
+        <div
+            class="goals-list"
+            id="goalsList"
+        >
+
+            <div class="loading">
+                Loading goals...
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<!-- =========================================
+     ADD GOAL MODAL
+========================================= -->
+
+<div
+    class="modal-overlay"
+    id="goalModal"
+>
+
+    <div class="modal">
+
+        <h2>
+            Add Goal
+        </h2>
+
+
+        <div class="form-group">
+
+            <label>
+                Distance
+            </label>
+
+            <select
+                id="goalDistance"
+            >
+
+                <option value="1500 m">
+                    1500 m
+                </option>
+
+                <option value="3000 m">
+                    3000 m
+                </option>
+
+                <option value="5000 m">
+                    5000 m
+                </option>
+
+                <option value="10 km">
+                    10 km
+                </option>
+
+                <option value="Half Marathon">
+                    Half Marathon
+                </option>
+
+                <option value="Marathon">
+                    Marathon
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Current PB
+            </label>
+
+            <input
+                id="goalCurrentPB"
+                type="text"
+                placeholder="e.g. 14:40"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Target Time
+            </label>
+
+            <input
+                id="goalTargetTime"
+                type="text"
+                placeholder="e.g. 14:20"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Target Date
+            </label>
+
+            <input
+                id="goalTargetDate"
+                type="date"
+            >
+
+        </div>
+
+
+        <div class="modal-buttons">
+
+            <button
+                class="cancel-button"
+                onclick="closeGoalModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="save-button"
+                onclick="saveGoal()"
+            >
+                Save Goal
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script src="coach-athlete.js"></script>
+
+
+</body>
+
+</html>
