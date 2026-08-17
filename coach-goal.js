@@ -873,18 +873,31 @@ function createSessionCard(
             </div>
 
 
-            <button
-                class="delete-session-button"
-                onclick="
-                    deleteSession(
-                        '${session.id}'
-                    )
-                "
-            >
+            <div class="session-actions">
 
-                🗑 Delete Session
+    <button
+        class="edit-session-button"
+        onclick="
+            editSession(
+                '${session.id}'
+            )
+        "
+    >
+        ✎ Edit
+    </button>
 
-            </button>
+    <button
+        class="delete-session-button"
+        onclick="
+            deleteSession(
+                '${session.id}'
+            )
+        "
+    >
+        🗑 Delete
+    </button>
+
+</div>
 
 
         </div>
