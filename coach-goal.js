@@ -841,17 +841,7 @@ function createSessionCard(
             </div>
 
 
-            <div>
-
-                <div class="session-title">
-
-                    ${escapeHtml(
-                        session.title
-                    )}
-
-                </div>
-
-<div>
+      <div>
 
     <div class="session-title">
 
