@@ -851,55 +851,57 @@ function createSessionCard(
 
                 </div>
 
+<div>
 
-               <div class="session-details">
+    <div class="session-title">
 
-    ${escapeHtml(
-        session.workout_type ||
-        ""
-    )}
+        ${escapeHtml(
+            session.title
+        )}
+
+    </div>
+
+
+    <div class="session-details">
+
+        ${escapeHtml(
+            session.workout_type || ""
+        )}
+
+        ${
+            details
+            ?
+            " • " +
+            escapeHtml(details)
+            :
+            ""
+        }
+
+    </div>
+
 
     ${
-        details
+        session.notes
         ?
-        " • " +
-        escapeHtml(
-            details
-        )
+        `
+        <div class="session-notes">
+
+            <div class="session-notes-label">
+                Notes
+            </div>
+
+            <div class="session-notes-box">
+                ${escapeHtml(session.notes)}
+            </div>
+
+        </div>
+        `
         :
         ""
     }
 
-    ${
-    session.notes
-    ?
-    `
-    <div style="
-        margin-top:8px;
-        padding:8px 10px;
-        background:#0b0b0b;
-        border:1px solid #292929;
-        border-radius:7px;
-        color:#bdbdbd;
-        font-size:13px;
-        line-height:1.5;
-        width:100%;
-        max-width:100%;
-        min-height:0;
-        height:auto;
-        overflow-wrap:anywhere;
-        word-break:break-word;
-        white-space:pre-wrap;
-    ">
-        ${escapeHtml(session.notes)}
-    </div>
-    `
-    :
-    ""
-}
-    
-
 </div>
+               
 
             </div>
 
