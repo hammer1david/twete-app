@@ -53,6 +53,7 @@ button {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 30px;
+    gap: 15px;
 }
 
 .logo {
@@ -69,16 +70,49 @@ button {
     margin-top: 3px;
 }
 
-.back-button {
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.back-button,
+.update-athlete-button {
     background: #111;
-    border: 1px solid #333;
     color: white;
     padding: 10px 15px;
     border-radius: 8px;
 }
 
+.back-button {
+    border: 1px solid #333;
+}
+
 .back-button:hover {
     border-color: #C6FF00;
+}
+
+.update-athlete-button {
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.update-athlete-button:hover {
+    border-color: #C6FF00;
+}
+
+.update-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff8a00;
+    flex-shrink: 0;
+}
+
+.update-status-dot.green {
+    background: #45d483;
 }
 
 
@@ -197,7 +231,6 @@ button {
     width: 0%;
     height: 100%;
     background: #C6FF00;
-    transition: width 1.2s ease;
 }
 
 .progress-number {
@@ -244,6 +277,23 @@ button {
     border: 1px solid #292929;
     border-radius: 10px;
     overflow: hidden;
+
+    transition:
+        opacity 0.3s ease,
+        filter 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.week-card.past-week {
+    opacity: 0.42;
+    filter: grayscale(0.7);
+}
+
+.week-card.current-week {
+    border-color: #C6FF00;
+    box-shadow:
+        0 0 0 1px
+        rgba(198,255,0,0.08);
 }
 
 .week-header {
@@ -276,12 +326,30 @@ button {
 .week-title {
     font-size: 14px;
     font-weight: 800;
+    white-space: nowrap;
 }
 
 .week-dates {
     color: #777;
     font-size: 11px;
     flex: 1;
+    min-width: 0;
+}
+
+.week-label {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 7px;
+
+    border: 1px solid #333;
+    border-radius: 5px;
+
+    color: #C6FF00;
+    font-size: 9px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .week-km {
@@ -346,7 +414,10 @@ button {
     padding: 12px;
 
     display: grid;
-    grid-template-columns: 85px minmax(0, 1fr) auto;
+    grid-template-columns:
+        85px
+        minmax(0, 1fr)
+        auto;
 
     align-items: start;
     gap: 15px;
@@ -626,6 +697,19 @@ button {
         padding: 18px 12px 60px;
     }
 
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .topbar-actions {
+        width: 100%;
+    }
+
+    .topbar-actions button {
+        flex: 1;
+    }
+
     .goal-top {
         align-items: flex-start;
         flex-direction: column;
@@ -668,7 +752,9 @@ button {
     }
 
     .session-card {
-        grid-template-columns: 65px minmax(0, 1fr);
+        grid-template-columns:
+            65px
+            minmax(0, 1fr);
     }
 
     .session-actions {
@@ -685,7 +771,8 @@ button {
         gap: 10px;
     }
 
-    .back-button {
+    .back-button,
+    .update-athlete-button {
         font-size: 11px;
         padding: 8px 10px;
     }
@@ -738,12 +825,32 @@ button {
 
         </div>
 
-        <button
-            class="back-button"
-            onclick="goBack()"
-        >
-            ← Back to Athlete
-        </button>
+
+        <div class="topbar-actions">
+
+            <button
+                class="update-athlete-button"
+                onclick="updateAthlete()"
+            >
+
+                <span
+                    id="updateStatusDot"
+                    class="update-status-dot"
+                ></span>
+
+                Update Athlete
+
+            </button>
+
+
+            <button
+                class="back-button"
+                onclick="goBack()"
+            >
+                ← Back to Athlete
+            </button>
+
+        </div>
 
     </div>
 
@@ -791,7 +898,9 @@ button {
 </div>
 
 
-<!-- SESSION MODAL -->
+<!-- ===============================
+     SESSION MODAL
+================================ -->
 
 <div
     class="modal-overlay"
@@ -979,7 +1088,9 @@ button {
 </div>
 
 
-<!-- WEEK MODAL -->
+<!-- ===============================
+     WEEK MODAL
+================================ -->
 
 <div
     class="modal-overlay"
@@ -1035,7 +1146,22 @@ button {
             </div>
 
 
-            <div class="form-group full">
+            <div class="form-group">
+
+                <label>
+                    Week label
+                </label>
+
+                <input
+                    type="text"
+                    id="weekLabel"
+                    placeholder="Loading / Sharpening / Race Week"
+                >
+
+            </div>
+
+
+            <div class="form-group">
 
                 <label>
                     Weekly kilometres
@@ -1078,7 +1204,9 @@ button {
 </div>
 
 
-<!-- GOAL MODAL -->
+<!-- ===============================
+     GOAL MODAL
+================================ -->
 
 <div
     class="modal-overlay"
@@ -1194,4 +1322,4 @@ button {
 
 </body>
 
-</html>
+    </html>
