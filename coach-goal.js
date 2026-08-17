@@ -1164,6 +1164,11 @@ function openSessionModal(
     ).value = "";
 
 
+
+    document.querySelector(
+    "#sessionModal .save-button"
+).textContent = "Save Session";
+   
     document
         .getElementById(
             "sessionModal"
