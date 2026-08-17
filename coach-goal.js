@@ -41,6 +41,7 @@ let sessions = [];
 
 let currentWeekId = null;
 
+let currentEditingSessionId = null;
 
 /* =========================================
    START
