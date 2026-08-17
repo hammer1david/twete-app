@@ -6,7 +6,7 @@ const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
+    "sb_publishable_o-hfeydDJf5J-xPQyxvWov_DJ3StSN";
 
 
 const supabaseClient =
@@ -17,6 +17,7 @@ const supabaseClient =
 
 
 let currentUser = null;
+
 let currentRole = null;
 
 let conversationUserId = null;
@@ -24,6 +25,8 @@ let conversationUserId = null;
 let realtimeChannel = null;
 
 let athletes = [];
+
+let selectedFile = null;
 
 
 /* =========================================
@@ -55,22 +58,8 @@ async function initialiseMessages() {
                 .getSession();
 
 
-        if (error) {
-
-            console.error(
-                "Session error:",
-                error
-            );
-
-            showError(
-                "Could not check your login session."
-            );
-
-            return;
-        }
-
-
         if (
+            error ||
             !session ||
             !session.user
         ) {
@@ -106,6 +95,8 @@ async function initialiseMessages() {
 
         setupComposer();
 
+        setupAttachmentInput();
+
     } catch (error) {
 
         console.error(
@@ -123,7 +114,7 @@ async function initialiseMessages() {
 
 
 /* =========================================
-   CURRENT PROFILE
+   PROFILE
 ========================================= */
 
 async function loadCurrentProfile() {
@@ -169,20 +160,20 @@ async function loadCurrentProfile() {
 
 
 /* =========================================
-   ATHLETE INITIALISE
+   ATHLETE
 ========================================= */
 
 async function initialiseAthlete() {
 
-    const listSection =
+    const list =
         document.getElementById(
             "athleteListSection"
         );
 
 
-    if (listSection) {
+    if (list) {
 
-        listSection.classList.add(
+        list.classList.add(
             "hidden"
         );
 
@@ -202,9 +193,9 @@ async function initialiseAthlete() {
 
     } else {
 
-        showNoConversation();
-
         showConversation();
+
+        showNoConversation();
 
     }
 
@@ -212,7 +203,7 @@ async function initialiseAthlete() {
 
 
 /* =========================================
-   FIND ATHLETE'S COACH
+   ATHLETE → COACH
 ========================================= */
 
 async function loadCoachForAthlete() {
@@ -242,21 +233,7 @@ async function loadCoachForAthlete() {
             .maybeSingle();
 
 
-    if (error) {
-
-        console.error(
-            "Coach connection error:",
-            error
-        );
-
-        conversationUserId =
-            null;
-
-        return;
-    }
-
-
-    if (!data) {
+    if (error || !data) {
 
         conversationUserId =
             null;
@@ -277,20 +254,20 @@ async function loadCoachForAthlete() {
 
 
 /* =========================================
-   COACH INITIALISE
+   COACH
 ========================================= */
 
 async function initialiseCoach() {
 
-    const listSection =
+    const list =
         document.getElementById(
             "athleteListSection"
         );
 
 
-    if (listSection) {
+    if (list) {
 
-        listSection.classList.remove(
+        list.classList.remove(
             "hidden"
         );
 
@@ -377,14 +354,10 @@ async function loadAthletes() {
         !connections.length
     ) {
 
-        athletes = [];
-
         list.innerHTML = `
 
             <div class="no-messages">
-
                 No athletes are connected yet.
-
             </div>
 
         `;
@@ -393,17 +366,15 @@ async function loadAthletes() {
     }
 
 
-    const athleteIds =
+    const ids =
         connections.map(
-            function (item) {
-                return item.athlete_id;
-            }
+            item =>
+                item.athlete_id
         );
 
 
     const {
-        data: profiles,
-        error: profileError
+        data: profiles
     } =
         await supabaseClient
             .from("profiles")
@@ -415,27 +386,8 @@ async function loadAthletes() {
             `)
             .in(
                 "id",
-                athleteIds
+                ids
             );
-
-
-    if (profileError) {
-
-        console.error(
-            "Athlete profile error:",
-            profileError
-        );
-
-        list.innerHTML = `
-
-            <div class="no-messages">
-                Could not load athlete profiles.
-            </div>
-
-        `;
-
-        return;
-    }
 
 
     athletes =
@@ -445,18 +397,13 @@ async function loadAthletes() {
     const enriched =
         await Promise.all(
             athletes.map(
-                async function (
-                    athlete
-                ) {
-
-                    const info =
-                        await getLastMessageInfo(
-                            athlete.id
-                        );
+                async athlete => {
 
                     return {
                         ...athlete,
-                        ...info
+                        ...await getLastMessageInfo(
+                            athlete.id
+                        )
                     };
 
                 }
@@ -464,35 +411,37 @@ async function loadAthletes() {
         );
 
 
-    enriched.sort(
-        function (a, b) {
-
-            const aTime =
-                a.last_message_at
-                    ?
-                    new Date(
-                        a.last_message_at
-                    ).getTime()
-                    :
-                    0;
-
-            const bTime =
-                b.last_message_at
-                    ?
-                    new Date(
-                        b.last_message_at
-                    ).getTime()
-                    :
-                    0;
-
-            return bTime - aTime;
-
-        }
-    );
-
-
     athletes =
-        enriched;
+        enriched.sort(
+            (
+                a,
+                b
+            ) => {
+
+                const aTime =
+                    a.last_message_at
+                        ?
+                        new Date(
+                            a.last_message_at
+                        ).getTime()
+                        :
+                        0;
+
+
+                const bTime =
+                    b.last_message_at
+                        ?
+                        new Date(
+                            b.last_message_at
+                        ).getTime()
+                        :
+                        0;
+
+
+                return bTime - aTime;
+
+            }
+        );
 
 
     renderAthleteList();
@@ -501,7 +450,7 @@ async function loadAthletes() {
 
 
 /* =========================================
-   LAST MESSAGE INFO
+   LAST MESSAGE
 ========================================= */
 
 async function getLastMessageInfo(
@@ -509,8 +458,7 @@ async function getLastMessageInfo(
 ) {
 
     const {
-        data,
-        error
+        data
     } =
         await supabaseClient
             .from("messages")
@@ -520,7 +468,9 @@ async function getLastMessageInfo(
                 receiver_id,
                 message,
                 created_at,
-                read_at
+                read_at,
+                attachment_name,
+                attachment_type
             `)
             .or(
                 `and(sender_id.eq.${currentUser.id},receiver_id.eq.${athleteId}),and(sender_id.eq.${athleteId},receiver_id.eq.${currentUser.id})`
@@ -535,38 +485,66 @@ async function getLastMessageInfo(
             .maybeSingle();
 
 
-    if (
-        error ||
-        !data
-    ) {
+    if (!data) {
 
         return {
 
-            last_message: "",
-            last_message_at: null,
-            unread: false
+            last_message:
+                "",
+
+            last_message_at:
+                null,
+
+            unread_count:
+                0
 
         };
 
     }
 
 
-    let unread =
-        false;
+    const {
+        count
+    } =
+        await supabaseClient
+            .from("messages")
+            .select(
+                "id",
+                {
+                    count: "exact",
+                    head: true
+                }
+            )
+            .eq(
+                "sender_id",
+                athleteId
+            )
+            .eq(
+                "receiver_id",
+                currentUser.id
+            )
+            .is(
+                "read_at",
+                null
+            );
+
+
+    let preview =
+        data.message ||
+        "";
 
 
     if (
-        String(
-            data.receiver_id
-        ) ===
-        String(
-            currentUser.id
-        ) &&
-        !data.read_at
+        !preview &&
+        data.attachment_name
     ) {
 
-        unread =
-            true;
+        preview =
+            getAttachmentLabel(
+                data.attachment_type
+            ) +
+            ": " +
+            data.attachment_name;
 
     }
 
@@ -574,13 +552,13 @@ async function getLastMessageInfo(
     return {
 
         last_message:
-            data.message || "",
+            preview,
 
         last_message_at:
             data.created_at,
 
-        unread:
-            unread
+        unread_count:
+            count || 0
 
     };
 
@@ -588,7 +566,7 @@ async function getLastMessageInfo(
 
 
 /* =========================================
-   RENDER ATHLETE LIST
+   ATHLETE LIST
 ========================================= */
 
 function renderAthleteList() {
@@ -604,24 +582,10 @@ function renderAthleteList() {
     }
 
 
-    if (!athletes.length) {
-
-        list.innerHTML = `
-
-            <div class="no-messages">
-                No athletes yet.
-            </div>
-
-        `;
-
-        return;
-    }
-
-
     list.innerHTML =
         athletes
             .map(
-                function (athlete) {
+                athlete => {
 
                     const name =
                         athlete.full_name ||
@@ -641,7 +605,7 @@ function renderAthleteList() {
                             class="
                                 athlete-item
                                 ${
-                                    athlete.unread
+                                    athlete.unread_count
                                     ?
                                     "unread"
                                     :
@@ -712,11 +676,9 @@ function renderAthleteList() {
                                     ?
                                     `
                                     <span class="athlete-item-time">
-
                                         ${formatTime(
                                             athlete.last_message_at
                                         )}
-
                                     </span>
                                     `
                                     :
@@ -725,10 +687,18 @@ function renderAthleteList() {
 
 
                                 ${
-                                    athlete.unread
+                                    athlete.unread_count
                                     ?
                                     `
-                                    <span class="unread-dot"></span>
+                                    <span class="unread-count">
+                                        ${
+                                            athlete.unread_count > 99
+                                            ?
+                                            "99+"
+                                            :
+                                            athlete.unread_count
+                                        }
+                                    </span>
                                     `
                                     :
                                     ""
@@ -748,7 +718,7 @@ function renderAthleteList() {
 
 
 /* =========================================
-   OPEN COACH CONVERSATION
+   OPEN CONVERSATION
 ========================================= */
 
 async function openConversation(
@@ -776,7 +746,7 @@ async function openConversation(
 
 
 /* =========================================
-   LOAD PROFILE HEADER
+   PROFILE HEADER
 ========================================= */
 
 async function loadProfileHeader(
@@ -784,8 +754,7 @@ async function loadProfileHeader(
 ) {
 
     const {
-        data,
-        error
+        data
     } =
         await supabaseClient
             .from("profiles")
@@ -802,26 +771,6 @@ async function loadProfileHeader(
             .maybeSingle();
 
 
-    if (error) {
-
-        console.error(
-            "Profile loading error:",
-            error
-        );
-
-        setProfileHeader(
-            currentRole === "coach"
-                ?
-                "Athlete"
-                :
-                "Coach",
-            ""
-        );
-
-        return;
-    }
-
-
     if (!data) {
 
         setProfileHeader(
@@ -830,7 +779,8 @@ async function loadProfileHeader(
                 "Athlete"
                 :
                 "Coach",
-            ""
+            "",
+            null
         );
 
         return;
@@ -846,7 +796,8 @@ async function loadProfileHeader(
                 :
                 "Coach"
         ),
-        data.role || "",
+        data.role ||
+        "",
         data.avatar_url
     );
 
@@ -937,7 +888,7 @@ function setProfileHeader(
 
 
 /* =========================================
-   SHOW / HIDE CONVERSATION
+   SHOW CONVERSATION
 ========================================= */
 
 function showConversation() {
@@ -962,19 +913,13 @@ function showConversation() {
         "coach"
     ) {
 
-        const list =
-            document.getElementById(
+        document
+            .getElementById(
                 "athleteListSection"
-            );
-
-
-        if (list) {
-
-            list.classList.add(
+            )
+            ?.classList.add(
                 "hidden"
             );
-
-        }
 
     }
 
@@ -983,22 +928,20 @@ function showConversation() {
 
 function hideConversation() {
 
-    const section =
-        document.getElementById(
+    document
+        .getElementById(
             "conversationSection"
-        );
-
-
-    if (section) {
-
-        section.classList.add(
+        )
+        ?.classList.add(
             "hidden"
         );
 
-    }
-
 }
 
+
+/* =========================================
+   BACK TO ATHLETES
+========================================= */
 
 function showAthleteList() {
 
@@ -1010,6 +953,7 @@ function showAthleteList() {
         goHome();
 
         return;
+
     }
 
 
@@ -1020,19 +964,13 @@ function showAthleteList() {
     hideConversation();
 
 
-    const list =
-        document.getElementById(
+    document
+        .getElementById(
             "athleteListSection"
-        );
-
-
-    if (list) {
-
-        list.classList.remove(
+        )
+        ?.classList.remove(
             "hidden"
         );
-
-    }
 
 
     if (realtimeChannel) {
@@ -1075,6 +1013,7 @@ async function loadMessages() {
         showNoConversation();
 
         return;
+
     }
 
 
@@ -1090,7 +1029,11 @@ async function loadMessages() {
                 receiver_id,
                 message,
                 created_at,
-                read_at
+                read_at,
+                attachment_path,
+                attachment_name,
+                attachment_type,
+                attachment_size
             `)
             .or(
                 `and(sender_id.eq.${currentUser.id},receiver_id.eq.${conversationUserId}),and(sender_id.eq.${conversationUserId},receiver_id.eq.${currentUser.id})`
@@ -1115,10 +1058,11 @@ async function loadMessages() {
         );
 
         return;
+
     }
 
 
-    renderMessages(
+    await renderMessages(
         data || []
     );
 
@@ -1134,7 +1078,7 @@ async function loadMessages() {
    RENDER MESSAGES
 ========================================= */
 
-function renderMessages(
+async function renderMessages(
     messages
 ) {
 
@@ -1164,67 +1108,325 @@ function renderMessages(
         `;
 
         return;
+
+    }
+
+
+    let unreadDividerShown =
+        false;
+
+
+    let html = "";
+
+
+    for (
+        const message
+        of messages
+    ) {
+
+        const sent =
+            String(
+                message.sender_id
+            ) ===
+            String(
+                currentUser.id
+            );
+
+
+        const unread =
+            !sent &&
+            !message.read_at;
+
+
+        /*
+           Add unread divider before the
+           first unread incoming message.
+        */
+
+        if (
+            unread &&
+            !unreadDividerShown
+        ) {
+
+            html += `
+
+                <div class="unread-divider">
+
+                    Unread
+
+                </div>
+
+            `;
+
+            unreadDividerShown =
+                true;
+
+        }
+
+
+        let attachmentHtml =
+            "";
+
+
+        if (
+            message.attachment_path
+        ) {
+
+            attachmentHtml =
+                await createAttachmentHtml(
+                    message
+                );
+
+        }
+
+
+        let statusHtml =
+            "";
+
+
+        if (sent) {
+
+            statusHtml = `
+
+                <span
+                    class="
+                        message-status
+                        ${
+                            message.read_at
+                            ?
+                            "read"
+                            :
+                            "unread"
+                        }
+                    "
+                >
+
+                    ${
+                        message.read_at
+                        ?
+                        "Read"
+                        :
+                        "Unread"
+                    }
+
+                </span>
+
+            `;
+
+        }
+
+
+        html += `
+
+            <div
+                class="
+                    message-row
+                    ${
+                        sent
+                        ?
+                        "sent"
+                        :
+                        "received"
+                    }
+                "
+            >
+
+                <div class="message-bubble">
+
+                    ${attachmentHtml}
+
+
+                    ${
+                        message.message
+                        ?
+                        `
+                        <div>
+
+                            ${escapeHtml(
+                                message.message
+                            ).replaceAll(
+                                "\n",
+                                "<br>"
+                            )}
+
+                        </div>
+                        `
+                        :
+                        ""
+                    }
+
+
+                    <span class="message-time">
+
+                        ${formatTime(
+                            message.created_at
+                        )}
+
+                    </span>
+
+
+                    ${statusHtml}
+
+                </div>
+
+            </div>
+
+        `;
+
     }
 
 
     list.innerHTML =
-        messages
-            .map(
-                function (message) {
-
-                    const sent =
-                        String(
-                            message.sender_id
-                        ) ===
-                        String(
-                            currentUser.id
-                        );
-
-
-                    return `
-
-                        <div
-                            class="
-                                message-row
-                                ${
-                                    sent
-                                    ?
-                                    "sent"
-                                    :
-                                    "received"
-                                }
-                            "
-                        >
-
-                            <div class="message-bubble">
-
-                                ${escapeHtml(
-                                    message.message
-                                ).replaceAll(
-                                    "\n",
-                                    "<br>"
-                                )}
-
-                                <span class="message-time">
-
-                                    ${formatTime(
-                                        message.created_at
-                                    )}
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join("");
+        html;
 
 
     scrollToBottom();
+
+}
+
+
+/* =========================================
+   ATTACHMENT HTML
+========================================= */
+
+async function createAttachmentHtml(
+    message
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from(
+                "message-attachments"
+            )
+            .createSignedUrl(
+                message.attachment_path,
+                3600
+            );
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        return `
+
+            <div class="message-file">
+
+                <div class="file-icon">
+                    📎
+                </div>
+
+                <div class="file-name">
+
+                    ${escapeHtml(
+                        message.attachment_name ||
+                        "Attachment"
+                    )}
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    const url =
+        data.signedUrl;
+
+
+    const type =
+        message.attachment_type ||
+        "";
+
+
+    const name =
+        message.attachment_name ||
+        "Attachment";
+
+
+    if (
+        type.startsWith(
+            "image/"
+        )
+    ) {
+
+        return `
+
+            <a
+                href="${escapeHtml(url)}"
+                target="_blank"
+                rel="noopener"
+            >
+
+                <img
+                    class="message-image"
+                    src="${escapeHtml(url)}"
+                    alt="${escapeHtml(name)}"
+                >
+
+            </a>
+
+        `;
+
+    }
+
+
+    if (
+        type.startsWith(
+            "video/"
+        )
+    ) {
+
+        return `
+
+            <video
+                class="message-video"
+                controls
+                preload="metadata"
+            >
+
+                <source
+                    src="${escapeHtml(url)}"
+                    type="${escapeHtml(type)}"
+                >
+
+            </video>
+
+        `;
+
+    }
+
+
+    return `
+
+        <a
+            class="message-file"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <div class="file-icon">
+                📄
+            </div>
+
+
+            <div class="file-name">
+
+                ${escapeHtml(name)}
+
+            </div>
+
+        </a>
+
+    `;
 
 }
 
@@ -1256,8 +1458,13 @@ async function sendMessage() {
         input.value.trim();
 
 
-    if (!text) {
+    if (
+        !text &&
+        !selectedFile
+    ) {
+
         return;
+
     }
 
 
@@ -1268,6 +1475,7 @@ async function sendMessage() {
         );
 
         return;
+
     }
 
 
@@ -1281,12 +1489,123 @@ async function sendMessage() {
 
     try {
 
+        /*
+           Generate the message ID now.
+
+           This lets us use the same ID
+           for the attachment path.
+        */
+
+        const messageId =
+            crypto.randomUUID();
+
+
+        let attachmentPath =
+            null;
+
+        let attachmentName =
+            null;
+
+        let attachmentType =
+            null;
+
+        let attachmentSize =
+            null;
+
+
+        /* =============================
+           UPLOAD ATTACHMENT
+        ============================= */
+
+        if (selectedFile) {
+
+            const extension =
+                getFileExtension(
+                    selectedFile.name
+                );
+
+
+            attachmentPath =
+                currentUser.id +
+                "/" +
+                messageId +
+                (
+                    extension
+                    ?
+                    "." +
+                    extension
+                    :
+                    ""
+                );
+
+
+            const {
+                error:
+                    uploadError
+            } =
+                await supabaseClient
+                    .storage
+                    .from(
+                        "message-attachments"
+                    )
+                    .upload(
+                        attachmentPath,
+                        selectedFile,
+                        {
+                            contentType:
+                                selectedFile.type ||
+                                "application/octet-stream",
+
+                            upsert:
+                                false
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                console.error(
+                    "Attachment upload error:",
+                    uploadError
+                );
+
+                alert(
+                    "Could not upload the attachment."
+                );
+
+                return;
+
+            }
+
+
+            attachmentName =
+                selectedFile.name;
+
+
+            attachmentType =
+                selectedFile.type ||
+                "application/octet-stream";
+
+
+            attachmentSize =
+                selectedFile.size;
+
+        }
+
+
+        /* =============================
+           INSERT MESSAGE
+        ============================= */
+
         const {
             error
         } =
             await supabaseClient
                 .from("messages")
                 .insert({
+
+                    id:
+                        messageId,
 
                     sender_id:
                         currentUser.id,
@@ -1295,7 +1614,19 @@ async function sendMessage() {
                         conversationUserId,
 
                     message:
-                        text
+                        text || null,
+
+                    attachment_path:
+                        attachmentPath,
+
+                    attachment_name:
+                        attachmentName,
+
+                    attachment_type:
+                        attachmentType,
+
+                    attachment_size:
+                        attachmentSize
 
                 });
 
@@ -1307,15 +1638,40 @@ async function sendMessage() {
                 error
             );
 
+
+            /*
+               If the database insert fails after
+               upload, remove the orphaned file.
+            */
+
+            if (
+                attachmentPath
+            ) {
+
+                await supabaseClient
+                    .storage
+                    .from(
+                        "message-attachments"
+                    )
+                    .remove([
+                        attachmentPath
+                    ]);
+
+            }
+
+
             alert(
                 "Could not send message."
             );
 
             return;
+
         }
 
 
         input.value = "";
+
+        clearSelectedFile();
 
         resizeComposer();
 
@@ -1338,6 +1694,225 @@ async function sendMessage() {
 
 
 /* =========================================
+   ATTACHMENT INPUT
+========================================= */
+
+function setupAttachmentInput() {
+
+    const input =
+        document.getElementById(
+            "attachmentInput"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    input.addEventListener(
+        "change",
+        function () {
+
+            if (
+                !input.files ||
+                !input.files.length
+            ) {
+
+                return;
+
+            }
+
+
+            const file =
+                input.files[0];
+
+
+            const maxSize =
+                50 * 1024 * 1024;
+
+
+            if (
+                file.size >
+                maxSize
+            ) {
+
+                alert(
+                    "The file is too large. Maximum size is 50 MB."
+                );
+
+
+                input.value =
+                    "";
+
+                return;
+
+            }
+
+
+            selectedFile =
+                file;
+
+
+            const fileName =
+                document.getElementById(
+                    "selectedFileName"
+                );
+
+
+            const selected =
+                document.getElementById(
+                    "selectedFile"
+                );
+
+
+            if (fileName) {
+
+                fileName.textContent =
+                    file.name;
+
+            }
+
+
+            if (selected) {
+
+                selected.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   CLEAR FILE
+========================================= */
+
+function clearSelectedFile() {
+
+    selectedFile =
+        null;
+
+
+    const input =
+        document.getElementById(
+            "attachmentInput"
+        );
+
+
+    if (input) {
+
+        input.value =
+            "";
+
+    }
+
+
+    document
+        .getElementById(
+            "selectedFile"
+        )
+        ?.classList.add(
+            "hidden"
+        );
+
+}
+
+
+/* =========================================
+   MARK READ
+========================================= */
+
+async function markMessagesRead(
+    messages
+) {
+
+    const unreadIds =
+        messages
+            .filter(
+                message => {
+
+                    return (
+
+                        String(
+                            message.receiver_id
+                        ) ===
+                        String(
+                            currentUser.id
+                        )
+
+                        &&
+
+                        !message.read_at
+
+                    );
+
+                }
+            )
+            .map(
+                message =>
+                    message.id
+            );
+
+
+    if (!unreadIds.length) {
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .update({
+
+                read_at:
+                    new Date().toISOString()
+
+            })
+            .in(
+                "id",
+                unreadIds
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Mark read error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Refresh coach athlete list so unread
+       counters disappear immediately.
+    */
+
+    if (
+        currentRole ===
+        "coach"
+    ) {
+
+        await loadAthletes();
+
+    }
+
+}
+
+
+/* =========================================
    REALTIME
 ========================================= */
 
@@ -1349,6 +1924,7 @@ function subscribeToMessages() {
     ) {
 
         return;
+
     }
 
 
@@ -1373,9 +1949,14 @@ function subscribeToMessages() {
             .on(
                 "postgres_changes",
                 {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "messages"
+                    event:
+                        "INSERT",
+
+                    schema:
+                        "public",
+
+                    table:
+                        "messages"
                 },
                 async function (
                     payload
@@ -1387,33 +1968,45 @@ function subscribeToMessages() {
 
                     const belongs =
                         (
+
                             String(
                                 message.sender_id
                             ) ===
                             String(
                                 currentUser.id
-                            ) &&
+                            )
+
+                            &&
+
                             String(
                                 message.receiver_id
                             ) ===
                             String(
                                 conversationUserId
                             )
+
                         )
+
                         ||
+
                         (
+
                             String(
                                 message.sender_id
                             ) ===
                             String(
                                 conversationUserId
-                            ) &&
+                            )
+
+                            &&
+
                             String(
                                 message.receiver_id
                             ) ===
                             String(
                                 currentUser.id
                             )
+
                         );
 
 
@@ -1436,61 +2029,6 @@ function subscribeToMessages() {
                 }
             )
             .subscribe();
-
-}
-
-
-/* =========================================
-   MARK READ
-========================================= */
-
-async function markMessagesRead(
-    messages
-) {
-
-    const unreadIds =
-        messages
-            .filter(
-                function (message) {
-
-                    return (
-                        String(
-                            message.receiver_id
-                        ) ===
-                        String(
-                            currentUser.id
-                        ) &&
-                        !message.read_at
-                    );
-
-                }
-            )
-            .map(
-                function (message) {
-
-                    return message.id;
-
-                }
-            );
-
-
-    if (!unreadIds.length) {
-        return;
-    }
-
-
-    await supabaseClient
-        .from("messages")
-        .update({
-
-            read_at:
-                new Date().toISOString()
-
-        })
-        .in(
-            "id",
-            unreadIds
-        );
 
 }
 
@@ -1523,7 +2061,11 @@ function setupComposer() {
         function (event) {
 
             if (
-                event.key === "Enter" &&
+                event.key ===
+                "Enter"
+
+                &&
+
                 !event.shiftKey
             ) {
 
@@ -1581,6 +2123,7 @@ function goHome() {
             "coach.html";
 
         return;
+
     }
 
 
@@ -1685,12 +2228,83 @@ function formatTime(
     return date.toLocaleString(
         "en-US",
         {
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
+            month:
+                "short",
+
+            day:
+                "numeric",
+
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit"
         }
     );
+
+}
+
+
+function getFileExtension(
+    fileName
+) {
+
+    const parts =
+        String(
+            fileName
+        )
+        .split(".");
+
+
+    if (
+        parts.length <= 1
+    ) {
+
+        return "";
+
+    }
+
+
+    return parts
+        .pop()
+        .toLowerCase()
+        .replace(
+            /[^a-z0-9]/g,
+            ""
+        );
+
+}
+
+
+function getAttachmentLabel(
+    type
+) {
+
+    if (
+        type &&
+        type.startsWith(
+            "image/"
+        )
+    ) {
+
+        return "Image";
+
+    }
+
+
+    if (
+        type &&
+        type.startsWith(
+            "video/"
+        )
+    ) {
+
+        return "Video";
+
+    }
+
+
+    return "File";
 
 }
 
@@ -1725,7 +2339,8 @@ function escapeHtml(
 ) {
 
     return String(
-        value ?? ""
+        value ??
+        ""
     )
         .replace(
             /&/g,
@@ -1756,7 +2371,8 @@ function escapeAttribute(
 ) {
 
     return String(
-        value ?? ""
+        value ??
+        ""
     )
         .replace(
             /'/g,
@@ -1767,4 +2383,4 @@ function escapeAttribute(
             "&quot;"
         );
 
-       }
+}
