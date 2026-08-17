@@ -1501,13 +1501,20 @@ body {
 
 
 /* =========================================
-   ATHLETE HEADER NAME
+   ATHLETE HEADER
 ========================================= */
+
+.athlete-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
 .athlete-header-name {
     color: #ffffff;
     font-size: 15px;
     font-weight: 600;
+    margin-left: auto;
     margin-right: 10px;
     white-space: nowrap;
 }
