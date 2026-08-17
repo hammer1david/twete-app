@@ -1475,3 +1475,9 @@ body {
     }
 
 }
+
+/* Allow athlete homepage to scroll */
+.athlete-app {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
