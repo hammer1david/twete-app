@@ -1403,13 +1403,14 @@ body {
     background: #C6FF00;
     color: #000000;
 }
+/* Athlete profile avatar */
 
 .athlete-profile-avatar {
     width: 60px;
     height: 60px;
     min-width: 60px;
     min-height: 60px;
-   
+
     border-radius: 50%;
     overflow: hidden;
 
