@@ -393,30 +393,15 @@ function createAthleteCard(
 /* =========================================
    SELECT ATHLETE
 ========================================= */
+function selectAthlete(athleteId) {
 
-function selectAthlete(
-    athleteId
-) {
+    if (!athleteId) {
+        return;
+    }
 
-    console.log(
-        "Selected athlete:",
-        athleteId
-    );
-
-
-    /*
-       We will create coach-athlete.html
-       next.
-
-       For now just show the ID so we
-       know the selection works.
-    */
-
-    alert(
-        "Athlete selected: " +
-        athleteId
-    );
-
+    window.location.href =
+        "coach-athlete.html?athlete_id=" +
+        encodeURIComponent(athleteId);
 }
 
 
