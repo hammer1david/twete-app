@@ -12,15 +12,17 @@ body {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-
     background: #050505;
-
-    color: #ffffff;
+    color: #fff;
 }
 
 button,
 textarea {
     font-family: inherit;
+}
+
+.hidden {
+    display: none !important;
 }
 
 
@@ -40,7 +42,7 @@ textarea {
         ),
         #050505;
 
-    padding-bottom: 135px;
+    padding-bottom: 80px;
 }
 
 
@@ -49,7 +51,6 @@ textarea {
 ========================================= */
 
 .messages-header {
-
     height: 72px;
 
     display: grid;
@@ -67,16 +68,13 @@ textarea {
 }
 
 .messages-header h1 {
-
     font-size: 21px;
-
     text-align: center;
-
     font-weight: 700;
 }
 
-.back-button {
-
+.back-button,
+.conversation-back {
     width: 40px;
     height: 40px;
 
@@ -87,15 +85,14 @@ textarea {
     color: #fff;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     cursor: pointer;
 }
 
-.back-button svg {
-
+.back-button svg,
+.conversation-back svg {
     width: 27px;
     height: 27px;
 
@@ -106,7 +103,6 @@ textarea {
     stroke-width: 2;
 
     stroke-linecap: round;
-
     stroke-linejoin: round;
 }
 
@@ -116,30 +112,191 @@ textarea {
 
 
 /* =========================================
-   PROFILE HEADER
+   ATHLETE LIST
 ========================================= */
 
-.conversation-header {
-
+.athlete-list-section {
     width: 100%;
-
     max-width: 850px;
 
     margin: 0 auto;
 
-    padding: 17px 18px;
+    padding: 20px 18px 100px;
+}
+
+.section-title {
+    color: #fff;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    margin-bottom: 13px;
+}
+
+.athlete-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.athlete-item {
+    width: 100%;
+
+    min-height: 70px;
+
+    padding: 10px 12px;
 
     display: flex;
 
     align-items: center;
 
-    gap: 13px;
+    gap: 12px;
+
+    background: #0d0d0d;
+
+    border: 1px solid #292929;
+
+    border-radius: 13px;
+
+    color: #fff;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.athlete-item:hover {
+    border-color: #C6FF00;
+}
+
+.athlete-item.unread {
+    border-color: rgba(198,255,0,.55);
+}
+
+.athlete-avatar {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: rgba(198,255,0,.08);
+
+    border: 1px solid #C6FF00;
+
+    color: #C6FF00;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    overflow: hidden;
+}
+
+.athlete-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.athlete-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.athlete-item-name {
+    font-size: 14px;
+    font-weight: 700;
+
+    margin-bottom: 5px;
+}
+
+.athlete-item-last {
+    color: #777;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.athlete-item-right {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 7px;
+}
+
+.athlete-item-time {
+    color: #666;
+
+    font-size: 8px;
+}
+
+.unread-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #C6FF00;
+}
+
+
+/* =========================================
+   CONVERSATION
+========================================= */
+
+.conversation-section {
+    width: 100%;
+
+    padding-bottom: 135px;
+}
+
+.conversation-header {
+    width: 100%;
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 13px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
 
     border-bottom: 1px solid #202020;
 }
 
-.profile-avatar {
+.conversation-back {
+    flex-shrink: 0;
 
+    width: 32px;
+}
+
+.conversation-back svg {
+    width: 22px;
+    height: 22px;
+}
+
+.profile-avatar {
     width: 50px;
     height: 50px;
 
@@ -156,7 +313,6 @@ textarea {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     font-size: 18px;
@@ -167,22 +323,23 @@ textarea {
 }
 
 .profile-avatar img {
-
     width: 100%;
     height: 100%;
 
     object-fit: cover;
 }
 
-.profile-info h2 {
+.profile-info {
+    min-width: 0;
+}
 
+.profile-info h2 {
     font-size: 17px;
 
     margin-bottom: 4px;
 }
 
 .profile-info span {
-
     color: #777;
 
     font-size: 11px;
@@ -194,16 +351,14 @@ textarea {
 ========================================= */
 
 .messages-list {
-
     width: 100%;
-
     max-width: 850px;
 
     margin: 0 auto;
 
     padding: 20px 18px;
 
-    min-height: 450px;
+    min-height: 400px;
 
     display: flex;
 
@@ -216,7 +371,6 @@ textarea {
 
 .messages-loading,
 .no-messages {
-
     color: #666;
 
     text-align: center;
@@ -228,33 +382,24 @@ textarea {
 
 
 /* =========================================
-   MESSAGE ROW
+   MESSAGE BUBBLES
 ========================================= */
 
 .message-row {
-
     width: 100%;
 
     display: flex;
 }
 
 .message-row.sent {
-
     justify-content: flex-end;
 }
 
 .message-row.received {
-
     justify-content: flex-start;
 }
 
-
-/* =========================================
-   MESSAGE BUBBLE
-========================================= */
-
 .message-bubble {
-
     max-width: 78%;
 
     padding: 11px 14px;
@@ -270,9 +415,7 @@ textarea {
     word-break: break-word;
 }
 
-.message-row.sent
-.message-bubble {
-
+.message-row.sent .message-bubble {
     background: #C6FF00;
 
     color: #000;
@@ -280,9 +423,7 @@ textarea {
     border-bottom-right-radius: 4px;
 }
 
-.message-row.received
-.message-bubble {
-
+.message-row.received .message-bubble {
     background: #181818;
 
     color: #aaa;
@@ -293,7 +434,6 @@ textarea {
 }
 
 .message-time {
-
     display: block;
 
     margin-top: 5px;
@@ -311,7 +451,6 @@ textarea {
 ========================================= */
 
 .message-composer {
-
     position: fixed;
 
     left: 0;
@@ -339,11 +478,9 @@ textarea {
 }
 
 .message-composer textarea {
-
     flex: 1;
 
     min-height: 42px;
-
     max-height: 120px;
 
     resize: none;
@@ -366,22 +503,14 @@ textarea {
 }
 
 .message-composer textarea:focus {
-
     border-color: #C6FF00;
 }
 
 .message-composer textarea::placeholder {
-
     color: #666;
 }
 
-
-/* =========================================
-   SEND BUTTON
-========================================= */
-
 #sendButton {
-
     width: 43px;
     height: 43px;
 
@@ -398,21 +527,16 @@ textarea {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     cursor: pointer;
 }
 
 #sendButton:disabled {
-
     opacity: .35;
-
-    cursor: default;
 }
 
 #sendButton svg {
-
     width: 21px;
     height: 21px;
 
@@ -423,7 +547,6 @@ textarea {
     stroke-width: 2;
 
     stroke-linecap: round;
-
     stroke-linejoin: round;
 }
 
@@ -433,7 +556,6 @@ textarea {
 ========================================= */
 
 .bottom-navigation {
-
     position: fixed;
 
     left: 0;
@@ -448,7 +570,6 @@ textarea {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 55px;
@@ -463,7 +584,6 @@ textarea {
 }
 
 .nav-item {
-
     min-width: 80px;
 
     border: none;
@@ -477,7 +597,6 @@ textarea {
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 4px;
@@ -486,12 +605,10 @@ textarea {
 }
 
 .nav-item.active {
-
     color: #C6FF00;
 }
 
 .nav-item svg {
-
     width: 24px;
     height: 24px;
 
@@ -502,12 +619,10 @@ textarea {
     stroke-width: 2;
 
     stroke-linecap: round;
-
     stroke-linejoin: round;
 }
 
 .nav-item span {
-
     font-size: 10px;
 
     font-weight: 600;
@@ -520,31 +635,31 @@ textarea {
 
 @media (max-width: 600px) {
 
-    .conversation-header {
-
+    .athlete-list-section {
         padding-left: 13px;
         padding-right: 13px;
     }
 
-    .messages-list {
+    .conversation-header {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 
+    .messages-list {
         padding-left: 13px;
         padding-right: 13px;
     }
 
     .message-bubble {
-
         max-width: 84%;
     }
 
     .message-composer {
-
         padding-left: 10px;
         padding-right: 10px;
     }
 
     .bottom-navigation {
-
         gap: 45px;
     }
 
