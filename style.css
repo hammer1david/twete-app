@@ -1498,3 +1498,16 @@ body {
     visibility: visible;
     opacity: 1;
 }
+
+
+/* =========================================
+   ATHLETE HEADER NAME
+========================================= */
+
+.athlete-header-name {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    margin-right: 10px;
+    white-space: nowrap;
+}
