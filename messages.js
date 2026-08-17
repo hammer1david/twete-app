@@ -2,27 +2,28 @@
    TWETE MESSAGES
 ========================================= */
 
-const MESSAGES_SUPABASE_URL =
+const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
-const MESSAGES_SUPABASE_KEY =
+const SUPABASE_KEY =
     "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
 
 
-const messagesSupabase =
+const supabaseClient =
     window.supabase.createClient(
-        MESSAGES_SUPABASE_URL,
-        MESSAGES_SUPABASE_KEY
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
 
 
 let currentUser = null;
-
 let currentRole = null;
 
 let conversationUserId = null;
 
 let realtimeChannel = null;
+
+let athletes = [];
 
 
 /* =========================================
@@ -43,18 +44,15 @@ async function initialiseMessages() {
 
     try {
 
-        /*
-           Give Supabase a moment to restore
-           the existing browser session.
-        */
-
         const {
             data: {
                 session
             },
             error
         } =
-            await messagesSupabase.auth.getSession();
+            await supabaseClient
+                .auth
+                .getSession();
 
 
         if (error) {
@@ -72,17 +70,13 @@ async function initialiseMessages() {
         }
 
 
-        /*
-           IMPORTANT:
-           Do NOT redirect to index.html here.
-           The athlete is already coming from
-           an authenticated page.
-        */
-
-        if (!session || !session.user) {
+        if (
+            !session ||
+            !session.user
+        ) {
 
             showError(
-                "Your login session could not be found. Please return to Home and try again."
+                "Your login session could not be found."
             );
 
             return;
@@ -95,19 +89,27 @@ async function initialiseMessages() {
 
         await loadCurrentProfile();
 
-        await loadConversationUser();
 
-        await loadMessages();
+        if (
+            currentRole ===
+            "coach"
+        ) {
 
-        subscribeToMessages();
+            await initialiseCoach();
+
+        } else {
+
+            await initialiseAthlete();
+
+        }
+
 
         setupComposer();
-
 
     } catch (error) {
 
         console.error(
-            "Messages initialisation error:",
+            "Messages error:",
             error
         );
 
@@ -121,7 +123,7 @@ async function initialiseMessages() {
 
 
 /* =========================================
-   LOAD CURRENT PROFILE
+   CURRENT PROFILE
 ========================================= */
 
 async function loadCurrentProfile() {
@@ -130,7 +132,7 @@ async function loadCurrentProfile() {
         data,
         error
     } =
-        await messagesSupabase
+        await supabaseClient
             .from("profiles")
             .select(`
                 id,
@@ -167,53 +169,50 @@ async function loadCurrentProfile() {
 
 
 /* =========================================
-   FIND CONVERSATION USER
+   ATHLETE INITIALISE
 ========================================= */
 
-async function loadConversationUser() {
+async function initialiseAthlete() {
 
-    /*
-       ATHLETE → COACH
-    */
+    const listSection =
+        document.getElementById(
+            "athleteListSection"
+        );
 
-    if (
-        currentRole ===
-        "athlete"
-    ) {
 
-        await loadCoachForAthlete();
+    if (listSection) {
 
-        return;
+        listSection.classList.add(
+            "hidden"
+        );
+
     }
 
-
-    /*
-       COACH → ATHLETE
-    */
-
-    if (
-        currentRole ===
-        "coach"
-    ) {
-
-        await loadAthleteForCoach();
-
-        return;
-    }
-
-
-    /*
-       Fallback:
-       Try athlete → coach relationship.
-    */
 
     await loadCoachForAthlete();
+
+
+    if (conversationUserId) {
+
+        showConversation();
+
+        await loadMessages();
+
+        subscribeToMessages();
+
+    } else {
+
+        showNoConversation();
+
+        showConversation();
+
+    }
 
 }
 
 
 /* =========================================
-   ATHLETE → COACH
+   FIND ATHLETE'S COACH
 ========================================= */
 
 async function loadCoachForAthlete() {
@@ -222,7 +221,7 @@ async function loadCoachForAthlete() {
         data,
         error
     } =
-        await messagesSupabase
+        await supabaseClient
             .from("coach_athletes")
             .select(`
                 coach_id,
@@ -246,11 +245,12 @@ async function loadCoachForAthlete() {
     if (error) {
 
         console.error(
-            "Coach relationship error:",
+            "Coach connection error:",
             error
         );
 
-        showNoConversation();
+        conversationUserId =
+            null;
 
         return;
     }
@@ -258,7 +258,8 @@ async function loadCoachForAthlete() {
 
     if (!data) {
 
-        showNoConversation();
+        conversationUserId =
+            null;
 
         return;
     }
@@ -276,19 +277,67 @@ async function loadCoachForAthlete() {
 
 
 /* =========================================
-   COACH → ATHLETE
+   COACH INITIALISE
 ========================================= */
 
-async function loadAthleteForCoach() {
+async function initialiseCoach() {
+
+    const listSection =
+        document.getElementById(
+            "athleteListSection"
+        );
+
+
+    if (listSection) {
+
+        listSection.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    hideConversation();
+
+
+    await loadAthletes();
+
+}
+
+
+/* =========================================
+   LOAD ATHLETES
+========================================= */
+
+async function loadAthletes() {
+
+    const list =
+        document.getElementById(
+            "athleteList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    list.innerHTML = `
+
+        <div class="messages-loading">
+            Loading athletes...
+        </div>
+
+    `;
+
 
     const {
-        data,
+        data: connections,
         error
     } =
-        await messagesSupabase
+        await supabaseClient
             .from("coach_athletes")
             .select(`
-                coach_id,
                 athlete_id,
                 created_at
             `)
@@ -301,45 +350,433 @@ async function loadAthleteForCoach() {
                 {
                     ascending: false
                 }
-            )
-            .limit(1)
-            .maybeSingle();
+            );
 
 
     if (error) {
 
         console.error(
-            "Athlete relationship error:",
+            "Athlete loading error:",
             error
         );
 
-        showNoConversation();
+        list.innerHTML = `
+
+            <div class="no-messages">
+                Could not load athletes.
+            </div>
+
+        `;
 
         return;
     }
 
 
-    if (!data) {
+    if (
+        !connections ||
+        !connections.length
+    ) {
 
-        showNoConversation();
+        athletes = [];
+
+        list.innerHTML = `
+
+            <div class="no-messages">
+
+                No athletes are connected yet.
+
+            </div>
+
+        `;
 
         return;
     }
 
 
-    conversationUserId =
-        data.athlete_id;
+    const athleteIds =
+        connections.map(
+            function (item) {
+                return item.athlete_id;
+            }
+        );
 
 
-    await loadProfileHeader(
-        conversationUserId
+    const {
+        data: profiles,
+        error: profileError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                role,
+                avatar_url
+            `)
+            .in(
+                "id",
+                athleteIds
+            );
+
+
+    if (profileError) {
+
+        console.error(
+            "Athlete profile error:",
+            profileError
+        );
+
+        list.innerHTML = `
+
+            <div class="no-messages">
+                Could not load athlete profiles.
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    athletes =
+        profiles || [];
+
+
+    const enriched =
+        await Promise.all(
+            athletes.map(
+                async function (
+                    athlete
+                ) {
+
+                    const info =
+                        await getLastMessageInfo(
+                            athlete.id
+                        );
+
+                    return {
+                        ...athlete,
+                        ...info
+                    };
+
+                }
+            )
+        );
+
+
+    enriched.sort(
+        function (a, b) {
+
+            const aTime =
+                a.last_message_at
+                    ?
+                    new Date(
+                        a.last_message_at
+                    ).getTime()
+                    :
+                    0;
+
+            const bTime =
+                b.last_message_at
+                    ?
+                    new Date(
+                        b.last_message_at
+                    ).getTime()
+                    :
+                    0;
+
+            return bTime - aTime;
+
+        }
     );
+
+
+    athletes =
+        enriched;
+
+
+    renderAthleteList();
 
 }
 
 
 /* =========================================
-   LOAD OTHER PROFILE
+   LAST MESSAGE INFO
+========================================= */
+
+async function getLastMessageInfo(
+    athleteId
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .select(`
+                id,
+                sender_id,
+                receiver_id,
+                message,
+                created_at,
+                read_at
+            `)
+            .or(
+                `and(sender_id.eq.${currentUser.id},receiver_id.eq.${athleteId}),and(sender_id.eq.${athleteId},receiver_id.eq.${currentUser.id})`
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1)
+            .maybeSingle();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        return {
+
+            last_message: "",
+            last_message_at: null,
+            unread: false
+
+        };
+
+    }
+
+
+    let unread =
+        false;
+
+
+    if (
+        String(
+            data.receiver_id
+        ) ===
+        String(
+            currentUser.id
+        ) &&
+        !data.read_at
+    ) {
+
+        unread =
+            true;
+
+    }
+
+
+    return {
+
+        last_message:
+            data.message || "",
+
+        last_message_at:
+            data.created_at,
+
+        unread:
+            unread
+
+    };
+
+}
+
+
+/* =========================================
+   RENDER ATHLETE LIST
+========================================= */
+
+function renderAthleteList() {
+
+    const list =
+        document.getElementById(
+            "athleteList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    if (!athletes.length) {
+
+        list.innerHTML = `
+
+            <div class="no-messages">
+                No athletes yet.
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        athletes
+            .map(
+                function (athlete) {
+
+                    const name =
+                        athlete.full_name ||
+                        "Athlete";
+
+
+                    const initial =
+                        name
+                            .charAt(0)
+                            .toUpperCase();
+
+
+                    return `
+
+                        <button
+                            type="button"
+                            class="
+                                athlete-item
+                                ${
+                                    athlete.unread
+                                    ?
+                                    "unread"
+                                    :
+                                    ""
+                                }
+                            "
+                            onclick="
+                                openConversation(
+                                    '${escapeAttribute(
+                                        athlete.id
+                                    )}'
+                                )
+                            "
+                        >
+
+                            <div class="athlete-avatar">
+
+                                ${
+                                    athlete.avatar_url
+                                    ?
+                                    `
+                                    <img
+                                        src="${escapeHtml(
+                                            athlete.avatar_url
+                                        )}"
+                                        alt=""
+                                    >
+                                    `
+                                    :
+                                    initial
+                                }
+
+                            </div>
+
+
+                            <div class="athlete-item-info">
+
+                                <div class="athlete-item-name">
+
+                                    ${escapeHtml(
+                                        name
+                                    )}
+
+                                </div>
+
+
+                                <div class="athlete-item-last">
+
+                                    ${
+                                        athlete.last_message
+                                        ?
+                                        escapeHtml(
+                                            athlete.last_message
+                                        )
+                                        :
+                                        "No messages yet"
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="athlete-item-right">
+
+                                ${
+                                    athlete.last_message_at
+                                    ?
+                                    `
+                                    <span class="athlete-item-time">
+
+                                        ${formatTime(
+                                            athlete.last_message_at
+                                        )}
+
+                                    </span>
+                                    `
+                                    :
+                                    ""
+                                }
+
+
+                                ${
+                                    athlete.unread
+                                    ?
+                                    `
+                                    <span class="unread-dot"></span>
+                                    `
+                                    :
+                                    ""
+                                }
+
+                            </div>
+
+                        </button>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =========================================
+   OPEN COACH CONVERSATION
+========================================= */
+
+async function openConversation(
+    athleteId
+) {
+
+    conversationUserId =
+        athleteId;
+
+
+    await loadProfileHeader(
+        athleteId
+    );
+
+
+    showConversation();
+
+
+    await loadMessages();
+
+
+    subscribeToMessages();
+
+}
+
+
+/* =========================================
+   LOAD PROFILE HEADER
 ========================================= */
 
 async function loadProfileHeader(
@@ -350,7 +787,7 @@ async function loadProfileHeader(
         data,
         error
     } =
-        await messagesSupabase
+        await supabaseClient
             .from("profiles")
             .select(`
                 id,
@@ -368,14 +805,16 @@ async function loadProfileHeader(
     if (error) {
 
         console.error(
-            "Other profile error:",
+            "Profile loading error:",
             error
         );
 
         setProfileHeader(
             currentRole === "coach"
-                ? "Athlete"
-                : "Coach",
+                ?
+                "Athlete"
+                :
+                "Coach",
             ""
         );
 
@@ -387,8 +826,10 @@ async function loadProfileHeader(
 
         setProfileHeader(
             currentRole === "coach"
-                ? "Athlete"
-                : "Coach",
+                ?
+                "Athlete"
+                :
+                "Coach",
             ""
         );
 
@@ -400,11 +841,12 @@ async function loadProfileHeader(
         data.full_name ||
         (
             currentRole === "coach"
-                ? "Athlete"
-                : "Coach"
+                ?
+                "Athlete"
+                :
+                "Coach"
         ),
-        data.role ||
-        "",
+        data.role || "",
         data.avatar_url
     );
 
@@ -495,6 +937,123 @@ function setProfileHeader(
 
 
 /* =========================================
+   SHOW / HIDE CONVERSATION
+========================================= */
+
+function showConversation() {
+
+    const section =
+        document.getElementById(
+            "conversationSection"
+        );
+
+
+    if (section) {
+
+        section.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    if (
+        currentRole ===
+        "coach"
+    ) {
+
+        const list =
+            document.getElementById(
+                "athleteListSection"
+            );
+
+
+        if (list) {
+
+            list.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+
+}
+
+
+function hideConversation() {
+
+    const section =
+        document.getElementById(
+            "conversationSection"
+        );
+
+
+    if (section) {
+
+        section.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+function showAthleteList() {
+
+    if (
+        currentRole !==
+        "coach"
+    ) {
+
+        goHome();
+
+        return;
+    }
+
+
+    conversationUserId =
+        null;
+
+
+    hideConversation();
+
+
+    const list =
+        document.getElementById(
+            "athleteListSection"
+        );
+
+
+    if (list) {
+
+        list.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    if (realtimeChannel) {
+
+        supabaseClient
+            .removeChannel(
+                realtimeChannel
+            );
+
+        realtimeChannel =
+            null;
+
+    }
+
+
+    loadAthletes();
+
+}
+
+
+/* =========================================
    LOAD MESSAGES
 ========================================= */
 
@@ -523,7 +1082,7 @@ async function loadMessages() {
         data,
         error
     } =
-        await messagesSupabase
+        await supabaseClient
             .from("messages")
             .select(`
                 id,
@@ -552,7 +1111,7 @@ async function loadMessages() {
         );
 
         showError(
-            "Could not load your messages."
+            "Could not load messages."
         );
 
         return;
@@ -598,7 +1157,7 @@ function renderMessages(
 
                 No messages yet.<br><br>
 
-                Start the conversation with your coach.
+                Start the conversation.
 
             </div>
 
@@ -705,7 +1264,7 @@ async function sendMessage() {
     if (!conversationUserId) {
 
         alert(
-            "No coach connection is available yet."
+            "Please select a conversation first."
         );
 
         return;
@@ -725,7 +1284,7 @@ async function sendMessage() {
         const {
             error
         } =
-            await messagesSupabase
+            await supabaseClient
                 .from("messages")
                 .insert({
 
@@ -759,6 +1318,7 @@ async function sendMessage() {
         input.value = "";
 
         resizeComposer();
+
 
         await loadMessages();
 
@@ -794,7 +1354,7 @@ function subscribeToMessages() {
 
     if (realtimeChannel) {
 
-        messagesSupabase
+        supabaseClient
             .removeChannel(
                 realtimeChannel
             );
@@ -803,10 +1363,12 @@ function subscribeToMessages() {
 
 
     realtimeChannel =
-        messagesSupabase
+        supabaseClient
             .channel(
                 "twete-messages-" +
-                currentUser.id
+                currentUser.id +
+                "-" +
+                conversationUserId
             )
             .on(
                 "postgres_changes",
@@ -861,6 +1423,16 @@ function subscribeToMessages() {
 
                     }
 
+
+                    if (
+                        currentRole ===
+                        "coach"
+                    ) {
+
+                        await loadAthletes();
+
+                    }
+
                 }
             )
             .subscribe();
@@ -907,7 +1479,7 @@ async function markMessagesRead(
     }
 
 
-    await messagesSupabase
+    await supabaseClient
         .from("messages")
         .update({
 
@@ -1000,6 +1572,18 @@ function resizeComposer() {
 
 function goHome() {
 
+    if (
+        currentRole ===
+        "coach"
+    ) {
+
+        window.location.href =
+            "coach.html";
+
+        return;
+    }
+
+
     window.location.href =
         "athlete.html";
 
@@ -1008,8 +1592,7 @@ function goHome() {
 
 function goBack() {
 
-    window.location.href =
-        "athlete.html";
+    goHome();
 
 }
 
@@ -1163,6 +1746,25 @@ function escapeHtml(
         .replace(
             /'/g,
             "&#039;"
+        );
+
+}
+
+
+function escapeAttribute(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /'/g,
+            "\\'"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
         );
 
        }
