@@ -11,10 +11,6 @@
 const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
-/*
-   KEEP YOUR EXISTING SUPABASE PUBLISHABLE KEY
-   HERE.
-*/
 const SUPABASE_KEY =
     "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
 
@@ -56,8 +52,7 @@ function showMessage(message, type = "error") {
         return;
     }
 
-    messageBox.textContent =
-        message;
+    messageBox.textContent = message;
 
     if (type === "success") {
 
@@ -72,10 +67,6 @@ function showMessage(message, type = "error") {
 }
 
 
-/* =========================================
-   CLEAR MESSAGE
-========================================= */
-
 function clearMessage() {
 
     if (messageBox) {
@@ -85,7 +76,7 @@ function clearMessage() {
 
 
 /* =========================================
-   GET INPUT
+   GET CREDENTIALS
 ========================================= */
 
 function getCredentials() {
@@ -148,21 +139,21 @@ async function login() {
             "Logging in...";
     }
 
-
     try {
 
         const {
             data,
             error
         } =
-            await supabaseClient.auth.signInWithPassword({
+            await supabaseClient.auth
+                .signInWithPassword({
 
-                email:
-                    credentials.email,
+                    email:
+                        credentials.email,
 
-                password:
-                    credentials.password
-            });
+                    password:
+                        credentials.password
+                });
 
 
         if (error) {
@@ -200,6 +191,7 @@ async function login() {
             data.user
         );
 
+
     } catch (error) {
 
         console.error(
@@ -210,6 +202,7 @@ async function login() {
         showMessage(
             "Something went wrong. Please try again."
         );
+
 
     } finally {
 
@@ -268,22 +261,22 @@ async function createAccount() {
             data,
             error
         } =
-            await supabaseClient.auth.signUp({
+            await supabaseClient.auth
+                .signUp({
 
-                email:
-                    credentials.email,
+                    email:
+                        credentials.email,
 
-                password:
-                    credentials.password,
+                    password:
+                        credentials.password,
 
-                options: {
+                    options: {
 
-                    emailRedirectTo:
-                        window.location.origin +
-                        window.location.pathname
-
-                }
-            });
+                        emailRedirectTo:
+                            window.location.origin +
+                            window.location.pathname
+                    }
+                });
 
 
         if (error) {
@@ -302,12 +295,6 @@ async function createAccount() {
         }
 
 
-        /*
-           Supabase may hide whether an email
-           already exists. Therefore we don't
-           attempt to bypass that protection.
-        */
-
         if (
             data &&
             data.user &&
@@ -323,11 +310,6 @@ async function createAccount() {
         }
 
 
-        /*
-           Email confirmation enabled:
-           user created but no session yet.
-        */
-
         if (
             data &&
             data.user &&
@@ -342,11 +324,6 @@ async function createAccount() {
             return;
         }
 
-
-        /*
-           Email confirmation disabled:
-           user receives a session immediately.
-        */
 
         if (
             data &&
@@ -372,6 +349,7 @@ async function createAccount() {
             "success"
         );
 
+
     } catch (error) {
 
         console.error(
@@ -382,6 +360,7 @@ async function createAccount() {
         showMessage(
             "Something went wrong. Please try again."
         );
+
 
     } finally {
 
@@ -423,10 +402,6 @@ async function redirectUser(user) {
                 error
             );
 
-            /*
-               For now, default to athlete.
-            */
-
             window.location.href =
                 "athlete.html";
 
@@ -446,12 +421,9 @@ async function redirectUser(user) {
         }
 
 
-        /*
-           Default role = athlete
-        */
-
         window.location.href =
             "athlete.html";
+
 
     } catch (error) {
 
@@ -475,6 +447,7 @@ async function forgotPassword() {
     const email =
         emailInput.value.trim();
 
+
     if (!email) {
 
         showMessage(
@@ -490,18 +463,38 @@ async function forgotPassword() {
     clearMessage();
 
 
+    showMessage(
+        "Sending password reset email...",
+        "success"
+    );
+
+
     try {
+
+        /*
+           IMPORTANT:
+           The reset email will send the user
+           to reset-password.html.
+        */
+
+        const resetUrl =
+            new URL(
+                "reset-password.html",
+                window.location.href
+            ).href;
+
 
         const {
             error
         } =
             await supabaseClient.auth
                 .resetPasswordForEmail(
+
                     email,
+
                     {
                         redirectTo:
-                            window.location.origin +
-                            window.location.pathname
+                            resetUrl
                     }
                 );
 
@@ -521,14 +514,11 @@ async function forgotPassword() {
         }
 
 
-        /*
-           Don't reveal whether an account exists.
-        */
-
         showMessage(
-            "If an account exists for this email, a password reset email has been sent.",
+            "Password reset email sent! Check your inbox.",
             "success"
         );
+
 
     } catch (error) {
 
