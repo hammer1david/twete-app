@@ -1,0 +1,1155 @@
+/* =========================================
+   TWETE MESSAGES
+========================================= */
+
+const SUPABASE_URL =
+    "https://uhbhsyuodizauwhhdffu.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSN";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+let currentUser = null;
+
+let currentRole = null;
+
+let conversationUserId = null;
+
+let realtimeChannel = null;
+
+
+/* =========================================
+   START
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        await initialiseMessages();
+
+    }
+);
+
+
+/* =========================================
+   INITIALISE
+========================================= */
+
+async function initialiseMessages() {
+
+    try {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (!user) {
+
+            window.location.href =
+                "index.html";
+
+            return;
+        }
+
+
+        currentUser =
+            user;
+
+
+        await loadCurrentProfile();
+
+        await loadConversationUser();
+
+        await loadMessages();
+
+        subscribeToMessages();
+
+        setupComposer();
+
+
+    } catch (error) {
+
+        console.error(
+            "Messages error:",
+            error
+        );
+
+        showError(
+            "Could not load messages."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD CURRENT PROFILE
+========================================= */
+
+async function loadCurrentProfile() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                role,
+                avatar_url
+            `)
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Profile error:",
+            error
+        );
+
+        return;
+    }
+
+
+    if (data) {
+
+        currentRole =
+            data.role;
+
+    }
+
+}
+
+
+/* =========================================
+   FIND CONVERSATION USER
+========================================= */
+
+async function loadConversationUser() {
+
+    /*
+       ATHLETE:
+       Find coach through coach_athletes.
+
+       COACH:
+       For now select the first connected
+       athlete. We will later turn this into
+       an athlete list.
+    */
+
+
+    if (
+        currentRole ===
+        "athlete"
+    ) {
+
+        await loadCoachForAthlete();
+
+        return;
+    }
+
+
+    if (
+        currentRole ===
+        "coach"
+    ) {
+
+        await loadAthleteForCoach();
+
+        return;
+    }
+
+
+    /*
+       Fallback:
+       Try athlete relationship first.
+    */
+
+    await loadCoachForAthlete();
+
+}
+
+
+/* =========================================
+   ATHLETE → COACH
+========================================= */
+
+async function loadCoachForAthlete() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("coach_athletes")
+            .select(`
+                coach_id,
+                athlete_id,
+                created_at
+            `)
+            .eq(
+                "athlete_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1)
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Coach relationship error:",
+            error
+        );
+
+        showNoConversation();
+
+        return;
+    }
+
+
+    if (!data) {
+
+        showNoConversation();
+
+        return;
+    }
+
+
+    conversationUserId =
+        data.coach_id;
+
+
+    await loadProfileHeader(
+        conversationUserId
+    );
+
+}
+
+
+/* =========================================
+   COACH → ATHLETE
+========================================= */
+
+async function loadAthleteForCoach() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("coach_athletes")
+            .select(`
+                coach_id,
+                athlete_id,
+                created_at
+            `)
+            .eq(
+                "coach_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1)
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Athlete relationship error:",
+            error
+        );
+
+        showNoConversation();
+
+        return;
+    }
+
+
+    if (!data) {
+
+        showNoConversation();
+
+        return;
+    }
+
+
+    conversationUserId =
+        data.athlete_id;
+
+
+    await loadProfileHeader(
+        conversationUserId
+    );
+
+}
+
+
+/* =========================================
+   PROFILE HEADER
+========================================= */
+
+async function loadProfileHeader(
+    userId
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                role,
+                avatar_url
+            `)
+            .eq(
+                "id",
+                userId
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Other profile error:",
+            error
+        );
+
+        setProfileHeader(
+            currentRole === "coach"
+                ? "Athlete"
+                : "Coach",
+            ""
+        );
+
+        return;
+    }
+
+
+    if (!data) {
+
+        setProfileHeader(
+            currentRole === "coach"
+                ? "Athlete"
+                : "Coach",
+            ""
+        );
+
+        return;
+    }
+
+
+    setProfileHeader(
+        data.full_name ||
+        (
+            currentRole === "coach"
+                ? "Athlete"
+                : "Coach"
+        ),
+        data.role ||
+        "",
+        data.avatar_url
+    );
+
+}
+
+
+/* =========================================
+   SET PROFILE HEADER
+========================================= */
+
+function setProfileHeader(
+    name,
+    role,
+    avatarUrl
+) {
+
+    const nameElement =
+        document.getElementById(
+            "profileName"
+        );
+
+
+    const roleElement =
+        document.getElementById(
+            "profileRole"
+        );
+
+
+    const avatar =
+        document.getElementById(
+            "profileAvatar"
+        );
+
+
+    if (nameElement) {
+
+        nameElement.textContent =
+            name;
+
+    }
+
+
+    if (roleElement) {
+
+        roleElement.textContent =
+            role === "coach"
+                ?
+                "Coach"
+                :
+                role === "athlete"
+                    ?
+                    "Athlete"
+                    :
+                    "";
+
+    }
+
+
+    if (
+        avatar &&
+        avatarUrl
+    ) {
+
+        avatar.innerHTML = `
+
+            <img
+                src="${escapeHtml(
+                    avatarUrl
+                )}"
+                alt=""
+            >
+
+        `;
+
+    } else if (avatar) {
+
+        avatar.textContent =
+            (
+                name ||
+                "T"
+            )
+            .charAt(0)
+            .toUpperCase();
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD MESSAGES
+========================================= */
+
+async function loadMessages() {
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    if (!conversationUserId) {
+
+        showNoConversation();
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .select(`
+                id,
+                sender_id,
+                receiver_id,
+                message,
+                created_at,
+                read_at
+            `)
+            .or(
+                `and(sender_id.eq.${currentUser.id},receiver_id.eq.${conversationUserId}),and(sender_id.eq.${conversationUserId},receiver_id.eq.${currentUser.id})`
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Message loading error:",
+            error
+        );
+
+        showError(
+            "Could not load your messages."
+        );
+
+        return;
+    }
+
+
+    renderMessages(
+        data || []
+    );
+
+
+    await markMessagesRead(
+        data || []
+    );
+
+}
+
+
+/* =========================================
+   RENDER
+========================================= */
+
+function renderMessages(
+    messages
+) {
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    if (!messages.length) {
+
+        list.innerHTML = `
+
+            <div class="no-messages">
+
+                No messages yet.<br><br>
+
+                Start the conversation.
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        messages
+            .map(
+                function (message) {
+
+                    const sent =
+                        String(
+                            message.sender_id
+                        ) ===
+                        String(
+                            currentUser.id
+                        );
+
+
+                    return `
+
+                        <div
+                            class="
+                                message-row
+                                ${
+                                    sent
+                                    ?
+                                    "sent"
+                                    :
+                                    "received"
+                                }
+                            "
+                        >
+
+                            <div class="message-bubble">
+
+                                ${escapeHtml(
+                                    message.message
+                                ).replaceAll(
+                                    "\n",
+                                    "<br>"
+                                )}
+
+                                <span class="message-time">
+
+                                    ${formatTime(
+                                        message.created_at
+                                    )}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    scrollToBottom();
+
+}
+
+
+/* =========================================
+   SEND MESSAGE
+========================================= */
+
+async function sendMessage() {
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+
+    const button =
+        document.getElementById(
+            "sendButton"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    const text =
+        input.value.trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    if (!conversationUserId) {
+
+        alert(
+            "No conversation is available yet."
+        );
+
+        return;
+    }
+
+
+    if (button) {
+
+        button.disabled =
+            true;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("messages")
+                .insert({
+
+                    sender_id:
+                        currentUser.id,
+
+                    receiver_id:
+                        conversationUserId,
+
+                    message:
+                        text
+
+                });
+
+
+        if (error) {
+
+            console.error(
+                "Send error:",
+                error
+            );
+
+            alert(
+                "Could not send message."
+            );
+
+            return;
+        }
+
+
+        input.value = "";
+
+        resizeComposer();
+
+
+        /*
+           Realtime will normally update
+           the conversation, but loading
+           immediately also makes the
+           sender see the message without
+           waiting.
+        */
+
+        await loadMessages();
+
+
+    } finally {
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   REALTIME
+========================================= */
+
+function subscribeToMessages() {
+
+    if (
+        !currentUser ||
+        !conversationUserId
+    ) {
+
+        return;
+    }
+
+
+    if (realtimeChannel) {
+
+        supabaseClient
+            .removeChannel(
+                realtimeChannel
+            );
+
+    }
+
+
+    realtimeChannel =
+        supabaseClient
+            .channel(
+                "twete-messages-" +
+                currentUser.id
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "messages"
+                },
+                async function (
+                    payload
+                ) {
+
+                    const message =
+                        payload.new;
+
+
+                    const belongs =
+                        (
+                            String(
+                                message.sender_id
+                            ) ===
+                            String(
+                                currentUser.id
+                            ) &&
+                            String(
+                                message.receiver_id
+                            ) ===
+                            String(
+                                conversationUserId
+                            )
+                        )
+                        ||
+                        (
+                            String(
+                                message.sender_id
+                            ) ===
+                            String(
+                                conversationUserId
+                            ) &&
+                            String(
+                                message.receiver_id
+                            ) ===
+                            String(
+                                currentUser.id
+                            )
+                        );
+
+
+                    if (belongs) {
+
+                        await loadMessages();
+
+                    }
+
+                }
+            )
+            .subscribe();
+
+}
+
+
+/* =========================================
+   MARK READ
+========================================= */
+
+async function markMessagesRead(
+    messages
+) {
+
+    const unreadIds =
+        messages
+            .filter(
+                function (message) {
+
+                    return (
+                        String(
+                            message.receiver_id
+                        ) ===
+                        String(
+                            currentUser.id
+                        ) &&
+                        !message.read_at
+                    );
+
+                }
+            )
+            .map(
+                function (message) {
+
+                    return message.id;
+
+                }
+            );
+
+
+    if (!unreadIds.length) {
+        return;
+    }
+
+
+    await supabaseClient
+        .from("messages")
+        .update({
+
+            read_at:
+                new Date().toISOString()
+
+        })
+        .in(
+            "id",
+            unreadIds
+        );
+
+}
+
+
+/* =========================================
+   COMPOSER
+========================================= */
+
+function setupComposer() {
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    input.addEventListener(
+        "input",
+        resizeComposer
+    );
+
+
+    input.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+}
+
+
+function resizeComposer() {
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    input.style.height =
+        "auto";
+
+
+    input.style.height =
+        Math.min(
+            input.scrollHeight,
+            120
+        ) +
+        "px";
+
+}
+
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+function goHome() {
+
+    window.location.href =
+        "athlete.html";
+
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "athlete.html";
+
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+function showNoConversation() {
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    list.innerHTML = `
+
+        <div class="no-messages">
+
+            No coach connection found yet.
+
+        </div>
+
+    `;
+
+}
+
+
+function showError(
+    message
+) {
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    list.innerHTML = `
+
+        <div class="no-messages">
+
+            ${escapeHtml(
+                message
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================
+   HELPERS
+========================================= */
+
+function formatTime(
+    value
+) {
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    return date.toLocaleString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function scrollToBottom() {
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    requestAnimationFrame(
+        function () {
+
+            list.scrollTop =
+                list.scrollHeight;
+
+        }
+    );
+
+}
+
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
