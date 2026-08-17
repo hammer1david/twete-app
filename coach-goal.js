@@ -21,8 +21,12 @@ const goalId =
 
 
 let goal = null;
+let program = null;
+
 let weeks = [];
 let sessions = [];
+
+let programStartDate = null;
 
 let currentWeekId = null;
 let currentEditingSessionId = null;
@@ -30,6 +34,9 @@ let currentEditingWeekId = null;
 
 let openWeekIds =
     new Set();
+
+let hasUnsyncedChanges =
+    false;
 
 
 /* =========================================
@@ -109,19 +116,81 @@ async function loadGoal() {
 
     if (!goal.program_id) {
 
-        const program =
+        const programData =
             await createProgramForGoal();
 
-        if (!program) {
+        if (!programData) {
             return;
         }
 
     }
 
 
+    await loadProgram();
+
+
     renderGoal();
 
     await loadWeeks();
+
+    updateStatusIndicator();
+
+}
+
+
+/* =========================================
+   LOAD PROGRAM
+========================================= */
+
+async function loadProgram() {
+
+    if (!goal.program_id) {
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("programs")
+            .select(`
+                id,
+                athlete_id,
+                name,
+                start_date,
+                end_date,
+                status,
+                coach_update_at,
+                athlete_received_at,
+                updated_at
+            `)
+            .eq(
+                "id",
+                goal.program_id
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Could not load program:",
+            error
+        );
+
+        return;
+    }
+
+
+    program =
+        data || null;
+
+
+    programStartDate =
+        program?.start_date ||
+        null;
 
 }
 
@@ -207,69 +276,99 @@ async function createProgramForGoal() {
         data.id;
 
 
+    program =
+        data;
+
+
+    programStartDate =
+        data.start_date;
+
+
     return data;
 
 }
 
 
 /* =========================================
-   CALCULATE GOAL PROGRESS
+   GOAL PROGRESS
 ========================================= */
 
 function calculateGoalProgress() {
 
-    if (!goal.target_date) {
+    if (
+        !programStartDate ||
+        !goal.target_date
+    ) {
+
         return 0;
+
     }
 
 
-    const now =
-        new Date();
-
-
     const start =
-        goal.created_at
-        ?
         new Date(
-            goal.created_at
-        )
-        :
-        new Date();
+            programStartDate +
+            "T00:00:00"
+        );
 
 
     const end =
         new Date(
             goal.target_date +
-            "T23:59:59"
+            "T00:00:00"
         );
 
 
-    if (
-        end.getTime() <=
-        start.getTime()
-    ) {
+    const today =
+        new Date();
 
-        return now >= end
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const totalDays =
+        Math.round(
+            (
+                end.getTime() -
+                start.getTime()
+            ) /
+            86400000
+        );
+
+
+    if (totalDays <= 0) {
+
+        return today >= end
             ? 100
             : 0;
 
     }
 
 
-    const total =
-        end.getTime() -
-        start.getTime();
-
-
-    const elapsed =
-        now.getTime() -
-        start.getTime();
+    const elapsedDays =
+        Math.max(
+            0,
+            Math.min(
+                totalDays,
+                Math.round(
+                    (
+                        today.getTime() -
+                        start.getTime()
+                    ) /
+                    86400000
+                )
+            )
+        );
 
 
     const percentage =
         (
-            elapsed /
-            total
+            elapsedDays /
+            totalDays
         ) * 100;
 
 
@@ -307,10 +406,12 @@ function renderGoal() {
                 </div>
 
                 <div class="goal-name">
+
                     ${escapeHtml(
                         goal.goal_name ||
                         "Goal"
                     )}
+
                 </div>
 
             </div>
@@ -324,6 +425,7 @@ function renderGoal() {
                 >
                     ✎ Edit Goal
                 </button>
+
 
                 <button
                     class="delete-goal-button"
@@ -349,9 +451,12 @@ function renderGoal() {
                     </div>
 
                     <div class="detail-value">
+
                         ${escapeHtml(
-                            goal.distance || ""
+                            goal.distance ||
+                            ""
                         )}
+
                     </div>
 
                 </div>
@@ -364,9 +469,12 @@ function renderGoal() {
                     </div>
 
                     <div class="detail-value">
+
                         ${escapeHtml(
-                            goal.target_time || ""
+                            goal.target_time ||
+                            ""
                         )}
+
                     </div>
 
                 </div>
@@ -444,7 +552,6 @@ function animateProgress(
             "goalProgressFill"
         );
 
-
     const number =
         document.getElementById(
             "goalProgressNumber"
@@ -455,13 +562,17 @@ function animateProgress(
         !fill ||
         !number
     ) {
+
         return;
+
     }
 
 
-    let current = 0;
+    let current =
+        0;
 
-    const duration = 1200;
+    const duration =
+        1200;
 
     const startTime =
         performance.now();
@@ -490,13 +601,15 @@ function animateProgress(
 
 
         fill.style.width =
-            current + "%";
+            current +
+            "%";
 
 
         number.textContent =
             Math.round(
                 current
-            ) + "%";
+            ) +
+            "%";
 
 
         if (
@@ -510,12 +623,14 @@ function animateProgress(
         } else {
 
             fill.style.width =
-                target + "%";
+                target +
+                "%";
 
             number.textContent =
                 Math.round(
                     target
-                ) + "%";
+                ) +
+                "%";
 
         }
 
@@ -548,6 +663,7 @@ async function loadWeeks() {
                 start_date,
                 end_date,
                 weekly_km,
+                week_label,
                 created_at
             `)
             .eq(
@@ -573,14 +689,16 @@ async function loadWeeks() {
 
 
     weeks =
-        weekData || [];
+        weekData ||
+        [];
 
 
     if (weeks.length) {
 
         const weekIds =
             weeks.map(
-                week => week.id
+                week =>
+                    week.id
             );
 
 
@@ -626,7 +744,8 @@ async function loadWeeks() {
 
 
         sessions =
-            sessionData || [];
+            sessionData ||
+            [];
 
     } else {
 
@@ -781,10 +900,75 @@ function createWeekCard(
         "— km";
 
 
+    const today =
+        new Date();
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const weekStart =
+        week.start_date
+        ?
+        new Date(
+            week.start_date +
+            "T00:00:00"
+        )
+        :
+        null;
+
+
+    const weekEnd =
+        week.end_date
+        ?
+        new Date(
+            week.end_date +
+            "T23:59:59"
+        )
+        :
+        null;
+
+
+    const isPastWeek =
+        weekEnd &&
+        today >
+        weekEnd;
+
+
+    const isCurrentWeek =
+        weekStart &&
+        weekEnd &&
+        today >= weekStart &&
+        today <= weekEnd;
+
+
+    let weekStateClass =
+        "";
+
+
+    if (isPastWeek) {
+
+        weekStateClass =
+            " past-week";
+
+    } else if (
+        isCurrentWeek
+    ) {
+
+        weekStateClass =
+            " current-week";
+
+    }
+
+
     return `
 
         <div
-            class="week-card"
+            class="week-card${weekStateClass}"
             id="week-${week.id}"
         >
 
@@ -803,21 +987,44 @@ function createWeekCard(
 
 
                 <div class="week-title">
-                    Week ${week.week_number}
+
+                    Week
+                    ${week.week_number}
+
                 </div>
 
 
                 <div class="week-dates">
+
                     ${escapeHtml(
                         weekDateText
                     )}
+
+                    ${
+                        week.week_label
+                        ?
+                        `
+                        <span class="week-label">
+                            ${escapeHtml(
+                                week.week_label
+                            )}
+                        </span>
+                        `
+                        :
+                        ""
+                    }
+
                 </div>
 
 
                 <div class="week-km">
+
                     ${escapeHtml(
-                        String(kmText)
+                        String(
+                            kmText
+                        )
                     )}
+
                 </div>
 
 
@@ -961,7 +1168,6 @@ function createSessionCard(
 
         <div class="session-card">
 
-
             <div class="session-date">
 
                 <div class="session-day">
@@ -1018,9 +1224,11 @@ function createSessionCard(
                         </div>
 
                         <div class="session-notes-box">
+
                             ${escapeHtml(
                                 session.notes
                             )}
+
                         </div>
 
                     </div>
@@ -1059,7 +1267,6 @@ function createSessionCard(
 
             </div>
 
-
         </div>
 
     `;
@@ -1085,17 +1292,26 @@ function addWeek() {
 
     document.getElementById(
         "weekStartDate"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
         "weekEndDate"
-    ).value = "";
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "weekLabel"
+    ).value =
+        "";
 
 
     document.getElementById(
         "weekKm"
-    ).value = "";
+    ).value =
+        "";
 
 
     document
@@ -1125,6 +1341,13 @@ async function saveWeek() {
         document.getElementById(
             "weekEndDate"
         ).value;
+
+
+    const weekLabel =
+        document.getElementById(
+            "weekLabel"
+        ).value
+        .trim();
 
 
     const weeklyKm =
@@ -1174,10 +1397,16 @@ async function saveWeek() {
         end_date:
             endDate,
 
+        week_label:
+            weekLabel ||
+            null,
+
         weekly_km:
             weeklyKm !== ""
             ?
-            Number(weeklyKm)
+            Number(
+                weeklyKm
+            )
             :
             null
 
@@ -1188,11 +1417,15 @@ async function saveWeek() {
     let newWeekId = null;
 
 
-    if (currentEditingWeekId) {
+    if (
+        currentEditingWeekId
+    ) {
 
         const result =
             await supabaseClient
-                .from("training_weeks")
+                .from(
+                    "training_weeks"
+                )
                 .update(
                     weekData
                 )
@@ -1201,8 +1434,10 @@ async function saveWeek() {
                     currentEditingWeekId
                 );
 
+
         error =
             result.error;
+
 
         newWeekId =
             currentEditingWeekId;
@@ -1226,7 +1461,9 @@ async function saveWeek() {
 
         const result =
             await supabaseClient
-                .from("training_weeks")
+                .from(
+                    "training_weeks"
+                )
                 .insert({
 
                     program_id:
@@ -1279,6 +1516,9 @@ async function saveWeek() {
     }
 
 
+    markUnsynced();
+
+
     await loadWeeks();
 
 }
@@ -1326,6 +1566,13 @@ function editWeek(
         "weekEndDate"
     ).value =
         week.end_date ||
+        "";
+
+
+    document.getElementById(
+        "weekLabel"
+    ).value =
+        week.week_label ||
         "";
 
 
@@ -1488,15 +1735,20 @@ async function deleteWeek(
 
         if (
             Number(
-                remainingWeeks[i].week_number
-            ) !== newNumber
+                remainingWeeks[i]
+                    .week_number
+            ) !==
+            newNumber
         ) {
 
             const {
-                error: renameError
+                error:
+                    renameError
             } =
                 await supabaseClient
-                    .from("training_weeks")
+                    .from(
+                        "training_weeks"
+                    )
                     .update({
 
                         week_number:
@@ -1505,7 +1757,8 @@ async function deleteWeek(
                     })
                     .eq(
                         "id",
-                        remainingWeeks[i].id
+                        remainingWeeks[i]
+                            .id
                     );
 
 
@@ -1521,6 +1774,9 @@ async function deleteWeek(
         }
 
     }
+
+
+    markUnsynced();
 
 
     await loadWeeks();
@@ -1627,12 +1883,14 @@ function openSessionModal(
 
     document.getElementById(
         "sessionDate"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
         "sessionTitle"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
@@ -1643,22 +1901,26 @@ function openSessionModal(
 
     document.getElementById(
         "sessionDistance"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
         "sessionDuration"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
         "sessionPace"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
         "sessionNotes"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.querySelector(
@@ -1807,14 +2069,18 @@ async function saveSession() {
         distance_km:
             distance
             ?
-            Number(distance)
+            Number(
+                distance
+            )
             :
             null,
 
         duration_minutes:
             duration
             ?
-            Number(duration)
+            Number(
+                duration
+            )
             :
             null,
 
@@ -1845,6 +2111,7 @@ async function saveSession() {
                     editingId
                 );
 
+
         error =
             result.error;
 
@@ -1861,6 +2128,7 @@ async function saveSession() {
                         false
 
                 });
+
 
         error =
             result.error;
@@ -1885,6 +2153,9 @@ async function saveSession() {
     openWeekIds.add(
         savedWeekId
     );
+
+
+    markUnsynced();
 
 
     await loadWeeks();
@@ -2035,6 +2306,9 @@ async function deleteSession(
 
         return;
     }
+
+
+    markUnsynced();
 
 
     await loadWeeks();
@@ -2207,11 +2481,6 @@ async function saveGoal() {
         data;
 
 
-    /*
-       Keep the linked program synchronized
-       with the edited goal.
-    */
-
     if (goal.program_id) {
 
         const {
@@ -2241,12 +2510,22 @@ async function saveGoal() {
                 programError
             );
 
+        } else {
+
+            programStartDate =
+                program?.start_date ||
+                programStartDate;
+
         }
 
     }
 
 
     closeGoalModal();
+
+
+    markUnsynced();
+
 
     renderGoal();
 
@@ -2275,8 +2554,12 @@ async function deleteGoal() {
             error: weekError
         } =
             await supabaseClient
-                .from("training_weeks")
-                .select("id")
+                .from(
+                    "training_weeks"
+                )
+                .select(
+                    "id"
+                )
                 .eq(
                     "program_id",
                     goal.program_id
@@ -2300,7 +2583,8 @@ async function deleteGoal() {
 
             const weekIds =
                 goalWeeks.map(
-                    week => week.id
+                    week =>
+                        week.id
                 );
 
 
@@ -2308,7 +2592,9 @@ async function deleteGoal() {
                 error: workoutError
             } =
                 await supabaseClient
-                    .from("workouts")
+                    .from(
+                        "workouts"
+                    )
                     .delete()
                     .in(
                         "week_id",
@@ -2327,10 +2613,13 @@ async function deleteGoal() {
 
 
             const {
-                error: weeksDeleteError
+                error:
+                    weeksDeleteError
             } =
                 await supabaseClient
-                    .from("training_weeks")
+                    .from(
+                        "training_weeks"
+                    )
                     .delete()
                     .in(
                         "id",
@@ -2338,7 +2627,9 @@ async function deleteGoal() {
                     );
 
 
-            if (weeksDeleteError) {
+            if (
+                weeksDeleteError
+            ) {
 
                 alert(
                     weeksDeleteError.message
@@ -2351,10 +2642,13 @@ async function deleteGoal() {
 
 
         const {
-            error: programError
+            error:
+                programError
         } =
             await supabaseClient
-                .from("programs")
+                .from(
+                    "programs"
+                )
                 .delete()
                 .eq(
                     "id",
@@ -2398,6 +2692,146 @@ async function deleteGoal() {
 
 
     goBack();
+
+}
+
+
+/* =========================================
+   UPDATE ATHLETE
+========================================= */
+
+async function updateAthlete() {
+
+    if (
+        !goal ||
+        !goal.program_id
+    ) {
+
+        alert(
+            "No training program found."
+        );
+
+        return;
+    }
+
+
+    const now =
+        new Date().toISOString();
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("programs")
+            .update({
+
+                coach_update_at:
+                    now,
+
+                athlete_received_at:
+                    now
+
+            })
+            .eq(
+                "id",
+                goal.program_id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Could not update athlete:\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    if (!program) {
+        program = {};
+    }
+
+
+    program.coach_update_at =
+        now;
+
+    program.athlete_received_at =
+        now;
+
+
+    hasUnsyncedChanges =
+        false;
+
+
+    updateStatusIndicator();
+
+
+    alert(
+        "The updated goal and training plan have been sent to the athlete."
+    );
+
+}
+
+
+/* =========================================
+   UNSYNCED STATUS
+========================================= */
+
+function markUnsynced() {
+
+    hasUnsyncedChanges =
+        true;
+
+
+    updateStatusIndicator();
+
+}
+
+
+function updateStatusIndicator() {
+
+    const dot =
+        document.getElementById(
+            "updateStatusDot"
+        );
+
+
+    if (!dot) {
+        return;
+    }
+
+
+    if (
+        hasUnsyncedChanges
+    ) {
+
+        dot.classList.remove(
+            "green"
+        );
+
+        return;
+    }
+
+
+    if (
+        program &&
+        program.athlete_received_at
+    ) {
+
+        dot.classList.add(
+            "green"
+        );
+
+    } else {
+
+        dot.classList.remove(
+            "green"
+        );
+
+    }
 
 }
 
@@ -2529,4 +2963,4 @@ function showWeeksError(
 
     `;
 
-                                    }
+            }
