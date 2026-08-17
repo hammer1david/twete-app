@@ -290,10 +290,6 @@ button {
     font-size: 14px;
 }
 
-.goal-main-info strong {
-    color: #dddddd;
-}
-
 
 /* =========================================
    PROGRESS CIRCLE
@@ -335,7 +331,10 @@ button {
 
     stroke-dasharray: 314;
 
-    stroke-dashoffset: 110;
+    stroke-dashoffset: 314;
+
+    transition:
+        stroke-dashoffset .5s ease;
 }
 
 .progress-number {
@@ -440,12 +439,27 @@ button {
     display: none;
 }
 
+
+/*
+   IMPORTANT:
+   More height so that:
+   WEEK 1
+   LOADING
+   100 km
+   Aug 17 – Aug 23
+
+   all fit without overlapping.
+*/
+
 .week-button {
     flex: 0 0 auto;
 
-    height: 44px;
+    min-height: 82px;
+    height: auto;
 
-    padding: 0 17px;
+    min-width: 145px;
+
+    padding: 10px 17px;
 
     border-radius: 8px;
 
@@ -460,7 +474,82 @@ button {
     font-weight: 700;
 
     cursor: pointer;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 3px;
 }
+
+
+/* Main week number */
+
+.week-button > span {
+    display: block;
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+/* Small information */
+
+.week-button small {
+    display: block;
+
+    margin-top: 1px;
+
+    color: #888888;
+
+    font-size: 8px;
+
+    line-height: 1.25;
+
+    text-transform: uppercase;
+
+    letter-spacing: .4px;
+
+    white-space: nowrap;
+}
+
+
+/* Weekly mileage */
+
+.week-button .weekly-mileage {
+    color: #C6FF00 !important;
+
+    font-size: 10px !important;
+
+    font-weight: 800;
+
+    margin-top: 2px;
+}
+
+
+/* Week dates */
+
+.week-button .week-dates {
+    color: #777777;
+
+    font-size: 8px;
+
+    font-weight: 400;
+
+    text-transform: none;
+
+    letter-spacing: 0;
+
+    margin-top: 2px;
+}
+
+
+/* Active week */
 
 .week-button.active {
     background: #C6FF00;
@@ -469,7 +558,45 @@ button {
 
     border-color: #C6FF00;
 
-    box-shadow: 0 0 18px rgba(198,255,0,0.13);
+    box-shadow:
+        0 0 18px
+        rgba(
+            198,
+            255,
+            0,
+            .13
+        );
+}
+
+
+/*
+   IMPORTANT:
+   Everything inside the active
+   green button must be black.
+*/
+
+.week-button.active > span,
+.week-button.active small,
+.week-button.active .weekly-mileage,
+.week-button.active .week-dates {
+    color: #000000 !important;
+}
+
+
+/* Current week */
+
+.week-button.current-week {
+    border-color:
+        #C6FF00 !important;
+}
+
+
+/* Past week */
+
+.week-button.past-week {
+    opacity: .42;
+
+    filter: grayscale(.7);
 }
 
 
@@ -492,13 +619,16 @@ button {
 }
 
 .week-indicator-fill {
-    width: 50%;
+    width: 0%;
 
     height: 100%;
 
     background: #C6FF00;
 
     border-radius: inherit;
+
+    transition:
+        width .35s ease;
 }
 
 
@@ -596,8 +726,14 @@ button {
     stroke-linejoin: round;
 }
 
+
+/* =========================================
+   WORKOUT INFO
+========================================= */
+
 .workout-info {
     flex: 1;
+
     min-width: 0;
 }
 
@@ -613,12 +749,8 @@ button {
     font-size: 13px;
 
     margin-bottom: 4px;
-}
 
-.workout-details span {
-    color: #C6FF00;
-
-    padding: 0 4px;
+    overflow-wrap: anywhere;
 }
 
 .workout-description {
@@ -629,50 +761,7 @@ button {
 
 
 /* =========================================
-   STATUS BUTTON
-========================================= */
-
-.status-button {
-    width: 29px;
-    height: 29px;
-
-    flex-shrink: 0;
-
-    border-radius: 50%;
-
-    border: 2px solid #555;
-
-    background: transparent;
-
-    color: #000000;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    font-size: 18px;
-
-    font-weight: 900;
-
-    cursor: pointer;
-}
-
-.completed-button {
-    background: #C6FF00;
-
-    border-color: #C6FF00;
-}
-
-.status-button.done {
-    background: #C6FF00;
-
-    border-color: #C6FF00;
-}
-
-
-/* =========================================
-   START WORKOUT
+   START BUTTON
 ========================================= */
 
 .start-button {
@@ -700,7 +789,7 @@ button {
 }
 
 .start-button:active {
-    transform: scale(0.97);
+    transform: scale(.97);
 }
 
 
@@ -724,6 +813,7 @@ button {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 12px;
@@ -811,11 +901,6 @@ button {
     border-radius: 50%;
 
     background:
-        radial-gradient(
-            circle at 50% 35%,
-            #eeeeee 0 20%,
-            transparent 21%
-        ),
         linear-gradient(
             135deg,
             #333,
@@ -951,22 +1036,6 @@ button {
     border-right: none;
 }
 
-.overview-stat svg {
-    width: 27px;
-    height: 27px;
-
-    fill: none;
-
-    stroke: #888;
-
-    stroke-width: 1.5;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-
-    margin-bottom: 7px;
-}
-
 .overview-stat span {
     display: block;
 
@@ -988,7 +1057,7 @@ button {
    BOTTOM NAVIGATION
 ========================================= */
 
-.bottom-nav {
+.bottom-navigation {
     position: fixed;
 
     left: 0;
@@ -1003,14 +1072,20 @@ button {
 
     gap: 100px;
 
-    background: rgba(7,7,7,0.98);
+    background:
+        rgba(
+            7,
+            7,
+            7,
+            .98
+        );
 
     border-top: 1px solid #303030;
 
     z-index: 20;
 }
 
-.bottom-nav-item {
+.nav-item {
     width: 90px;
 
     border: none;
@@ -1031,10 +1106,7 @@ button {
     cursor: pointer;
 }
 
-.bottom-nav-item svg {
-    width: 27px;
-    height: 27px;
-
+.nav-item svg {
     fill: none;
 
     stroke: currentColor;
@@ -1042,15 +1114,156 @@ button {
     stroke-width: 1.8;
 
     stroke-linecap: round;
+
     stroke-linejoin: round;
 }
 
-.bottom-nav-item span {
+.nav-item span {
     font-size: 12px;
 }
 
-.bottom-nav-item.active {
+.nav-item.active {
     color: #C6FF00;
+}
+
+
+/* =========================================
+   DYNAMIC STATES
+========================================= */
+
+.workout-card.past-workout {
+    opacity: .42;
+
+    filter: grayscale(.65);
+
+    transition:
+        opacity .25s ease;
+}
+
+.workout-card.today-workout {
+    border-color:
+        #C6FF00 !important;
+
+    box-shadow:
+        0 0 0 1px
+        rgba(
+            198,
+            255,
+            0,
+            .12
+        );
+}
+
+.today-label {
+    display: inline-block;
+
+    margin-top: 7px;
+
+    color: #C6FF00;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================
+   COACH NOTE
+========================================= */
+
+.coach-note {
+    margin-top: 10px;
+
+    padding: 10px 12px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .035
+        );
+
+    border-left:
+        2px solid
+        #C6FF00;
+
+    border-radius: 5px;
+}
+
+.coach-note-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #C6FF00;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+.coach-note-text {
+    color: #aaa;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
+}
+
+
+/* =========================================
+   FEEDBACK BUTTON
+========================================= */
+
+.feedback-button {
+    display: block;
+
+    margin-top: 10px;
+
+    background: transparent;
+
+    color: #C6FF00;
+
+    border:
+        1px solid
+        #333;
+
+    border-radius: 7px;
+
+    padding: 7px 10px;
+
+    font-size: 10px;
+
+    cursor: pointer;
+}
+
+.feedback-button:hover {
+    border-color:
+        #C6FF00;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.athlete-empty {
+    color: #777;
+
+    padding: 22px 4px;
+
+    font-size: 13px;
 }
 
 
@@ -1145,6 +1358,47 @@ button {
         font-size: 11px;
     }
 
+
+    /* ================================
+       MOBILE WEEKS
+    ================================= */
+
+    .week-selector {
+        gap: 10px;
+
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .week-button {
+        min-width: 125px;
+
+        min-height: 78px;
+
+        padding: 9px 12px;
+    }
+
+    .week-button > span {
+        font-size: 11px;
+    }
+
+    .week-button small {
+        font-size: 8px;
+    }
+
+    .week-button .weekly-mileage {
+        font-size: 9px !important;
+    }
+
+    .week-button .week-dates {
+        font-size: 7px;
+    }
+
+
+    /* ================================
+       WORKOUTS
+    ================================= */
+
     .workout-card {
         gap: 8px;
 
@@ -1186,9 +1440,19 @@ button {
         font-size: 10px;
     }
 
+
+    /* ================================
+       INFO
+    ================================= */
+
     .info-grid {
         grid-template-columns: 1fr;
     }
+
+
+    /* ================================
+       OVERVIEW
+    ================================= */
 
     .overview-stats {
         grid-template-columns:
@@ -1206,8 +1470,13 @@ button {
         padding-bottom: 12px;
     }
 
-    .bottom-nav {
+
+    /* ================================
+       BOTTOM NAV
+    ================================= */
+
+    .bottom-navigation {
         gap: 65px;
     }
 
-}
+       }
