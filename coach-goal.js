@@ -809,7 +809,7 @@ function createSessionCard(
 
         session.pace
             ?
-            session.pace
+            session.pace + "/km"
             :
             null
 
@@ -869,38 +869,26 @@ function createSessionCard(
         ""
     }
 
-
-    ${
-        session.rest
-        ?
-        `
-        <div style="
-            margin-top:6px;
-            color:#aaa;
-        ">
-            Rest:
-            ${escapeHtml(
-                session.rest
-            )}
-        </div>
-        `
-        :
-        ""
-    }
-
-
     ${
         session.notes
         ?
         `
         <div style="
-            margin-top:5px;
-            color:#777;
-        ">
-            ${escapeHtml(
-                session.notes
-            )}
-        </div>
+    margin-top:10px;
+    padding:10px;
+    background:#0b0b0b;
+    border:1px solid #292929;
+    border-radius:7px;
+    color:#bdbdbd;
+    font-size:13px;
+    line-height:1.5;
+">
+
+    ${escapeHtml(
+        session.notes
+    )}
+
+</div>
         `
         :
         ""
