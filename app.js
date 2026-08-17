@@ -1,6 +1,6 @@
 /* =========================================
    TWETE APP
-   Authentication
+   LOGIN & ACCOUNT
 ========================================= */
 
 
@@ -8,27 +8,21 @@
    SUPABASE
 ========================================= */
 
-const SUPABASE_URL = "https://cvwawazfelidkloqmbma.supabase.co";
+const SUPABASE_URL =
+    "https://uhbhsyuodizauwhhdffu.supabase.co";
 
+/*
+   KEEP YOUR EXISTING SUPABASE PUBLISHABLE KEY
+   HERE.
+*/
 const SUPABASE_KEY =
-    "sb_publishable_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
+
 
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
-    );
-
-
-/* =========================================
-   WEBSITE URL
-========================================= */
-
-const TWETE_URL =
-    window.location.origin +
-    window.location.pathname.substring(
-        0,
-        window.location.pathname.lastIndexOf("/") + 1
     );
 
 
@@ -48,8 +42,8 @@ const loginButton =
 const createAccountButton =
     document.getElementById("createAccountButton");
 
-const forgotPasswordButton =
-    document.getElementById("forgotPassword");
+const messageBox =
+    document.getElementById("authMessage");
 
 
 /* =========================================
@@ -58,32 +52,8 @@ const forgotPasswordButton =
 
 function showMessage(message, type = "error") {
 
-    let messageBox =
-        document.getElementById("authMessage");
-
     if (!messageBox) {
-
-        messageBox =
-            document.createElement("div");
-
-        messageBox.id =
-            "authMessage";
-
-        messageBox.style.marginTop =
-            "15px";
-
-        messageBox.style.textAlign =
-            "center";
-
-        messageBox.style.fontSize =
-            "14px";
-
-        const card =
-            document.querySelector(".login-card");
-
-        if (card) {
-            card.appendChild(messageBox);
-        }
+        return;
     }
 
     messageBox.textContent =
@@ -103,7 +73,19 @@ function showMessage(message, type = "error") {
 
 
 /* =========================================
-   VALIDATION
+   CLEAR MESSAGE
+========================================= */
+
+function clearMessage() {
+
+    if (messageBox) {
+        messageBox.textContent = "";
+    }
+}
+
+
+/* =========================================
+   GET INPUT
 ========================================= */
 
 function getCredentials() {
@@ -117,8 +99,10 @@ function getCredentials() {
     if (!email) {
 
         showMessage(
-            "Please enter your email address."
+            "Please enter your email."
         );
+
+        emailInput.focus();
 
         return null;
     }
@@ -128,6 +112,8 @@ function getCredentials() {
         showMessage(
             "Please enter your password."
         );
+
+        passwordInput.focus();
 
         return null;
     }
@@ -143,7 +129,7 @@ function getCredentials() {
    LOGIN
 ========================================= */
 
-async function loginUser() {
+async function login() {
 
     const credentials =
         getCredentials();
@@ -152,12 +138,16 @@ async function loginUser() {
         return;
     }
 
-    loginButton.disabled = true;
+    clearMessage();
 
-    loginButton.textContent =
-        "Logging in...";
+    if (loginButton) {
 
-    showMessage("");
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+            "Logging in...";
+    }
+
 
     try {
 
@@ -172,7 +162,6 @@ async function loginUser() {
 
                 password:
                     credentials.password
-
             });
 
 
@@ -211,9 +200,7 @@ async function loginUser() {
             data.user
         );
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Unexpected login error:",
@@ -224,14 +211,16 @@ async function loginUser() {
             "Something went wrong. Please try again."
         );
 
-    }
+    } finally {
 
-    finally {
+        if (loginButton) {
 
-        loginButton.disabled = false;
+            loginButton.disabled =
+                false;
 
-        loginButton.textContent =
-            "Log In";
+            loginButton.textContent =
+                "Log in";
+        }
     }
 }
 
@@ -260,13 +249,17 @@ async function createAccount() {
     }
 
 
-    createAccountButton.disabled =
-        true;
+    clearMessage();
 
-    createAccountButton.textContent =
-        "Creating account...";
 
-    showMessage("");
+    if (createAccountButton) {
+
+        createAccountButton.disabled =
+            true;
+
+        createAccountButton.textContent =
+            "Creating account...";
+    }
 
 
     try {
@@ -286,10 +279,10 @@ async function createAccount() {
                 options: {
 
                     emailRedirectTo:
-                        TWETE_URL
+                        window.location.origin +
+                        window.location.pathname
 
                 }
-
             });
 
 
@@ -310,14 +303,10 @@ async function createAccount() {
 
 
         /*
-           Supabase may intentionally return
-           a successful-looking response for an
-           already registered email.
-
-           Therefore we do NOT try to detect
-           existing accounts from the client.
+           Supabase may hide whether an email
+           already exists. Therefore we don't
+           attempt to bypass that protection.
         */
-
 
         if (
             data &&
@@ -335,8 +324,8 @@ async function createAccount() {
 
 
         /*
-           If email confirmation is enabled,
-           session will normally be null.
+           Email confirmation enabled:
+           user created but no session yet.
         */
 
         if (
@@ -355,13 +344,14 @@ async function createAccount() {
 
 
         /*
-           If email confirmation is disabled,
-           the user may already have a session.
+           Email confirmation disabled:
+           user receives a session immediately.
         */
 
         if (
             data &&
-            data.user
+            data.user &&
+            data.session
         ) {
 
             showMessage(
@@ -378,14 +368,11 @@ async function createAccount() {
 
 
         showMessage(
-            "Account created. Please check your email."
-            ,
+            "Account created. Please check your email.",
             "success"
         );
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Unexpected signup error:",
@@ -396,15 +383,16 @@ async function createAccount() {
             "Something went wrong. Please try again."
         );
 
-    }
+    } finally {
 
-    finally {
+        if (createAccountButton) {
 
-        createAccountButton.disabled =
-            false;
+            createAccountButton.disabled =
+                false;
 
-        createAccountButton.textContent =
-            "Create New Account";
+            createAccountButton.textContent =
+                "Create a new account";
+        }
     }
 }
 
@@ -436,8 +424,7 @@ async function redirectUser(user) {
             );
 
             /*
-               Don't block authentication if
-               the profile doesn't exist yet.
+               For now, default to athlete.
             */
 
             window.location.href =
@@ -460,16 +447,13 @@ async function redirectUser(user) {
 
 
         /*
-           Default role:
-           athlete
+           Default role = athlete
         */
 
         window.location.href =
             "athlete.html";
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Redirect error:",
@@ -503,6 +487,9 @@ async function forgotPassword() {
     }
 
 
+    clearMessage();
+
+
     try {
 
         const {
@@ -513,7 +500,8 @@ async function forgotPassword() {
                     email,
                     {
                         redirectTo:
-                            TWETE_URL
+                            window.location.origin +
+                            window.location.pathname
                     }
                 );
 
@@ -533,17 +521,19 @@ async function forgotPassword() {
         }
 
 
+        /*
+           Don't reveal whether an account exists.
+        */
+
         showMessage(
             "If an account exists for this email, a password reset email has been sent.",
             "success"
         );
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "Unexpected reset error:",
+            "Unexpected password reset error:",
             error
         );
 
@@ -582,37 +572,6 @@ function togglePassword() {
 
 
 /* =========================================
-   BUTTON EVENTS
-========================================= */
-
-if (loginButton) {
-
-    loginButton.addEventListener(
-        "click",
-        loginUser
-    );
-}
-
-
-if (createAccountButton) {
-
-    createAccountButton.addEventListener(
-        "click",
-        createAccount
-    );
-}
-
-
-if (forgotPasswordButton) {
-
-    forgotPasswordButton.addEventListener(
-        "click",
-        forgotPassword
-    );
-}
-
-
-/* =========================================
    ENTER KEY
 ========================================= */
 
@@ -627,73 +586,10 @@ if (passwordInput) {
                 "Enter"
             ) {
 
-                loginUser();
+                login();
             }
-
         }
     );
-}
-
-
-/* =========================================
-   PASSWORD TOGGLE
-========================================= */
-
-const passwordToggle =
-    document.querySelector(
-        ".password-toggle"
-    );
-
-if (passwordToggle) {
-
-    passwordToggle.addEventListener(
-        "click",
-        togglePassword
-    );
-}
-
-
-/* =========================================
-   SESSION CHECK
-========================================= */
-
-async function checkExistingSession() {
-
-    try {
-
-        const {
-            data
-        } =
-            await supabaseClient.auth
-                .getSession();
-
-
-        if (
-            data &&
-            data.session &&
-            data.session.user
-        ) {
-
-            /*
-               Uncomment this later if you
-               want already logged-in users
-               to automatically skip the login page.
-
-               await redirectUser(
-                   data.session.user
-               );
-            */
-        }
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Session check error:",
-            error
-        );
-    }
 }
 
 
@@ -701,4 +597,6 @@ async function checkExistingSession() {
    START
 ========================================= */
 
-checkExistingSession();
+console.log(
+    "Twete authentication loaded."
+);
