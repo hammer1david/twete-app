@@ -710,7 +710,66 @@ async function loadAthleteProfilePicture() {
 
 loadAthleteProfilePicture();
 
+async function loadAthleteHeaderName() {
 
+    const nameElement =
+        document.getElementById(
+            "athleteHeaderName"
+        );
+
+    if (!nameElement) {
+        return;
+    }
+
+    try {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabaseClient.auth.getUser();
+
+        if (!user) {
+            return;
+        }
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select("full_name")
+                .eq("id", user.id)
+                .maybeSingle();
+
+        if (error) {
+
+            console.error(
+                "Could not load athlete name:",
+                error
+            );
+
+            return;
+        }
+
+        if (data?.full_name) {
+
+            nameElement.textContent =
+                data.full_name;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Athlete name error:",
+            error
+        );
+    }
+}
+
+loadAthleteHeaderName();
 
 /* =========================================
    MOTIVATIONAL QUOTES
