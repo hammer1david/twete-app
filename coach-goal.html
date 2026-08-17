@@ -22,10 +22,7 @@ body {
     margin: 0;
     background: #050505;
     color: white;
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 button,
@@ -116,14 +113,11 @@ button {
     width: 48px;
     height: 48px;
     flex-shrink: 0;
-
     border-radius: 10px;
     background: #182000;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: #C6FF00;
     font-size: 25px;
 }
@@ -150,10 +144,6 @@ button {
 .edit-goal-button {
     border: 1px solid #333;
     color: white;
-}
-
-.edit-goal-button:hover {
-    border-color: #C6FF00;
 }
 
 .delete-goal-button {
@@ -251,11 +241,9 @@ button {
 .week-header {
     min-height: 58px;
     padding: 10px 14px;
-
     display: flex;
     align-items: center;
     gap: 10px;
-
     cursor: pointer;
 }
 
@@ -286,12 +274,19 @@ button {
     flex: 1;
 }
 
+.week-km {
+    color: #C6FF00;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
 .week-actions {
     display: flex;
     gap: 7px;
 }
 
 .add-session-button,
+.edit-week-button,
 .delete-week-button {
     background: #111;
     padding: 7px 10px;
@@ -299,13 +294,10 @@ button {
     font-size: 11px;
 }
 
-.add-session-button {
+.add-session-button,
+.edit-week-button {
     border: 1px solid #333;
     color: white;
-}
-
-.add-session-button:hover {
-    border-color: #C6FF00;
 }
 
 .delete-week-button {
@@ -431,10 +423,6 @@ button {
     color: white;
 }
 
-.edit-session-button:hover {
-    border-color: #C6FF00;
-}
-
 .delete-session-button {
     border: 1px solid #5b2525;
     color: #ff5555;
@@ -455,16 +443,11 @@ button {
 .modal-overlay {
     position: fixed;
     inset: 0;
-
     background: rgba(0,0,0,0.78);
-
     display: none;
-
     align-items: center;
     justify-content: center;
-
     padding: 20px;
-
     z-index: 100;
 }
 
@@ -480,9 +463,7 @@ button {
 
     background: #111;
     border: 1px solid #333;
-
     border-radius: 14px;
-
     padding: 24px;
 }
 
@@ -540,14 +521,12 @@ button {
     border-radius: 7px;
 
     padding: 11px;
-
     outline: none;
 }
 
 .form-group textarea {
     min-height: 150px;
     resize: vertical;
-
     overflow-wrap: break-word;
     word-break: break-word;
     white-space: pre-wrap;
@@ -640,6 +619,11 @@ button {
     .week-dates {
         width: 100%;
         flex: auto;
+        padding-left: 30px;
+    }
+
+    .week-km {
+        width: 100%;
         padding-left: 30px;
     }
 
@@ -967,7 +951,108 @@ button {
 
 
 <!-- ===============================
-     GOAL EDIT MODAL
+     WEEK MODAL
+================================ -->
+
+<div
+    class="modal-overlay"
+    id="weekModal"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2 id="weekModalTitle">
+                New Week
+            </h2>
+
+            <button
+                class="close-button"
+                onclick="closeWeekModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Start date *
+                </label>
+
+                <input
+                    type="date"
+                    id="weekStartDate"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    End date *
+                </label>
+
+                <input
+                    type="date"
+                    id="weekEndDate"
+                >
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    Weekly kilometres
+                </label>
+
+                <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    id="weekKm"
+                    placeholder="e.g. 80"
+                >
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="cancel-button"
+                onclick="closeWeekModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="save-button"
+                onclick="saveWeek()"
+            >
+                Save Week
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===============================
+     GOAL MODAL
 ================================ -->
 
 <div
@@ -1079,7 +1164,6 @@ button {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="coach-goal.js"></script>
-
 
 </body>
 
