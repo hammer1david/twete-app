@@ -1281,14 +1281,7 @@ async function saveSession() {
         .trim();
 
 
-    const rest =
-        document.getElementById(
-            "sessionRest"
-        ).value
-        .trim();
-
-
-    const notes =
+   const notes =
         document.getElementById(
             "sessionNotes"
         ).value
