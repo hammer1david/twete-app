@@ -12,6 +12,7 @@
 
     <title>Twete Coach - Athletes</title>
 
+
     <style>
 
         * {
@@ -19,9 +20,15 @@
         }
 
 
+        html,
         body {
-
             margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+
+        body {
 
             background: #050505;
 
@@ -32,8 +39,14 @@
                 Helvetica,
                 sans-serif;
 
+            padding-bottom: 90px;
+
         }
 
+
+        /* ================================
+           PAGE
+        ================================= */
 
         .page {
 
@@ -323,6 +336,111 @@
 
 
         /* ================================
+           COACH FOOTER
+        ================================= */
+
+        .bottom-navigation {
+
+            position: fixed;
+
+            left: 0;
+
+            right: 0;
+
+            bottom: 0;
+
+            height: 70px;
+
+            z-index: 1000;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 55px;
+
+            background:
+                rgba(
+                    8,
+                    8,
+                    8,
+                    .97
+                );
+
+            border-top: 1px solid #222;
+
+            backdrop-filter: blur(12px);
+
+            -webkit-backdrop-filter: blur(12px);
+
+        }
+
+
+        .nav-item {
+
+            min-width: 80px;
+
+            border: none;
+
+            background: transparent;
+
+            color: #777;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 4px;
+
+            cursor: pointer;
+
+            padding: 0;
+
+        }
+
+
+        .nav-item.active {
+
+            color: #C6FF00;
+
+        }
+
+
+        .nav-item svg {
+
+            width: 24px;
+
+            height: 24px;
+
+            fill: none;
+
+            stroke: currentColor;
+
+            stroke-width: 2;
+
+            stroke-linecap: round;
+
+            stroke-linejoin: round;
+
+        }
+
+
+        .nav-item span {
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+
+        /* ================================
            MOBILE
         ================================= */
 
@@ -352,6 +470,13 @@
             .athletes-grid {
 
                 grid-template-columns: 1fr;
+
+            }
+
+
+            .bottom-navigation {
+
+                gap: 45px;
 
             }
 
@@ -395,8 +520,11 @@
             Athletes
         </h1>
 
+
         <div class="subtitle">
+
             Select an athlete to manage their training.
+
         </div>
 
 
@@ -408,6 +536,7 @@
             <h2>
                 Registered athletes
             </h2>
+
 
             <div
                 class="athlete-count"
@@ -425,7 +554,9 @@
         >
 
             <div class="loading">
+
                 Loading athletes...
+
             </div>
 
         </div>
@@ -433,18 +564,124 @@
 
     </main>
 
+
 </div>
 
 
 
-<!-- SUPABASE -->
+<!-- ================================
+     COACH FOOTER
+================================= -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<nav class="bottom-navigation">
 
 
-<!-- OUR JAVASCRIPT -->
+    <!-- HOME -->
+
+    <button
+        class="nav-item active"
+        onclick="goCoachHome()"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path
+                d="M3 10.5L12 3l9 7.5"
+            ></path>
+
+            <path
+                d="M5 9.5V21h14V9.5"
+            ></path>
+
+            <path
+                d="M9 21v-6h6v6"
+            ></path>
+
+        </svg>
+
+
+        <span>
+            Home
+        </span>
+
+    </button>
+
+
+
+    <!-- MESSAGES -->
+
+    <button
+        class="nav-item"
+        onclick="goCoachMessages()"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path
+                d="M4 4h16v12H8l-4 4V4z"
+            ></path>
+
+            <line
+                x1="8"
+                y1="9"
+                x2="16"
+                y2="9"
+            ></line>
+
+            <line
+                x1="8"
+                y1="12"
+                x2="14"
+                y2="12"
+            ></line>
+
+        </svg>
+
+
+        <span>
+            Messages
+        </span>
+
+    </button>
+
+
+</nav>
+
+
+
+<!-- ================================
+     SUPABASE
+================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- EXISTING COACH JS -->
 
 <script src="coach.js"></script>
+
+
+
+<script>
+
+    function goCoachHome() {
+
+        window.location.href =
+            "coach.html";
+
+    }
+
+
+    function goCoachMessages() {
+
+        window.location.href =
+            "messages.html";
+
+    }
+
+</script>
 
 
 </body>
