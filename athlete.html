@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -12,18 +13,97 @@
     <title>Twete | Home</title>
 
     <link rel="stylesheet" href="style.css">
+
+
+    <style>
+
+        /* =========================================
+           MESSAGE NOTIFICATION BADGE
+        ========================================= */
+
+        .messages-nav-item {
+            position: relative;
+        }
+
+
+        .message-notification-badge {
+
+            position: absolute;
+
+            top: -5px;
+
+            right: 14px;
+
+            min-width: 17px;
+
+            height: 17px;
+
+            padding: 0 4px;
+
+            border-radius: 20px;
+
+            background: #ff3b30;
+
+            color: #ffffff;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            line-height: 1;
+
+            border: 2px solid #050505;
+
+            z-index: 10;
+
+        }
+
+
+        .message-notification-badge.visible {
+
+            display: flex;
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .message-notification-badge {
+
+                right: 10px;
+
+                top: -4px;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
 <div class="app athlete-app">
 
+
     <!-- Decorative background -->
+
     <div class="glow-line top"></div>
+
     <div class="glow-line bottom"></div>
 
 
+
     <main class="athlete-page">
+
 
         <!-- =========================
              HEADER
@@ -31,15 +111,18 @@
 
         <header class="athlete-header">
 
+
             <div class="dashboard-logo">
                 TWETE
             </div>
+
 
             <span
                 id="athleteHeaderName"
                 class="athlete-header-name"
             >
             </span>
+
 
             <button
                 class="profile-button"
@@ -70,6 +153,7 @@
                             r="4"
                         ></circle>
 
+
                         <path
                             d="M5.5 21a6.5 6.5 0 0 1 13 0"
                         ></path>
@@ -81,6 +165,7 @@
             </button>
 
         </header>
+
 
 
         <!-- =========================
@@ -99,11 +184,13 @@
         </section>
 
 
+
         <!-- =========================
              CURRENT GOAL
         ========================== -->
 
         <section class="goal-section">
+
 
             <h2 class="section-title">
                 Current Goal
@@ -115,9 +202,12 @@
                 id="currentGoalCard"
             >
 
+
                 <div class="goal-main">
 
+
                     <div class="goal-icon target-icon">
+
 
                         <svg
                             width="48"
@@ -136,11 +226,13 @@
                                 r="8"
                             ></circle>
 
+
                             <circle
                                 cx="12"
                                 cy="12"
                                 r="4"
                             ></circle>
+
 
                             <circle
                                 cx="12"
@@ -153,15 +245,19 @@
                     </div>
 
 
+
                     <div class="goal-information">
+
 
                         <span class="goal-status">
                             CURRENT GOAL
                         </span>
 
+
                         <h3 id="currentGoalTitle">
                             No current goal
                         </h3>
+
 
                         <p
                             class="goal-pb"
@@ -179,20 +275,25 @@
         </section>
 
 
+
         <!-- =========================
              PAST GOALS
         ========================== -->
 
         <section class="goal-section past-goals">
 
+
             <h2 class="section-title">
                 Past Goals
             </h2>
 
 
+
             <div class="past-goal-card no-goal-card">
 
+
                 <div class="past-goal-icon">
+
 
                     <svg
                         width="34"
@@ -206,10 +307,15 @@
                     >
 
                         <path d="M8 21h8"></path>
+
                         <path d="M12 17v4"></path>
+
                         <path d="M7 4h10"></path>
+
                         <path d="M8 4v5"></path>
+
                         <path d="M16 4v5"></path>
+
                         <path d="M8 9l4 4 4-4"></path>
 
                     </svg>
@@ -217,15 +323,19 @@
                 </div>
 
 
+
                 <div class="past-goal-information">
+
 
                     <span class="goal-status">
                         PAST GOALS
                     </span>
 
+
                     <h3>
                         No past goals yet
                     </h3>
+
 
                     <p>
                         Completed goals from your coach will appear here.
@@ -241,11 +351,15 @@
     </main>
 
 
+
     <!-- =========================
          BOTTOM NAVIGATION
     ========================== -->
 
     <nav class="bottom-navigation">
+
+
+        <!-- HOME -->
 
         <button
             class="nav-item active"
@@ -267,15 +381,18 @@
                     d="M3 10.5L12 3l9 7.5"
                 ></path>
 
+
                 <path
                     d="M5 9.5V21h14V9.5"
                 ></path>
+
 
                 <path
                     d="M9 21v-6h6v6"
                 ></path>
 
             </svg>
+
 
             <span>
                 Home
@@ -284,10 +401,17 @@
         </button>
 
 
+
+        <!-- =========================
+             MESSAGES
+        ========================== -->
+
         <button
-            class="nav-item"
+            class="nav-item messages-nav-item"
             onclick="window.location.href='messages.html'"
+            aria-label="Messages"
         >
+
 
             <svg
                 width="27"
@@ -304,12 +428,14 @@
                     d="M4 4h16v12H8l-4 4V4z"
                 ></path>
 
+
                 <line
                     x1="8"
                     y1="9"
                     x2="16"
                     y2="9"
                 ></line>
+
 
                 <line
                     x1="8"
@@ -320,24 +446,45 @@
 
             </svg>
 
+
+
+            <!-- RED NOTIFICATION -->
+
+            <span
+                id="messageNotificationBadge"
+                class="message-notification-badge"
+            >
+                0
+            </span>
+
+
             <span>
                 Messages
             </span>
 
         </button>
 
+
     </nav>
+
 
 </div>
 
 
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script src="app.js"></script>
 
+
 <script src="auth-guard.js"></script>
 
+
 <script>
+
     protectPage("athlete");
 
 
@@ -352,10 +499,12 @@
                 "currentGoalCard"
             );
 
+
         const title =
             document.getElementById(
                 "currentGoalTitle"
             );
+
 
         const details =
             document.getElementById(
@@ -368,7 +517,9 @@
             !title ||
             !details
         ) {
+
             return;
+
         }
 
 
@@ -385,7 +536,9 @@
 
 
             if (!user) {
+
                 return;
+
             }
 
 
@@ -427,11 +580,14 @@
                 );
 
                 return;
+
             }
 
 
             if (!goal) {
+
                 return;
+
             }
 
 
@@ -524,10 +680,219 @@
     }
 
 
+
+    /* =========================================
+       MESSAGE NOTIFICATION
+    ========================================= */
+
+    async function updateMessageNotification() {
+
+        const badge =
+            document.getElementById(
+                "messageNotificationBadge"
+            );
+
+
+        if (!badge) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const {
+                data: {
+                    user
+                }
+            } =
+                await supabaseClient
+                    .auth
+                    .getUser();
+
+
+            if (!user) {
+
+                return;
+
+            }
+
+
+            const {
+                count,
+                error
+            } =
+                await supabaseClient
+                    .from("messages")
+                    .select(
+                        "id",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    )
+                    .eq(
+                        "receiver_id",
+                        user.id
+                    )
+                    .is(
+                        "read_at",
+                        null
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Message notification error:",
+                    error
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !count ||
+                count <= 0
+            ) {
+
+                badge.textContent =
+                    "0";
+
+                badge.classList.remove(
+                    "visible"
+                );
+
+                return;
+
+            }
+
+
+            /*
+               Show the exact number up to 99.
+               Above 99 we show 99+.
+            */
+
+            badge.textContent =
+                count > 99
+                    ?
+                    "99+"
+                    :
+                    String(count);
+
+
+            badge.classList.add(
+                "visible"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Notification error:",
+                error
+            );
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       REALTIME MESSAGE NOTIFICATIONS
+    ========================================= */
+
+    let athleteMessageNotificationChannel =
+        null;
+
+
+    async function setupMessageNotifications() {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        if (!user) {
+
+            return;
+
+        }
+
+
+        /*
+           First load existing unread messages.
+        */
+
+        await updateMessageNotification();
+
+
+        /*
+           Listen for new messages.
+        */
+
+        athleteMessageNotificationChannel =
+            supabaseClient
+                .channel(
+                    "athlete-message-notifications-" +
+                    user.id
+                )
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "INSERT",
+                        schema: "public",
+                        table: "messages",
+                        filter:
+                            "receiver_id=eq." +
+                            user.id
+                    },
+                    async function () {
+
+                        await updateMessageNotification();
+
+                    }
+                )
+                .subscribe();
+
+
+        /*
+           Small fallback check.
+
+           This makes the badge reliable even if
+           the browser temporarily loses Realtime.
+        */
+
+        setInterval(
+            updateMessageNotification,
+            10000
+        );
+
+    }
+
+
+
+    /* =========================================
+       START
+    ========================================= */
+
     loadCurrentGoal();
+
+
+    setupMessageNotifications();
 
 </script>
 
 
 </body>
+
 </html>
