@@ -4,22 +4,34 @@
     box-sizing: border-box;
 }
 
+
 html,
 body {
     width: 100%;
     min-height: 100%;
 }
 
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     background: #050505;
+
     color: #fff;
+
 }
 
+
 button,
-textarea {
+textarea,
+input {
     font-family: inherit;
 }
+
 
 .hidden {
     display: none !important;
@@ -31,6 +43,7 @@ textarea {
 ========================================= */
 
 .messages-app {
+
     min-height: 100vh;
     min-height: 100dvh;
 
@@ -43,6 +56,7 @@ textarea {
         #050505;
 
     padding-bottom: 80px;
+
 }
 
 
@@ -51,6 +65,7 @@ textarea {
 ========================================= */
 
 .messages-header {
+
     height: 72px;
 
     display: grid;
@@ -65,16 +80,24 @@ textarea {
     padding: 0 22px;
 
     border-bottom: 1px solid #181818;
+
 }
 
+
 .messages-header h1 {
+
     font-size: 21px;
+
     text-align: center;
+
     font-weight: 700;
+
 }
+
 
 .back-button,
 .conversation-back {
+
     width: 40px;
     height: 40px;
 
@@ -85,14 +108,18 @@ textarea {
     color: #fff;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     cursor: pointer;
+
 }
+
 
 .back-button svg,
 .conversation-back svg {
+
     width: 27px;
     height: 27px;
 
@@ -103,8 +130,11 @@ textarea {
     stroke-width: 2;
 
     stroke-linecap: round;
+
     stroke-linejoin: round;
+
 }
+
 
 .header-spacer {
     width: 40px;
@@ -116,32 +146,42 @@ textarea {
 ========================================= */
 
 .athlete-list-section {
+
     width: 100%;
+
     max-width: 850px;
 
     margin: 0 auto;
 
     padding: 20px 18px 100px;
+
 }
 
+
 .section-title {
-    color: #fff;
 
     font-size: 18px;
+
     font-weight: 700;
 
     margin-bottom: 13px;
+
 }
 
+
 .athlete-list {
+
     display: flex;
 
     flex-direction: column;
 
     gap: 8px;
+
 }
 
+
 .athlete-item {
+
     width: 100%;
 
     min-height: 70px;
@@ -165,17 +205,32 @@ textarea {
     cursor: pointer;
 
     text-align: left;
+
 }
+
 
 .athlete-item:hover {
+
     border-color: #C6FF00;
+
 }
+
 
 .athlete-item.unread {
-    border-color: rgba(198,255,0,.55);
+
+    border-color:
+        rgba(
+            198,
+            255,
+            0,
+            .55
+        );
+
 }
 
+
 .athlete-avatar {
+
     width: 46px;
     height: 46px;
 
@@ -183,7 +238,13 @@ textarea {
 
     border-radius: 50%;
 
-    background: rgba(198,255,0,.08);
+    background:
+        rgba(
+            198,
+            255,
+            0,
+            .08
+        );
 
     border: 1px solid #C6FF00;
 
@@ -192,6 +253,7 @@ textarea {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     font-size: 16px;
@@ -199,28 +261,42 @@ textarea {
     font-weight: 700;
 
     overflow: hidden;
+
 }
 
+
 .athlete-avatar img {
+
     width: 100%;
     height: 100%;
 
     object-fit: cover;
+
 }
+
 
 .athlete-item-info {
+
     flex: 1;
+
     min-width: 0;
+
 }
 
+
 .athlete-item-name {
+
     font-size: 14px;
+
     font-weight: 700;
 
     margin-bottom: 5px;
+
 }
 
+
 .athlete-item-last {
+
     color: #777;
 
     font-size: 11px;
@@ -230,31 +306,56 @@ textarea {
     overflow: hidden;
 
     text-overflow: ellipsis;
+
 }
 
+
 .athlete-item-right {
+
     display: flex;
 
     flex-direction: column;
 
     align-items: flex-end;
 
-    gap: 7px;
+    gap: 6px;
+
 }
 
+
 .athlete-item-time {
+
     color: #666;
 
     font-size: 8px;
+
 }
 
-.unread-dot {
-    width: 9px;
-    height: 9px;
 
-    border-radius: 50%;
+.unread-count {
 
-    background: #C6FF00;
+    min-width: 18px;
+
+    height: 18px;
+
+    padding: 0 5px;
+
+    border-radius: 20px;
+
+    background: #ff3b30;
+
+    color: #fff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
 }
 
 
@@ -263,13 +364,18 @@ textarea {
 ========================================= */
 
 .conversation-section {
+
     width: 100%;
 
     padding-bottom: 135px;
+
 }
 
+
 .conversation-header {
+
     width: 100%;
+
     max-width: 850px;
 
     margin: 0 auto;
@@ -283,20 +389,29 @@ textarea {
     gap: 10px;
 
     border-bottom: 1px solid #202020;
+
 }
 
+
 .conversation-back {
+
     flex-shrink: 0;
 
     width: 32px;
+
 }
+
 
 .conversation-back svg {
+
     width: 22px;
     height: 22px;
+
 }
 
+
 .profile-avatar {
+
     width: 50px;
     height: 50px;
 
@@ -304,7 +419,13 @@ textarea {
 
     border-radius: 50%;
 
-    background: rgba(198,255,0,.08);
+    background:
+        rgba(
+            198,
+            255,
+            0,
+            .08
+        );
 
     border: 1px solid #C6FF00;
 
@@ -313,6 +434,7 @@ textarea {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     font-size: 18px;
@@ -320,38 +442,53 @@ textarea {
     font-weight: 700;
 
     overflow: hidden;
+
 }
 
+
 .profile-avatar img {
+
     width: 100%;
     height: 100%;
 
     object-fit: cover;
+
 }
+
 
 .profile-info {
+
     min-width: 0;
+
 }
 
+
 .profile-info h2 {
+
     font-size: 17px;
 
     margin-bottom: 4px;
+
 }
 
+
 .profile-info span {
+
     color: #777;
 
     font-size: 11px;
+
 }
 
 
 /* =========================================
-   MESSAGES
+   MESSAGE LIST
 ========================================= */
 
 .messages-list {
+
     width: 100%;
+
     max-width: 850px;
 
     margin: 0 auto;
@@ -367,10 +504,13 @@ textarea {
     gap: 9px;
 
     overflow-y: auto;
+
 }
+
 
 .messages-loading,
 .no-messages {
+
     color: #666;
 
     text-align: center;
@@ -378,28 +518,88 @@ textarea {
     padding: 70px 20px;
 
     font-size: 13px;
+
 }
 
 
 /* =========================================
-   MESSAGE BUBBLES
+   UNREAD DIVIDER
 ========================================= */
 
-.message-row {
+.unread-divider {
+
     width: 100%;
 
     display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin: 8px 0;
+
+    color: #ff3b30;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
 }
+
+
+.unread-divider::before,
+.unread-divider::after {
+
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        rgba(
+            255,
+            59,
+            48,
+            .3
+        );
+
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+.message-row {
+
+    width: 100%;
+
+    display: flex;
+
+}
+
 
 .message-row.sent {
+
     justify-content: flex-end;
+
 }
+
 
 .message-row.received {
+
     justify-content: flex-start;
+
 }
 
+
 .message-bubble {
+
     max-width: 78%;
 
     padding: 11px 14px;
@@ -412,18 +612,24 @@ textarea {
 
     overflow-wrap: anywhere;
 
-    word-break: break-word;
 }
 
-.message-row.sent .message-bubble {
+
+.message-row.sent
+.message-bubble {
+
     background: #C6FF00;
 
     color: #000;
 
     border-bottom-right-radius: 4px;
+
 }
 
-.message-row.received .message-bubble {
+
+.message-row.received
+.message-bubble {
+
     background: #181818;
 
     color: #aaa;
@@ -431,9 +637,108 @@ textarea {
     border: 1px solid #292929;
 
     border-bottom-left-radius: 4px;
+
 }
 
+
+/* =========================================
+   ATTACHMENTS
+========================================= */
+
+.message-image {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 320px;
+
+    max-height: 360px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.message-video {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 340px;
+
+    max-height: 360px;
+
+    border-radius: 10px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.message-file {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px;
+
+    margin-bottom: 7px;
+
+    border-radius: 9px;
+
+    background: rgba(0,0,0,.12);
+
+    text-decoration: none;
+
+    color: inherit;
+
+}
+
+
+.file-icon {
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: rgba(0,0,0,.12);
+
+    font-size: 14px;
+
+}
+
+
+.file-name {
+
+    font-size: 11px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
 .message-time {
+
     display: block;
 
     margin-top: 5px;
@@ -443,6 +748,110 @@ textarea {
     opacity: .55;
 
     text-align: right;
+
+}
+
+
+/* =========================================
+   READ / UNREAD MARKER
+========================================= */
+
+.message-status {
+
+    display: block;
+
+    margin-top: 3px;
+
+    text-align: right;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+    opacity: .55;
+
+}
+
+
+.message-status.read {
+
+    opacity: .8;
+
+}
+
+
+.message-status.unread {
+
+    opacity: .5;
+
+}
+
+
+/* =========================================
+   SELECTED FILE
+========================================= */
+
+.selected-file {
+
+    position: fixed;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 123px;
+
+    z-index: 850;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 8px 15px;
+
+    background: #151515;
+
+    border-top: 1px solid #292929;
+
+    color: #aaa;
+
+    font-size: 11px;
+
+}
+
+
+.selected-file span {
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+.selected-file button {
+
+    width: 24px;
+    height: 24px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #292929;
+
+    color: #fff;
+
+    font-size: 17px;
+
+    line-height: 1;
+
 }
 
 
@@ -451,6 +860,7 @@ textarea {
 ========================================= */
 
 .message-composer {
+
     position: fixed;
 
     left: 0;
@@ -464,23 +874,84 @@ textarea {
 
     align-items: flex-end;
 
-    gap: 9px;
+    gap: 7px;
 
-    padding: 10px 15px;
+    padding: 10px 12px;
 
-    background: rgba(7,7,7,.97);
+    background:
+        rgba(
+            7,
+            7,
+            7,
+            .97
+        );
 
     border-top: 1px solid #222;
 
     backdrop-filter: blur(12px);
 
-    -webkit-backdrop-filter: blur(12px);
 }
 
+
+.attachment-button {
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #333;
+
+    border-radius: 50%;
+
+    background: #111;
+
+    color: #aaa;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+}
+
+
+.attachment-button:hover {
+
+    color: #C6FF00;
+
+    border-color: #C6FF00;
+
+}
+
+
+.attachment-button svg {
+
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+
+}
+
+
 .message-composer textarea {
+
     flex: 1;
 
     min-height: 42px;
+
     max-height: 120px;
 
     resize: none;
@@ -500,17 +971,26 @@ textarea {
     font-size: 13px;
 
     line-height: 1.4;
+
 }
+
 
 .message-composer textarea:focus {
+
     border-color: #C6FF00;
+
 }
+
 
 .message-composer textarea::placeholder {
+
     color: #666;
+
 }
 
+
 #sendButton {
+
     width: 43px;
     height: 43px;
 
@@ -527,16 +1007,23 @@ textarea {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     cursor: pointer;
+
 }
+
 
 #sendButton:disabled {
+
     opacity: .35;
+
 }
 
+
 #sendButton svg {
+
     width: 21px;
     height: 21px;
 
@@ -547,7 +1034,9 @@ textarea {
     stroke-width: 2;
 
     stroke-linecap: round;
+
     stroke-linejoin: round;
+
 }
 
 
@@ -556,6 +1045,7 @@ textarea {
 ========================================= */
 
 .bottom-navigation {
+
     position: fixed;
 
     left: 0;
@@ -570,20 +1060,28 @@ textarea {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 55px;
 
-    background: rgba(8,8,8,.97);
+    background:
+        rgba(
+            8,
+            8,
+            8,
+            .97
+        );
 
     border-top: 1px solid #222;
 
     backdrop-filter: blur(12px);
 
-    -webkit-backdrop-filter: blur(12px);
 }
 
+
 .nav-item {
+
     min-width: 80px;
 
     border: none;
@@ -597,18 +1095,25 @@ textarea {
     flex-direction: column;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 4px;
 
     cursor: pointer;
+
 }
+
 
 .nav-item.active {
+
     color: #C6FF00;
+
 }
 
+
 .nav-item svg {
+
     width: 24px;
     height: 24px;
 
@@ -619,13 +1124,18 @@ textarea {
     stroke-width: 2;
 
     stroke-linecap: round;
+
     stroke-linejoin: round;
+
 }
 
+
 .nav-item span {
+
     font-size: 10px;
 
     font-weight: 600;
+
 }
 
 
@@ -636,31 +1146,48 @@ textarea {
 @media (max-width: 600px) {
 
     .athlete-list-section {
+
         padding-left: 13px;
         padding-right: 13px;
+
     }
+
 
     .conversation-header {
-        padding-left: 10px;
-        padding-right: 10px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+
     }
+
 
     .messages-list {
+
         padding-left: 13px;
         padding-right: 13px;
+
     }
+
 
     .message-bubble {
-        max-width: 84%;
+
+        max-width: 86%;
+
     }
+
 
     .message-composer {
-        padding-left: 10px;
-        padding-right: 10px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+
     }
 
+
     .bottom-navigation {
+
         gap: 45px;
+
     }
 
 }
