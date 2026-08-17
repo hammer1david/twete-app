@@ -1,60 +1,141 @@
 /* =========================================
-   TWETE + SUPABASE
+   TWETE APP
+   Authentication
 ========================================= */
 
 
 /* =========================================
-   SUPABASE CONNECTION
+   SUPABASE
 ========================================= */
 
-const SUPABASE_URL =
-    "https://uhbhsyuodizauwhhdffu.supabase.co";
+const SUPABASE_URL = "https://cvwawazfelidkloqmbma.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
-
+const SUPABASE_KEY =
+    "sb_publishable_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+        SUPABASE_KEY
     );
 
 
 /* =========================================
-   TWETE WEBSITE URL
+   WEBSITE URL
 ========================================= */
 
 const TWETE_URL =
-    "https://hammer1david.github.io/twete-app/";
+    window.location.origin +
+    window.location.pathname.substring(
+        0,
+        window.location.pathname.lastIndexOf("/") + 1
+    );
 
 
 /* =========================================
-   SHOW MESSAGE
+   ELEMENTS
 ========================================= */
 
-function showMessage(message, type = "normal") {
+const emailInput =
+    document.getElementById("email");
 
-    const element =
+const passwordInput =
+    document.getElementById("password");
+
+const loginButton =
+    document.getElementById("loginButton");
+
+const createAccountButton =
+    document.getElementById("createAccountButton");
+
+const forgotPasswordButton =
+    document.getElementById("forgotPassword");
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(message, type = "error") {
+
+    let messageBox =
         document.getElementById("authMessage");
 
-    if (!element) return;
+    if (!messageBox) {
 
-    element.textContent = message;
+        messageBox =
+            document.createElement("div");
 
-    if (type === "error") {
+        messageBox.id =
+            "authMessage";
 
-        element.style.color = "#ff5555";
+        messageBox.style.marginTop =
+            "15px";
 
-    } else if (type === "success") {
+        messageBox.style.textAlign =
+            "center";
 
-        element.style.color = "#C6FF00";
+        messageBox.style.fontSize =
+            "14px";
+
+        const card =
+            document.querySelector(".login-card");
+
+        if (card) {
+            card.appendChild(messageBox);
+        }
+    }
+
+    messageBox.textContent =
+        message;
+
+    if (type === "success") {
+
+        messageBox.style.color =
+            "#C6FF00";
 
     } else {
 
-        element.style.color = "#ffffff";
-
+        messageBox.style.color =
+            "#ff6b6b";
     }
+}
+
+
+/* =========================================
+   VALIDATION
+========================================= */
+
+function getCredentials() {
+
+    const email =
+        emailInput.value.trim();
+
+    const password =
+        passwordInput.value;
+
+    if (!email) {
+
+        showMessage(
+            "Please enter your email address."
+        );
+
+        return null;
+    }
+
+    if (!password) {
+
+        showMessage(
+            "Please enter your password."
+        );
+
+        return null;
+    }
+
+    return {
+        email,
+        password
+    };
 }
 
 
@@ -62,123 +143,96 @@ function showMessage(message, type = "normal") {
    LOGIN
 ========================================= */
 
-async function login() {
+async function loginUser() {
 
-    const email =
-        document.getElementById("email").value.trim();
+    const credentials =
+        getCredentials();
 
-    const password =
-        document.getElementById("password").value;
+    if (!credentials) {
+        return;
+    }
+
+    loginButton.disabled = true;
+
+    loginButton.textContent =
+        "Logging in...";
+
+    showMessage("");
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signInWithPassword({
+
+                email:
+                    credentials.email,
+
+                password:
+                    credentials.password
+
+            });
 
 
-    if (!email || !password) {
+        if (error) {
+
+            console.error(
+                "Login error:",
+                error
+            );
+
+            showMessage(
+                "Incorrect email or password."
+            );
+
+            return;
+        }
+
+
+        if (!data || !data.user) {
+
+            showMessage(
+                "Login failed. Please try again."
+            );
+
+            return;
+        }
+
 
         showMessage(
-            "Please enter your email and password.",
-            "error"
+            "Login successful!",
+            "success"
         );
 
-        return;
+
+        await redirectUser(
+            data.user
+        );
+
     }
 
+    catch (error) {
 
-    const button =
-        document.getElementById("loginButton");
-
-    button.disabled = true;
-
-    button.textContent = "Logging in...";
-
-
-    const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-
-            email: email,
-
-            password: password
-
-        });
-
-
-    if (error) {
-
-        console.error(error);
+        console.error(
+            "Unexpected login error:",
+            error
+        );
 
         showMessage(
-            "Incorrect email or password.",
-            "error"
+            "Something went wrong. Please try again."
         );
 
-        button.disabled = false;
-
-        button.textContent = "Log in";
-
-        return;
     }
 
+    finally {
 
-    await redirectUser(data.user);
+        loginButton.disabled = false;
 
-
-    button.disabled = false;
-
-    button.textContent = "Log in";
-}
-
-
-/* =========================================
-   REDIRECT USER ACCORDING TO ROLE
-========================================= */
-
-async function redirectUser(user) {
-
-    if (!user) {
-
-        showMessage(
-            "No user session found.",
-            "error"
-        );
-
-        return;
+        loginButton.textContent =
+            "Log In";
     }
-
-
-    const { data: profile, error } =
-        await supabaseClient
-            .from("profiles")
-            .select("role")
-            .eq("id", user.id)
-            .single();
-
-
-    if (error) {
-
-        console.error(error);
-
-        showMessage(
-            "Could not load your profile.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    /* COACH */
-
-    if (profile.role === "coach") {
-
-        window.location.href =
-            "coach.html";
-
-        return;
-    }
-
-
-    /* ATHLETE */
-
-    window.location.href =
-        "athlete.html";
 }
 
 
@@ -188,170 +242,242 @@ async function redirectUser(user) {
 
 async function createAccount() {
 
-    const email =
-        document.getElementById("email").value.trim();
+    const credentials =
+        getCredentials();
 
-    const password =
-        document.getElementById("password").value;
+    if (!credentials) {
+        return;
+    }
 
 
-    if (!email) {
+    if (credentials.password.length < 6) {
 
         showMessage(
-            "Please enter your email address.",
-            "error"
+            "Password must be at least 6 characters."
         );
 
         return;
     }
 
 
-    if (!password) {
+    createAccountButton.disabled =
+        true;
 
-        showMessage(
-            "Please enter a password.",
-            "error"
-        );
+    createAccountButton.textContent =
+        "Creating account...";
 
-        return;
-    }
+    showMessage("");
 
 
-    if (password.length < 6) {
+    try {
 
-        showMessage(
-            "Password must contain at least 6 characters.",
-            "error"
-        );
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signUp({
 
-        return;
-    }
+                email:
+                    credentials.email,
 
+                password:
+                    credentials.password,
 
-    const button =
-        document.getElementById("createAccountButton");
+                options: {
 
-    button.disabled = true;
+                    emailRedirectTo:
+                        TWETE_URL
 
-    button.textContent = "Creating account...";
+                }
 
-
-    /*
-       Check whether the email already has
-       an active session/account.
-
-       Supabase intentionally doesn't expose
-       arbitrary user existence checks from
-       browser JavaScript for security reasons.
-    */
-
-    const { data, error } =
-        await supabaseClient.auth.signUp({
-
-            email: email,
-
-            password: password,
-
-            options: {
-
-                emailRedirectTo:
-                    TWETE_URL
-
-            }
-
-        });
+            });
 
 
-    if (error) {
+        if (error) {
 
-        console.error(error);
-
-
-        const message =
-            error.message.toLowerCase();
-
-
-        if (
-            message.includes("already registered") ||
-            message.includes("already exists") ||
-            message.includes("user already")
-        ) {
-
-            showMessage(
-                "This email is already registered.",
-                "error"
+            console.error(
+                "Signup error:",
+                error
             );
 
-        } else {
-
             showMessage(
-                error.message,
-                "error"
+                error.message ||
+                "Unable to create account."
             );
+
+            return;
         }
 
 
-        button.disabled = false;
+        /*
+           Supabase may intentionally return
+           a successful-looking response for an
+           already registered email.
 
-        button.textContent = "Create a new account";
+           Therefore we do NOT try to detect
+           existing accounts from the client.
+        */
 
-        return;
-    }
 
-
-    /*
-       Supabase may return a user without a
-       session when email confirmation is required.
-    */
-
-    if (data.user) {
-
-        if (!data.session) {
+        if (
+            data &&
+            data.user &&
+            data.user.identities &&
+            data.user.identities.length === 0
+        ) {
 
             showMessage(
-                "Account created. Please check your email to confirm your account.",
+                "This email may already be registered. Try logging in instead."
+            );
+
+            return;
+        }
+
+
+        /*
+           If email confirmation is enabled,
+           session will normally be null.
+        */
+
+        if (
+            data &&
+            data.user &&
+            !data.session
+        ) {
+
+            showMessage(
+                "Account created! Please check your email to confirm your account.",
                 "success"
             );
 
-        } else {
+            return;
+        }
+
+
+        /*
+           If email confirmation is disabled,
+           the user may already have a session.
+        */
+
+        if (
+            data &&
+            data.user
+        ) {
 
             showMessage(
                 "Account created successfully!",
                 "success"
             );
 
-            await redirectUser(data.user);
+            await redirectUser(
+                data.user
+            );
+
+            return;
         }
+
+
+        showMessage(
+            "Account created. Please check your email."
+            ,
+            "success"
+        );
+
     }
 
+    catch (error) {
 
-    button.disabled = false;
+        console.error(
+            "Unexpected signup error:",
+            error
+        );
 
-    button.textContent = "Create a new account";
+        showMessage(
+            "Something went wrong. Please try again."
+        );
+
+    }
+
+    finally {
+
+        createAccountButton.disabled =
+            false;
+
+        createAccountButton.textContent =
+            "Create New Account";
+    }
 }
 
 
 /* =========================================
-   SHOW / HIDE PASSWORD
+   REDIRECT USER
 ========================================= */
 
-function togglePassword() {
+async function redirectUser(user) {
 
-    const password =
-        document.getElementById("password");
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .maybeSingle();
 
 
-    if (!password) return;
+        if (error) {
+
+            console.error(
+                "Profile lookup error:",
+                error
+            );
+
+            /*
+               Don't block authentication if
+               the profile doesn't exist yet.
+            */
+
+            window.location.href =
+                "athlete.html";
+
+            return;
+        }
 
 
-    if (password.type === "password") {
+        if (
+            data &&
+            data.role === "coach"
+        ) {
 
-        password.type = "text";
+            window.location.href =
+                "coach.html";
 
-    } else {
+            return;
+        }
 
-        password.type = "password";
 
+        /*
+           Default role:
+           athlete
+        */
+
+        window.location.href =
+            "athlete.html";
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Redirect error:",
+            error
+        );
+
+        window.location.href =
+            "athlete.html";
     }
 }
 
@@ -363,139 +489,211 @@ function togglePassword() {
 async function forgotPassword() {
 
     const email =
-        document.getElementById("email").value.trim();
-
+        emailInput.value.trim();
 
     if (!email) {
 
         showMessage(
-            "Please enter your email address first.",
-            "error"
+            "Enter your email address first."
         );
+
+        emailInput.focus();
 
         return;
     }
 
 
-    const { error } =
-        await supabaseClient.auth.resetPasswordForEmail(
-            email,
-            {
-                redirectTo: TWETE_URL
-            }
-        );
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient.auth
+                .resetPasswordForEmail(
+                    email,
+                    {
+                        redirectTo:
+                            TWETE_URL
+                    }
+                );
 
 
-    if (error) {
+        if (error) {
 
-        console.error(error);
+            console.error(
+                "Password reset error:",
+                error
+            );
+
+            showMessage(
+                "Unable to send password reset email."
+            );
+
+            return;
+        }
+
 
         showMessage(
-            error.message,
-            "error"
+            "If an account exists for this email, a password reset email has been sent.",
+            "success"
         );
 
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected reset error:",
+            error
+        );
+
+        showMessage(
+            "Something went wrong. Please try again."
+        );
+    }
+}
+
+
+/* =========================================
+   SHOW / HIDE PASSWORD
+========================================= */
+
+function togglePassword() {
+
+    if (!passwordInput) {
         return;
     }
 
 
-    showMessage(
-        "Password reset email sent.",
-        "success"
+    if (
+        passwordInput.type ===
+        "password"
+    ) {
+
+        passwordInput.type =
+            "text";
+
+    } else {
+
+        passwordInput.type =
+            "password";
+    }
+}
+
+
+/* =========================================
+   BUTTON EVENTS
+========================================= */
+
+if (loginButton) {
+
+    loginButton.addEventListener(
+        "click",
+        loginUser
+    );
+}
+
+
+if (createAccountButton) {
+
+    createAccountButton.addEventListener(
+        "click",
+        createAccount
+    );
+}
+
+
+if (forgotPasswordButton) {
+
+    forgotPasswordButton.addEventListener(
+        "click",
+        forgotPassword
     );
 }
 
 
 /* =========================================
-   LOGOUT
+   ENTER KEY
 ========================================= */
 
-async function logout() {
+if (passwordInput) {
 
-    await supabaseClient.auth.signOut();
+    passwordInput.addEventListener(
+        "keydown",
+        function(event) {
 
-    window.location.href = "index.html";
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                loginUser();
+            }
+
+        }
+    );
 }
 
 
 /* =========================================
-   PROFILE
+   PASSWORD TOGGLE
 ========================================= */
 
-function openProfile() {
+const passwordToggle =
+    document.querySelector(
+        ".password-toggle"
+    );
 
-    window.location.href =
-        "profile.html";
+if (passwordToggle) {
+
+    passwordToggle.addEventListener(
+        "click",
+        togglePassword
+    );
 }
 
 
 /* =========================================
-   GOALS
-========================================= */
-
-function openGoal(goalId) {
-
-    if (goalId === "current") {
-
-        window.location.href =
-            "goal.html";
-
-        return;
-    }
-
-
-    if (goalId === "past-1") {
-
-        window.location.href =
-            "goal.html?goal=5k";
-
-        return;
-    }
-
-
-    if (goalId === "past-2") {
-
-        window.location.href =
-            "goal.html?goal=10k";
-
-        return;
-    }
-}
-
-
-/* =========================================
-   MESSAGES
-========================================= */
-
-function openMessages() {
-
-    window.location.href =
-        "messages.html";
-}
-
-
-/* =========================================
-   CHECK EXISTING SESSION
+   SESSION CHECK
 ========================================= */
 
 async function checkExistingSession() {
 
-    const { data } =
-        await supabaseClient.auth.getSession();
+    try {
+
+        const {
+            data
+        } =
+            await supabaseClient.auth
+                .getSession();
 
 
-    if (!data.session) {
-        return;
+        if (
+            data &&
+            data.session &&
+            data.session.user
+        ) {
+
+            /*
+               Uncomment this later if you
+               want already logged-in users
+               to automatically skip the login page.
+
+               await redirectUser(
+                   data.session.user
+               );
+            */
+        }
+
     }
 
+    catch (error) {
 
-    /*
-       We intentionally don't automatically
-       redirect from the login page here.
-
-       The user can still see the login screen
-       while testing.
-    */
+        console.error(
+            "Session check error:",
+            error
+        );
+    }
 }
 
 
@@ -503,7 +701,4 @@ async function checkExistingSession() {
    START
 ========================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    checkExistingSession
-);
+checkExistingSession();
