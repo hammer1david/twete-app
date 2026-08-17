@@ -894,6 +894,7 @@ function createSessionCard(
                 ${escapeHtml(session.notes)}
             </div>
 
+
         </div>
         `
         :
