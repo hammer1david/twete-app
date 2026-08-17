@@ -131,6 +131,16 @@ form.addEventListener(
                 document.querySelector(
                     'input[name="experience"]:checked'
                 )?.value;
+            
+            const experienceLevelMap = {
+    "Beginner": "beginner",
+    "Intermediate": "intermediate",
+    "Advanced": "advanced",
+    "Professional / Elite": "pro"
+};
+
+const experienceLevel =
+    experienceLevelMap[experience];
 
 
             let distance =
@@ -178,7 +188,7 @@ form.addEventListener(
                     distance,
 
                 experience_level:
-                    experience
+                    experienceLevel
             };
 
 
