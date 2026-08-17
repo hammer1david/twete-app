@@ -639,3 +639,7 @@ if (passwordInput) {
 console.log(
     "Twete authentication loaded."
 );
+
+function openProfile() {
+    window.location.href = "profile.html";
+}
