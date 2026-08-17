@@ -17,15 +17,10 @@ const supabaseClient =
 
 
 let currentUser = null;
-
 let currentRole = null;
-
 let conversationUserId = null;
-
 let realtimeChannel = null;
-
 let athletes = [];
-
 let selectedFile = null;
 
 
@@ -94,8 +89,8 @@ async function initialiseMessages() {
 
 
         setupComposer();
-
         setupAttachmentInput();
+
 
     } catch (error) {
 
@@ -204,6 +199,7 @@ async function initialiseAthlete() {
 
 /* =========================================
    ATHLETE → COACH
+   EXISTING CONNECTION — DO NOT CHANGE
 ========================================= */
 
 async function loadCoachForAthlete() {
@@ -275,7 +271,6 @@ async function initialiseCoach() {
 
 
     hideConversation();
-
 
     await loadAthletes();
 
@@ -736,9 +731,7 @@ async function openConversation(
 
     showConversation();
 
-
     await loadMessages();
-
 
     subscribeToMessages();
 
@@ -1062,6 +1055,12 @@ async function loadMessages() {
     }
 
 
+    /*
+       IMPORTANT:
+       Render first so unread messages are visible.
+       Only then mark them as read.
+    */
+
     await renderMessages(
         data || []
     );
@@ -1137,11 +1136,6 @@ async function renderMessages(
             !sent &&
             !message.read_at;
 
-
-        /*
-           Add unread divider before the
-           first unread incoming message.
-        */
 
         if (
             unread &&
@@ -1489,13 +1483,6 @@ async function sendMessage() {
 
     try {
 
-        /*
-           Generate the message ID now.
-
-           This lets us use the same ID
-           for the attachment path.
-        */
-
         const messageId =
             crypto.randomUUID();
 
@@ -1638,11 +1625,6 @@ async function sendMessage() {
                 error
             );
 
-
-            /*
-               If the database insert fails after
-               upload, remove the orphaned file.
-            */
 
             if (
                 attachmentPath
@@ -1894,11 +1876,6 @@ async function markMessagesRead(
 
     }
 
-
-    /*
-       Refresh coach athlete list so unread
-       counters disappear immediately.
-    */
 
     if (
         currentRole ===
@@ -2383,4 +2360,4 @@ function escapeAttribute(
             "&quot;"
         );
 
-}
+               }
