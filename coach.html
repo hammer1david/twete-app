@@ -119,7 +119,70 @@
 
         }
 
+.push-settings {
 
+    margin: 25px 0 30px 0;
+
+    padding: 18px;
+
+    background: #101010;
+
+    border: 1px solid #252525;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.push-title {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    margin-bottom: 5px;
+}
+
+.push-description {
+
+    font-size: 12px;
+
+    color: #777;
+}
+
+.push-toggle {
+
+    min-width: 65px;
+
+    padding: 9px 14px;
+
+    border: 1px solid #333;
+
+    border-radius: 20px;
+
+    background: #181818;
+
+    color: #777;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.push-toggle.on {
+
+    background: #C6FF00;
+
+    color: #050505;
+
+    border-color: #C6FF00;
+}
         /* ================================
            ATHLETES
         ================================= */
@@ -526,7 +589,27 @@
             Select an athlete to manage their training.
 
         </div>
+<div class="push-settings">
 
+    <div>
+        <div class="push-title">
+            Push Notifications
+        </div>
+
+        <div class="push-description">
+            Get notified when an athlete sends you a message.
+        </div>
+    </div>
+
+    <button
+        id="coachPushToggle"
+        class="push-toggle"
+        onclick="toggleCoachPush()"
+    >
+        OFF
+    </button>
+
+</div>
 
         <br>
 
@@ -680,7 +763,71 @@
             "messages.html";
 
     }
+async function updateCoachPushButton() {
 
+    const button =
+        document.getElementById(
+            "coachPushToggle"
+        );
+
+    if (!button) return;
+
+    const enabled =
+        await isPushEnabled();
+
+    if (enabled) {
+
+        button.textContent = "ON";
+
+        button.classList.add("on");
+
+    } else {
+
+        button.textContent = "OFF";
+
+        button.classList.remove("on");
+
+    }
+}
+
+
+async function toggleCoachPush() {
+
+    const button =
+        document.getElementById(
+            "coachPushToggle"
+        );
+
+    if (!button) return;
+
+
+    const enabled =
+        await isPushEnabled();
+
+
+    if (enabled) {
+
+        await disablePushNotifications();
+
+    } else {
+
+        await enablePushNotifications();
+
+    }
+
+
+    await updateCoachPushButton();
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        updateCoachPushButton();
+
+    }
+);
 </script>
 
 
