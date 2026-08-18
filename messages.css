@@ -239,7 +239,7 @@ body:has(#conversationSection:not(.hidden))
     top: 0;
     left: 0;
     right: 0;
-    bottom: 68px;
+    bottom: 0;
 
     width: 100%;
     height: auto;
