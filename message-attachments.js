@@ -1136,25 +1136,29 @@ function scrollToBottomAfterAttachment() {
 
     function scrollNow() {
 
-        requestAnimationFrame(
-            function () {
+    requestAnimationFrame(
+        function () {
 
-                const lastMessage =
-                    list.lastElementChild;
+            /*
+               Scroll directly inside the chat container.
+               Keep 140px of space above the composer.
+            */
 
-                if (lastMessage) {
+            const bottomPosition =
+                list.scrollHeight -
+                list.clientHeight -
+                140;
 
-                    lastMessage.scrollIntoView({
-                        behavior: "auto",
-                        block: "end"
-                    });
+            list.scrollTop =
+                Math.max(
+                    0,
+                    bottomPosition
+                );
 
-                }
+        }
+    );
 
-            }
-        );
-
-    }
+}
 
 
     /* Scroll immediately */
