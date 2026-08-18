@@ -1446,3 +1446,66 @@ function formatTime(
     );
 
 }
+/* =========================================
+   MOBILE KEYBOARD / VISUAL VIEWPORT
+========================================= */
+
+function handleKeyboardResize() {
+
+    if (!window.visualViewport) {
+        return;
+    }
+
+    const chat =
+        document.querySelector(".chat");
+
+    if (!chat) {
+        return;
+    }
+
+    const viewportHeight =
+        window.visualViewport.height;
+
+    chat.style.height =
+        viewportHeight + "px";
+
+
+    /*
+        Keep the latest message visible
+        when the keyboard opens.
+    */
+
+    requestAnimationFrame(
+        function () {
+
+            scrollToBottom();
+
+        }
+    );
+
+}
+
+
+if (window.visualViewport) {
+
+    window.visualViewport.addEventListener(
+        "resize",
+        handleKeyboardResize
+    );
+
+    window.visualViewport.addEventListener(
+        "scroll",
+        handleKeyboardResize
+    );
+
+}
+
+
+/*
+    Initial calculation
+*/
+
+window.addEventListener(
+    "load",
+    handleKeyboardResize
+);
