@@ -1963,3 +1963,112 @@ textarea {
 
     gap: 4px;
 }
+
+
+/* =========================================
+   FIXED CHAT HEADERS
+========================================= */
+
+/* Main Messages header stays at the top */
+.messages-header {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
+    background:
+        rgba(5, 5, 5, 0.94);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
+}
+
+
+/* =========================================
+   FIXED COACH HEADER
+========================================= */
+
+.conversation-header {
+    position: sticky;
+
+    top: 72px;
+
+    z-index: 990;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 100%;
+
+    background:
+        rgba(5, 5, 5, 0.94);
+
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
+}
+
+
+/* Remove the small arrow next to Coach */
+
+.conversation-back {
+    display: none !important;
+}
+
+
+/* Center coach profile */
+
+.profile-info {
+    text-align: center;
+
+    min-width: 0;
+}
+
+
+/* Center Coach text */
+
+.profile-info h2,
+.profile-info span {
+    text-align: center;
+}
+
+
+/* Keep avatar and Coach together */
+
+.conversation-header .profile-avatar {
+    flex-shrink: 0;
+
+    margin-right: 10px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .messages-header {
+        height: 64px;
+    }
+
+    .conversation-header {
+        top: 64px;
+
+        padding:
+            10px 16px;
+    }
+
+}
