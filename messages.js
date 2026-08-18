@@ -96,7 +96,17 @@ async function initialiseMessages() {
         await loadCurrentProfile();
 
         await loadConversationUser();
-       const conversationSection =
+       
+
+
+      
+
+        await loadMessages();
+
+        subscribeToMessages();
+
+        setupComposer();
+const conversationSection =
     document.getElementById(
         "conversationSection"
     );
@@ -106,15 +116,6 @@ if (conversationSection) {
     conversationSection.classList.remove(
         "hidden"
     );
-
-}
-
-        await loadMessages();
-
-        subscribeToMessages();
-
-        setupComposer();
-
 
     } catch (error) {
 
