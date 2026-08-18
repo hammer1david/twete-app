@@ -2072,3 +2072,37 @@ textarea {
     }
 
 }
+
+
+/* =========================================
+   CHAT SCROLL AREA
+========================================= */
+
+.messages-list {
+    height: calc(100dvh - 72px - 76px - 68px);
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    scroll-behavior: auto;
+
+    scroll-padding-bottom: 90px;
+
+    padding-bottom: 90px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .messages-list {
+        height: calc(100dvh - 64px - 76px - 68px);
+
+        padding-bottom: 90px;
+    }
+
+}
