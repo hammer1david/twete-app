@@ -1239,27 +1239,24 @@ function setupComposer() {
 
 
         input.addEventListener(
-            "keydown",
-            function (event) {
+    "keydown",
+    function (event) {
 
-                /*
-                    Enter = send
-                    Shift + Enter = new line
-                */
+        /*
+            Enter = new line
 
-                if (
-                    event.key === "Enter" &&
-                    !event.shiftKey
-                ) {
+            The Send button is used
+            to send the message.
+        */
 
-                    event.preventDefault();
+        if (event.key === "Enter") {
 
-                    sendMessage();
+            return;
 
-                }
+        }
 
-            }
-        );
+    }
+);
 
     }
 
