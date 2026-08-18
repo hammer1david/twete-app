@@ -105,10 +105,6 @@ async function initialiseMessages() {
 
         subscribeToMessages();
 
-        await loadMessages();
-
-subscribeToMessages();
-
 setupComposer();
 
 const conversationSection =
