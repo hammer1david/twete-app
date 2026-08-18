@@ -2119,3 +2119,11 @@ textarea {
     }
 
 }
+
+/* =========================================
+   KEEP LAST MESSAGE ABOVE COMPOSER
+========================================= */
+
+.messages-list > .message-row:last-child {
+    scroll-margin-bottom: 140px;
+}
