@@ -40,11 +40,6 @@ function initialiseAttachments() {
     );
 
 
-    /*
-       Wait until the original messages.js
-       has created its functions.
-    */
-
     setTimeout(
         setupAttachmentFunctions,
         300
@@ -211,7 +206,9 @@ function showAttachmentPreview(
             class="attachment-preview-remove"
             aria-label="Remove attachment"
         >
+
             ×
+
         </button>
 
     `;
@@ -320,11 +317,6 @@ function wrapSendMessage() {
 
     async function sendMessageWithAttachment() {
 
-        /*
-           NO ATTACHMENT:
-           use original working function.
-        */
-
         if (
             !selectedAttachment
         ) {
@@ -367,12 +359,6 @@ async function sendAttachmentMessage() {
             "sendButton"
         );
 
-
-    /*
-       IMPORTANT:
-       Use the SAME Supabase client
-       as the working messages.js.
-    */
 
     if (
         typeof messagesSupabase ===
@@ -463,10 +449,6 @@ async function sendAttachmentMessage() {
             );
 
 
-        /*
-           UPLOAD
-        */
-
         const {
             error:
                 uploadError
@@ -519,10 +501,6 @@ async function sendAttachmentMessage() {
                 "";
 
 
-        /*
-           CREATE MESSAGE
-        */
-
         const {
             error:
                 messageError
@@ -569,11 +547,6 @@ async function sendAttachmentMessage() {
             );
 
 
-            /*
-               Remove uploaded file
-               if message creation fails.
-            */
-
             await messagesSupabase
                 .storage
                 .from(
@@ -584,24 +557,20 @@ async function sendAttachmentMessage() {
                 ]);
 
 
-             alert(
-    "Message error: " +
-    (
-        messageError?.message ||
-        messageError?.details ||
-        messageError?.hint ||
-        "Unknown error"
-    )
-);
+            alert(
+                "Message error: " +
+                (
+                    messageError?.message ||
+                    messageError?.details ||
+                    messageError?.hint ||
+                    "Unknown error"
+                )
+            );
 
             return;
 
         }
 
-
-        /*
-           CLEAR
-        */
 
         if (input) {
 
@@ -613,11 +582,6 @@ async function sendAttachmentMessage() {
 
         removeSelectedAttachment();
 
-
-        /*
-           Reload using the EXISTING
-           messages.js function.
-        */
 
         if (
             typeof window.loadMessages ===
@@ -638,14 +602,14 @@ async function sendAttachmentMessage() {
 
 
         alert(
-    "Attachment error: " +
-    (
-        error?.message ||
-        error?.details ||
-        error?.hint ||
-        "Unknown error"
-    )
-);
+            "Attachment error: " +
+            (
+                error?.message ||
+                error?.details ||
+                error?.hint ||
+                "Unknown error"
+            )
+        );
 
 
     } finally {
@@ -699,18 +663,7 @@ function wrapLoadMessages() {
 
     async function loadMessagesWithAttachments() {
 
-        /*
-           First let the ORIGINAL
-           working messages.js load
-           everything normally.
-        */
-
         await originalLoadMessages();
-
-
-        /*
-           Then add attachment previews.
-        */
 
         await renderAttachmentMessages();
 
@@ -729,7 +682,7 @@ function wrapLoadMessages() {
 
 
 /* =========================================
-   RENDER ATTACHMENTS
+   RENDER ATTACHMENTS + DOWNLOAD
 ========================================= */
 
 async function renderAttachmentMessages() {
@@ -776,10 +729,6 @@ async function renderAttachmentMessages() {
         return;
     }
 
-
-    /*
-       Get messages with attachments.
-    */
 
     const {
         data,
@@ -837,10 +786,6 @@ async function renderAttachmentMessages() {
         );
 
 
-    /*
-       Match message rows by order.
-    */
-
     for (
         let i = 0;
         i < data.length;
@@ -883,10 +828,6 @@ async function renderAttachmentMessages() {
 
         }
 
-
-        /*
-           Don't add it twice.
-        */
 
         if (
             bubble.querySelector(
@@ -945,6 +886,23 @@ async function renderAttachmentMessages() {
             "message-attachment-rendered";
 
 
+        const downloadName =
+            message.attachment_name ||
+            "attachment";
+
+
+        const safeUrl =
+            escapeAttachmentHtml(
+                url
+            );
+
+
+        const safeName =
+            escapeAttachmentHtml(
+                downloadName
+            );
+
+
         /*
            IMAGE
         */
@@ -960,23 +918,27 @@ async function renderAttachmentMessages() {
             attachment.innerHTML = `
 
                 <a
-                    href="${escapeAttachmentHtml(
-                        url
-                    )}"
+                    href="${safeUrl}"
                     target="_blank"
                     rel="noopener"
                 >
 
                     <img
                         class="message-attachment-image"
-                        src="${escapeAttachmentHtml(
-                            url
-                        )}"
-                        alt="${escapeAttachmentHtml(
-                            message.attachment_name ||
-                            "Image"
-                        )}"
+                        src="${safeUrl}"
+                        alt="${safeName}"
                     >
+
+                </a>
+
+
+                <a
+                    class="message-attachment-download"
+                    href="${safeUrl}"
+                    download="${safeName}"
+                >
+
+                    ⬇ Download
 
                 </a>
 
@@ -1006,9 +968,7 @@ async function renderAttachmentMessages() {
                 >
 
                     <source
-                        src="${escapeAttachmentHtml(
-                            url
-                        )}"
+                        src="${safeUrl}"
                         type="${escapeAttachmentHtml(
                             message.attachment_type
                         )}"
@@ -1017,6 +977,17 @@ async function renderAttachmentMessages() {
                     Your browser does not support video.
 
                 </video>
+
+
+                <a
+                    class="message-attachment-download"
+                    href="${safeUrl}"
+                    download="${safeName}"
+                >
+
+                    ⬇ Download
+
+                </a>
 
             `;
 
@@ -1033,9 +1004,7 @@ async function renderAttachmentMessages() {
 
                 <a
                     class="message-attachment-file"
-                    href="${escapeAttachmentHtml(
-                        url
-                    )}"
+                    href="${safeUrl}"
                     target="_blank"
                     rel="noopener"
                 >
@@ -1043,7 +1012,9 @@ async function renderAttachmentMessages() {
                     <span
                         class="message-attachment-icon"
                     >
+
                         📄
+
                     </span>
 
 
@@ -1055,10 +1026,7 @@ async function renderAttachmentMessages() {
                             class="message-attachment-name"
                         >
 
-                            ${escapeAttachmentHtml(
-                                message.attachment_name ||
-                                "Document"
-                            )}
+                            ${safeName}
 
                         </span>
 
@@ -1077,15 +1045,21 @@ async function renderAttachmentMessages() {
 
                 </a>
 
+
+                <a
+                    class="message-attachment-download"
+                    href="${safeUrl}"
+                    download="${safeName}"
+                >
+
+                    ⬇ Download
+
+                </a>
+
             `;
 
         }
 
-
-        /*
-           Put attachment at the
-           beginning of the bubble.
-        */
 
         bubble.prepend(
             attachment
