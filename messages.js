@@ -940,9 +940,16 @@ function subscribeToMessages() {
 
                     if (belongs) {
 
-                        console.log("REALTIME MESSAGE RECEIVED");
+    if (
+        String(message.sender_id) !==
+        String(currentUser.id)
+    ) {
 
-                    }
+        await loadMessages();
+
+    }
+
+}
 
                 }
             )
