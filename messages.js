@@ -3,12 +3,15 @@
 ========================================= */
 
 
+/* =========================================
+   SUPABASE
+========================================= */
+
 const MESSAGES_SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
 const MESSAGES_SUPABASE_KEY =
     "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
-
 
 const messagesSupabase =
     window.supabase.createClient(
@@ -16,6 +19,10 @@ const messagesSupabase =
         MESSAGES_SUPABASE_KEY
     );
 
+
+/* =========================================
+   STATE
+========================================= */
 
 let currentUser = null;
 
@@ -44,11 +51,6 @@ async function initialiseMessages() {
 
     try {
 
-        /*
-           Give Supabase a moment to restore
-           the existing browser session.
-        */
-
         const {
             data: {
                 session
@@ -73,17 +75,13 @@ async function initialiseMessages() {
         }
 
 
-        /*
-           IMPORTANT:
-           Do NOT redirect to index.html here.
-           The athlete is already coming from
-           an authenticated page.
-        */
-
-        if (!session || !session.user) {
+        if (
+            !session ||
+            !session.user
+        ) {
 
             showError(
-                "Your login session could not be found. Please return to Home and try again."
+                "Your login session could not be found."
             );
 
             return;
@@ -94,52 +92,62 @@ async function initialiseMessages() {
             session.user;
 
 
+        /*
+            Load our profile
+        */
+
         await loadCurrentProfile();
 
+
+        /*
+            Find the person
+            we are chatting with
+        */
+
         await loadConversationUser();
-       
 
 
-      
+        /*
+            Setup composer
+        */
+
+        setupComposer();
+
+
+        /*
+            Load messages
+        */
 
         await loadMessages();
 
+
+        /*
+            Start realtime
+        */
+
         subscribeToMessages();
 
-setupComposer();
 
-const conversationSection =
-    document.getElementById(
-        "conversationSection"
-    );
-
-if (conversationSection) {
-
-    conversationSection.classList.remove(
-        "hidden"
-    );
-
-    requestAnimationFrame(function () {
+        /*
+            Initial scroll
+        */
 
         scrollToBottom();
 
-    });
 
-}
+    } catch (error) {
 
-} catch (error) {
+        console.error(
+            "Messages initialisation error:",
+            error
+        );
 
-    console.error(
-        "Messages initialisation error:",
-        error
-    );
-
-    showError(
-        "Could not load Messages."
-    );
-
+        showError(
+            "Could not load Messages."
+        );
 
     }
+
 }
 
 
@@ -179,12 +187,20 @@ async function loadCurrentProfile() {
     }
 
 
-    if (data) {
-
-        currentRole =
-            data.role;
-
+    if (!data) {
+        return;
     }
+
+
+    currentRole =
+        data.role;
+
+
+    /*
+        We can also use the current
+        user's profile information later
+        if needed.
+    */
 
 }
 
@@ -196,7 +212,7 @@ async function loadCurrentProfile() {
 async function loadConversationUser() {
 
     /*
-       ATHLETE → COACH
+        ATHLETE → COACH
     */
 
     if (
@@ -211,7 +227,7 @@ async function loadConversationUser() {
 
 
     /*
-       COACH → ATHLETE
+        COACH → ATHLETE
     */
 
     if (
@@ -226,8 +242,7 @@ async function loadConversationUser() {
 
 
     /*
-       Fallback:
-       Try athlete → coach relationship.
+        Fallback
     */
 
     await loadCoachForAthlete();
@@ -325,32 +340,32 @@ async function loadAthleteForCoach() {
 
 
     /*
-       If the notification contains an
-       athlete_id, open exactly that athlete.
+        Open requested athlete
     */
 
     if (requestedAthleteId) {
 
-        query = query.eq(
-            "athlete_id",
-            requestedAthleteId
-        );
+        query =
+            query.eq(
+                "athlete_id",
+                requestedAthleteId
+            );
 
     } else {
 
         /*
-           Normal Messages page:
-           use the most recently connected athlete.
+            Otherwise use latest connection
         */
 
-        query = query
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(1);
+        query =
+            query
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(1);
 
     }
 
@@ -358,7 +373,8 @@ async function loadAthleteForCoach() {
     const {
         data,
         error
-    } = await query.maybeSingle();
+    } =
+        await query.maybeSingle();
 
 
     if (error) {
@@ -431,7 +447,7 @@ async function loadProfileHeader(
             currentRole === "coach"
                 ? "Athlete"
                 : "Coach",
-            ""
+            null
         );
 
         return;
@@ -444,7 +460,7 @@ async function loadProfileHeader(
             currentRole === "coach"
                 ? "Athlete"
                 : "Coach",
-            ""
+            null
         );
 
         return;
@@ -458,8 +474,6 @@ async function loadProfileHeader(
                 ? "Athlete"
                 : "Coach"
         ),
-        data.role ||
-        "",
         data.avatar_url
     );
 
@@ -467,76 +481,80 @@ async function loadProfileHeader(
 
 
 /* =========================================
-   PROFILE HEADER
+   SET HEADER
 ========================================= */
 
 function setProfileHeader(
     name,
-    role,
     avatarUrl
 ) {
 
     const nameElement =
-        document.getElementById(
-            "profileName"
+        document.querySelector(
+            ".header-info h1"
         );
 
 
-    const roleElement =
-        document.getElementById(
-            "profileRole"
+    const avatarElement =
+        document.querySelector(
+            ".header-avatar"
         );
 
 
-    const avatar =
-        document.getElementById(
-            "profileAvatar"
-        );
-
+    /*
+        Name
+    */
 
     if (nameElement) {
 
         nameElement.textContent =
-            name;
+            name || "Twete";
 
     }
 
 
-    if (roleElement) {
+    /*
+        Avatar
+    */
 
-        roleElement.textContent =
-            role === "coach"
-                ?
-                "Coach"
-                :
-                role === "athlete"
-                    ?
-                    "Athlete"
-                    :
-                    "";
-
+    if (!avatarElement) {
+        return;
     }
 
 
-    if (
-        avatar &&
-        avatarUrl
-    ) {
+    if (avatarUrl) {
 
-        avatar.innerHTML = `
+        avatarElement.innerHTML = "";
 
-            <img
-                src="${escapeHtml(
-                    avatarUrl
-                )}"
-                alt=""
-            >
+        const image =
+            document.createElement(
+                "img"
+            );
 
-        `;
+        image.src =
+            avatarUrl;
 
-    } else if (avatar) {
+        image.alt = "";
 
-        avatar.textContent =
+        image.referrerPolicy =
+            "no-referrer";
+
+        image.style.width =
+            "100%";
+
+        image.style.height =
+            "100%";
+
+        image.style.objectFit =
+            "cover";
+
+        avatarElement.appendChild(
+            image
+        );
+
+    } else {
+
+        avatarElement.textContent =
             (
                 name ||
                 "T"
@@ -557,7 +575,7 @@ async function loadMessages() {
 
     const list =
         document.getElementById(
-            "messagesList"
+            "messagesWindow"
         );
 
 
@@ -636,7 +654,7 @@ function renderMessages(
 
     const list =
         document.getElementById(
-            "messagesList"
+            "messagesWindow"
         );
 
 
@@ -645,130 +663,241 @@ function renderMessages(
     }
 
 
+    /*
+        Remove old messages
+    */
+
+    list.innerHTML = "";
+
+
+    /*
+        Empty conversation
+    */
+
     if (!messages.length) {
 
-        list.innerHTML = `
+        const empty =
+            document.createElement(
+                "div"
+            );
 
-            <div class="no-messages">
+        empty.className =
+            "no-messages";
 
-                No messages yet.<br><br>
+        empty.textContent =
+            "No messages yet.";
 
-                Start the conversation with your coach.
-
-            </div>
-
-        `;
+        list.appendChild(
+            empty
+        );
 
         return;
     }
 
 
-    list.innerHTML =
-        messages
-            .map(
-                function (message) {
+    /*
+        Render messages
+        in chronological order
+    */
 
-                    const sent =
-                        String(
-                            message.sender_id
-                        ) ===
-                        String(
-                            currentUser.id
-                        );
+    messages.forEach(
+        function (message) {
+
+            const sent =
+                String(
+                    message.sender_id
+                ) ===
+                String(
+                    currentUser.id
+                );
 
 
-                    return `
+            /*
+                Row
+            */
 
-                        <div
-                            class="
-                                message-row
-                                ${
-                                    sent
-                                    ?
-                                    "sent"
-                                    :
-                                    "received"
-                                }
-                            "
-                        >
+            const row =
+                document.createElement(
+                    "div"
+                );
 
-                            <div class="message-bubble">
+            row.className =
+                sent
+                    ? "message-row sent"
+                    : "message-row received";
 
-                                ${escapeHtml(
-                                    message.message
-                                ).replaceAll(
-                                    "\n",
-                                    "<br>"
-                                )}
 
-                                <span class="message-time">
+            /*
+                Bubble
+            */
 
-                                    ${formatTime(
-                                        message.created_at
-                                    )}
+            const bubble =
+                document.createElement(
+                    "div"
+                );
 
-                                </span>
+            bubble.className =
+                "message-bubble";
 
-                            </div>
 
-                        </div>
+            /*
+                Text
+            */
 
-                    `;
+            const text =
+                document.createElement(
+                    "div"
+                );
 
-                }
-            )
-            .join("");
+            text.className =
+                "message-text";
 
+
+            /*
+                textContent is intentional.
+                It prevents HTML injection.
+            */
+
+            text.textContent =
+                message.message || "";
+
+
+            /*
+                Time
+            */
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+            meta.className =
+                sent
+                    ? "message-meta"
+                    : "message-time";
+
+
+            const time =
+                document.createElement(
+                    "span"
+                );
+
+            time.textContent =
+                formatTime(
+                    message.created_at
+                );
+
+
+            meta.appendChild(
+                time
+            );
+
+
+            /*
+                Read checks
+                only on sent messages
+            */
+
+            if (sent) {
+
+                const checks =
+                    document.createElement(
+                        "span"
+                    );
+
+                checks.className =
+                    "message-checks";
+
+                checks.textContent =
+                    "✓✓";
+
+                meta.appendChild(
+                    checks
+                );
+
+            }
+
+
+            /*
+                Assemble
+            */
+
+            bubble.appendChild(
+                text
+            );
+
+            bubble.appendChild(
+                meta
+            );
+
+            row.appendChild(
+                bubble
+            );
+
+            list.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    /*
+        IMPORTANT:
+        Wait until browser has calculated
+        the actual height before scrolling.
+    */
 
     scrollToBottom();
 
 }
 
 
-
 /* =========================================
    SCROLL TO LATEST MESSAGE
 ========================================= */
+
 function scrollToBottom() {
 
     const list =
         document.getElementById(
-            "messagesList"
+            "messagesWindow"
         );
+
 
     if (!list) {
         return;
     }
 
-   const debug = document.getElementById("scrollDebug");
 
-if (debug) {
-    debug.textContent =
-        "scrollTop: " + list.scrollTop +
-        " | scrollHeight: " + list.scrollHeight +
-        " | clientHeight: " + list.clientHeight;
-}
-       console.log(
-    "SCROLL:",
-    "scrollTop =", list.scrollTop,
-    "scrollHeight =", list.scrollHeight,
-    "clientHeight =", list.clientHeight
-);
-    
+    /*
+        First frame:
+        browser calculates layout.
+    */
 
-    requestAnimationFrame(function () {
+    requestAnimationFrame(
+        function () {
 
-        requestAnimationFrame(function () {
+            /*
+                Second frame:
+                dimensions are now reliable.
+            */
 
-            list.scrollTop =
-                list.scrollHeight -
-                list.clientHeight;
+            requestAnimationFrame(
+                function () {
 
-        });
+                    list.scrollTop =
+                        list.scrollHeight;
 
-    });
+                }
+            );
+
+        }
+    );
 
 }
+
+
 /* =========================================
    SEND MESSAGE
 ========================================= */
@@ -782,8 +911,8 @@ async function sendMessage() {
 
 
     const button =
-        document.getElementById(
-            "sendButton"
+        document.querySelector(
+            ".send-button"
         );
 
 
@@ -803,8 +932,8 @@ async function sendMessage() {
 
     if (!conversationUserId) {
 
-        alert(
-            "No coach connection is available yet."
+        showError(
+            "No conversation is available yet."
         );
 
         return;
@@ -847,19 +976,32 @@ async function sendMessage() {
                 error
             );
 
-            alert(
+            showError(
                 "Could not send message."
             );
 
             return;
         }
 
-input.value = "";
 
-resizeComposer();
-await loadMessages();
+        /*
+            Clear input
+        */
 
-       
+        input.value = "";
+
+
+        resizeComposer();
+
+
+        /*
+            Reload messages.
+
+            This also scrolls to the
+            newest message.
+        */
+
+        await loadMessages();
 
 
     } finally {
@@ -890,6 +1032,10 @@ function subscribeToMessages() {
         return;
     }
 
+
+    /*
+        Remove old channel
+    */
 
     if (realtimeChannel) {
 
@@ -954,18 +1100,31 @@ function subscribeToMessages() {
                         );
 
 
-                    if (belongs) {
+                    if (!belongs) {
+                        return;
+                    }
 
-    if (
-        String(message.sender_id) !==
-        String(currentUser.id)
-    ) {
 
-        await loadMessages();
+                    /*
+                        If another person sends
+                        a message, reload it.
 
-    }
+                        Our own send already reloads
+                        immediately.
+                    */
 
-}
+                    if (
+                        String(
+                            message.sender_id
+                        ) !==
+                        String(
+                            currentUser.id
+                        )
+                    ) {
+
+                        await loadMessages();
+
+                    }
 
                 }
             )
@@ -975,12 +1134,17 @@ function subscribeToMessages() {
 
 
 /* =========================================
-   MARK READ
+   MARK MESSAGES READ
 ========================================= */
 
 async function markMessagesRead(
     messages
 ) {
+
+    if (!currentUser) {
+        return;
+    }
+
 
     const unreadIds =
         messages
@@ -1013,18 +1177,31 @@ async function markMessagesRead(
     }
 
 
-    await messagesSupabase
-        .from("messages")
-        .update({
+    const {
+        error
+    } =
+        await messagesSupabase
+            .from("messages")
+            .update({
 
-            read_at:
-                new Date().toISOString()
+                read_at:
+                    new Date().toISOString()
 
-        })
-        .in(
-            "id",
-            unreadIds
+            })
+            .in(
+                "id",
+                unreadIds
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Mark read error:",
+            error
         );
+
+    }
 
 }
 
@@ -1041,37 +1218,83 @@ function setupComposer() {
         );
 
 
-    if (!input) {
-        return;
+    const sendButton =
+        document.querySelector(
+            ".send-button"
+        );
+
+
+    const backButton =
+        document.querySelector(
+            ".back-button"
+        );
+
+
+    if (input) {
+
+        input.addEventListener(
+            "input",
+            resizeComposer
+        );
+
+
+        input.addEventListener(
+            "keydown",
+            function (event) {
+
+                /*
+                    Enter = send
+                    Shift + Enter = new line
+                */
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
     }
 
 
-    input.addEventListener(
-        "input",
-        resizeComposer
-    );
+    if (sendButton) {
+
+        sendButton.addEventListener(
+            "click",
+            sendMessage
+        );
+
+    }
 
 
-    input.addEventListener(
-        "keydown",
-        function (event) {
+    if (backButton) {
 
-            if (
-                event.key === "Enter" &&
-                !event.shiftKey
-            ) {
+        backButton.addEventListener(
+            "click",
+            goBack
+        );
 
-                event.preventDefault();
+    }
 
-                sendMessage();
 
-            }
-
-        }
-    );
+    /*
+        Attachment button is not connected
+        yet. We will add it later.
+    */
 
 }
 
+
+/* =========================================
+   RESIZE COMPOSER
+========================================= */
 
 function resizeComposer() {
 
@@ -1093,7 +1316,7 @@ function resizeComposer() {
     input.style.height =
         Math.min(
             input.scrollHeight,
-            120
+            130
         ) +
         "px";
 
@@ -1104,14 +1327,6 @@ function resizeComposer() {
    NAVIGATION
 ========================================= */
 
-function goHome() {
-
-    window.location.href =
-        "athlete.html";
-
-}
-
-
 function goBack() {
 
     window.location.href =
@@ -1121,14 +1336,14 @@ function goBack() {
 
 
 /* =========================================
-   EMPTY / ERROR
+   EMPTY STATE
 ========================================= */
 
 function showNoConversation() {
 
     const list =
         document.getElementById(
-            "messagesList"
+            "messagesWindow"
         );
 
 
@@ -1137,18 +1352,31 @@ function showNoConversation() {
     }
 
 
-    list.innerHTML = `
+    list.innerHTML = "";
 
-        <div class="no-messages">
 
-            No coach connection found yet.
+    const empty =
+        document.createElement(
+            "div"
+        );
 
-        </div>
+    empty.className =
+        "no-messages";
 
-    `;
+    empty.textContent =
+        "No conversation found yet.";
+
+
+    list.appendChild(
+        empty
+    );
 
 }
 
+
+/* =========================================
+   ERROR
+========================================= */
 
 function showError(
     message
@@ -1156,7 +1384,7 @@ function showError(
 
     const list =
         document.getElementById(
-            "messagesList"
+            "messagesWindow"
         );
 
 
@@ -1165,23 +1393,30 @@ function showError(
     }
 
 
-    list.innerHTML = `
+    list.innerHTML = "";
 
-        <div class="no-messages">
 
-            ${escapeHtml(
-                message
-            )}
+    const errorElement =
+        document.createElement(
+            "div"
+        );
 
-        </div>
+    errorElement.className =
+        "no-messages";
 
-    `;
+    errorElement.textContent =
+        message;
+
+
+    list.appendChild(
+        errorElement
+    );
 
 }
 
 
 /* =========================================
-   HELPERS
+   FORMAT TIME
 ========================================= */
 
 function formatTime(
@@ -1205,51 +1440,12 @@ function formatTime(
     }
 
 
-    return date.toLocaleString(
-        "en-US",
+    return date.toLocaleTimeString(
+        [],
         {
-            month: "short",
-            day: "numeric",
             hour: "2-digit",
             minute: "2-digit"
         }
     );
 
 }
-
-
-
-
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHtml(
-    value
-) {
-
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-       }
