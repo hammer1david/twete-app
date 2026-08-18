@@ -131,19 +131,8 @@ if (conversationSection) {
         "Could not load Messages."
     );
 
-}
-
-        console.error(
-            "Messages initialisation error:",
-            error
-        );
-
-        showError(
-            "Could not load Messages."
-        );
 
     }
-
 }
 
 
