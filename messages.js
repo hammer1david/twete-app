@@ -6,7 +6,7 @@ const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
+    "sb_publishable_o-hfeydDJf5J-xPQyxvWov_DJ3StSNn";
 
 
 const supabaseClient =
@@ -213,6 +213,7 @@ async function initialiseAthlete() {
 
 /* =========================================
    FIND ATHLETE'S COACH
+   DO NOT CHANGE
 ========================================= */
 
 async function loadCoachForAthlete() {
@@ -396,7 +397,9 @@ async function loadAthletes() {
     const athleteIds =
         connections.map(
             function (item) {
+
                 return item.athlete_id;
+
             }
         );
 
@@ -476,6 +479,7 @@ async function loadAthletes() {
                     :
                     0;
 
+
             const bTime =
                 b.last_message_at
                     ?
@@ -484,6 +488,7 @@ async function loadAthletes() {
                     ).getTime()
                     :
                     0;
+
 
             return bTime - aTime;
 
@@ -520,7 +525,12 @@ async function getLastMessageInfo(
                 receiver_id,
                 message,
                 created_at,
-                read_at
+                read_at,
+                attachment_url,
+                attachment_path,
+                attachment_name,
+                attachment_type,
+                attachment_size
             `)
             .or(
                 `and(sender_id.eq.${currentUser.id},receiver_id.eq.${athleteId}),and(sender_id.eq.${athleteId},receiver_id.eq.${currentUser.id})`
@@ -571,10 +581,27 @@ async function getLastMessageInfo(
     }
 
 
+    let lastMessage =
+        data.message ||
+        "";
+
+
+    if (
+        !lastMessage &&
+        data.attachment_name
+    ) {
+
+        lastMessage =
+            "📎 " +
+            data.attachment_name;
+
+    }
+
+
     return {
 
         last_message:
-            data.message || "",
+            lastMessage,
 
         last_message_at:
             data.created_at,
@@ -748,7 +775,7 @@ function renderAthleteList() {
 
 
 /* =========================================
-   OPEN COACH CONVERSATION
+   OPEN CONVERSATION
 ========================================= */
 
 async function openConversation(
@@ -1090,7 +1117,12 @@ async function loadMessages() {
                 receiver_id,
                 message,
                 created_at,
-                read_at
+                read_at,
+                attachment_url,
+                attachment_path,
+                attachment_name,
+                attachment_type,
+                attachment_size
             `)
             .or(
                 `and(sender_id.eq.${currentUser.id},receiver_id.eq.${conversationUserId}),and(sender_id.eq.${conversationUserId},receiver_id.eq.${currentUser.id})`
@@ -1118,7 +1150,7 @@ async function loadMessages() {
     }
 
 
-    renderMessages(
+    await renderMessages(
         data || []
     );
 
@@ -1134,7 +1166,7 @@ async function loadMessages() {
    RENDER MESSAGES
 ========================================= */
 
-function renderMessages(
+async function renderMessages(
     messages
 ) {
 
@@ -1167,61 +1199,262 @@ function renderMessages(
     }
 
 
-    list.innerHTML =
-        messages
-            .map(
-                function (message) {
-
-                    const sent =
-                        String(
-                            message.sender_id
-                        ) ===
-                        String(
-                            currentUser.id
-                        );
+    let html =
+        "";
 
 
-                    return `
+    for (
+        const message
+        of messages
+    ) {
 
-                        <div
-                            class="
-                                message-row
-                                ${
-                                    sent
-                                    ?
-                                    "sent"
-                                    :
-                                    "received"
-                                }
-                            "
+        const sent =
+            String(
+                message.sender_id
+            ) ===
+            String(
+                currentUser.id
+            );
+
+
+        let attachmentHtml =
+            "";
+
+
+        /* =====================================
+           ATTACHMENT
+        ===================================== */
+
+        if (
+            message.attachment_path
+        ) {
+
+            const {
+                data: signedData,
+                error: signedError
+            } =
+                await supabaseClient
+                    .storage
+                    .from(
+                        "message-attachments"
+                    )
+                    .createSignedUrl(
+                        message.attachment_path,
+                        3600
+                    );
+
+
+            if (
+                !signedError &&
+                signedData
+            ) {
+
+                const url =
+                    signedData.signedUrl;
+
+
+                /*
+                   IMAGE
+                */
+
+                if (
+                    message.attachment_type &&
+                    message.attachment_type
+                        .startsWith(
+                            "image/"
+                        )
+                ) {
+
+                    attachmentHtml = `
+
+                        <a
+                            href="${escapeHtml(
+                                url
+                            )}"
+                            target="_blank"
+                            rel="noopener"
                         >
 
-                            <div class="message-bubble">
+                            <img
+                                class="message-attachment-image"
+                                src="${escapeHtml(
+                                    url
+                                )}"
+                                alt="${escapeHtml(
+                                    message.attachment_name ||
+                                    "Image"
+                                )}"
+                            >
 
-                                ${escapeHtml(
-                                    message.message
-                                ).replaceAll(
-                                    "\n",
-                                    "<br>"
-                                )}
-
-                                <span class="message-time">
-
-                                    ${formatTime(
-                                        message.created_at
-                                    )}
-
-                                </span>
-
-                            </div>
-
-                        </div>
+                        </a>
 
                     `;
 
                 }
-            )
-            .join("");
+
+
+                /*
+                   VIDEO
+                */
+
+                else if (
+                    message.attachment_type &&
+                    message.attachment_type
+                        .startsWith(
+                            "video/"
+                        )
+                ) {
+
+                    attachmentHtml = `
+
+                        <video
+                            class="message-attachment-video"
+                            controls
+                            preload="metadata"
+                        >
+
+                            <source
+                                src="${escapeHtml(
+                                    url
+                                )}"
+                                type="${escapeHtml(
+                                    message.attachment_type
+                                )}"
+                            >
+
+                            Your browser does not support video.
+
+                        </video>
+
+                    `;
+
+                }
+
+
+                /*
+                   DOCUMENT
+                */
+
+                else {
+
+                    attachmentHtml = `
+
+                        <a
+                            class="message-attachment-file"
+                            href="${escapeHtml(
+                                url
+                            )}"
+                            target="_blank"
+                            rel="noopener"
+                        >
+
+                            <span class="message-attachment-icon">
+
+                                📄
+
+                            </span>
+
+
+                            <span class="message-attachment-info">
+
+                                <span class="message-attachment-name">
+
+                                    ${escapeHtml(
+                                        message.attachment_name ||
+                                        "Document"
+                                    )}
+
+                                </span>
+
+
+                                <span class="message-attachment-size">
+
+                                    ${formatAttachmentSize(
+                                        message.attachment_size
+                                    )}
+
+                                </span>
+
+                            </span>
+
+                        </a>
+
+                    `;
+
+                }
+
+            }
+
+        }
+
+
+        /*
+           MESSAGE TEXT
+        */
+
+        const messageText =
+            message.message
+                ?
+                `
+                <div class="message-text">
+
+                    ${escapeHtml(
+                        message.message
+                    ).replaceAll(
+                        "\n",
+                        "<br>"
+                    )}
+
+                </div>
+                `
+                :
+                "";
+
+
+        /*
+           MESSAGE
+        */
+
+        html += `
+
+            <div
+                class="
+                    message-row
+                    ${
+                        sent
+                        ?
+                        "sent"
+                        :
+                        "received"
+                    }
+                "
+            >
+
+                <div class="message-bubble">
+
+                    ${attachmentHtml}
+
+                    ${messageText}
+
+                    <span class="message-time">
+
+                        ${formatTime(
+                            message.created_at
+                        )}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    list.innerHTML =
+        html;
 
 
     scrollToBottom();
@@ -1315,7 +1548,9 @@ async function sendMessage() {
         }
 
 
-        input.value = "";
+        input.value =
+            "";
+
 
         resizeComposer();
 
@@ -1373,9 +1608,14 @@ function subscribeToMessages() {
             .on(
                 "postgres_changes",
                 {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "messages"
+                    event:
+                        "INSERT",
+
+                    schema:
+                        "public",
+
+                    table:
+                        "messages"
                 },
                 async function (
                     payload
@@ -1393,6 +1633,7 @@ function subscribeToMessages() {
                             String(
                                 currentUser.id
                             ) &&
+
                             String(
                                 message.receiver_id
                             ) ===
@@ -1408,6 +1649,7 @@ function subscribeToMessages() {
                             String(
                                 conversationUserId
                             ) &&
+
                             String(
                                 message.receiver_id
                             ) ===
@@ -1460,6 +1702,7 @@ async function markMessagesRead(
                         String(
                             currentUser.id
                         ) &&
+
                         !message.read_at
                     );
 
@@ -1523,7 +1766,9 @@ function setupComposer() {
         function (event) {
 
             if (
-                event.key === "Enter" &&
+                event.key ===
+                "Enter" &&
+
                 !event.shiftKey
             ) {
 
@@ -1685,15 +1930,86 @@ function formatTime(
     return date.toLocaleString(
         "en-US",
         {
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
+            month:
+                "short",
+
+            day:
+                "numeric",
+
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit"
         }
     );
 
 }
 
+
+/* =========================================
+   ATTACHMENT SIZE
+========================================= */
+
+function formatAttachmentSize(
+    bytes
+) {
+
+    if (
+        !bytes ||
+        bytes <= 0
+    ) {
+
+        return "";
+
+    }
+
+
+    if (
+        bytes < 1024
+    ) {
+
+        return (
+            bytes +
+            " B"
+        );
+
+    }
+
+
+    if (
+        bytes <
+        1024 * 1024
+    ) {
+
+        return (
+            (
+                bytes /
+                1024
+            ).toFixed(1) +
+            " KB"
+        );
+
+    }
+
+
+    return (
+        (
+            bytes /
+            (
+                1024 *
+                1024
+            )
+        ).toFixed(1) +
+        " MB"
+    );
+
+}
+
+
+/* =========================================
+   SCROLL
+========================================= */
 
 function scrollToBottom() {
 
@@ -1720,12 +2036,17 @@ function scrollToBottom() {
 }
 
 
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
 function escapeHtml(
     value
 ) {
 
     return String(
-        value ?? ""
+        value ??
+        ""
     )
         .replace(
             /&/g,
@@ -1751,12 +2072,17 @@ function escapeHtml(
 }
 
 
+/* =========================================
+   ESCAPE ATTRIBUTE
+========================================= */
+
 function escapeAttribute(
     value
 ) {
 
     return String(
-        value ?? ""
+        value ??
+        ""
     )
         .replace(
             /'/g,
@@ -1767,4 +2093,4 @@ function escapeAttribute(
             "&quot;"
         );
 
-}
+       }
