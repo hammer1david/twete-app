@@ -838,12 +838,17 @@ async function sendMessage() {
             return;
         }
 
+input.value = "";
 
-        input.value = "";
+resizeComposer();
 
-        resizeComposer();
+await loadMessages();
 
-        await loadMessages();
+requestAnimationFrame(function () {
+
+    scrollToBottom();
+
+});
 
 
     } finally {
