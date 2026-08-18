@@ -415,6 +415,8 @@ async function isPushEnabled() {
 }
 
 
+
+
 /* =========================================
    START
 ========================================= */
@@ -422,3 +424,58 @@ async function isPushEnabled() {
 console.log(
     "Twete push notifications loaded."
 );
+
+
+
+/* =========================================
+   SEND TEST PUSH
+========================================= */
+
+async function sendTestPushNotification() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await profileSupabase.functions.invoke(
+            "send-push",
+            {
+                body: {
+                    title: "Twete",
+                    body: "This is a test push notification.",
+                    url: "/messages.html"
+                }
+            }
+        );
+
+
+        if (error) {
+
+            console.error(
+                "Test push failed:",
+                error
+            );
+
+            return false;
+        }
+
+
+        console.log(
+            "Test push result:",
+            data
+        );
+
+        return true;
+
+
+    } catch (error) {
+
+        console.error(
+            "Test push error:",
+            error
+        );
+
+        return false;
+    }
+}
