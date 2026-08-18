@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -14,11 +16,14 @@
         rel="stylesheet"
         href="messages.css"
     >
+
 </head>
+
 
 <body>
 
     <div class="chat">
+
 
         <!-- =================================
              HEADER
@@ -33,9 +38,11 @@
                 ←
             </button>
 
+
             <div class="header-avatar">
                 D
             </div>
+
 
             <div class="header-info">
 
@@ -52,8 +59,10 @@
         </header>
 
 
+
         <!-- =================================
              MESSAGE WINDOW
+             
              ONLY THIS AREA SCROLLS
         ================================== -->
 
@@ -62,15 +71,8 @@
             id="messagesWindow"
         >
 
-            <!--
-                DUMMY MESSAGES
 
-                These are only for testing
-                the layout.
-
-                We will replace them with
-                real Supabase messages later.
-            -->
+            <!-- DUMMY MESSAGE -->
 
             <div class="message-row received">
 
@@ -87,6 +89,7 @@
                 </div>
 
             </div>
+
 
 
             <div class="message-row sent">
@@ -106,6 +109,7 @@
             </div>
 
 
+
             <div class="message-row received">
 
                 <div class="message-bubble">
@@ -121,6 +125,7 @@
                 </div>
 
             </div>
+
 
 
             <div class="message-row sent">
@@ -140,6 +145,7 @@
             </div>
 
 
+
             <div class="message-row received">
 
                 <div class="message-bubble">
@@ -156,15 +162,20 @@
 
             </div>
 
+
         </main>
+
 
 
         <!-- =================================
              COMPOSER / FOOTER
-             FIXED OWN AREA
+             
+             THIS IS NOT PART OF THE
+             MESSAGE SCROLL AREA
         ================================== -->
 
         <footer class="chat-composer">
+
 
             <button
                 class="attachment-button"
@@ -173,11 +184,13 @@
                 +
             </button>
 
+
             <textarea
                 id="messageInput"
                 placeholder="Write a message..."
                 rows="1"
             ></textarea>
+
 
             <button
                 class="send-button"
@@ -186,9 +199,12 @@
                 ↑
             </button>
 
+
         </footer>
+
 
     </div>
 
 </body>
+
 </html>
