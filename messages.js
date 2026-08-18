@@ -105,7 +105,12 @@ async function initialiseMessages() {
 
         subscribeToMessages();
 
-        setupComposer();
+        await loadMessages();
+
+subscribeToMessages();
+
+setupComposer();
+
 const conversationSection =
     document.getElementById(
         "conversationSection"
@@ -117,7 +122,20 @@ if (conversationSection) {
         "hidden"
     );
 
-    } catch (error) {
+}
+
+} catch (error) {
+
+    console.error(
+        "Messages initialisation error:",
+        error
+    );
+
+    showError(
+        "Could not load Messages."
+    );
+
+}
 
         console.error(
             "Messages initialisation error:",
