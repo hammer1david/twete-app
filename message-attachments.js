@@ -1,6 +1,7 @@
 /* =========================================
    TWETE MESSAGE ATTACHMENTS
-   Works on top of the existing messages.js
+   IMPORTANT:
+   This file does NOT change coach connection.
 ========================================= */
 
 let selectedAttachment = null;
@@ -40,14 +41,27 @@ function initialiseAttachments() {
 
 
     /*
-       Wait until messages.js has finished loading.
-       Then wrap the existing sendMessage function.
+       Wait until the original messages.js
+       has created its functions.
     */
 
     setTimeout(
-        wrapSendMessage,
-        100
+        setupAttachmentFunctions,
+        300
     );
+
+}
+
+
+/* =========================================
+   SETUP
+========================================= */
+
+function setupAttachmentFunctions() {
+
+    wrapSendMessage();
+
+    wrapLoadMessages();
 
 }
 
@@ -224,7 +238,7 @@ function showAttachmentPreview(
 
 
 /* =========================================
-   REMOVE ATTACHMENT
+   REMOVE
 ========================================= */
 
 function removeSelectedAttachment() {
@@ -270,7 +284,7 @@ function removeAttachmentPreview() {
 
 
 /* =========================================
-   WRAP EXISTING SEND
+   WRAP SEND MESSAGE
 ========================================= */
 
 function wrapSendMessage() {
@@ -282,7 +296,7 @@ function wrapSendMessage() {
 
         setTimeout(
             wrapSendMessage,
-            200
+            300
         );
 
         return;
@@ -290,12 +304,9 @@ function wrapSendMessage() {
     }
 
 
-    /*
-       Prevent wrapping more than once.
-    */
-
     if (
-        window.sendMessage.__attachmentWrapped
+        window.sendMessage
+            .__attachmentWrapped
     ) {
 
         return;
@@ -310,8 +321,8 @@ function wrapSendMessage() {
     async function sendMessageWithAttachment() {
 
         /*
-           If no attachment is selected,
-           use the original working function.
+           NO ATTACHMENT:
+           use original working function.
         */
 
         if (
@@ -340,7 +351,7 @@ function wrapSendMessage() {
 
 
 /* =========================================
-   SEND ATTACHMENT MESSAGE
+   SEND ATTACHMENT
 ========================================= */
 
 async function sendAttachmentMessage() {
@@ -357,25 +368,25 @@ async function sendAttachmentMessage() {
         );
 
 
+    /*
+       IMPORTANT:
+       Use the SAME Supabase client
+       as the working messages.js.
+    */
+
     if (
-        !window.currentUser &&
-        typeof currentUser ===
+        typeof messagesSupabase ===
         "undefined"
     ) {
 
         alert(
-            "Your login session is not ready yet."
+            "Messaging connection is not ready yet."
         );
 
         return;
 
     }
 
-
-    /*
-       messages.js keeps these variables
-       globally available.
-    */
 
     const user =
         typeof currentUser !==
@@ -401,7 +412,7 @@ async function sendAttachmentMessage() {
     ) {
 
         alert(
-            "No conversation is selected."
+            "No coach connection is available yet."
         );
 
         return;
@@ -453,14 +464,14 @@ async function sendAttachmentMessage() {
 
 
         /*
-           Upload file
+           UPLOAD
         */
 
         const {
             error:
                 uploadError
         } =
-            await supabaseClient
+            await messagesSupabase
                 .storage
                 .from(
                     "message-attachments"
@@ -469,6 +480,7 @@ async function sendAttachmentMessage() {
                     path,
                     file,
                     {
+
                         cacheControl:
                             "3600",
 
@@ -478,6 +490,7 @@ async function sendAttachmentMessage() {
 
                         upsert:
                             false
+
                     }
                 );
 
@@ -507,14 +520,14 @@ async function sendAttachmentMessage() {
 
 
         /*
-           Insert message
+           CREATE MESSAGE
         */
 
         const {
             error:
                 messageError
         } =
-            await supabaseClient
+            await messagesSupabase
                 .from(
                     "messages"
                 )
@@ -530,8 +543,7 @@ async function sendAttachmentMessage() {
                         receiver,
 
                     message:
-                        text ||
-                        "",
+                        text,
 
                     attachment_path:
                         path,
@@ -558,11 +570,11 @@ async function sendAttachmentMessage() {
 
 
             /*
-               Remove uploaded file if
-               message creation failed.
+               Remove uploaded file
+               if message creation fails.
             */
 
-            await supabaseClient
+            await messagesSupabase
                 .storage
                 .from(
                     "message-attachments"
@@ -582,7 +594,7 @@ async function sendAttachmentMessage() {
 
 
         /*
-           Clear composer
+           CLEAR
         */
 
         if (input) {
@@ -597,8 +609,8 @@ async function sendAttachmentMessage() {
 
 
         /*
-           Reload existing messages
-           using the original function.
+           Reload using the EXISTING
+           messages.js function.
         */
 
         if (
@@ -634,6 +646,472 @@ async function sendAttachmentMessage() {
         }
 
     }
+
+}
+
+
+/* =========================================
+   WRAP LOAD MESSAGES
+========================================= */
+
+function wrapLoadMessages() {
+
+    if (
+        typeof window.loadMessages !==
+        "function"
+    ) {
+
+        setTimeout(
+            wrapLoadMessages,
+            300
+        );
+
+        return;
+
+    }
+
+
+    if (
+        window.loadMessages
+            .__attachmentWrapped
+    ) {
+
+        return;
+
+    }
+
+
+    const originalLoadMessages =
+        window.loadMessages;
+
+
+    async function loadMessagesWithAttachments() {
+
+        /*
+           First let the ORIGINAL
+           working messages.js load
+           everything normally.
+        */
+
+        await originalLoadMessages();
+
+
+        /*
+           Then add attachment previews.
+        */
+
+        await renderAttachmentMessages();
+
+    }
+
+
+    loadMessagesWithAttachments
+        .__attachmentWrapped =
+        true;
+
+
+    window.loadMessages =
+        loadMessagesWithAttachments;
+
+}
+
+
+/* =========================================
+   RENDER ATTACHMENTS
+========================================= */
+
+async function renderAttachmentMessages() {
+
+    if (
+        typeof messagesSupabase ===
+        "undefined"
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        typeof currentUser ===
+        "undefined" ||
+        typeof conversationUserId ===
+        "undefined"
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !currentUser ||
+        !conversationUserId
+    ) {
+
+        return;
+
+    }
+
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    /*
+       Get messages with attachments.
+    */
+
+    const {
+        data,
+        error
+    } =
+        await messagesSupabase
+            .from("messages")
+            .select(`
+                id,
+                sender_id,
+                receiver_id,
+                message,
+                created_at,
+                attachment_path,
+                attachment_name,
+                attachment_type,
+                attachment_size
+            `)
+            .or(
+                `and(sender_id.eq.${currentUser.id},receiver_id.eq.${conversationUserId}),and(sender_id.eq.${conversationUserId},receiver_id.eq.${currentUser.id})`
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Attachment message loading error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !data ||
+        !data.length
+    ) {
+
+        return;
+
+    }
+
+
+    const rows =
+        list.querySelectorAll(
+            ".message-row"
+        );
+
+
+    /*
+       Match message rows by order.
+    */
+
+    for (
+        let i = 0;
+        i < data.length;
+        i++
+    ) {
+
+        const message =
+            data[i];
+
+
+        if (
+            !message.attachment_path
+        ) {
+
+            continue;
+
+        }
+
+
+        const row =
+            rows[i];
+
+
+        if (!row) {
+
+            continue;
+
+        }
+
+
+        const bubble =
+            row.querySelector(
+                ".message-bubble"
+            );
+
+
+        if (!bubble) {
+
+            continue;
+
+        }
+
+
+        /*
+           Don't add it twice.
+        */
+
+        if (
+            bubble.querySelector(
+                ".message-attachment-rendered"
+            )
+        ) {
+
+            continue;
+
+        }
+
+
+        const {
+            data:
+                signedData,
+            error:
+                signedError
+        } =
+            await messagesSupabase
+                .storage
+                .from(
+                    "message-attachments"
+                )
+                .createSignedUrl(
+                    message.attachment_path,
+                    3600
+                );
+
+
+        if (
+            signedError ||
+            !signedData
+        ) {
+
+            console.error(
+                "Signed URL error:",
+                signedError
+            );
+
+            continue;
+
+        }
+
+
+        const url =
+            signedData.signedUrl;
+
+
+        const attachment =
+            document.createElement(
+                "div"
+            );
+
+
+        attachment.className =
+            "message-attachment-rendered";
+
+
+        /*
+           IMAGE
+        */
+
+        if (
+            message.attachment_type &&
+            message.attachment_type
+                .startsWith(
+                    "image/"
+                )
+        ) {
+
+            attachment.innerHTML = `
+
+                <a
+                    href="${escapeAttachmentHtml(
+                        url
+                    )}"
+                    target="_blank"
+                    rel="noopener"
+                >
+
+                    <img
+                        class="message-attachment-image"
+                        src="${escapeAttachmentHtml(
+                            url
+                        )}"
+                        alt="${escapeAttachmentHtml(
+                            message.attachment_name ||
+                            "Image"
+                        )}"
+                    >
+
+                </a>
+
+            `;
+
+        }
+
+
+        /*
+           VIDEO
+        */
+
+        else if (
+            message.attachment_type &&
+            message.attachment_type
+                .startsWith(
+                    "video/"
+                )
+        ) {
+
+            attachment.innerHTML = `
+
+                <video
+                    class="message-attachment-video"
+                    controls
+                    preload="metadata"
+                >
+
+                    <source
+                        src="${escapeAttachmentHtml(
+                            url
+                        )}"
+                        type="${escapeAttachmentHtml(
+                            message.attachment_type
+                        )}"
+                    >
+
+                    Your browser does not support video.
+
+                </video>
+
+            `;
+
+        }
+
+
+        /*
+           DOCUMENT
+        */
+
+        else {
+
+            attachment.innerHTML = `
+
+                <a
+                    class="message-attachment-file"
+                    href="${escapeAttachmentHtml(
+                        url
+                    )}"
+                    target="_blank"
+                    rel="noopener"
+                >
+
+                    <span
+                        class="message-attachment-icon"
+                    >
+                        📄
+                    </span>
+
+
+                    <span
+                        class="message-attachment-info"
+                    >
+
+                        <span
+                            class="message-attachment-name"
+                        >
+
+                            ${escapeAttachmentHtml(
+                                message.attachment_name ||
+                                "Document"
+                            )}
+
+                        </span>
+
+
+                        <span
+                            class="message-attachment-size"
+                        >
+
+                            ${formatFileSize(
+                                message.attachment_size
+                            )}
+
+                        </span>
+
+                    </span>
+
+                </a>
+
+            `;
+
+        }
+
+
+        /*
+           Put attachment at the
+           beginning of the bubble.
+        */
+
+        bubble.prepend(
+            attachment
+        );
+
+    }
+
+
+    scrollToBottomAfterAttachment();
+
+}
+
+
+/* =========================================
+   SCROLL
+========================================= */
+
+function scrollToBottomAfterAttachment() {
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    requestAnimationFrame(
+        function () {
+
+            list.scrollTop =
+                list.scrollHeight;
+
+        }
+    );
 
 }
 
