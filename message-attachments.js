@@ -584,9 +584,15 @@ async function sendAttachmentMessage() {
                 ]);
 
 
-            alert(
-                "The attachment was uploaded, but the message could not be sent."
-            );
+             alert(
+    "Message error: " +
+    (
+        messageError?.message ||
+        messageError?.details ||
+        messageError?.hint ||
+        "Unknown error"
+    )
+);
 
             return;
 
@@ -632,8 +638,14 @@ async function sendAttachmentMessage() {
 
 
         alert(
-            "Could not send the attachment."
-        );
+    "Attachment error: " +
+    (
+        error?.message ||
+        error?.details ||
+        error?.hint ||
+        "Unknown error"
+    )
+);
 
 
     } finally {
