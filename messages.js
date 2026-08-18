@@ -1185,33 +1185,6 @@ function formatTime(
 }
 
 
-/* =========================================
-   SCROLL
-========================================= */
-
-function scrollToBottom() {
-
-    const list =
-        document.getElementById(
-            "messagesList"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    requestAnimationFrame(
-        function () {
-
-            list.scrollTop =
-                list.scrollHeight;
-
-        }
-    );
-
-}
 
 
 /* =========================================
