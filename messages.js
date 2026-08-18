@@ -736,12 +736,16 @@ function scrollToBottom() {
 
     requestAnimationFrame(function () {
 
-        list.scrollTo({
-            top: list.scrollHeight,
-            behavior: "auto"
+        requestAnimationFrame(function () {
+
+            list.scrollTop =
+                list.scrollHeight -
+                list.clientHeight;
+
         });
 
     });
+
 }
 /* =========================================
    SEND MESSAGE
