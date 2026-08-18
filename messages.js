@@ -293,11 +293,14 @@ async function loadCoachForAthlete() {
 
 async function loadAthleteForCoach() {
 
-    const {
-        data,
-        error
-    } =
-        await messagesSupabase
+    const requestedAthleteId =
+        new URLSearchParams(
+            window.location.search
+        ).get("athlete_id");
+
+
+    let query =
+        messagesSupabase
             .from("coach_athletes")
             .select(`
                 coach_id,
@@ -307,15 +310,44 @@ async function loadAthleteForCoach() {
             .eq(
                 "coach_id",
                 currentUser.id
-            )
+            );
+
+
+    /*
+       If the notification contains an
+       athlete_id, open exactly that athlete.
+    */
+
+    if (requestedAthleteId) {
+
+        query = query.eq(
+            "athlete_id",
+            requestedAthleteId
+        );
+
+    } else {
+
+        /*
+           Normal Messages page:
+           use the most recently connected athlete.
+        */
+
+        query = query
             .order(
                 "created_at",
                 {
                     ascending: false
                 }
             )
-            .limit(1)
-            .maybeSingle();
+            .limit(1);
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await query.maybeSingle();
 
 
     if (error) {
