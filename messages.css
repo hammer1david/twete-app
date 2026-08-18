@@ -1926,3 +1926,40 @@ textarea {
     }
 
 }
+
+
+/* =========================================
+   FOOTER - EQUAL HALVES
+========================================= */
+
+.bottom-navigation {
+    display: flex;
+
+    justify-content: stretch;
+
+    align-items: stretch;
+
+    gap: 0;
+
+    padding: 0;
+}
+
+.bottom-navigation .nav-item {
+    flex: 1;
+
+    width: 50%;
+
+    min-width: 0;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
