@@ -452,7 +452,7 @@ body:has(#conversationSection:not(.hidden))
     padding:
         16px
         14px
-        108px;
+        35px;
 
     display: flex;
 
