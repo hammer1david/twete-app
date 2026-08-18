@@ -842,7 +842,8 @@ input.value = "";
 
 resizeComposer();
 
-await loadMessages();
+
+       
 
 
     } finally {
