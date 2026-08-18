@@ -853,9 +853,14 @@ async function renderAttachmentMessages() {
                     "message-attachments"
                 )
                 .createSignedUrl(
-                    message.attachment_path,
-                    3600
-                );
+    message.attachment_path,
+    3600,
+    {
+        download:
+            message.attachment_name ||
+            true
+    }
+);
 
 
         if (
