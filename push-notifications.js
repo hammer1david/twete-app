@@ -87,7 +87,7 @@ async function getPushUser() {
             },
             error
         } =
-            await supabaseClient.auth.getUser();
+            await profileSupabase.auth.getUser();
 
         if (error) {
 
@@ -263,7 +263,7 @@ async function enablePushNotifications() {
         const {
             error
         } =
-            await supabaseClient
+            await profileSupabase
                 .from("push_subscriptions")
                 .upsert(
                     {
@@ -341,7 +341,7 @@ async function disablePushNotifications() {
         await subscription.unsubscribe();
 
 
-        await supabaseClient
+        await profileSupabase
             .from("push_subscriptions")
             .delete()
             .eq(
