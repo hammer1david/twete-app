@@ -70,7 +70,7 @@ const absoluteUrl = new URL(
 
                     if ("focus" in client) {
 
-                        client.navigate(targetUrl);
+                        client.navigate(absoluteUrl);
 
                         return client.focus();
 
@@ -82,7 +82,7 @@ const absoluteUrl = new URL(
                 if (clients.openWindow) {
 
                     return clients.openWindow(
-                        targetUrl
+                        absoluteUrl
                     );
 
                 }
