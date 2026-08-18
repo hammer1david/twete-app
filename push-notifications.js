@@ -435,39 +435,49 @@ async function sendTestPushNotification() {
 
     try {
 
-        const {
-            data,
-            error
-        } = await profileSupabase.functions.invoke(
-            "send-push",
-            {
-                body: {
-                    title: "Twete",
-                    body: "This is a test push notification.",
-                    url: "/messages.html"
+        const { data, error } =
+            await profileSupabase.functions.invoke(
+                "send-push",
+                {
+                    body: {
+                        title: "Twete",
+                        body: "This is a test push notification.",
+                        url: "/messages.html"
+                    }
                 }
-            }
-        );
-
-
-        if (error) {
-
-            console.error(
-                "Test push failed:",
-                error
             );
 
-            return false;
+        console.log("SEND PUSH RESPONSE:", data);
+        console.log("SEND PUSH ERROR:", error);
+
+        if (error) {
+            return {
+                success: false,
+                message: error.message || "Function error"
+            };
         }
 
+        if (!data) {
+            return {
+                success: false,
+                message: "No response from send-push"
+            };
+        }
 
-        console.log(
-            "Test push result:",
-            data
-        );
+        if (data.sent > 0) {
+            return {
+                success: true,
+                message: `Push sent — ${data.sent} device`
+            };
+        }
 
-        return true;
-
+        return {
+            success: false,
+            message:
+                data.error ||
+                data.message ||
+                `Push failed — sent: ${data.sent ?? 0}`
+        };
 
     } catch (error) {
 
@@ -476,6 +486,9 @@ async function sendTestPushNotification() {
             error
         );
 
-        return false;
+        return {
+            success: false,
+            message: error.message || "Unknown error"
+        };
     }
 }
