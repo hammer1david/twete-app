@@ -15,6 +15,22 @@
 
     <style>
 
+.test-push-button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    background: #1a1a1a;
+    color: #C6FF00;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.test-push-button:active {
+    transform: scale(0.98);
+}
+        
 .notifications-section {
     margin: 25px 0;
     padding: 18px;
@@ -606,7 +622,59 @@ loadPushStatus();
 
 </script>
 
-    
+   <button
+    type="button"
+    id="testPushButton"
+    class="test-push-button"
+>
+    Send test notification
+   </button> 
+
+
+    <script>
+
+const testPushButton =
+    document.getElementById("testPushButton");
+
+testPushButton.addEventListener(
+    "click",
+    async function () {
+
+        testPushButton.disabled = true;
+        testPushButton.textContent =
+            "Sending...";
+
+        const success =
+            await sendTestPushNotification();
+
+        if (success) {
+
+            testPushButton.textContent =
+                "Test sent ✓";
+
+        } else {
+
+            testPushButton.textContent =
+                "Test failed";
+
+        }
+
+        setTimeout(
+            function () {
+
+                testPushButton.disabled =
+                    false;
+
+                testPushButton.textContent =
+                    "Send test notification";
+
+            },
+            2500
+        );
+    }
+);
+
+    </script>
 </body>
 
 </html>
