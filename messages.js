@@ -119,6 +119,12 @@ if (conversationSection) {
         "hidden"
     );
 
+    requestAnimationFrame(function () {
+
+        scrollToBottom();
+
+    });
+
 }
 
 } catch (error) {
