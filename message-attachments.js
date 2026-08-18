@@ -531,7 +531,7 @@ async function sendAttachmentMessage() {
 
                     message:
                         text ||
-                        null,
+                        "",
 
                     attachment_path:
                         path,
