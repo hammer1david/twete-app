@@ -202,19 +202,6 @@ textarea {
    CONVERSATION SECTION
 ========================================= */
 
-/*
-   The conversation becomes the complete
-   chat screen.
-
-   Header
-   ↓
-   Messages
-   ↓
-   Composer
-
-   Bottom navigation stays outside it.
-*/
-
 body:has(#conversationSection:not(.hidden)) {
     overflow: hidden;
 }
@@ -400,7 +387,6 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     text-overflow: ellipsis;
 }
 
-/* No subtitle */
 .profile-info span {
     display: none;
 }
@@ -420,10 +406,14 @@ body:has(#conversationSection:not(.hidden)) .messages-list {
 
     margin: 0 auto;
 
+    /*
+       Extra bottom space keeps the last
+       message above the composer.
+    */
     padding:
         18px
         16px
-        105px;
+        145px;
 
     display: flex;
 
@@ -1342,7 +1332,7 @@ body:has(#conversationSection:not(.hidden)) .message-composer {
         padding:
             14px
             11px
-            105px;
+            145px;
     }
 
     .message-bubble {
@@ -1401,4 +1391,4 @@ body:has(#conversationSection:not(.hidden)) .message-composer {
 
         font-size: 12px;
     }
-            }
+           }
