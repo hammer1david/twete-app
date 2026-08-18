@@ -841,7 +841,7 @@ async function sendMessage() {
 input.value = "";
 
 resizeComposer();
-
+await loadMessages();
 
        
 
