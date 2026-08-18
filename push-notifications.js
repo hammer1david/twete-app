@@ -436,7 +436,7 @@ async function sendTestPushNotification() {
 
         const result =
             await profileSupabase.functions.invoke(
-                "send-push",
+                "send-push-v2",
                 {
                     body: {
                         title: "Twete",
