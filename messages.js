@@ -698,14 +698,26 @@ function scrollToBottom() {
         return;
     }
 
+
     requestAnimationFrame(
         function () {
 
-            list.scrollTop =
-                list.scrollHeight;
+            const lastMessage =
+                list.lastElementChild;
+
+
+            if (lastMessage) {
+
+                lastMessage.scrollIntoView({
+                    behavior: "auto",
+                    block: "end"
+                });
+
+            }
 
         }
     );
+
 }
 /* =========================================
    SEND MESSAGE
