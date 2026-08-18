@@ -844,12 +844,6 @@ resizeComposer();
 
 await loadMessages();
 
-requestAnimationFrame(function () {
-
-    scrollToBottom();
-
-});
-
 
     } finally {
 
