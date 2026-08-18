@@ -881,6 +881,10 @@ async function renderAttachmentMessages() {
         const url =
             signedData.signedUrl;
 
+       const downloadName =
+    message.attachment_name ||
+    "attachment";
+
 
         const attachment =
             document.createElement(
@@ -938,15 +942,14 @@ async function renderAttachmentMessages() {
                 </a>
 
 
-                <a
-                    class="message-attachment-download"
-                    href="${safeUrl}"
-                    download="${safeName}"
-                >
-
-                    ⬇ Download
-
-                </a>
+                <button
+    type="button"
+    class="message-attachment-download"
+    data-download-url="${safeUrl}"
+    data-download-name="${safeName}"
+>
+    ⬇ Download
+</button>
 
             `;
 
@@ -985,15 +988,14 @@ async function renderAttachmentMessages() {
                 </video>
 
 
-                <a
-                    class="message-attachment-download"
-                    href="${safeUrl}"
-                    download="${safeName}"
-                >
-
-                    ⬇ Download
-
-                </a>
+                <button
+    type="button"
+    class="message-attachment-download"
+    data-download-url="${safeUrl}"
+    data-download-name="${safeName}"
+>
+    ⬇ Download
+</button>
 
             `;
 
@@ -1052,15 +1054,14 @@ async function renderAttachmentMessages() {
                 </a>
 
 
-                <a
-                    class="message-attachment-download"
-                    href="${safeUrl}"
-                    download="${safeName}"
-                >
-
-                    ⬇ Download
-
-                </a>
+                <button
+    type="button"
+    class="message-attachment-download"
+    data-download-url="${safeUrl}"
+    data-download-name="${safeName}"
+>
+    ⬇ Download
+</button>
 
             `;
 
@@ -1291,7 +1292,107 @@ function getFileExtension(
         );
 
 }
+/* =========================================
+   CROSS-BROWSER DOWNLOAD
+========================================= */
 
+async function downloadAttachment(
+    url,
+    fileName
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                url
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Download failed"
+            );
+
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        const blobUrl =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            blobUrl;
+
+
+        link.download =
+            fileName ||
+            "attachment";
+
+
+        link.style.display =
+            "none";
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        setTimeout(
+            function () {
+
+                URL.revokeObjectURL(
+                    blobUrl
+                );
+
+            },
+            1000
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Download error:",
+            error
+        );
+
+
+        /*
+           Browser fallback:
+           If fetch/blob download is blocked,
+           open the original file instead.
+        */
+
+        window.open(
+            url,
+            "_blank",
+            "noopener"
+        );
+
+    }
+
+}
 
 /* =========================================
    ESCAPE
