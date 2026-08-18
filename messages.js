@@ -733,32 +733,8 @@ function scrollToBottom() {
         return;
     }
 
-    const scroll = function () {
-
-        list.scrollTop =
-            list.scrollHeight -
-            list.clientHeight;
-
-    };
-
-    requestAnimationFrame(function () {
-
-        scroll();
-
-        requestAnimationFrame(function () {
-
-            scroll();
-
-        });
-
-    });
-
-    setTimeout(function () {
-
-        scroll();
-
-    }, 100);
-
+    list.scrollTop =
+        list.scrollHeight;
 }
 /* =========================================
    SEND MESSAGE
