@@ -52,7 +52,7 @@ self.addEventListener(
                 : "/messages.html";
 
 const absoluteUrl = new URL(
-    targetUrl,
+    targetUrl.replace(/^\/+/, ""),
     self.registration.scope
 ).href;
 
