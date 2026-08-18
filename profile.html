@@ -15,6 +15,113 @@
 
     <style>
 
+.notifications-section {
+    margin: 25px 0;
+    padding: 18px;
+    border-radius: 16px;
+    background: #111;
+    border: 1px solid #292929;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.notifications-info {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+}
+
+.notifications-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #1d1d1d;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notifications-info strong {
+    display: block;
+    font-size: 15px;
+}
+
+.notifications-info p {
+    margin: 4px 0 0;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.push-toggle {
+    border: none;
+    background: transparent;
+    color: #888;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.push-toggle-track {
+    width: 46px;
+    height: 26px;
+    border-radius: 20px;
+    background: #333;
+
+    position: relative;
+
+    transition:
+        background .2s ease;
+}
+
+.push-toggle-knob {
+    position: absolute;
+
+    width: 20px;
+    height: 20px;
+
+    top: 3px;
+    left: 3px;
+
+    border-radius: 50%;
+    background: #888;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+.push-toggle.enabled {
+    color: #C6FF00;
+}
+
+.push-toggle.enabled
+.push-toggle-track {
+    background: #C6FF00;
+}
+
+.push-toggle.enabled
+.push-toggle-knob {
+    transform: translateX(20px);
+    background: #090909;
+}
+
+
+
+        
         .profile-page {
             max-width: 620px;
             margin: 0 auto;
