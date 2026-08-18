@@ -719,7 +719,6 @@ function renderMessages(
 /* =========================================
    SCROLL TO LATEST MESSAGE
 ========================================= */
-
 function scrollToBottom() {
 
     const list =
@@ -731,25 +730,12 @@ function scrollToBottom() {
         return;
     }
 
+    requestAnimationFrame(function () {
 
-    requestAnimationFrame(
-        function () {
+        list.scrollTop =
+            list.scrollHeight;
 
-            const lastMessage =
-                list.lastElementChild;
-
-
-            if (lastMessage) {
-
-                lastMessage.scrollIntoView({
-                    behavior: "auto",
-                    block: "end"
-                });
-
-            }
-
-        }
-    );
+    });
 
 }
 /* =========================================
