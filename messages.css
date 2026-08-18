@@ -953,3 +953,38 @@ textarea {
 
     word-break: break-word;
 }
+
+/* =========================================
+   ATTACHMENT DOWNLOAD BUTTON
+========================================= */
+
+.message-attachment-download {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 6px;
+
+    padding: 6px 10px;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    color: inherit;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    cursor: pointer;
+}
+
+.message-attachment-download:active {
+    transform: scale(0.97);
+}
