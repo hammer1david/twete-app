@@ -896,9 +896,7 @@ async function renderAttachmentMessages() {
             "message-attachment-rendered";
 
 
-        const downloadName =
-            message.attachment_name ||
-            "attachment";
+        
 
 
         const safeUrl =
