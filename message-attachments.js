@@ -1072,6 +1072,42 @@ async function renderAttachmentMessages() {
             attachment
         );
 
+       const downloadButton =
+    attachment.querySelector(
+        ".message-attachment-download"
+    );
+
+
+if (downloadButton) {
+
+    downloadButton.addEventListener(
+        "click",
+        function () {
+
+            const url =
+                downloadButton
+                    .getAttribute(
+                        "data-download-url"
+                    );
+
+
+            const fileName =
+                downloadButton
+                    .getAttribute(
+                        "data-download-name"
+                    );
+
+
+            downloadAttachment(
+                url,
+                fileName
+            );
+
+        }
+    );
+
+}
+
     }
 
 
