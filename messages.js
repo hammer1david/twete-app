@@ -740,6 +740,22 @@ function scrollToBottom() {
         return;
     }
 
+   const debug = document.getElementById("scrollDebug");
+
+if (debug) {
+    debug.textContent =
+        "scrollTop: " + list.scrollTop +
+        " | scrollHeight: " + list.scrollHeight +
+        " | clientHeight: " + list.clientHeight;
+}
+       console.log(
+    "SCROLL:",
+    "scrollTop =", list.scrollTop,
+    "scrollHeight =", list.scrollHeight,
+    "clientHeight =", list.clientHeight
+);
+    
+
     requestAnimationFrame(function () {
 
         requestAnimationFrame(function () {
