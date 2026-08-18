@@ -2075,11 +2075,11 @@ textarea {
 
 
 /* =========================================
-   CHAT SCROLL AREA
+   CHAT SCROLL AREA - FIXED COMPOSER SPACE
 ========================================= */
 
 .messages-list {
-    height: calc(100dvh - 72px - 76px - 68px);
+    height: calc(100dvh - 72px - 68px);
 
     min-height: 0;
 
@@ -2089,9 +2089,15 @@ textarea {
 
     scroll-behavior: auto;
 
-    scroll-padding-bottom: 90px;
+    /*
+       Leave enough room for the fixed
+       message composer at the bottom.
+    */
+    scroll-padding-bottom: 110px;
 
-    padding-bottom: 90px;
+    padding-bottom: 110px;
+
+    box-sizing: border-box;
 }
 
 
@@ -2100,9 +2106,16 @@ textarea {
 @media (max-width: 600px) {
 
     .messages-list {
-        height: calc(100dvh - 64px - 76px - 68px);
 
-        padding-bottom: 90px;
+        height:
+            calc(100dvh - 64px - 68px);
+
+        scroll-padding-bottom:
+            110px;
+
+        padding-bottom:
+            110px;
+
     }
 
 }
