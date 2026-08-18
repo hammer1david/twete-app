@@ -8,36 +8,43 @@
     padding: 0;
 }
 
+
 html,
 body {
     width: 100%;
     height: 100%;
 }
 
+
 body {
     background: #050505;
+
     color: #ffffff;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     overflow: hidden;
 }
 
 
 /* =========================================
-   CHAT
+   MAIN CHAT
 ========================================= */
 
 .chat {
     width: 100%;
+
     height: 100dvh;
 
     display: grid;
 
     /*
-        1. Header
-        2. Message window
-        3. Composer
-
-        ONLY the middle row can grow/shrink.
+        HEADER
+        MESSAGES
+        COMPOSER
     */
 
     grid-template-rows:
@@ -57,35 +64,47 @@ body {
 
 .chat-header {
     width: 100%;
+
     height: 68px;
 
     display: flex;
+
     align-items: center;
 
     gap: 10px;
 
-    padding: 0 14px;
+    padding:
+        0 14px;
 
     background: #080808;
 
     border-bottom:
         1px solid
-        rgba(255, 255, 255, 0.08);
+        rgba(255,255,255,.08);
 
-    z-index: 10;
+    /*
+        Header NEVER scrolls.
+    */
+
+    overflow: hidden;
 }
 
 
-/* Back button */
+/* =========================================
+   BACK BUTTON
+========================================= */
 
 .back-button {
     width: 40px;
+
     height: 40px;
 
-    flex-shrink: 0;
+    flex: 0 0 40px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     border: none;
@@ -100,21 +119,27 @@ body {
 }
 
 
-/* Avatar */
+/* =========================================
+   HEADER AVATAR
+========================================= */
 
 .header-avatar {
     width: 42px;
+
     height: 42px;
 
-    flex-shrink: 0;
+    flex: 0 0 42px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     border-radius: 50%;
 
-    background: rgba(198, 255, 0, 0.08);
+    background:
+        rgba(198,255,0,.08);
 
     border:
         1px solid
@@ -128,16 +153,20 @@ body {
 }
 
 
-/* Header text */
+/* =========================================
+   HEADER INFORMATION
+========================================= */
 
 .header-info {
     min-width: 0;
 
     display: flex;
+
     flex-direction: column;
 
     justify-content: center;
 }
+
 
 .header-info h1 {
     color: #ffffff;
@@ -148,6 +177,7 @@ body {
 
     line-height: 1.2;
 }
+
 
 .header-info span {
     margin-top: 3px;
@@ -163,33 +193,52 @@ body {
 ========================================= */
 
 /*
-    THIS IS THE ONLY SCROLLING AREA.
+    THIS IS THE ONLY SCROLLABLE AREA.
 
-    It has a real, fixed space between
-    the header and composer.
+    Message order:
 
-    Nothing outside this box can scroll.
+    OLDEST
+       ↓
+    ...
+       ↓
+    NEWEST
+
+    The newest message will later
+    be placed at the bottom by JS.
 */
 
 .messages-window {
     width: 100%;
+
     min-width: 0;
+
     min-height: 0;
 
     display: flex;
+
     flex-direction: column;
+
+    /*
+        IMPORTANT:
+        NO justify-content:flex-end
+    */
 
     gap: 6px;
 
     padding:
         16px 14px;
 
+    /*
+        ONLY THIS BOX SCROLLS
+    */
+
     overflow-y: auto;
+
     overflow-x: hidden;
 
     /*
-        Prevent browser scroll anchoring
-        from changing the position.
+        Prevent browser from trying
+        to change our scroll position.
     */
 
     overflow-anchor: none;
@@ -202,13 +251,7 @@ body {
 
     overscroll-behavior: contain;
 
-    /*
-        IMPORTANT:
-        The message window itself is
-        allowed to shrink.
-    */
-
-    flex: none;
+    scrollbar-width: thin;
 }
 
 
@@ -223,12 +266,15 @@ body {
 
     flex-shrink: 0;
 
-    padding: 1px 0;
+    padding:
+        1px 0;
 }
+
 
 .message-row.sent {
     justify-content: flex-end;
 }
+
 
 .message-row.received {
     justify-content: flex-start;
@@ -257,9 +303,13 @@ body {
 }
 
 
-/* Sent */
+/* =========================================
+   SENT BUBBLE
+========================================= */
 
-.message-row.sent .message-bubble {
+.message-row.sent
+.message-bubble {
+
     background:
         linear-gradient(
             145deg,
@@ -269,13 +319,21 @@ body {
 
     color: #050505;
 
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
     border-bottom-right-radius: 5px;
 }
 
 
-/* Received */
+/* =========================================
+   RECEIVED BUBBLE
+========================================= */
 
-.message-row.received .message-bubble {
+.message-row.received
+.message-bubble {
+
     background:
         linear-gradient(
             145deg,
@@ -284,6 +342,10 @@ body {
         );
 
     color: #e4e4e4;
+
+    border:
+        1px solid
+        rgba(255,255,255,.075);
 
     border-bottom-left-radius: 5px;
 }
@@ -294,13 +356,13 @@ body {
 ========================================= */
 
 .message-text {
-    overflow-wrap: anywhere;
-
-    word-break: break-word;
-
     font-size: 13px;
 
     line-height: 1.48;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
 }
 
 
@@ -313,11 +375,9 @@ body {
 
     margin-top: 6px;
 
-    color: inherit;
-
-    opacity: 0.45;
-
     font-size: 8px;
+
+    opacity: .45;
 
     text-align: right;
 }
@@ -330,13 +390,17 @@ body {
 /*
     IMPORTANT:
 
-    This is a completely separate grid row.
+    Composer is a completely separate
+    grid row.
 
-    It is NOT part of the scrolling
-    message window.
+    It is NOT inside messages-window.
+
+    Therefore messages can NEVER
+    scroll behind it.
 */
 
 .chat-composer {
+
     position: relative;
 
     width: 100%;
@@ -356,9 +420,13 @@ body {
 
     border-top:
         1px solid
-        rgba(255, 255, 255, 0.08);
+        rgba(255,255,255,.08);
 
-    z-index: 20;
+    /*
+        Composer NEVER scrolls.
+    */
+
+    overflow: hidden;
 }
 
 
@@ -367,13 +435,17 @@ body {
 ========================================= */
 
 .attachment-button {
+
     width: 42px;
+
     height: 42px;
 
     flex: 0 0 42px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     border: none;
@@ -395,6 +467,7 @@ body {
 ========================================= */
 
 .chat-composer textarea {
+
     flex: 1;
 
     min-width: 0;
@@ -410,7 +483,7 @@ body {
 
     border:
         1px solid
-        rgba(255, 255, 255, 0.10);
+        rgba(255,255,255,.10);
 
     border-radius: 15px;
 
@@ -427,13 +500,15 @@ body {
     overflow-y: auto;
 }
 
+
 .chat-composer textarea::placeholder {
     color: #606060;
 }
 
+
 .chat-composer textarea:focus {
     border-color:
-        rgba(198, 255, 0, 0.55);
+        rgba(198,255,0,.55);
 }
 
 
@@ -442,13 +517,17 @@ body {
 ========================================= */
 
 .send-button {
+
     width: 42px;
+
     height: 42px;
 
     flex: 0 0 42px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     border: none;
@@ -468,61 +547,85 @@ body {
 
 
 /* =========================================
-   TABLET / MOBILE
+   MOBILE / TABLET
 ========================================= */
 
 @media (max-width: 600px) {
 
     .chat {
+
         grid-template-rows:
             64px
             minmax(0, 1fr)
             auto;
     }
 
+
     .chat-header {
+
         height: 64px;
 
         padding:
             0 10px;
     }
 
+
     .header-avatar {
+
         width: 40px;
+
         height: 40px;
+
+        flex-basis: 40px;
     }
+
 
     .back-button {
+
         width: 38px;
+
         height: 38px;
+
+        flex-basis: 38px;
     }
 
+
     .messages-window {
+
         padding:
             14px 10px;
     }
 
+
     .message-bubble {
+
         max-width: 86%;
 
         padding:
             9px 11px;
     }
 
+
     .chat-composer {
+
         padding:
             7px 9px;
     }
 
+
     .attachment-button,
     .send-button {
+
         width: 40px;
+
         height: 40px;
 
         flex-basis: 40px;
     }
 
+
     .chat-composer textarea {
+
         min-height: 42px;
 
         padding:
@@ -538,30 +641,44 @@ body {
 @media (max-width: 380px) {
 
     .chat {
+
         grid-template-rows:
             62px
             minmax(0, 1fr)
             auto;
     }
 
+
     .chat-header {
+
         height: 62px;
     }
 
+
     .header-avatar {
+
         width: 38px;
+
         height: 38px;
+
+        flex-basis: 38px;
     }
 
+
     .header-info h1 {
+
         font-size: 15px;
     }
 
+
     .message-bubble {
+
         max-width: 89%;
     }
 
+
     .chat-composer textarea {
+
         font-size: 12px;
     }
 }
