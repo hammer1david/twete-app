@@ -2186,3 +2186,36 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 .messages-list > .message-row:last-child {
     scroll-margin-bottom: 140px;
 }
+
+/* =========================================
+   CHAT POSITION
+========================================= */
+
+body:has(#conversationSection:not(.hidden)) {
+    overflow: hidden;
+}
+
+body:has(#conversationSection:not(.hidden)) .conversation-section {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 68px;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #050505;
+
+    z-index: 700;
+}
+
+body:has(#conversationSection:not(.hidden)) .conversation-header {
+    flex-shrink: 0;
+
+    margin: 0;
+}
