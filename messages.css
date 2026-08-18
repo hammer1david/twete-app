@@ -2219,3 +2219,89 @@ body:has(#conversationSection:not(.hidden)) .conversation-header {
 
     margin: 0;
 }
+
+/* =========================================
+   CHAT LAYOUT FIX
+========================================= */
+
+body:has(#conversationSection:not(.hidden)) {
+    overflow: hidden;
+}
+
+body:has(#conversationSection:not(.hidden)) .conversation-section {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 68px;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #050505;
+
+    z-index: 700;
+
+    overflow: hidden;
+}
+
+
+/* CHAT HEADER */
+
+body:has(#conversationSection:not(.hidden)) .conversation-header {
+    flex-shrink: 0;
+
+    height: 72px;
+
+    margin: 0;
+}
+
+
+/* MESSAGE AREA */
+
+body:has(#conversationSection:not(.hidden)) .messages-list {
+    flex: 1;
+
+    min-height: 0;
+
+    width: 100%;
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 20px 18px 160px;
+
+    overflow-y: auto;
+
+    overscroll-behavior: contain;
+}
+
+
+/* COMPOSER */
+
+body:has(#conversationSection:not(.hidden)) .message-composer {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 800;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    body:has(#conversationSection:not(.hidden)) .messages-list {
+        padding-left: 13px;
+        padding-right: 13px;
+        padding-bottom: 160px;
+    }
+
+}
