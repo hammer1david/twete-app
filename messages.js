@@ -940,7 +940,7 @@ function subscribeToMessages() {
 
                     if (belongs) {
 
-                        await loadMessages();
+                        console.log("REALTIME MESSAGE RECEIVED");
 
                     }
 
