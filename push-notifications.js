@@ -3,7 +3,7 @@
 ========================================= */
 
 const VAPID_PUBLIC_KEY =
-    "BKDcr7e89FuoYxYf3VAti4YTSYrkeFenZAE10g3r6BMjuwYBDN2PIF8b7QigIv969G1xM48FQXKBhHlVOqzYr5s";
+    "BHTDtXcxEa5c7Sg6xydRENVubBg2cP9k-IIx5Cy4d3EZq1mhRXeKk36_Jaup5wPchQUepusx8VfugA-VtcD71sA";
 
 /* =========================================
    CONVERT VAPID KEY
