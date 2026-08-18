@@ -57,39 +57,9 @@ const absoluteUrl = new URL(
 ).href;
 
         
-        event.waitUntil(
-
-            clients.matchAll({
-                type: "window",
-                includeUncontrolled: true
-            })
-
-            .then(function (clientList) {
-
-                for (const client of clientList) {
-
-                    if ("focus" in client) {
-
-                        client.navigate(absoluteUrl);
-
-                        return client.focus();
-
-                    }
-
-                }
-
-
-                if (clients.openWindow) {
-
-                    return clients.openWindow(
-                        absoluteUrl
-                    );
-
-                }
-
-            })
-
-        );
+       event.waitUntil(
+    clients.openWindow(absoluteUrl)
+);
 
     }
 );
