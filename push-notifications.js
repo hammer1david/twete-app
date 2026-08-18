@@ -434,6 +434,18 @@ async function sendTestPushNotification() {
 
     try {
 
+        // Do not send a test push when notifications are OFF
+        const enabled = await isPushEnabled();
+
+        if (!enabled) {
+
+            return {
+                success: false,
+                message: "Push notifications are OFF"
+            };
+        }
+
+
         const result =
             await profileSupabase.functions.invoke(
                 "send-push-v2",
@@ -446,13 +458,16 @@ async function sendTestPushNotification() {
                 }
             );
 
+
         console.log(
             "FULL PUSH RESULT:",
             result
         );
 
+
         const data = result?.data;
         const error = result?.error;
+
 
         if (error) {
 
@@ -467,6 +482,7 @@ async function sendTestPushNotification() {
             };
         }
 
+
         if (!data) {
 
             return {
@@ -475,6 +491,7 @@ async function sendTestPushNotification() {
                     "ERROR: No data returned"
             };
         }
+
 
         if (data.sent > 0) {
 
@@ -486,12 +503,14 @@ async function sendTestPushNotification() {
             };
         }
 
+
         return {
             success: false,
             message:
                 "PUSH NOT SENT: " +
                 JSON.stringify(data)
         };
+
 
     } catch (error) {
 
