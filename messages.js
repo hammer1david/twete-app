@@ -96,6 +96,18 @@ async function initialiseMessages() {
         await loadCurrentProfile();
 
         await loadConversationUser();
+       const conversationSection =
+    document.getElementById(
+        "conversationSection"
+    );
+
+if (conversationSection) {
+
+    conversationSection.classList.remove(
+        "hidden"
+    );
+
+}
 
         await loadMessages();
 
