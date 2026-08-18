@@ -1,3 +1,7 @@
+/* =========================================
+   RESET
+========================================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -31,83 +35,22 @@ textarea {
 ========================================= */
 
 .messages-app {
-    min-height: 100vh;
+    width: 100%;
     min-height: 100dvh;
 
     background:
         radial-gradient(
-            circle at 80% 10%,
-            rgba(198,255,0,.035),
-            transparent 30%
+            circle at 85% 0%,
+            rgba(198,255,0,.045),
+            transparent 28%
         ),
-        #050505;
+        linear-gradient(
+            180deg,
+            #050505 0%,
+            #070707 100%
+        );
 
-    padding-bottom: 80px;
-}
-
-
-/* =========================================
-   HEADER
-========================================= */
-
-.messages-header {
-    height: 72px;
-
-    display: grid;
-
-    grid-template-columns:
-        1fr
-        auto
-        1fr;
-
-    align-items: center;
-
-    padding: 0 22px;
-
-    border-bottom: 1px solid #181818;
-}
-
-.messages-header h1 {
-    font-size: 21px;
-    text-align: center;
-    font-weight: 700;
-}
-
-.back-button,
-.conversation-back {
-    width: 40px;
-    height: 40px;
-
-    border: none;
-
-    background: transparent;
-
-    color: #fff;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-}
-
-.back-button svg,
-.conversation-back svg {
-    width: 27px;
-    height: 27px;
-
-    fill: none;
-
-    stroke: currentColor;
-
-    stroke-width: 2;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.header-spacer {
-    width: 40px;
+    padding-bottom: 68px;
 }
 
 
@@ -135,21 +78,17 @@ textarea {
 
 .athlete-list {
     display: flex;
-
     flex-direction: column;
-
     gap: 8px;
 }
 
 .athlete-item {
     width: 100%;
-
     min-height: 70px;
 
     padding: 10px 12px;
 
     display: flex;
-
     align-items: center;
 
     gap: 12px;
@@ -157,7 +96,6 @@ textarea {
     background: #0d0d0d;
 
     border: 1px solid #292929;
-
     border-radius: 13px;
 
     color: #fff;
@@ -165,10 +103,14 @@ textarea {
     cursor: pointer;
 
     text-align: left;
+
+    transition:
+        border-color .18s ease,
+        background .18s ease;
 }
 
 .athlete-item:hover {
-    border-color: #C6FF00;
+    border-color: rgba(198,255,0,.55);
 }
 
 .athlete-item.unread {
@@ -190,12 +132,10 @@ textarea {
     color: #C6FF00;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     font-size: 16px;
-
     font-weight: 700;
 
     overflow: hidden;
@@ -258,6 +198,51 @@ textarea {
 }
 
 
+/* =========================================
+   CONVERSATION SECTION
+========================================= */
+
+/*
+   The conversation becomes the complete
+   chat screen.
+
+   Header
+   ↓
+   Messages
+   ↓
+   Composer
+
+   Bottom navigation stays outside it.
+*/
+
+body:has(#conversationSection:not(.hidden)) {
+    overflow: hidden;
+}
+
+body:has(#conversationSection:not(.hidden)) .conversation-section {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 68px;
+
+    width: 100%;
+    height: auto;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #050505;
+
+    z-index: 700;
+
+    overflow: hidden;
+}
+
 
 /* =========================================
    CONVERSATION HEADER
@@ -268,23 +253,29 @@ textarea {
 
     height: 72px;
 
-    margin: 0;
+    flex: 0 0 72px;
 
-    padding: 0 18px;
+    padding: 0 16px;
 
     display: flex;
-
     align-items: center;
 
     gap: 8px;
 
-    background: #050505;
+    background: rgba(5,5,5,.94);
 
-    border-bottom: 1px solid #181818;
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+
+    backdrop-filter: blur(18px);
+
+    -webkit-backdrop-filter: blur(18px);
 }
 
 
-/* BACK ARROW */
+/* =========================================
+   BACK BUTTON
+========================================= */
 
 .conversation-back {
     width: 42px;
@@ -293,7 +284,6 @@ textarea {
     flex-shrink: 0;
 
     margin: 0;
-
     padding: 0;
 
     border: none;
@@ -303,12 +293,21 @@ textarea {
     color: #fff;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     cursor: pointer;
+
+    opacity: .92;
+
+    transition:
+        transform .15s ease,
+        opacity .15s ease;
+}
+
+.conversation-back:active {
+    transform: scale(.92);
+    opacity: .7;
 }
 
 .conversation-back svg {
@@ -322,12 +321,13 @@ textarea {
     stroke-width: 2;
 
     stroke-linecap: round;
-
     stroke-linejoin: round;
 }
 
 
-/* COACH AVATAR */
+/* =========================================
+   PROFILE AVATAR
+========================================= */
 
 .profile-avatar {
     width: 44px;
@@ -335,27 +335,28 @@ textarea {
 
     flex-shrink: 0;
 
-    margin-left: 0;
-
     border-radius: 50%;
 
-    background: rgba(198,255,0,.08);
+    background:
+        rgba(198,255,0,.06);
 
-    border: 1.5px solid #C6FF00;
+    border:
+        1px solid rgba(198,255,0,.65);
 
     color: #C6FF00;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     font-size: 16px;
-
     font-weight: 700;
 
     overflow: hidden;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(198,255,0,.025);
 }
 
 .profile-avatar img {
@@ -366,13 +367,14 @@ textarea {
 }
 
 
-/* COACH NAME */
+/* =========================================
+   PROFILE NAME
+========================================= */
 
 .profile-info {
     min-width: 0;
 
     display: flex;
-
     flex-direction: column;
 
     justify-content: center;
@@ -383,50 +385,64 @@ textarea {
 
     color: #fff;
 
-    font-size: 17px;
+    font-size: 16px;
 
     line-height: 1.1;
 
     font-weight: 700;
+
+    letter-spacing: -.1px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
 }
 
+/* No subtitle */
 .profile-info span {
     display: none;
 }
-/* =========================================
-   ATHLETE CHAT = FULL HEADER
-========================================= */
 
-body:has(#conversationSection:not(.hidden)) .messages-header {
-    display: none;
-}
-
-body:has(#conversationSection:not(.hidden)) .conversation-section {
-    padding-top: 0;
-}
 
 /* =========================================
-   MESSAGES
+   MESSAGE AREA
 ========================================= */
 
-.messages-list {
+body:has(#conversationSection:not(.hidden)) .messages-list {
+    flex: 1;
+
+    min-height: 0;
+
     width: 100%;
     max-width: 850px;
 
     margin: 0 auto;
 
-    padding: 20px 18px;
-
-    min-height: 400px;
+    padding:
+        18px
+        16px
+        105px;
 
     display: flex;
 
     flex-direction: column;
 
-    gap: 9px;
+    gap: 6px;
 
     overflow-y: auto;
+    overflow-x: hidden;
+
+    overscroll-behavior: contain;
+
+    scroll-behavior: smooth;
 }
+
+
+/* =========================================
+   LOADING / EMPTY
+========================================= */
 
 .messages-loading,
 .no-messages {
@@ -441,13 +457,15 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 
 
 /* =========================================
-   MESSAGE BUBBLES
+   MESSAGE ROW
 ========================================= */
 
 .message-row {
     width: 100%;
 
     display: flex;
+
+    padding: 1px 0;
 }
 
 .message-row.sent {
@@ -456,736 +474,6 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 
 .message-row.received {
     justify-content: flex-start;
-}
-
-.message-bubble {
-    max-width: 78%;
-
-    padding: 11px 14px;
-
-    border-radius: 15px;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-
-    overflow-wrap: anywhere;
-
-    word-break: break-word;
-}
-
-.message-row.sent .message-bubble {
-    background: #C6FF00;
-
-    color: #000;
-
-    border-bottom-right-radius: 4px;
-}
-
-.message-row.received .message-bubble {
-    background: #181818;
-
-    color: #aaa;
-
-    border: 1px solid #292929;
-
-    border-bottom-left-radius: 4px;
-}
-
-.message-time {
-    display: block;
-
-    margin-top: 5px;
-
-    font-size: 8px;
-
-    opacity: .55;
-
-    text-align: right;
-}
-
-
-/* =========================================
-   COMPOSER
-========================================= */
-
-.message-composer {
-    position: fixed;
-
-    left: 0;
-    right: 0;
-
-    bottom: 68px;
-
-    z-index: 800;
-
-    display: flex;
-
-    align-items: flex-end;
-
-    gap: 9px;
-
-    padding: 10px 15px;
-
-    background: rgba(7,7,7,.97);
-
-    border-top: 1px solid #222;
-
-    backdrop-filter: blur(12px);
-
-    -webkit-backdrop-filter: blur(12px);
-}
-
-
-/* =========================================
-   ATTACHMENT BUTTON
-========================================= */
-
-.attachment-input {
-    display: none;
-}
-
-.attachment-button {
-    width: 43px;
-    height: 43px;
-
-    flex-shrink: 0;
-
-    border: 1px solid #333;
-
-    border-radius: 50%;
-
-    background: #111;
-
-    color: #aaa;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-
-    transition:
-        border-color .2s ease,
-        color .2s ease,
-        background .2s ease;
-}
-
-.attachment-button:hover {
-    border-color: #C6FF00;
-
-    color: #C6FF00;
-
-    background: #151515;
-}
-
-.attachment-button:active {
-    transform: scale(.96);
-}
-
-.attachment-button svg {
-    width: 21px;
-    height: 21px;
-
-    fill: none;
-
-    stroke: currentColor;
-
-    stroke-width: 2;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-
-/* =========================================
-   TEXTAREA
-========================================= */
-
-.message-composer textarea {
-    flex: 1;
-
-    min-height: 42px;
-    max-height: 120px;
-
-    resize: none;
-
-    padding: 11px 13px;
-
-    border-radius: 12px;
-
-    border: 1px solid #333;
-
-    background: #111;
-
-    color: #fff;
-
-    outline: none;
-
-    font-size: 13px;
-
-    line-height: 1.4;
-}
-
-.message-composer textarea:focus {
-    border-color: #C6FF00;
-}
-
-.message-composer textarea::placeholder {
-    color: #666;
-}
-
-
-/* =========================================
-   SEND BUTTON
-========================================= */
-
-#sendButton {
-    width: 43px;
-    height: 43px;
-
-    flex-shrink: 0;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: #C6FF00;
-
-    color: #000;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-}
-
-#sendButton:disabled {
-    opacity: .35;
-}
-
-#sendButton svg {
-    width: 21px;
-    height: 21px;
-
-    fill: none;
-
-    stroke: currentColor;
-
-    stroke-width: 2;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-
-/* =========================================
-   FOOTER
-========================================= */
-
-.bottom-navigation {
-    position: fixed;
-
-    left: 0;
-    right: 0;
-
-    bottom: 0;
-
-    height: 68px;
-
-    z-index: 900;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 55px;
-
-    background: rgba(8,8,8,.97);
-
-    border-top: 1px solid #222;
-
-    backdrop-filter: blur(12px);
-
-    -webkit-backdrop-filter: blur(12px);
-}
-
-.nav-item {
-    min-width: 80px;
-
-    border: none;
-
-    background: transparent;
-
-    color: #777;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 4px;
-
-    cursor: pointer;
-}
-
-.nav-item.active {
-    color: #C6FF00;
-}
-
-.nav-item svg {
-    width: 24px;
-    height: 24px;
-
-    fill: none;
-
-    stroke: currentColor;
-
-    stroke-width: 2;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.nav-item span {
-    font-size: 10px;
-
-    font-weight: 600;
-}
-
-
-/* =========================================
-   MOBILE
-========================================= */
-
-@media (max-width: 600px) {
-
-    .athlete-list-section {
-        padding-left: 13px;
-        padding-right: 13px;
-    }
-
-    .conversation-header {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .messages-list {
-        padding-left: 13px;
-        padding-right: 13px;
-    }
-
-    .message-bubble {
-        max-width: 84%;
-    }
-
-    .message-composer {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .bottom-navigation {
-        gap: 45px;
-    }
-
-}
-
-
-/* =========================================
-   ATTACHMENT PREVIEW
-========================================= */
-
-.attachment-preview {
-    position: fixed;
-
-    left: 0;
-    right: 0;
-
-    bottom: 126px;
-
-    z-index: 799;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 9px 14px;
-
-    background: #111;
-
-    border-top: 1px solid #292929;
-    border-bottom: 1px solid #292929;
-}
-
-.attachment-preview-icon {
-    width: 38px;
-    height: 38px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: #1b1b1b;
-
-    border-radius: 9px;
-
-    font-size: 20px;
-}
-
-.attachment-preview-info {
-    flex: 1;
-
-    min-width: 0;
-}
-
-.attachment-preview-name {
-    color: #fff;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-.attachment-preview-size {
-    color: #777;
-
-    font-size: 10px;
-
-    margin-top: 3px;
-}
-
-.attachment-preview-remove {
-    width: 30px;
-    height: 30px;
-
-    flex-shrink: 0;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: #222;
-
-    color: #aaa;
-
-    font-size: 20px;
-
-    line-height: 1;
-
-    cursor: pointer;
-}
-
-.attachment-preview-remove:hover {
-    color: #C6FF00;
-}
-
-
-/* =========================================
-   MESSAGE ATTACHMENTS
-========================================= */
-
-.message-attachment-image {
-    display: block;
-
-    width: 100%;
-    max-width: 280px;
-
-    max-height: 360px;
-
-    object-fit: cover;
-
-    border-radius: 10px;
-
-    margin-bottom: 7px;
-
-    cursor: pointer;
-}
-
-
-.message-attachment-video {
-    display: block;
-
-    width: 100%;
-    max-width: 300px;
-
-    max-height: 360px;
-
-    border-radius: 10px;
-
-    margin-bottom: 7px;
-
-    background: #000;
-}
-
-
-.message-attachment-file {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    min-width: 190px;
-
-    max-width: 280px;
-
-    padding: 10px;
-
-    margin-bottom: 7px;
-
-    border-radius: 10px;
-
-    text-decoration: none;
-
-    background: rgba(0,0,0,.12);
-
-    color: inherit;
-
-    border: 1px solid rgba(0,0,0,.15);
-}
-
-
-.message-row.received
-.message-attachment-file {
-    background: #101010;
-
-    border-color: #292929;
-}
-
-
-.message-attachment-icon {
-    font-size: 25px;
-
-    flex-shrink: 0;
-}
-
-
-.message-attachment-info {
-    min-width: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 3px;
-}
-
-
-.message-attachment-name {
-    font-size: 11px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-
-.message-attachment-size {
-    font-size: 9px;
-
-    opacity: .55;
-}
-
-
-.message-text {
-    overflow-wrap: anywhere;
-
-    word-break: break-word;
-}
-
-/* =========================================
-   ATTACHMENT DOWNLOAD BUTTON
-========================================= */
-
-.message-attachment-download {
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
-    margin-top: 6px;
-
-    padding: 6px 10px;
-
-    border-radius: 7px;
-
-    text-decoration: none;
-
-    font-size: 10px;
-
-    font-weight: 600;
-
-    color: inherit;
-
-    background: rgba(255, 255, 255, 0.08);
-
-    border: 1px solid rgba(255, 255, 255, 0.12);
-
-    cursor: pointer;
-}
-
-.message-attachment-download:active {
-    transform: scale(0.97);
-}
-
-
-/* =========================================
-   TWETE PREMIUM CHAT DESIGN
-   DESIGN ONLY
-   NO JAVASCRIPT CHANGES
-========================================= */
-
-
-/* =========================================
-   CHAT BACKGROUND
-========================================= */
-
-.messages-app {
-    background:
-        radial-gradient(
-            circle at 85% 0%,
-            rgba(198,255,0,.045),
-            transparent 28%
-        ),
-        linear-gradient(
-            180deg,
-            #050505 0%,
-            #070707 100%
-        );
-}
-
-
-/* =========================================
-   HEADER
-========================================= */
-
-.messages-header {
-    height: 68px;
-
-    background: rgba(5,5,5,.88);
-
-    border-bottom:
-        1px solid rgba(255,255,255,.06);
-
-    backdrop-filter:
-        blur(18px);
-
-    -webkit-backdrop-filter:
-        blur(18px);
-}
-
-.messages-header h1 {
-    font-size: 20px;
-
-    letter-spacing: -.2px;
-}
-
-
-/* =========================================
-   CONVERSATION HEADER
-========================================= */
-
-.conversation-header {
-    padding:
-        11px 16px;
-
-    background:
-        rgba(5,5,5,.82);
-
-    border-bottom:
-        1px solid rgba(255,255,255,.06);
-
-    backdrop-filter:
-        blur(18px);
-
-    -webkit-backdrop-filter:
-        blur(18px);
-}
-
-.conversation-back {
-    opacity: .9;
-
-    transition:
-        transform .18s ease,
-        opacity .18s ease;
-}
-
-.conversation-back:active {
-    transform:
-        scale(.92);
-}
-
-.profile-avatar {
-    width: 44px;
-    height: 44px;
-
-    border:
-        1px solid rgba(198,255,0,.65);
-
-    background:
-        rgba(198,255,0,.06);
-
-    box-shadow:
-        0 0 0 4px
-        rgba(198,255,0,.025);
-}
-
-.profile-info h2 {
-    font-size: 15px;
-
-    font-weight: 700;
-
-    letter-spacing: -.1px;
-}
-
-.profile-info span {
-    color: #6f6f6f;
-
-    font-size: 10px;
-}
-
-
-/* =========================================
-   MESSAGE AREA
-========================================= */
-
-.messages-list {
-    padding:
-        18px 16px 22px;
-
-    gap: 7px;
-
-    scroll-behavior: smooth;
-}
-
-
-/* =========================================
-   MESSAGE ROW
-========================================= */
-
-.message-row {
-    padding:
-        1px 0;
 }
 
 
@@ -1199,12 +487,15 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     padding:
         10px 12px;
 
-    border-radius:
-        17px;
+    border-radius: 17px;
 
     font-size: 13px;
 
     line-height: 1.45;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
 
     transition:
         transform .15s ease;
@@ -1227,8 +518,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
         1px solid
         rgba(255,255,255,.08);
 
-    border-bottom-right-radius:
-        5px;
+    border-bottom-right-radius: 5px;
 
     box-shadow:
         0 3px 12px
@@ -1252,8 +542,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
         1px solid
         rgba(255,255,255,.075);
 
-    border-bottom-left-radius:
-        5px;
+    border-bottom-left-radius: 5px;
 
     box-shadow:
         0 3px 12px
@@ -1271,6 +560,10 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     line-height: 1.48;
 
     letter-spacing: -.05px;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
 }
 
 
@@ -1279,18 +572,22 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 ========================================= */
 
 .message-time {
+    display: block;
+
     margin-top: 6px;
 
     font-size: 8px;
 
     opacity: .48;
 
+    text-align: right;
+
     letter-spacing: .05px;
 }
 
 
 /* =========================================
-   ATTACHMENT CONTAINER
+   MESSAGE ATTACHMENTS
 ========================================= */
 
 .message-attachment-rendered {
@@ -1306,9 +603,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 
-/* =========================================
-   IMAGES
-========================================= */
+/* IMAGE */
 
 .message-attachment-image {
     display: block;
@@ -1342,14 +637,11 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 .message-attachment-image:active {
-    transform:
-        scale(.985);
+    transform: scale(.985);
 }
 
 
-/* =========================================
-   VIDEOS
-========================================= */
+/* VIDEO */
 
 .message-attachment-video {
     display: block;
@@ -1373,9 +665,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 
-/* =========================================
-   DOCUMENT CARD
-========================================= */
+/* FILE */
 
 .message-attachment-file {
     display: flex;
@@ -1386,7 +676,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 
     width: 100%;
 
-    min-width: 200px;
+    min-width: 190px;
 
     max-width: 290px;
 
@@ -1396,8 +686,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     margin:
         0 0 7px;
 
-    border-radius:
-        12px;
+    border-radius: 12px;
 
     text-decoration: none;
 
@@ -1416,27 +705,22 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 .message-attachment-file:active {
-    transform:
-        scale(.985);
+    transform: scale(.985);
 }
 
 .message-row.received
 .message-attachment-file {
-    background:
-        #0d0d0d;
+    background: #0d0d0d;
 
     border-color:
         rgba(255,255,255,.07);
 }
 
 
-/* =========================================
-   DOCUMENT ICON
-========================================= */
+/* FILE ICON */
 
 .message-attachment-icon {
     width: 38px;
-
     height: 38px;
 
     flex-shrink: 0;
@@ -1444,7 +728,6 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 9px;
@@ -1456,9 +739,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 
-/* =========================================
-   DOCUMENT INFO
-========================================= */
+/* FILE INFO */
 
 .message-attachment-info {
     min-width: 0;
@@ -1493,22 +774,16 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 
-/* =========================================
-   DOWNLOAD BUTTON
-========================================= */
+/* DOWNLOAD */
 
 .message-attachment-download {
     appearance: none;
-
     -webkit-appearance: none;
 
     display: inline-flex;
 
     align-items: center;
-
     justify-content: center;
-
-    width: auto;
 
     min-height: 27px;
 
@@ -1522,8 +797,7 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
         1px solid
         rgba(0,0,0,.12);
 
-    border-radius:
-        8px;
+    border-radius: 8px;
 
     background:
         rgba(0,0,0,.08);
@@ -1537,8 +811,6 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     font-weight: 700;
 
     line-height: 1;
-
-    letter-spacing: .1px;
 
     cursor: pointer;
 
@@ -1554,14 +826,9 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 .message-attachment-download:active {
-    transform:
-        scale(.96);
-
+    transform: scale(.96);
     opacity: .8;
 }
-
-
-/* RECEIVED DOWNLOAD */
 
 .message-row.received
 .message-attachment-download {
@@ -1582,17 +849,31 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 
 
 /* =========================================
-   COMPOSER
+   MESSAGE COMPOSER
 ========================================= */
 
-.message-composer {
+body:has(#conversationSection:not(.hidden)) .message-composer {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    z-index: 800;
+
+    display: flex;
+
+    align-items: flex-end;
+
     gap: 8px;
 
     padding:
         9px 12px;
 
     background:
-        rgba(6,6,6,.88);
+        rgba(6,6,6,.94);
 
     border-top:
         1px solid
@@ -1602,11 +883,18 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
         0 -8px 30px
         rgba(0,0,0,.18);
 
-    backdrop-filter:
-        blur(20px);
+    backdrop-filter: blur(20px);
 
-    -webkit-backdrop-filter:
-        blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+
+/* =========================================
+   ATTACHMENT INPUT
+========================================= */
+
+.attachment-input {
+    display: none;
 }
 
 
@@ -1616,18 +904,26 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 
 .attachment-button {
     width: 42px;
-
     height: 42px;
+
+    flex-shrink: 0;
 
     border:
         1px solid
         rgba(255,255,255,.10);
 
-    background:
-        #111;
+    border-radius: 50%;
 
-    color:
-        #858585;
+    background: #111;
+
+    color: #858585;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
 
     box-shadow:
         0 2px 8px
@@ -1644,16 +940,27 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     border-color:
         rgba(198,255,0,.55);
 
-    color:
-        #C6FF00;
+    color: #C6FF00;
 
-    background:
-        #151515;
+    background: #151515;
 }
 
 .attachment-button:active {
-    transform:
-        scale(.94);
+    transform: scale(.94);
+}
+
+.attachment-button svg {
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 
@@ -1662,7 +969,14 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 ========================================= */
 
 .message-composer textarea {
+    flex: 1;
+
+    min-width: 0;
+
     min-height: 42px;
+    max-height: 120px;
+
+    resize: none;
 
     padding:
         11px 14px;
@@ -1671,17 +985,17 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
         1px solid
         rgba(255,255,255,.09);
 
-    border-radius:
-        14px;
+    border-radius: 14px;
 
-    background:
-        #111;
+    background: #111;
 
-    color:
-        #fff;
+    color: #fff;
 
-    font-size:
-        13px;
+    outline: none;
+
+    font-size: 13px;
+
+    line-height: 1.4;
 
     box-shadow:
         inset 0 1px 0
@@ -1696,13 +1010,11 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
     border-color:
         rgba(198,255,0,.65);
 
-    background:
-        #121212;
+    background: #121212;
 }
 
 .message-composer textarea::placeholder {
-    color:
-        #5f5f5f;
+    color: #5f5f5f;
 }
 
 
@@ -1712,8 +1024,13 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 
 #sendButton {
     width: 42px;
-
     height: 42px;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    border-radius: 50%;
 
     background:
         linear-gradient(
@@ -1721,6 +1038,15 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
             #C6FF00,
             #B8F000
         );
+
+    color: #000;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
 
     box-shadow:
         0 3px 12px
@@ -1739,8 +1065,25 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 #sendButton:active {
-    transform:
-        scale(.94);
+    transform: scale(.94);
+}
+
+#sendButton:disabled {
+    opacity: .35;
+}
+
+#sendButton svg {
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 
@@ -1749,8 +1092,20 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 ========================================= */
 
 .attachment-preview {
-    bottom:
-        122px;
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    bottom: 61px;
+
+    z-index: 799;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
 
     padding:
         10px 13px;
@@ -1770,39 +1125,80 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
         0 -8px 25px
         rgba(0,0,0,.25);
 
-    backdrop-filter:
-        blur(18px);
+    backdrop-filter: blur(18px);
 
-    -webkit-backdrop-filter:
-        blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
 .attachment-preview-icon {
     width: 40px;
-
     height: 40px;
 
-    border-radius:
-        10px;
+    flex-shrink: 0;
 
-    background:
-        #1a1a1a;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #1a1a1a;
 
     border:
         1px solid
         rgba(255,255,255,.06);
+
+    font-size: 20px;
+}
+
+.attachment-preview-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+.attachment-preview-name {
+    color: #fff;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.attachment-preview-size {
+    color: #777;
+
+    font-size: 10px;
+
+    margin-top: 3px;
 }
 
 .attachment-preview-remove {
     width: 30px;
-
     height: 30px;
 
-    background:
-        #202020;
+    flex-shrink: 0;
 
-    color:
-        #aaa;
+    border: none;
+
+    border-radius: 50%;
+
+    background: #202020;
+
+    color: #aaa;
+
+    font-size: 20px;
+
+    line-height: 1;
+
+    cursor: pointer;
 
     transition:
         background .18s ease,
@@ -1811,30 +1207,41 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 }
 
 .attachment-preview-remove:hover {
-    color:
-        #C6FF00;
+    color: #C6FF00;
 
-    background:
-        #282828;
+    background: #282828;
 }
 
 .attachment-preview-remove:active {
-    transform:
-        scale(.92);
+    transform: scale(.92);
 }
 
 
 /* =========================================
-   FOOTER
+   BOTTOM NAVIGATION
 ========================================= */
 
 .bottom-navigation {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
     height: 68px;
 
-    gap: 52px;
+    z-index: 900;
+
+    display: flex;
+
+    align-items: stretch;
+
+    justify-content: stretch;
+
+    padding: 0;
 
     background:
-        rgba(6,6,6,.91);
+        rgba(6,6,6,.94);
 
     border-top:
         1px solid
@@ -1844,110 +1251,132 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
         0 -5px 25px
         rgba(0,0,0,.18);
 
-    backdrop-filter:
-        blur(20px);
+    backdrop-filter: blur(20px);
 
-    -webkit-backdrop-filter:
-        blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
-.nav-item {
-    min-width: 72px;
+.bottom-navigation .nav-item {
+    flex: 1;
+
+    width: 50%;
+    min-width: 0;
+
+    height: 100%;
+
+    border: none;
+
+    background: transparent;
+
+    color: #626262;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
 
     gap: 4px;
 
-    color:
-        #626262;
+    cursor: pointer;
 
     transition:
         color .18s ease,
         transform .15s ease;
 }
 
-.nav-item.active {
-    color:
-        #C6FF00;
+.bottom-navigation .nav-item.active {
+    color: #C6FF00;
 }
 
-.nav-item:active {
-    transform:
-        scale(.95);
+.bottom-navigation .nav-item:active {
+    transform: scale(.95);
 }
 
-.nav-item span {
-    font-size:
-        9px;
+.bottom-navigation .nav-item svg {
+    width: 24px;
+    height: 24px;
 
-    font-weight:
-        650;
+    fill: none;
 
-    letter-spacing:
-        .1px;
+    stroke: currentColor;
+
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.bottom-navigation .nav-item span {
+    font-size: 9px;
+
+    font-weight: 650;
+
+    letter-spacing: .1px;
 }
 
 
 /* =========================================
-   MOBILE REFINEMENT
+   MOBILE
 ========================================= */
 
 @media (max-width: 600px) {
 
+    .athlete-list-section {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .conversation-header {
+        height: 64px;
+
+        flex-basis: 64px;
+
+        padding:
+            0 10px;
+    }
+
+    body:has(#conversationSection:not(.hidden))
     .messages-list {
         padding:
-            14px 11px 20px;
-
-        gap:
-            6px;
+            14px
+            11px
+            105px;
     }
 
     .message-bubble {
-        max-width:
-            86%;
+        max-width: 86%;
 
         padding:
             9px 11px;
 
-        border-radius:
-            16px;
+        border-radius: 16px;
     }
 
     .message-attachment-image {
-        max-width:
-            285px;
+        max-width: 285px;
+        max-height: 340px;
 
-        max-height:
-            340px;
-
-        border-radius:
-            12px;
+        border-radius: 12px;
     }
 
     .message-attachment-video {
-        max-width:
-            290px;
+        max-width: 290px;
 
-        border-radius:
-            12px;
+        border-radius: 12px;
     }
 
     .message-attachment-file {
-        max-width:
-            285px;
-
-        min-width:
-            190px;
+        max-width: 285px;
+        min-width: 190px;
     }
 
+    body:has(#conversationSection:not(.hidden))
     .message-composer {
         padding:
             8px 9px;
     }
-
-    .bottom-navigation {
-        gap:
-            42px;
-    }
-
 }
 
 
@@ -1958,433 +1387,18 @@ body:has(#conversationSection:not(.hidden)) .conversation-section {
 @media (max-width: 380px) {
 
     .message-bubble {
-        max-width:
-            89%;
+        max-width: 89%;
     }
 
     .attachment-button,
     #sendButton {
-        width:
-            40px;
-
-        height:
-            40px;
+        width: 40px;
+        height: 40px;
     }
 
     .message-composer textarea {
-        min-height:
-            40px;
+        min-height: 40px;
 
-        font-size:
-            12px;
+        font-size: 12px;
     }
-
-    .bottom-navigation {
-        gap:
-            30px;
-    }
-
-}
-
-
-/* =========================================
-   FOOTER - EQUAL HALVES
-========================================= */
-
-.bottom-navigation {
-    display: flex;
-
-    justify-content: stretch;
-
-    align-items: stretch;
-
-    gap: 0;
-
-    padding: 0;
-}
-
-.bottom-navigation .nav-item {
-    flex: 1;
-
-    width: 50%;
-
-    min-width: 0;
-
-    height: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    flex-direction: column;
-
-    gap: 4px;
-}
-
-
-/* =========================================
-   FIXED CHAT HEADERS
-========================================= */
-
-/* Main Messages header stays at the top */
-.messages-header {
-    position: sticky;
-
-    top: 0;
-
-    z-index: 1000;
-
-    background:
-        rgba(5, 5, 5, 0.94);
-
-    backdrop-filter:
-        blur(18px);
-
-    -webkit-backdrop-filter:
-        blur(18px);
-}
-
-
-/* =========================================
-   FIXED COACH HEADER
-========================================= */
-
-.conversation-header {
-    position: sticky;
-
-    top: 72px;
-
-    z-index: 990;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 100%;
-
-    background:
-        rgba(5, 5, 5, 0.94);
-
-    border-bottom:
-        1px solid rgba(255,255,255,.06);
-
-    backdrop-filter:
-        blur(18px);
-
-    -webkit-backdrop-filter:
-        blur(18px);
-}
-
-
-/* Remove the small arrow next to Coach */
-
-.conversation-back {
-    display: none !important;
-}
-
-
-/* Center coach profile */
-
-.profile-info {
-    text-align: center;
-
-    min-width: 0;
-}
-
-
-/* Center Coach text */
-
-.profile-info h2,
-.profile-info span {
-    text-align: center;
-}
-
-
-/* Keep avatar and Coach together */
-
-.conversation-header .profile-avatar {
-    flex-shrink: 0;
-
-    margin-right: 10px;
-}
-
-
-/* =========================================
-   MOBILE
-========================================= */
-
-@media (max-width: 600px) {
-
-    .messages-header {
-        height: 64px;
-    }
-
-    .conversation-header {
-        top: 64px;
-
-        padding:
-            10px 16px;
-    }
-
-}
-
-
-/* =========================================
-   CHAT SCROLL AREA - FIXED COMPOSER SPACE
-========================================= */
-
-.messages-list {
-    height: calc(100dvh - 72px - 68px);
-
-    min-height: 0;
-
-    overflow-y: auto;
-
-    overflow-x: hidden;
-
-    scroll-behavior: auto;
-
-    /*
-       Leave enough room for the fixed
-       message composer at the bottom.
-    */
-    scroll-padding-bottom: 110px;
-
-    padding-bottom: 110px;
-
-    box-sizing: border-box;
-}
-
-
-/* Mobile */
-
-@media (max-width: 600px) {
-
-    .messages-list {
-
-        height:
-            calc(100dvh - 64px - 68px);
-
-        scroll-padding-bottom:
-            110px;
-
-        padding-bottom:
-            110px;
-
-    }
-
-}
-
-/* =========================================
-   KEEP LAST MESSAGE ABOVE COMPOSER
-========================================= */
-
-.messages-list > .message-row:last-child {
-    scroll-margin-bottom: 140px;
-}
-
-/* =========================================
-   CHAT POSITION
-========================================= */
-
-body:has(#conversationSection:not(.hidden)) {
-    overflow: hidden;
-}
-
-body:has(#conversationSection:not(.hidden)) .conversation-section {
-    position: fixed;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 68px;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    display: flex;
-    flex-direction: column;
-
-    background: #050505;
-
-    z-index: 700;
-}
-
-body:has(#conversationSection:not(.hidden)) .conversation-header {
-    flex-shrink: 0;
-
-    margin: 0;
-}
-
-/* =========================================
-   CHAT LAYOUT FIX
-========================================= */
-
-body:has(#conversationSection:not(.hidden)) {
-    overflow: hidden;
-}
-
-body:has(#conversationSection:not(.hidden)) .conversation-section {
-    position: fixed;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 68px;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    display: flex;
-    flex-direction: column;
-
-    background: #050505;
-
-    z-index: 700;
-
-    overflow: hidden;
-}
-
-
-/* CHAT HEADER */
-
-body:has(#conversationSection:not(.hidden)) .conversation-header {
-    flex-shrink: 0;
-
-    height: 72px;
-
-    margin: 0;
-}
-
-
-/* MESSAGE AREA */
-
-body:has(#conversationSection:not(.hidden)) .messages-list {
-    flex: 1;
-
-    min-height: 0;
-
-    width: 100%;
-    max-width: 850px;
-
-    margin: 0 auto;
-
-    padding: 20px 18px 160px;
-
-    overflow-y: auto;
-
-    overscroll-behavior: contain;
-}
-
-
-/* COMPOSER */
-
-body:has(#conversationSection:not(.hidden)) .message-composer {
-    position: absolute;
-
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    z-index: 800;
-}
-
-
-/* MOBILE */
-
-@media (max-width: 600px) {
-
-    body:has(#conversationSection:not(.hidden)) .messages-list {
-        padding-left: 13px;
-        padding-right: 13px;
-        padding-bottom: 160px;
-    }
-
-}
-
-/* =========================================
-   ACTIVE CHAT LAYOUT
-========================================= */
-
-body:has(#conversationSection:not(.hidden)) {
-    overflow: hidden;
-}
-
-body:has(#conversationSection:not(.hidden)) .conversation-section {
-    position: fixed;
-
-    top: 0;
-    left: 0;
-    right: 0;
-
-    bottom: 68px;
-
-    width: 100%;
-    height: auto;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    display: flex;
-    flex-direction: column;
-
-    background: #050505;
-
-    z-index: 700;
-
-    overflow: hidden;
-}
-
-
-/* CHAT HEADER */
-
-body:has(#conversationSection:not(.hidden)) .conversation-header {
-    flex: 0 0 72px;
-
-    width: 100%;
-
-    margin: 0 !important;
-    padding: 0 18px;
-
-    position: relative;
-
-    top: 0;
-}
-
-
-/* MESSAGE AREA */
-
-body:has(#conversationSection:not(.hidden)) .messages-list {
-    flex: 1;
-
-    min-height: 0;
-
-    margin: 0 auto;
-
-    padding: 20px 18px 160px;
-
-    width: 100%;
-
-    max-width: 850px;
-
-    overflow-y: auto;
-}
-
-
-/* COMPOSER */
-
-body:has(#conversationSection:not(.hidden)) .message-composer {
-    position: absolute;
-
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    width: 100%;
-
-    z-index: 800;
-}
+            }
