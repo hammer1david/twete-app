@@ -644,20 +644,20 @@ testPushButton.addEventListener(
         testPushButton.textContent =
             "Sending...";
 
-        const success =
-            await sendTestPushNotification();
+        const result =
+    await sendTestPushNotification();
 
-        if (success) {
+if (result.success) {
 
-            testPushButton.textContent =
-                "Test sent ✓";
+    testPushButton.textContent =
+        result.message;
 
-        } else {
+} else {
 
-            testPushButton.textContent =
-                "Test failed";
+    testPushButton.textContent =
+        result.message;
 
-        }
+}
 
         setTimeout(
             function () {
