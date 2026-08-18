@@ -735,8 +735,12 @@ function scrollToBottom() {
 
     requestAnimationFrame(function () {
 
-        list.scrollTop =
-            list.scrollHeight;
+        requestAnimationFrame(function () {
+
+            list.scrollTop =
+                list.scrollHeight;
+
+        });
 
     });
 
