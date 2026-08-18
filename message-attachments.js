@@ -1118,6 +1118,10 @@ if (downloadButton) {
    SCROLL
 ========================================= */
 
+/* =========================================
+   SCROLL AFTER ATTACHMENT IS FULLY LOADED
+========================================= */
+
 function scrollToBottomAfterAttachment() {
 
     const list =
@@ -1125,19 +1129,98 @@ function scrollToBottomAfterAttachment() {
             "messagesList"
         );
 
-
     if (!list) {
         return;
     }
 
 
-    requestAnimationFrame(
-        function () {
+    function scrollNow() {
 
-            list.scrollTop =
-                list.scrollHeight;
+        requestAnimationFrame(
+            function () {
+
+                const lastMessage =
+                    list.lastElementChild;
+
+                if (lastMessage) {
+
+                    lastMessage.scrollIntoView({
+                        behavior: "auto",
+                        block: "end"
+                    });
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* Scroll immediately */
+
+    scrollNow();
+
+
+    /* Wait for images */
+
+    const images =
+        list.querySelectorAll(
+            "img.message-attachment-image"
+        );
+
+
+    images.forEach(
+        function (image) {
+
+            if (!image.complete) {
+
+                image.addEventListener(
+                    "load",
+                    scrollNow,
+                    {
+                        once: true
+                    }
+                );
+
+            }
 
         }
+    );
+
+
+    /* Wait for videos */
+
+    const videos =
+        list.querySelectorAll(
+            "video.message-attachment-video"
+        );
+
+
+    videos.forEach(
+        function (video) {
+
+            if (video.readyState < 3) {
+
+                video.addEventListener(
+                    "loadeddata",
+                    scrollNow,
+                    {
+                        once: true
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    /* Final safety scroll after layout */
+
+    setTimeout(
+        scrollNow,
+        300
     );
 
 }
