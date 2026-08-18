@@ -51,7 +51,12 @@ self.addEventListener(
                 ? event.notification.data.url
                 : "/messages.html";
 
+const absoluteUrl = new URL(
+    targetUrl,
+    self.registration.scope
+).href;
 
+        
         event.waitUntil(
 
             clients.matchAll({
