@@ -2,7 +2,6 @@
    RESET
 ========================================= */
 
-
 * {
     margin: 0;
     padding: 0;
@@ -17,11 +16,8 @@ body {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-
     background: #050505;
-
     color: #fff;
-
     overflow-x: hidden;
 }
 
@@ -47,7 +43,6 @@ button {
 .messages-app {
     width: 100%;
     height: 100dvh;
-
     background:
         radial-gradient(
             circle at 85% 0%,
@@ -55,7 +50,6 @@ button {
             transparent 28%
         ),
         #050505;
-
     padding-bottom: 68px;
 }
 
@@ -67,17 +61,13 @@ button {
 .athlete-list-section {
     width: 100%;
     max-width: 850px;
-
     margin: 0 auto;
-
     padding: 20px 18px 100px;
 }
 
 .section-title {
     margin-bottom: 14px;
-
     color: #fff;
-
     font-size: 18px;
     font-weight: 700;
 }
@@ -85,42 +75,28 @@ button {
 .athlete-list {
     display: flex;
     flex-direction: column;
-
     gap: 8px;
 }
 
 .athlete-item {
     width: 100%;
     min-height: 70px;
-
     padding: 10px 12px;
-
     display: flex;
     align-items: center;
-
     gap: 12px;
-
     background: #0d0d0d;
-
     border: 1px solid #292929;
-
     border-radius: 13px;
-
     color: #fff;
-
     text-align: left;
-
     cursor: pointer;
-
     transition:
         border-color .18s ease,
         background .18s ease;
 }
 
-.athlete-item:hover {
-    border-color: rgba(198,255,0,.55);
-}
-
+.athlete-item:hover,
 .athlete-item.unread {
     border-color: rgba(198,255,0,.55);
 }
@@ -128,81 +104,60 @@ button {
 .athlete-avatar {
     width: 46px;
     height: 46px;
-
     flex-shrink: 0;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 50%;
-
     background: rgba(198,255,0,.08);
-
     border: 1px solid #C6FF00;
-
     color: #C6FF00;
-
     font-size: 16px;
     font-weight: 700;
-
     overflow: hidden;
 }
 
 .athlete-avatar img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
 }
 
 .athlete-item-info {
     flex: 1;
-
     min-width: 0;
 }
 
 .athlete-item-name {
     margin-bottom: 5px;
-
     font-size: 14px;
     font-weight: 700;
 }
 
 .athlete-item-last {
     color: #777;
-
     font-size: 11px;
-
     white-space: nowrap;
-
     overflow: hidden;
-
     text-overflow: ellipsis;
 }
 
 .athlete-item-right {
     display: flex;
-
     flex-direction: column;
-
     align-items: flex-end;
-
     gap: 7px;
 }
 
 .athlete-item-time {
     color: #666;
-
     font-size: 8px;
 }
 
 .unread-dot {
     width: 9px;
     height: 9px;
-
     border-radius: 50%;
-
     background: #C6FF00;
 }
 
@@ -210,18 +165,6 @@ button {
 /* =========================================
    ACTIVE CONVERSATION
 ========================================= */
-
-/*
-   The conversation occupies everything
-   between the top of the viewport and
-   the bottom navigation.
-
-   HEADER
-   ↓
-   MESSAGE SCROLL AREA
-   ↓
-   COMPOSER
-*/
 
 body:has(#conversationSection:not(.hidden)) {
     overflow: hidden;
@@ -231,6 +174,19 @@ body:has(#conversationSection:not(.hidden))
 .messages-app {
     padding-bottom: 68px;
 }
+
+/*
+   CHAT STRUCTURE
+
+   HEADER
+      ↓
+   MESSAGE WINDOW
+      ↓
+   COMPOSER
+
+   The message window is the ONLY
+   scrolling area.
+*/
 
 body:has(#conversationSection:not(.hidden))
 .conversation-section {
@@ -247,8 +203,12 @@ body:has(#conversationSection:not(.hidden))
     margin: 0;
     padding: 0;
 
-    display: flex;
-    flex-direction: column;
+    display: grid;
+
+    grid-template-rows:
+        68px
+        minmax(0, 1fr)
+        auto;
 
     background: #050505;
 
@@ -266,23 +226,19 @@ body:has(#conversationSection:not(.hidden))
     width: 100%;
     height: 68px;
 
-    flex: 0 0 68px;
-
     display: flex;
     align-items: center;
 
     padding: 0 14px;
-
     gap: 8px;
 
-    background:
-        rgba(5,5,5,.96);
+    background: rgba(5,5,5,.96);
 
     border-bottom:
-        1px solid rgba(255,255,255,.06);
+        1px solid
+        rgba(255,255,255,.06);
 
     backdrop-filter: blur(18px);
-
     -webkit-backdrop-filter: blur(18px);
 }
 
@@ -321,7 +277,6 @@ body:has(#conversationSection:not(.hidden))
 
 .conversation-back:active {
     transform: scale(.9);
-
     opacity: .7;
 }
 
@@ -361,11 +316,13 @@ body:has(#conversationSection:not(.hidden))
         rgba(198,255,0,.06);
 
     border:
-        1px solid rgba(198,255,0,.7);
+        1px solid
+        rgba(198,255,0,.7);
 
     color: #C6FF00;
 
     font-size: 15px;
+
     font-weight: 700;
 
     overflow: hidden;
@@ -393,6 +350,7 @@ body:has(#conversationSection:not(.hidden))
     flex: 1;
 
     display: flex;
+
     flex-direction: column;
 
     justify-content: center;
@@ -416,30 +374,32 @@ body:has(#conversationSection:not(.hidden))
     text-overflow: ellipsis;
 }
 
-/* We only want the name */
 .profile-info span {
     display: none;
 }
 
 
 /* =========================================
-   MESSAGE SCROLL AREA
+   MESSAGE WINDOW
 ========================================= */
 
 /*
-   IMPORTANT:
+   IMPORTANT
 
-   This area is flex:1.
-   The composer is NOT positioned
-   over it.
+   This is now the middle grid row.
 
-   Therefore messages can never
-   disappear behind the composer.
+   It has a REAL finite height.
+
+   It is the ONLY scrolling area.
+
+   The composer is a completely separate
+   grid row, so messages cannot scroll
+   behind it.
 */
 
 body:has(#conversationSection:not(.hidden))
 .messages-list {
-    flex: 1 1 0;
+    min-width: 0;
 
     min-height: 0;
 
@@ -452,7 +412,7 @@ body:has(#conversationSection:not(.hidden))
     padding:
         16px
         14px
-        35px;
+        16px;
 
     display: flex;
 
@@ -461,6 +421,7 @@ body:has(#conversationSection:not(.hidden))
     gap: 6px;
 
     overflow-y: auto;
+
     overflow-x: hidden;
 
     overscroll-behavior: contain;
@@ -468,6 +429,12 @@ body:has(#conversationSection:not(.hidden))
     -webkit-overflow-scrolling: touch;
 
     scrollbar-width: thin;
+
+    /*
+       Prevent browser scroll anchoring
+       from fighting the chat scroll.
+    */
+    overflow-anchor: none;
 }
 
 
@@ -532,10 +499,11 @@ body:has(#conversationSection:not(.hidden))
 }
 
 
-/* SENT */
+/* =========================================
+   SENT MESSAGE
+========================================= */
 
-.message-row.sent
-.message-bubble {
+.message-row.sent .message-bubble {
     background:
         linear-gradient(
             145deg,
@@ -557,10 +525,11 @@ body:has(#conversationSection:not(.hidden))
 }
 
 
-/* RECEIVED */
+/* =========================================
+   RECEIVED MESSAGE
+========================================= */
 
-.message-row.received
-.message-bubble {
+.message-row.received .message-bubble {
     background:
         linear-gradient(
             145deg,
@@ -670,9 +639,11 @@ body:has(#conversationSection:not(.hidden))
     width: 100%;
 
     max-width: 290px;
+
     min-width: 190px;
 
     display: flex;
+
     align-items: center;
 
     gap: 11px;
@@ -711,7 +682,9 @@ body:has(#conversationSection:not(.hidden))
     flex: 0 0 38px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     border-radius: 9px;
@@ -728,6 +701,7 @@ body:has(#conversationSection:not(.hidden))
     flex: 1;
 
     display: flex;
+
     flex-direction: column;
 
     gap: 3px;
@@ -755,7 +729,9 @@ body:has(#conversationSection:not(.hidden))
     min-height: 27px;
 
     display: inline-flex;
+
     align-items: center;
+
     justify-content: center;
 
     padding:
@@ -776,6 +752,7 @@ body:has(#conversationSection:not(.hidden))
     color: inherit;
 
     font-size: 9px;
+
     font-weight: 700;
 
     cursor: pointer;
@@ -798,10 +775,12 @@ body:has(#conversationSection:not(.hidden))
 ========================================= */
 
 /*
-   IMPORTANT:
+   IMPORTANT
 
-   Composer is a normal flex item.
-   It does NOT overlap the message area.
+   Composer occupies its own grid row.
+
+   It is NOT inside the scrolling
+   messages area.
 */
 
 body:has(#conversationSection:not(.hidden))
@@ -810,9 +789,10 @@ body:has(#conversationSection:not(.hidden))
 
     width: 100%;
 
-    flex: 0 0 auto;
+    min-width: 0;
 
     display: flex;
+
     align-items: center;
 
     padding:
@@ -822,7 +802,8 @@ body:has(#conversationSection:not(.hidden))
         rgba(7,7,7,.97);
 
     border-top:
-        1px solid rgba(255,255,255,.065);
+        1px solid
+        rgba(255,255,255,.065);
 
     z-index: 800;
 
@@ -835,13 +816,6 @@ body:has(#conversationSection:not(.hidden))
 /* =========================================
    MESSAGE INPUT
 ========================================= */
-
-/*
-   One large modern input field.
-
-   Attachment and send buttons sit
-   visually INSIDE this field.
-*/
 
 .message-composer textarea {
     width: 100%;
@@ -856,8 +830,6 @@ body:has(#conversationSection:not(.hidden))
 
     padding:
         12px
-        48px
-        12px
         48px;
 
     border:
@@ -866,8 +838,7 @@ body:has(#conversationSection:not(.hidden))
 
     border-radius: 16px;
 
-    background:
-        #111;
+    background: #111;
 
     color: #fff;
 
@@ -892,8 +863,7 @@ body:has(#conversationSection:not(.hidden))
     border-color:
         rgba(198,255,0,.55);
 
-    background:
-        #131313;
+    background: #131313;
 }
 
 .message-composer textarea::placeholder {
@@ -916,13 +886,16 @@ body:has(#conversationSection:not(.hidden))
 
     top: 50%;
 
-    transform: translateY(-50%);
+    transform:
+        translateY(-50%);
 
     width: 34px;
     height: 34px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     padding: 0;
@@ -985,13 +958,16 @@ body:has(#conversationSection:not(.hidden))
 
     top: 50%;
 
-    transform: translateY(-50%);
+    transform:
+        translateY(-50%);
 
     width: 34px;
     height: 34px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     padding: 0;
@@ -1066,6 +1042,7 @@ body:has(#conversationSection:not(.hidden))
     z-index: 799;
 
     display: flex;
+
     align-items: center;
 
     gap: 10px;
@@ -1096,7 +1073,9 @@ body:has(#conversationSection:not(.hidden))
     flex: 0 0 38px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     border-radius: 9px;
@@ -1116,6 +1095,7 @@ body:has(#conversationSection:not(.hidden))
     color: #fff;
 
     font-size: 12px;
+
     font-weight: 600;
 
     white-space: nowrap;
@@ -1166,9 +1146,11 @@ body:has(#conversationSection:not(.hidden))
 
     left: 0;
     right: 0;
+
     bottom: 0;
 
     width: 100%;
+
     height: 68px;
 
     z-index: 900;
@@ -1179,7 +1161,8 @@ body:has(#conversationSection:not(.hidden))
         rgba(6,6,6,.97);
 
     border-top:
-        1px solid rgba(255,255,255,.065);
+        1px solid
+        rgba(255,255,255,.065);
 
     backdrop-filter: blur(20px);
 
@@ -1190,10 +1173,13 @@ body:has(#conversationSection:not(.hidden))
     flex: 1;
 
     width: 50%;
+
     height: 68px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     flex-direction: column;
@@ -1254,10 +1240,16 @@ body:has(#conversationSection:not(.hidden))
     .conversation-header {
         height: 64px;
 
-        flex-basis: 64px;
-
         padding:
             0 10px;
+    }
+
+    body:has(#conversationSection:not(.hidden))
+    .conversation-section {
+        grid-template-rows:
+            64px
+            minmax(0, 1fr)
+            auto;
     }
 
     .profile-avatar {
@@ -1311,8 +1303,6 @@ body:has(#conversationSection:not(.hidden))
 
         padding:
             11px
-            45px
-            11px
             45px;
 
         border-radius: 15px;
@@ -1357,8 +1347,14 @@ body:has(#conversationSection:not(.hidden))
 
     .conversation-header {
         height: 62px;
+    }
 
-        flex-basis: 62px;
+    body:has(#conversationSection:not(.hidden))
+    .conversation-section {
+        grid-template-rows:
+            62px
+            minmax(0, 1fr)
+            auto;
     }
 
     .profile-avatar {
@@ -1383,8 +1379,6 @@ body:has(#conversationSection:not(.hidden))
 
         padding:
             10px
-            42px
-            10px
             42px;
 
         font-size: 12px;
@@ -1401,4 +1395,4 @@ body:has(#conversationSection:not(.hidden))
     .message-bubble {
         max-width: 89%;
     }
-   }
+             }
