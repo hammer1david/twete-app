@@ -511,12 +511,102 @@
 
 <script src="profile.js"></script>
 
-<script src="auth-guard.js"></script>
+<script src="push-notifications.js"></script>
 
+<script src="auth-guard.js"></script>
+    
 <script>
     protectPage("athlete");
 </script>
 
+<script>
+
+const pushToggle =
+    document.getElementById("pushToggle");
+
+const pushToggleText =
+    document.getElementById("pushToggleText");
+
+
+function updatePushToggle(enabled) {
+
+    if (!pushToggle) {
+        return;
+    }
+
+    if (enabled) {
+
+        pushToggle.classList.add("enabled");
+
+        pushToggleText.textContent =
+            "ON";
+
+    } else {
+
+        pushToggle.classList.remove("enabled");
+
+        pushToggleText.textContent =
+            "OFF";
+    }
+}
+
+
+async function loadPushStatus() {
+
+    const enabled =
+        await isPushEnabled();
+
+    updatePushToggle(enabled);
+}
+
+
+pushToggle.addEventListener(
+    "click",
+    async function () {
+
+        pushToggle.disabled = true;
+
+        try {
+
+            const enabled =
+                await isPushEnabled();
+
+
+            if (enabled) {
+
+                await disablePushNotifications();
+
+                updatePushToggle(false);
+
+            } else {
+
+                const success =
+                    await enablePushNotifications();
+
+                updatePushToggle(success);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Push toggle error:",
+                error
+            );
+
+        } finally {
+
+            pushToggle.disabled = false;
+        }
+    }
+);
+
+
+loadPushStatus();
+
+</script>
+
+    
 </body>
 
 </html>
