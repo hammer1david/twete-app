@@ -435,7 +435,7 @@ async function sendTestPushNotification() {
 
     try {
 
-        const { data, error } =
+        const result =
             await profileSupabase.functions.invoke(
                 "send-push",
                 {
@@ -447,48 +447,68 @@ async function sendTestPushNotification() {
                 }
             );
 
-        console.log("SEND PUSH RESPONSE:", data);
-        console.log("SEND PUSH ERROR:", error);
+        console.log(
+            "FULL PUSH RESULT:",
+            result
+        );
+
+        const data = result?.data;
+        const error = result?.error;
 
         if (error) {
+
             return {
                 success: false,
-                message: error.message || "Function error"
+                message:
+                    "ERROR: " +
+                    (
+                        error.message ||
+                        JSON.stringify(error)
+                    )
             };
         }
 
         if (!data) {
+
             return {
                 success: false,
-                message: "No response from send-push"
+                message:
+                    "ERROR: No data returned"
             };
         }
 
         if (data.sent > 0) {
+
             return {
                 success: true,
-                message: `Push sent — ${data.sent} device`
+                message:
+                    "PUSH SENT: " +
+                    data.sent
             };
         }
 
         return {
             success: false,
             message:
-                data.error ||
-                data.message ||
-                `Push failed — sent: ${data.sent ?? 0}`
+                "PUSH NOT SENT: " +
+                JSON.stringify(data)
         };
 
     } catch (error) {
 
         console.error(
-            "Test push error:",
+            "PUSH EXCEPTION:",
             error
         );
 
         return {
             success: false,
-            message: error.message || "Unknown error"
+            message:
+                "EXCEPTION: " +
+                (
+                    error?.message ||
+                    String(error)
+                )
         };
     }
 }
