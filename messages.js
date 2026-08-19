@@ -1580,6 +1580,122 @@ async function sendMessage() {
 scrollToBottom(
     false
 );
+   sendChatPush(
+    data
+);
+
+}
+
+/* =========================================
+   SEND CHAT PUSH
+========================================= */
+
+async function sendChatPush(messageData) {
+
+    if (
+        !chatUser ||
+        !messageData
+    ) {
+        return;
+    }
+
+
+    let body =
+        "You have a new message.";
+
+
+    if (
+        messageData.message &&
+        messageData.message.trim()
+    ) {
+
+        body =
+            messageData.message.trim();
+
+    } else if (
+        messageData.attachment_type &&
+        messageData.attachment_type.startsWith(
+            "image/"
+        )
+    ) {
+
+        body =
+            "Sent you a photo.";
+
+    } else if (
+        messageData.attachment_type &&
+        messageData.attachment_type.startsWith(
+            "video/"
+        )
+    ) {
+
+        body =
+            "Sent you a video.";
+
+    } else if (
+        messageData.attachment_path
+    ) {
+
+        body =
+            "Sent you a file.";
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .functions
+                .invoke(
+                    "send-push-v2",
+                    {
+                        body: {
+
+                            recipient_id:
+                                chatUser.id,
+
+                            title:
+                                currentProfile?.full_name
+                                || "Twete",
+
+                            body:
+                                body,
+
+                            url:
+                                currentProfile?.role === "coach"
+                                    ? "/messages.html"
+                                    : `/messages.html?athlete_id=${currentUser.id}`
+
+                        }
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Chat push error:",
+                error
+            );
+
+        }
+
+    } catch (error) {
+
+        /*
+            Push failure must never stop
+            the actual chat message.
+        */
+
+        console.error(
+            "Chat push exception:",
+            error
+        );
+
+    }
 
 }
 
