@@ -417,16 +417,20 @@ if (workoutIds.length) {
     } =
         await goalSupabase
             .from("workout_feedback")
-            .select(`
-                id,
-                workout_id,
-                athlete_id,
-                feeling,
-                effort,
-                comment,
-                created_at,
-                updated_at
-            `)
+      .select(`
+    id,
+    workout_id,
+    athlete_id,
+    feeling,
+    effort,
+    legs,
+    temperature,
+    wind,
+    terrain,
+    comment,
+    created_at,
+    updated_at
+`)
             .in(
                 "workout_id",
                 workoutIds
