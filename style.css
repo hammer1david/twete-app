@@ -1569,9 +1569,7 @@ body {
 }
 
 
-.academy-card:active {
-    transform: scale(0.985);
-}
+
 
 
 .academy-card-header {
