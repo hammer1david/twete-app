@@ -1346,3 +1346,104 @@ window.addEventListener(
 
     }
 );
+/* =========================================
+   MOBILE KEYBOARD / VISUAL VIEWPORT
+========================================= */
+
+function updateChatViewport() {
+
+    const chatPage =
+        document.querySelector(
+            ".chat-page"
+        );
+
+
+    if (!chatPage) {
+        return;
+    }
+
+
+    /*
+        On mobile devices the software keyboard
+        changes the visible viewport height.
+
+        visualViewport.height gives us the
+        actually visible area above the keyboard.
+    */
+
+    if (window.visualViewport) {
+
+        chatPage.style.height =
+            `${window.visualViewport.height}px`;
+
+    } else {
+
+        /*
+            Fallback for browsers without
+            Visual Viewport support.
+        */
+
+        chatPage.style.height =
+            `${window.innerHeight}px`;
+
+    }
+
+
+    /*
+        Keep the latest message visible when
+        the keyboard opens or closes.
+    */
+
+    requestAnimationFrame(
+        function () {
+
+            scrollToBottom(
+                false
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   VIEWPORT EVENTS
+========================================= */
+
+if (window.visualViewport) {
+
+    window.visualViewport.addEventListener(
+        "resize",
+        updateChatViewport
+    );
+
+
+    window.visualViewport.addEventListener(
+        "scroll",
+        updateChatViewport
+    );
+
+}
+
+
+window.addEventListener(
+    "resize",
+    updateChatViewport
+);
+
+
+window.addEventListener(
+    "orientationchange",
+    updateChatViewport
+);
+
+
+/* =========================================
+   INITIAL VIEWPORT
+========================================= */
+
+window.addEventListener(
+    "load",
+    updateChatViewport
+);
