@@ -1225,7 +1225,86 @@ function createSessionCard(
         .filter(Boolean)
         .join(" • ");
 
+${
 
+    athleteFeedback
+    ?
+    `
+    <div class="coach-athlete-feedback">
+
+        <div class="coach-athlete-feedback-label">
+            ATHLETE FEEDBACK
+        </div>
+
+
+        <div class="coach-feedback-summary">
+
+            ${
+                athleteFeedback.feeling
+                ?
+                `
+                <span>
+                    ${getCoachFeelingEmoji(
+                        athleteFeedback.feeling
+                    )}
+
+                    ${escapeHtml(
+                        athleteFeedback.feeling
+                            .charAt(0)
+                            .toUpperCase() +
+                        athleteFeedback.feeling
+                            .slice(1)
+                    )}
+                </span>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                athleteFeedback.effort
+                ?
+                `
+                <span>
+                    RPE
+                    ${escapeHtml(
+                        athleteFeedback.effort
+                    )}/10
+                </span>
+                `
+                :
+                ""
+            }
+
+        </div>
+
+
+        ${
+            athleteFeedback.comment
+            ?
+            `
+            <div class="coach-feedback-comment">
+
+                ${escapeHtml(
+                    athleteFeedback.comment
+                ).replaceAll(
+                    "\n",
+                    "<br>"
+                )}
+
+            </div>
+            `
+            :
+            ""
+        }
+
+    </div>
+    `
+    :
+    ""
+
+}
     return `
 
         <div class="session-card">
