@@ -1063,7 +1063,6 @@ function renderMessage(
 /* =========================================
    SEND MESSAGE
 ========================================= */
-
 async function sendMessage() {
 
     if (
@@ -1071,7 +1070,6 @@ async function sendMessage() {
         !currentUser ||
         !chatUser
     ) {
-
         return;
     }
 
@@ -1080,17 +1078,65 @@ async function sendMessage() {
         messageInput.value.trim();
 
 
-    if (!message) {
+    const attachment =
+        selectedAttachments.length > 0
+            ? selectedAttachments[0]
+            : null;
+
+
+    /*
+        Nothing to send
+    */
+
+    if (
+        !message &&
+        !attachment
+    ) {
         return;
     }
 
 
-    isSending =
-        true;
+    isSending = true;
+    sendButton.disabled = true;
 
-    sendButton.disabled =
-        true;
 
+    let attachmentData = {
+        attachment_path: null,
+        attachment_name: null,
+        attachment_type: null,
+        attachment_size: null
+    };
+
+
+    /*
+        Upload attachment first
+    */
+
+    if (attachment) {
+
+        const uploadResult =
+            await uploadChatAttachment(
+                attachment
+            );
+
+
+        if (!uploadResult) {
+
+            isSending = false;
+            sendButton.disabled = false;
+
+            return;
+        }
+
+
+        attachmentData =
+            uploadResult;
+    }
+
+
+    /*
+        Create message
+    */
 
     const {
         data,
@@ -1099,6 +1145,7 @@ async function sendMessage() {
         await supabaseClient
             .from("messages")
             .insert({
+
                 sender_id:
                     currentUser.id,
 
@@ -1106,20 +1153,31 @@ async function sendMessage() {
                     chatUser.id,
 
                 message:
-                    message
+                    message || null,
+
+                attachment_path:
+                    attachmentData.attachment_path,
+
+                attachment_name:
+                    attachmentData.attachment_name,
+
+                attachment_type:
+                    attachmentData.attachment_type,
+
+                attachment_size:
+                    attachmentData.attachment_size
+
             })
             .select(
-                "id, sender_id, receiver_id, message, created_at, read_at"
+                "id, sender_id, receiver_id, message, created_at, read_at, attachment_path, attachment_name, attachment_type, attachment_size"
             )
             .single();
 
 
-    isSending =
-        false;
-
-    sendButton.disabled =
-        false;
-
+    /*
+        If message creation fails,
+        remove the uploaded orphan file.
+    */
 
     if (error) {
 
@@ -1128,21 +1186,49 @@ async function sendMessage() {
             error
         );
 
+
+        if (
+            attachmentData.attachment_path
+        ) {
+
+            await supabaseClient
+                .storage
+                .from("chat-attachments")
+                .remove([
+                    attachmentData.attachment_path
+                ]);
+
+        }
+
+
+        isSending = false;
+        sendButton.disabled = false;
+
         return;
     }
 
 
-    messageInput.value =
-        "";
+    /*
+        Clear composer only after success
+    */
+
+    messageInput.value = "";
+
+    selectedAttachments = [];
+
+    renderAttachmentPreview();
 
     resetInputHeight();
 
 
+    isSending = false;
+    sendButton.disabled = false;
+
+
     /*
         Render immediately.
-
-        If Realtime also delivers it,
-        duplicate protection handles it.
+        Realtime duplicate protection
+        prevents duplicate messages.
     */
 
     renderMessage(
@@ -1156,6 +1242,162 @@ async function sendMessage() {
 
 }
 
+/* =========================================
+   UPLOAD CHAT ATTACHMENT
+========================================= */
+
+async function uploadChatAttachment(file) {
+
+    if (
+        !file ||
+        !currentUser
+    ) {
+        return null;
+    }
+
+
+    /*
+        Maximum file size: 20 MB
+    */
+
+    const MAX_FILE_SIZE =
+        20 * 1024 * 1024;
+
+
+    if (
+        file.size >
+        MAX_FILE_SIZE
+    ) {
+
+        alert(
+            "The file is too large. Maximum size is 20 MB."
+        );
+
+        return null;
+    }
+
+
+    /*
+        Create our own safe file name.
+
+        This is important for camera photos too,
+        because we do not rely on the original
+        device filename.
+    */
+
+    const extension =
+        getFileExtension(
+            file.name
+        );
+
+
+    const uniqueId =
+        crypto.randomUUID();
+
+
+    const safeFileName =
+        extension
+            ? `${uniqueId}.${extension}`
+            : uniqueId;
+
+
+    /*
+        First folder = sender UUID.
+
+        This matches our Supabase
+        Storage security policy.
+    */
+
+    const storagePath =
+        `${currentUser.id}/${safeFileName}`;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from(
+                "chat-attachments"
+            )
+            .upload(
+                storagePath,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: false,
+
+                    contentType:
+                        file.type ||
+                        undefined
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Attachment upload error:",
+            error
+        );
+
+        alert(
+            "The attachment could not be uploaded."
+        );
+
+        return null;
+    }
+
+
+    return {
+
+        attachment_path:
+            storagePath,
+
+        attachment_name:
+            file.name ||
+            "Attachment",
+
+        attachment_type:
+            file.type ||
+            "application/octet-stream",
+
+        attachment_size:
+            file.size
+
+    };
+
+}
+
+
+/* =========================================
+   FILE EXTENSION
+========================================= */
+
+function getFileExtension(fileName) {
+
+    if (
+        !fileName ||
+        !fileName.includes(".")
+    ) {
+        return "";
+    }
+
+
+    const extension =
+        fileName
+            .split(".")
+            .pop()
+            .toLowerCase()
+            .replace(
+                /[^a-z0-9]/g,
+                ""
+            );
+
+
+    return extension;
+
+}
 
 /* =========================================
    REALTIME
