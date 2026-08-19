@@ -1279,7 +1279,147 @@ await loadCurrentGoalImage(
 
     }
 
+async function loadCurrentGoalImage(
+    goalImageId
+) {
 
+    const visual =
+        document.getElementById(
+            "currentGoalVisual"
+        );
+
+    const imageElement =
+        document.getElementById(
+            "currentGoalImage"
+        );
+
+
+    if (
+        !visual ||
+        !imageElement
+    ) {
+        return;
+    }
+
+
+    if (!goalImageId) {
+
+        visual.classList.remove(
+            "visible"
+        );
+
+        imageElement.removeAttribute(
+            "src"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            data: image,
+            error
+        } =
+            await supabaseClient
+                .from("goal_images")
+                .select(`
+                    id,
+                    name,
+                    storage_path,
+                    alt_text
+                `)
+                .eq(
+                    "id",
+                    goalImageId
+                )
+                .eq(
+                    "active",
+                    true
+                )
+                .maybeSingle();
+
+
+        if (
+            error ||
+            !image
+        ) {
+
+            if (error) {
+
+                console.error(
+                    "Goal image error:",
+                    error
+                );
+
+            }
+
+            return;
+        }
+
+
+        const {
+            data
+        } =
+            supabaseClient
+                .storage
+                .from(
+                    "goal-images"
+                )
+                .getPublicUrl(
+                    image.storage_path
+                );
+
+
+        if (
+            !data ||
+            !data.publicUrl
+        ) {
+            return;
+        }
+
+
+        imageElement.onload =
+            function () {
+
+                visual.classList.add(
+                    "visible"
+                );
+
+            };
+
+
+        imageElement.onerror =
+            function () {
+
+                visual.classList.remove(
+                    "visible"
+                );
+
+            };
+
+
+        imageElement.src =
+            data.publicUrl;
+
+
+        imageElement.alt =
+            image.alt_text ||
+            image.name ||
+            "Goal visual";
+
+
+    } catch (error) {
+
+        console.error(
+            "Current goal visual error:",
+            error
+        );
+
+    }
+
+}
 
     /* =========================================================
        LOAD PAST GOALS
