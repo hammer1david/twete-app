@@ -1526,3 +1526,99 @@ body {
     }
 
   }
+/* =========================================================
+   ATHLETE SESSION FEEDBACK
+========================================================= */
+
+.coach-athlete-feedback {
+    margin-top: 11px;
+
+    padding:
+        11px
+        12px;
+
+    border:
+        1px solid
+        rgba(198,255,0,.10);
+
+    border-left:
+        2px solid
+        #C6FF00;
+
+    border-radius:
+        9px;
+
+    background:
+        rgba(198,255,0,.025);
+}
+
+
+.coach-athlete-feedback-label {
+    margin-bottom:
+        7px;
+
+    color:
+        #C6FF00;
+
+    font-size:
+        8px;
+
+    font-weight:
+        850;
+
+    letter-spacing:
+        .9px;
+}
+
+
+.coach-feedback-summary {
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        6px;
+
+    margin-bottom:
+        7px;
+}
+
+
+.coach-feedback-summary span {
+    padding:
+        4px
+        8px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    color:
+        #D6DAD6;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+}
+
+
+.coach-feedback-comment {
+    color:
+        #AEB3AE;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.5;
+}
