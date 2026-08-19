@@ -24,7 +24,10 @@ const supabaseClient =
 /* =========================================
    ELEMENTS
 ========================================= */
-
+const chatPage =
+    document.getElementById(
+        "chatPage"
+    );
 const backButton =
     document.getElementById("backButton");
 
