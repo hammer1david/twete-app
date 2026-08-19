@@ -285,7 +285,75 @@ button {
     word-break: break-word;
 }
 
+/* =========================================
+   MESSAGE ATTACHMENTS
+========================================= */
 
+.message-attachment-image,
+.message-attachment-video {
+
+    display: block;
+
+    width: auto;
+
+    max-width: 240px;
+    max-height: 260px;
+
+    height: auto;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+
+    margin-top: 8px;
+
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .message-attachment-image,
+    .message-attachment-video {
+
+        max-width: 210px;
+        max-height: 230px;
+
+    }
+
+}
+
+
+/* Files */
+
+.message-attachment-file {
+
+    display: block;
+
+    max-width: 240px;
+
+    margin-top: 8px;
+
+    padding: 10px 12px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.08);
+
+    color: inherit;
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
 /* =========================================
    RECEIVED
 ========================================= */
