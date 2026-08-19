@@ -1155,10 +1155,10 @@ button {
     align-items: center;
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.35);
 
-    backdrop-filter: blur(7px);
-    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 
     opacity: 1;
     visibility: visible;
