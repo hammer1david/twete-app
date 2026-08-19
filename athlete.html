@@ -7,22 +7,1435 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="theme-color"
+        content="#050505"
     >
 
     <title>Twete | Home</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
 
     <style>
 
-        /* =========================================
-           MESSAGE NOTIFICATION BADGE
-        ========================================= */
+        /* =========================================================
+           ATHLETE HOME — VISUAL UPGRADE
+           This overrides only the Athlete Dashboard appearance.
+        ========================================================= */
+
+
+        :root {
+
+            --twete-green: #C6FF00;
+
+            --twete-bg: #050505;
+
+            --twete-card: #0A0B09;
+
+            --twete-card-soft: #0D0E0C;
+
+            --twete-border: #272927;
+
+            --twete-border-soft: rgba(255, 255, 255, 0.08);
+
+            --twete-muted: #919591;
+
+            --twete-muted-dark: #626662;
+
+        }
+
+
+
+        /* =========================================================
+           PAGE
+        ========================================================= */
+
+        body {
+
+            background: var(--twete-bg);
+
+        }
+
+
+        .athlete-app {
+
+            position: relative;
+
+            overflow-x: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 50% 2%,
+                    rgba(198, 255, 0, 0.055),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 100% 42%,
+                    rgba(198, 255, 0, 0.025),
+                    transparent 30%
+                ),
+                #050505;
+
+        }
+
+
+        .athlete-page {
+
+            max-width: 850px;
+
+            padding-top: 102px;
+
+            padding-left: 22px;
+
+            padding-right: 22px;
+
+            padding-bottom: 125px;
+
+        }
+
+
+
+        /* =========================================================
+           DECORATIVE BACKGROUND
+        ========================================================= */
+
+        .glow-line {
+
+            opacity: 0.55;
+
+            animation:
+                backgroundLineFloat 12s ease-in-out infinite alternate;
+
+        }
+
+
+        .glow-line.bottom {
+
+            animation-delay: -6s;
+
+        }
+
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .athlete-header {
+
+            height: 82px;
+
+            padding:
+                max(14px, env(safe-area-inset-top))
+                24px
+                14px;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.045);
+
+            background:
+                rgba(5, 5, 5, 0.88);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+        }
+
+
+        .dashboard-logo {
+
+            position: relative;
+
+            font-size: 32px;
+
+            letter-spacing: -2.8px;
+
+            text-shadow:
+                0 0 18px rgba(198, 255, 0, 0.08);
+
+        }
+
+
+        .dashboard-logo::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 1px;
+
+            bottom: -5px;
+
+            width: 22px;
+
+            height: 2px;
+
+            border-radius: 20px;
+
+            background: var(--twete-green);
+
+            opacity: 0.8;
+
+        }
+
+
+        .athlete-header-name {
+
+            position: absolute;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            max-width: 45%;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+
+            text-overflow: ellipsis;
+
+            color: #CFCFCF;
+
+            font-size: 14px;
+
+            font-weight: 650;
+
+            letter-spacing: 0.1px;
+
+        }
+
+
+        .profile-button {
+
+            width: 49px;
+
+            height: 49px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 50%;
+
+            background:
+                rgba(255, 255, 255, 0.025);
+
+            transition:
+                transform 0.18s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+
+        }
+
+
+        .profile-button:hover {
+
+            border-color:
+                rgba(198, 255, 0, 0.42);
+
+            background:
+                rgba(198, 255, 0, 0.055);
+
+        }
+
+
+        .profile-button:active {
+
+            transform: scale(0.94);
+
+        }
+
+
+        .athlete-profile-avatar {
+
+            width: 100%;
+
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: inherit;
+
+            overflow: hidden;
+
+        }
+
+
+        .athlete-profile-avatar img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+
+        /* =========================================================
+           MOTIVATION SECTION
+        ========================================================= */
+
+        .athlete-welcome {
+
+            margin-top: 16px;
+
+            margin-bottom: 48px;
+
+        }
+
+
+        .motivation-banner {
+
+            width: 100%;
+
+            min-height: 190px;
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 29px 28px 25px;
+
+            border:
+                1px solid rgba(198, 255, 0, 0.22);
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    rgba(198, 255, 0, 0.055),
+                    transparent 34%
+                ),
+                radial-gradient(
+                    circle at 92% 15%,
+                    rgba(198, 255, 0, 0.06),
+                    transparent 35%
+                ),
+                #090A08;
+
+            box-shadow:
+                0 16px 45px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+            isolation: isolate;
+
+            animation:
+                motivationBannerEnter 0.65s ease both;
+
+        }
+
+
+        .motivation-banner::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    transparent 0%,
+                    transparent 42%,
+                    rgba(255, 255, 255, 0.025) 50%,
+                    transparent 58%,
+                    transparent 100%
+                );
+
+            transform: translateX(-100%);
+
+            animation:
+                bannerShine 9s ease-in-out infinite;
+
+            z-index: 1;
+
+        }
+
+
+        .motivation-banner::after {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            right: 0;
+
+            width: 85px;
+
+            height: 3px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    var(--twete-green)
+                );
+
+            opacity: 0.55;
+
+        }
+
+
+        .motivation-glow {
+
+            position: absolute;
+
+            top: -110px;
+
+            left: -180px;
+
+            width: 280px;
+
+            height: 300px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(198, 255, 0, 0.13),
+                    transparent 68%
+                );
+
+            filter: blur(10px);
+
+            pointer-events: none;
+
+            animation:
+                motivationGlowMove 10s ease-in-out infinite alternate;
+
+            z-index: 0;
+
+        }
+
+
+        .motivation-content {
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .motivation-label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 21px;
+
+            color: var(--twete-green);
+
+            font-size: 11px;
+
+            font-weight: 850;
+
+            letter-spacing: 1.6px;
+
+        }
+
+
+        .motivation-dot {
+
+            width: 7px;
+
+            height: 7px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background:
+                var(--twete-green);
+
+            box-shadow:
+                0 0 10px rgba(198, 255, 0, 0.65);
+
+            animation:
+                motivationDotPulse 2.4s ease-in-out infinite;
+
+        }
+
+
+        .motivation-quote {
+
+            max-width: 650px;
+
+            color: #FFFFFF;
+
+            font-size: clamp(
+                23px,
+                4.5vw,
+                31px
+            );
+
+            font-weight: 760;
+
+            line-height: 1.22;
+
+            letter-spacing: -0.85px;
+
+            opacity: 0;
+
+            transform: translateY(10px);
+
+            animation:
+                motivationQuoteEnter
+                0.65s
+                ease
+                0.13s
+                forwards;
+
+        }
+
+
+        .motivation-footer {
+
+            margin-top: 24px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            color: #656865;
+
+            font-size: 10px;
+
+            font-weight: 750;
+
+            letter-spacing: 1.4px;
+
+        }
+
+
+        .motivation-footer::before {
+
+            content: "";
+
+            width: 22px;
+
+            height: 1px;
+
+            background:
+                rgba(198, 255, 0, 0.42);
+
+        }
+
+
+
+        /* =========================================================
+           SECTION
+        ========================================================= */
+
+        .goal-section {
+
+            margin-bottom: 50px;
+
+        }
+
+
+        .section-heading-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 19px;
+
+        }
+
+
+        .section-title {
+
+            margin: 0;
+
+            color: #F7F7F7;
+
+            font-size: 23px;
+
+            font-weight: 760;
+
+            letter-spacing: -0.6px;
+
+        }
+
+
+        .section-kicker {
+
+            color: #666A66;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.3px;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        /* =========================================================
+           CURRENT GOAL
+        ========================================================= */
+
+        .current-goal-card {
+
+            min-height: 0;
+
+            padding: 27px;
+
+            border:
+                1px solid rgba(198, 255, 0, 0.36);
+
+            border-radius: 25px;
+
+            background:
+                radial-gradient(
+                    circle at 82% 25%,
+                    rgba(198, 255, 0, 0.07),
+                    transparent 38%
+                ),
+                linear-gradient(
+                    145deg,
+                    #0A0B09,
+                    #070807
+                );
+
+            box-shadow:
+                0 18px 45px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+            transition:
+                transform 0.18s ease,
+                border-color 0.2s ease,
+                box-shadow 0.25s ease;
+
+        }
+
+
+        .current-goal-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            right: -22px;
+
+            bottom: -65px;
+
+            width: 180px;
+
+            height: 180px;
+
+            border:
+                1px solid rgba(198, 255, 0, 0.06);
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+        }
+
+
+        .current-goal-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(198, 255, 0, 0.6);
+
+            box-shadow:
+                0 20px 52px rgba(0, 0, 0, 0.35),
+                0 0 32px rgba(198, 255, 0, 0.035);
+
+        }
+
+
+        .current-goal-card:active {
+
+            transform:
+                scale(0.99);
+
+        }
+
+
+        .goal-main {
+
+            align-items: center;
+
+            min-height: 130px;
+
+        }
+
+
+        .goal-icon {
+
+            width: 95px;
+
+            height: 95px;
+
+            margin-right: 24px;
+
+            border:
+                1px solid rgba(198, 255, 0, 0.22);
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(198, 255, 0, 0.08),
+                    rgba(0, 0, 0, 0.16)
+                );
+
+            box-shadow:
+                inset 0 0 22px rgba(198, 255, 0, 0.025);
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+
+        }
+
+
+        .current-goal-card:hover .goal-icon {
+
+            transform:
+                scale(1.035);
+
+            box-shadow:
+                0 0 22px rgba(198, 255, 0, 0.055);
+
+        }
+
+
+        .goal-information {
+
+            padding: 0;
+
+            padding-right: 25px;
+
+        }
+
+
+        .goal-status {
+
+            margin-bottom: 12px;
+
+            padding: 6px 10px;
+
+            border:
+                1px solid rgba(198, 255, 0, 0.26);
+
+            border-radius: 7px;
+
+            background:
+                rgba(198, 255, 0, 0.055);
+
+            font-size: 10px;
+
+            letter-spacing: 0.9px;
+
+        }
+
+
+        .goal-information h3 {
+
+            margin-bottom: 10px;
+
+            font-size: clamp(
+                24px,
+                5vw,
+                30px
+            );
+
+            line-height: 1.12;
+
+            letter-spacing: -0.8px;
+
+        }
+
+
+        .goal-pb {
+
+            margin: 0;
+
+            color: #999D99;
+
+            font-size: 15px;
+
+            line-height: 1.55;
+
+        }
+
+
+        .current-goal-arrow {
+
+            position: absolute;
+
+            right: 23px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 33px;
+
+            height: 33px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #777B77;
+
+            transition:
+                color 0.2s ease,
+                transform 0.2s ease;
+
+        }
+
+
+        .current-goal-card:not(.no-goal-card):hover
+        .current-goal-arrow {
+
+            color: var(--twete-green);
+
+            transform:
+                translateY(-50%)
+                translateX(3px);
+
+        }
+
+
+
+        /* =========================================================
+           PAST GOALS
+        ========================================================= */
+
+        .past-goals {
+
+            margin-bottom: 52px;
+
+        }
+
+
+        #pastGoalsContainer {
+
+            display: grid;
+
+            gap: 12px;
+
+        }
+
+
+        .past-goal-card {
+
+            width: 100%;
+
+            min-height: 118px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 20px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.075);
+
+            border-radius: 21px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0B0C0B,
+                    #080908
+                );
+
+            transition:
+                transform 0.18s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+
+        }
+
+
+        .past-goal-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(198, 255, 0, 0.22);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0D0E0C,
+                    #090A09
+                );
+
+        }
+
+
+        .past-goal-card:active {
+
+            transform:
+                scale(0.992);
+
+        }
+
+
+        .past-goal-icon {
+
+            width: 72px;
+
+            height: 72px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-right: 18px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 18px;
+
+            background:
+                rgba(255, 255, 255, 0.018);
+
+            color: #888D88;
+
+        }
+
+
+        .past-goal-information {
+
+            min-width: 0;
+
+            flex: 1;
+
+        }
+
+
+        .past-goal-information .goal-status {
+
+            color: #9C9F9C;
+
+            border-color:
+                rgba(255, 255, 255, 0.1);
+
+            background:
+                rgba(255, 255, 255, 0.025);
+
+        }
+
+
+        .past-goal-information h3 {
+
+            margin-bottom: 7px;
+
+            color: #EEEEEE;
+
+            font-size: 19px;
+
+            letter-spacing: -0.35px;
+
+        }
+
+
+        .past-goal-information p {
+
+            color: #7D817D;
+
+            font-size: 14px;
+
+            line-height: 1.45;
+
+        }
+
+
+
+        /* =========================================================
+           ACADEMY
+        ========================================================= */
+
+        .academy-section {
+
+            margin-top: 10px;
+
+            margin-bottom: 35px;
+
+        }
+
+
+        .academy-card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 29px 27px 0;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.085);
+
+            border-radius: 26px;
+
+            background:
+                radial-gradient(
+                    circle at 90% 2%,
+                    rgba(198, 255, 0, 0.075),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    145deg,
+                    #0C0D0B,
+                    #080908
+                );
+
+            box-shadow:
+                0 18px 50px rgba(0, 0, 0, 0.27);
+
+        }
+
+
+        .academy-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: -35px;
+
+            top: -35px;
+
+            width: 120px;
+
+            height: 120px;
+
+            border:
+                1px solid rgba(198, 255, 0, 0.055);
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+        }
+
+
+        .academy-card-header {
+
+            position: relative;
+
+            z-index: 2;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .academy-title {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            color: var(--twete-green);
+
+            font-size: 11px;
+
+            font-weight: 850;
+
+            letter-spacing: 1.3px;
+
+        }
+
+
+        .academy-icon {
+
+            width: 34px;
+
+            height: 34px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border:
+                1px solid rgba(198, 255, 0, 0.2);
+
+            border-radius: 10px;
+
+            background:
+                rgba(198, 255, 0, 0.045);
+
+        }
+
+
+        .academy-icon svg {
+
+            width: 19px;
+
+            height: 19px;
+
+        }
+
+
+        .academy-headline {
+
+            position: relative;
+
+            z-index: 2;
+
+            margin-bottom: 11px;
+
+            font-size: clamp(
+                27px,
+                5vw,
+                34px
+            );
+
+            line-height: 1.1;
+
+            letter-spacing: -1px;
+
+        }
+
+
+        .academy-description {
+
+            position: relative;
+
+            z-index: 2;
+
+            max-width: 570px;
+
+            color: #909490;
+
+            font-size: 15px;
+
+            line-height: 1.55;
+
+        }
+
+
+        .academy-divider {
+
+            height: 1px;
+
+            margin: 25px 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.08),
+                    rgba(198, 255, 0, 0.14),
+                    rgba(255, 255, 255, 0.04)
+                );
+
+        }
+
+
+        .academy-features {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 27px;
+
+        }
+
+
+        .academy-feature {
+
+            min-height: 108px;
+
+            padding: 16px 13px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.06);
+
+            border-radius: 17px;
+
+            background:
+                rgba(255, 255, 255, 0.017);
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+
+        }
+
+
+        .academy-feature:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(198, 255, 0, 0.17);
+
+            background:
+                rgba(198, 255, 0, 0.025);
+
+        }
+
+
+        .academy-feature svg {
+
+            width: 24px;
+
+            height: 24px;
+
+            margin-bottom: 13px;
+
+            color: var(--twete-green);
+
+        }
+
+
+        .academy-feature strong {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #E7E8E7;
+
+            font-size: 11px;
+
+            letter-spacing: 0.8px;
+
+        }
+
+
+        .academy-feature span {
+
+            color: #727672;
+
+            font-size: 12px;
+
+            line-height: 1.3;
+
+        }
+
+
+        .academy-open-bar {
+
+            position: relative;
+
+            z-index: 3;
+
+            margin-left: -27px;
+
+            margin-right: -27px;
+
+            min-height: 67px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: flex-end;
+
+            padding: 0 26px;
+
+            border-top:
+                1px solid rgba(255, 255, 255, 0.065);
+
+            background:
+                rgba(255, 255, 255, 0.016);
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease;
+
+        }
+
+
+        .academy-open-bar:hover {
+
+            background:
+                rgba(198, 255, 0, 0.045);
+
+        }
+
+
+        .academy-open-action {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            color: var(--twete-green);
+
+            font-size: 12px;
+
+            font-weight: 850;
+
+            letter-spacing: 0.9px;
+
+        }
+
+
+        .academy-open-action svg {
+
+            width: 19px;
+
+            height: 19px;
+
+            transition:
+                transform 0.2s ease;
+
+        }
+
+
+        .academy-open-bar:hover
+        .academy-open-action svg {
+
+            transform:
+                translateX(4px);
+
+        }
+
+
+
+        /* =========================================================
+           BOTTOM NAVIGATION
+        ========================================================= */
+
+        .bottom-navigation {
+
+            padding-bottom:
+                max(
+                    10px,
+                    env(safe-area-inset-bottom)
+                );
+
+            border-top:
+                1px solid rgba(255, 255, 255, 0.055);
+
+            background:
+                rgba(5, 5, 5, 0.91);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+        }
+
+
+        .nav-item {
+
+            position: relative;
+
+            transition:
+                color 0.2s ease,
+                transform 0.15s ease;
+
+        }
+
+
+        .nav-item:active {
+
+            transform:
+                scale(0.94);
+
+        }
+
+
+        .nav-item.active::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: -10px;
+
+            left: 50%;
+
+            width: 28px;
+
+            height: 2px;
+
+            transform:
+                translateX(-50%);
+
+            border-radius: 20px;
+
+            background:
+                var(--twete-green);
+
+            box-shadow:
+                0 0 9px rgba(198, 255, 0, 0.3);
+
+        }
+
+
+
+        /* =========================================================
+           MESSAGE NOTIFICATION
+        ========================================================= */
 
         .messages-nav-item {
+
             position: relative;
+
         }
 
 
@@ -30,21 +1443,15 @@
 
             position: absolute;
 
-            top: -10px;
+            top: -8px;
 
-            right: 100px;
+            right: calc(50% - 31px);
 
-            min-width: 25px;
+            min-width: 22px;
 
-            height: 25px;
+            height: 22px;
 
-            padding: 0 5px;
-
-            border-radius: 20px;
-
-            background: #ff3b30;
-
-            color: #ffffff;
+            padding: 0 6px;
 
             display: none;
 
@@ -52,15 +1459,26 @@
 
             justify-content: center;
 
-            font-size: 15px;
+            border:
+                2px solid #050505;
 
-            font-weight: 800;
+            border-radius: 20px;
+
+            background:
+                #FF3B30;
+
+            color: #FFFFFF;
+
+            font-size: 11px;
+
+            font-weight: 850;
 
             line-height: 1;
 
-            border: 2px solid #050505;
-
             z-index: 10;
+
+            box-shadow:
+                0 3px 10px rgba(255, 59, 48, 0.22);
 
         }
 
@@ -69,16 +1487,576 @@
 
             display: flex;
 
+            animation:
+                notificationEnter
+                0.35s
+                cubic-bezier(
+                    0.2,
+                    1.4,
+                    0.4,
+                    1
+                );
+
         }
 
 
+
+        /* =========================================================
+           REVEAL ANIMATIONS
+        ========================================================= */
+
+        .reveal-section {
+
+            opacity: 0;
+
+            transform:
+                translateY(18px);
+
+            transition:
+                opacity 0.6s ease,
+                transform 0.6s ease;
+
+        }
+
+
+        .reveal-section.visible {
+
+            opacity: 1;
+
+            transform:
+                translateY(0);
+
+        }
+
+
+
+        /* =========================================================
+           KEYFRAMES
+        ========================================================= */
+
+        @keyframes motivationBannerEnter {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(12px)
+                    scale(0.995);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+
+        @keyframes motivationQuoteEnter {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(10px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+
+            }
+
+        }
+
+
+        @keyframes motivationGlowMove {
+
+            from {
+
+                transform:
+                    translateX(0)
+                    scale(1);
+
+            }
+
+            to {
+
+                transform:
+                    translateX(610px)
+                    scale(1.15);
+
+            }
+
+        }
+
+
+        @keyframes motivationDotPulse {
+
+            0%,
+            100% {
+
+                opacity: 0.55;
+
+                transform:
+                    scale(0.9);
+
+                box-shadow:
+                    0 0 5px rgba(198, 255, 0, 0.35);
+
+            }
+
+            50% {
+
+                opacity: 1;
+
+                transform:
+                    scale(1.12);
+
+                box-shadow:
+                    0 0 13px rgba(198, 255, 0, 0.8);
+
+            }
+
+        }
+
+
+        @keyframes bannerShine {
+
+            0%,
+            68% {
+
+                transform:
+                    translateX(-110%);
+
+            }
+
+            85%,
+            100% {
+
+                transform:
+                    translateX(110%);
+
+            }
+
+        }
+
+
+        @keyframes backgroundLineFloat {
+
+            from {
+
+                opacity: 0.35;
+
+                transform:
+                    rotate(-48deg)
+                    translateX(-10px);
+
+            }
+
+            to {
+
+                opacity: 0.6;
+
+                transform:
+                    rotate(-48deg)
+                    translateX(18px);
+
+            }
+
+        }
+
+
+        @keyframes notificationEnter {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    scale(0.5);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    scale(1);
+
+            }
+
+        }
+
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
         @media (max-width: 600px) {
 
-            .message-notification-badge {
+            .athlete-page {
 
-                right: 10px;
+                padding-left: 17px;
 
-                top: -4px;
+                padding-right: 17px;
+
+                padding-top: 94px;
+
+            }
+
+
+            .athlete-header {
+
+                height: 76px;
+
+                padding-left: 18px;
+
+                padding-right: 18px;
+
+            }
+
+
+            .dashboard-logo {
+
+                font-size: 29px;
+
+            }
+
+
+            .athlete-header-name {
+
+                display: none;
+
+            }
+
+
+            .profile-button {
+
+                width: 45px;
+
+                height: 45px;
+
+            }
+
+
+            .athlete-welcome {
+
+                margin-top: 10px;
+
+                margin-bottom: 42px;
+
+            }
+
+
+            .motivation-banner {
+
+                min-height: 174px;
+
+                padding: 24px 21px 22px;
+
+                border-radius: 23px;
+
+            }
+
+
+            .motivation-label {
+
+                margin-bottom: 18px;
+
+            }
+
+
+            .motivation-footer {
+
+                margin-top: 21px;
+
+            }
+
+
+            .goal-section {
+
+                margin-bottom: 43px;
+
+            }
+
+
+            .section-title {
+
+                font-size: 21px;
+
+            }
+
+
+            .current-goal-card {
+
+                padding: 22px 19px;
+
+                border-radius: 22px;
+
+            }
+
+
+            .goal-main {
+
+                min-height: 110px;
+
+            }
+
+
+            .goal-icon {
+
+                width: 72px;
+
+                height: 72px;
+
+                margin-right: 17px;
+
+            }
+
+
+            .goal-icon svg {
+
+                width: 39px;
+
+                height: 39px;
+
+            }
+
+
+            .goal-information {
+
+                padding-right: 17px;
+
+            }
+
+
+            .goal-information h3 {
+
+                font-size: 23px;
+
+            }
+
+
+            .goal-pb {
+
+                font-size: 13px;
+
+            }
+
+
+            .current-goal-arrow {
+
+                right: 13px;
+
+            }
+
+
+            .past-goal-card {
+
+                min-height: 103px;
+
+                padding: 16px;
+
+                border-radius: 19px;
+
+            }
+
+
+            .past-goal-icon {
+
+                width: 61px;
+
+                height: 61px;
+
+                margin-right: 15px;
+
+                border-radius: 16px;
+
+            }
+
+
+            .past-goal-information h3 {
+
+                font-size: 17px;
+
+            }
+
+
+            .past-goal-information p {
+
+                font-size: 12.5px;
+
+            }
+
+
+            .academy-card {
+
+                padding:
+                    24px
+                    20px
+                    0;
+
+                border-radius: 23px;
+
+            }
+
+
+            .academy-open-bar {
+
+                margin-left: -20px;
+
+                margin-right: -20px;
+
+                padding:
+                    0
+                    20px;
+
+            }
+
+
+            .academy-features {
+
+                gap: 7px;
+
+            }
+
+
+            .academy-feature {
+
+                min-height: 104px;
+
+                padding:
+                    14px
+                    9px;
+
+            }
+
+
+            .academy-feature span {
+
+                font-size: 10.5px;
+
+            }
+
+        }
+
+
+
+        /* =========================================================
+           SMALL MOBILE
+        ========================================================= */
+
+        @media (max-width: 390px) {
+
+            .goal-icon {
+
+                width: 64px;
+
+                height: 64px;
+
+                margin-right: 14px;
+
+            }
+
+
+            .goal-information h3 {
+
+                font-size: 21px;
+
+            }
+
+
+            .academy-features {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .academy-feature {
+
+                min-height: auto;
+
+                display: grid;
+
+                grid-template-columns:
+                    35px 1fr;
+
+                align-items: center;
+
+            }
+
+
+            .academy-feature svg {
+
+                grid-row:
+                    1 / span 2;
+
+                margin: 0;
+
+            }
+
+        }
+
+
+
+        /* =========================================================
+           REDUCED MOTION
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            * {
+
+                scroll-behavior: auto !important;
+
+            }
+
+
+            .motivation-banner,
+            .motivation-quote,
+            .motivation-glow,
+            .motivation-dot,
+            .motivation-banner::before,
+            .glow-line,
+            .message-notification-badge.visible {
+
+                animation: none !important;
+
+            }
+
+
+            .motivation-quote {
+
+                opacity: 1;
+
+                transform: none;
+
+            }
+
+
+            .reveal-section {
+
+                opacity: 1;
+
+                transform: none;
+
+                transition: none;
 
             }
 
@@ -89,7 +2067,9 @@
 </head>
 
 
+
 <body>
+
 
 <div class="app athlete-app">
 
@@ -105,15 +2085,18 @@
     <main class="athlete-page">
 
 
-        <!-- =========================
+
+        <!-- =====================================================
              HEADER
-        ========================== -->
+        ====================================================== -->
 
         <header class="athlete-header">
 
 
             <div class="dashboard-logo">
+
                 TWETE
+
             </div>
 
 
@@ -137,12 +2120,12 @@
                 >
 
                     <svg
-                        width="25"
-                        height="25"
+                        width="24"
+                        height="24"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
+                        stroke-width="1.8"
                         stroke-linecap="round"
                         stroke-linejoin="round"
                     >
@@ -152,7 +2135,6 @@
                             cy="7"
                             r="4"
                         ></circle>
-
 
                         <path
                             d="M5.5 21a6.5 6.5 0 0 1 13 0"
@@ -164,37 +2146,92 @@
 
             </button>
 
+
         </header>
 
 
 
-        <!-- =========================
-             WELCOME
-        ========================== -->
+        <!-- =====================================================
+             MOTIVATION
+        ====================================================== -->
 
         <section class="athlete-welcome">
 
-            <div
-                class="motivation-quote"
-                id="motivationQuote"
-            >
-                Trust the process. Your work will show.
+
+            <div class="motivation-banner">
+
+
+                <div class="motivation-glow"></div>
+
+
+                <div class="motivation-content">
+
+
+                    <div class="motivation-label">
+
+                        <span class="motivation-dot"></span>
+
+                        TWETE MINDSET
+
+                    </div>
+
+
+                    <div
+                        class="motivation-quote"
+                        id="motivationQuote"
+                    >
+
+                        Trust the process.
+                        Your work will show.
+
+                    </div>
+
+
+                    <div class="motivation-footer">
+
+                        TODAY'S MINDSET
+
+                    </div>
+
+
+                </div>
+
+
             </div>
+
 
         </section>
 
 
 
-        <!-- =========================
+        <!-- =====================================================
              CURRENT GOAL
-        ========================== -->
+        ====================================================== -->
 
-        <section class="goal-section">
+        <section
+            class="goal-section reveal-section"
+        >
 
 
-            <h2 class="section-title">
-                Current Goal
-            </h2>
+            <div class="section-heading-row">
+
+
+                <h2 class="section-title">
+
+                    Current Goal
+
+                </h2>
+
+
+                <span class="section-kicker">
+
+                    YOUR FOCUS
+
+                </span>
+
+
+            </div>
+
 
 
             <div
@@ -226,13 +2263,11 @@
                                 r="8"
                             ></circle>
 
-
                             <circle
                                 cx="12"
                                 cy="12"
                                 r="4"
                             ></circle>
-
 
                             <circle
                                 cx="12"
@@ -242,6 +2277,7 @@
 
                         </svg>
 
+
                     </div>
 
 
@@ -250,12 +2286,16 @@
 
 
                         <span class="goal-status">
+
                             CURRENT GOAL
+
                         </span>
 
 
                         <h3 id="currentGoalTitle">
+
                             No current goal
+
                         </h3>
 
 
@@ -263,33 +2303,84 @@
                             class="goal-pb"
                             id="currentGoalDetails"
                         >
-                            Your coach hasn't assigned a goal yet.
+
+                            Your coach hasn't assigned
+                            a goal yet.
+
                         </p>
+
 
                     </div>
 
+
                 </div>
 
+
+
+                <div class="current-goal-arrow">
+
+
+                    <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path d="M9 18l6-6-6-6"></path>
+
+                    </svg>
+
+
+                </div>
+
+
             </div>
+
 
         </section>
 
 
 
-        <!-- =========================
+        <!-- =====================================================
              PAST GOALS
-        ========================== -->
+        ====================================================== -->
 
-        <section class="goal-section past-goals">
+        <section
+            class="goal-section past-goals reveal-section"
+        >
 
-    <h2 class="section-title">
-        Past Goals
-    </h2>
 
-    <div
-        id="pastGoalsContainer"
-        class="past-goal-card no-goal-card"
-    >
+            <div class="section-heading-row">
+
+
+                <h2 class="section-title">
+
+                    Past Goals
+
+                </h2>
+
+
+                <span class="section-kicker">
+
+                    YOUR JOURNEY
+
+                </span>
+
+
+            </div>
+
+
+
+            <div
+                id="pastGoalsContainer"
+                class="past-goal-card no-goal-card"
+            >
+
 
                 <div class="past-goal-icon">
 
@@ -319,6 +2410,7 @@
 
                     </svg>
 
+
                 </div>
 
 
@@ -327,200 +2419,315 @@
 
 
                     <span class="goal-status">
+
                         PAST GOALS
+
                     </span>
 
 
                     <h3>
+
                         No past goals yet
+
                     </h3>
 
 
                     <p>
-                        Completed goals from your coach will appear here.
+
+                        Completed goals from your coach
+                        will appear here.
+
                     </p>
+
 
                 </div>
 
+
             </div>
+
 
         </section>
-<!-- =========================
-     TWETE ACADEMY
-========================== -->
-
-<section class="academy-section">
-
-    <div class="academy-card">
-
-        <div class="academy-card-header">
-
-    <div class="academy-title">
-
-        <div class="academy-icon">
-
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            >
-                <path d="M2 9l10-5 10 5-10 5L2 9z"></path>
-                <path d="M6 11.5V16c3 2 9 2 12 0v-4.5"></path>
-                <path d="M22 9v6"></path>
-            </svg>
-
-        </div>
-
-        <span>
-            TWETE ACADEMY
-        </span>
-
-    </div>
-
-</div>
 
 
-        <h2 class="academy-headline">
-            Learn. Train. Improve.
-        </h2>
 
+        <!-- =====================================================
+             TWETE ACADEMY
+        ====================================================== -->
 
-        <p class="academy-description">
-            Training knowledge, coaching insights
-            and exclusive content to help you
-            perform at your best.
-        </p>
-
-
-        <div class="academy-divider"></div>
-
-
-        <div class="academy-features">
-
-            <div class="academy-feature">
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <path d="M4 5a3 3 0 0 1 3-1h5v16H7a3 3 0 0 0-3 1V5z"></path>
-                    <path d="M20 5a3 3 0 0 0-3-1h-5v16h5a3 3 0 0 1 3 1V5z"></path>
-                </svg>
-
-                <strong>
-                    ARTICLES
-                </strong>
-
-                <span>
-                    Expert knowledge
-                </span>
-
-            </div>
-
-
-            <div class="academy-feature">
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <path d="M9 18h6"></path>
-                    <path d="M10 22h4"></path>
-                    <path d="M8.5 14.5A6 6 0 1 1 15.5 14.5C14.5 15.2 14 16 14 18h-4c0-2-.5-2.8-1.5-3.5z"></path>
-                </svg>
-
-                <strong>
-                    INSIGHTS
-                </strong>
-
-                <span>
-                    Coaching tips
-                </span>
-
-            </div>
-
-
-            <div class="academy-feature">
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <path d="M4 20V13h4v7"></path>
-                    <path d="M10 20V9h4v11"></path>
-                    <path d="M16 20V4h4v16"></path>
-                </svg>
-
-                <strong>
-                    TOOLS
-                </strong>
-
-                <span>
-                    Practical guides
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div
-    class="academy-open-bar"
-    onclick="window.location.href='academy.html'"
-    role="button"
-    tabindex="0"
->
-
-    
-
-
-    <div class="academy-open-action">
-
-        <span>
-            OPEN ACADEMY
-        </span>
-
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+        <section
+            class="academy-section reveal-section"
         >
-            <path d="M5 12h14"></path>
-            <path d="M13 6l6 6-6 6"></path>
-        </svg>
 
-    </div>
 
-        </div>
-    </div>
+            <div class="academy-card">
 
-</section>
+
+                <div class="academy-card-header">
+
+
+                    <div class="academy-title">
+
+
+                        <div class="academy-icon">
+
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+
+                                <path
+                                    d="M2 9l10-5 10 5-10 5L2 9z"
+                                ></path>
+
+                                <path
+                                    d="M6 11.5V16c3 2 9 2 12 0v-4.5"
+                                ></path>
+
+                                <path
+                                    d="M22 9v6"
+                                ></path>
+
+                            </svg>
+
+
+                        </div>
+
+
+                        <span>
+
+                            TWETE ACADEMY
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <h2 class="academy-headline">
+
+                    Learn. Train. Improve.
+
+                </h2>
+
+
+                <p class="academy-description">
+
+                    Training knowledge, coaching insights
+                    and practical tools designed to help
+                    you understand your training and
+                    perform at your best.
+
+                </p>
+
+
+
+                <div class="academy-divider"></div>
+
+
+
+                <div class="academy-features">
+
+
+                    <!-- ARTICLES -->
+
+                    <div class="academy-feature">
+
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+
+                            <path
+                                d="M4 5a3 3 0 0 1 3-1h5v16H7a3 3 0 0 0-3 1V5z"
+                            ></path>
+
+                            <path
+                                d="M20 5a3 3 0 0 0-3-1h-5v16h5a3 3 0 0 1 3 1V5z"
+                            ></path>
+
+                        </svg>
+
+
+                        <strong>
+
+                            ARTICLES
+
+                        </strong>
+
+
+                        <span>
+
+                            Training knowledge
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- INSIGHTS -->
+
+                    <div class="academy-feature">
+
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+
+                            <path d="M9 18h6"></path>
+
+                            <path d="M10 22h4"></path>
+
+                            <path
+                                d="M8.5 14.5A6 6 0 1 1 15.5 14.5C14.5 15.2 14 16 14 18h-4c0-2-.5-2.8-1.5-3.5z"
+                            ></path>
+
+                        </svg>
+
+
+                        <strong>
+
+                            INSIGHTS
+
+                        </strong>
+
+
+                        <span>
+
+                            Coaching insights
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- TOOLS -->
+
+                    <div class="academy-feature">
+
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+
+                            <path d="M4 20V13h4v7"></path>
+
+                            <path d="M10 20V9h4v11"></path>
+
+                            <path d="M16 20V4h4v16"></path>
+
+                        </svg>
+
+
+                        <strong>
+
+                            TOOLS
+
+                        </strong>
+
+
+                        <span>
+
+                            Practical guides
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div
+                    class="academy-open-bar"
+                    onclick="window.location.href='academy.html'"
+                    onkeydown="
+                        if (
+                            event.key === 'Enter' ||
+                            event.key === ' '
+                        ) {
+                            window.location.href='academy.html';
+                        }
+                    "
+                    role="button"
+                    tabindex="0"
+                >
+
+
+                    <div class="academy-open-action">
+
+
+                        <span>
+
+                            OPEN ACADEMY
+
+                        </span>
+
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+
+                            <path d="M5 12h14"></path>
+
+                            <path d="M13 6l6 6-6 6"></path>
+
+                        </svg>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
 
     </main>
 
 
 
-    <!-- =========================
+    <!-- =========================================================
          BOTTOM NAVIGATION
-    ========================== -->
+    ========================================================== -->
 
     <nav class="bottom-navigation">
 
@@ -530,7 +2737,9 @@
         <button
             class="nav-item active"
             onclick="goHome()"
+            aria-label="Home"
         >
+
 
             <svg
                 width="27"
@@ -547,11 +2756,9 @@
                     d="M3 10.5L12 3l9 7.5"
                 ></path>
 
-
                 <path
                     d="M5 9.5V21h14V9.5"
                 ></path>
-
 
                 <path
                     d="M9 21v-6h6v6"
@@ -561,16 +2768,17 @@
 
 
             <span>
+
                 Home
+
             </span>
+
 
         </button>
 
 
 
-        <!-- =========================
-             MESSAGES
-        ========================== -->
+        <!-- MESSAGES -->
 
         <button
             class="nav-item messages-nav-item"
@@ -594,14 +2802,12 @@
                     d="M4 4h16v12H8l-4 4V4z"
                 ></path>
 
-
                 <line
                     x1="8"
                     y1="9"
                     x2="16"
                     y2="9"
                 ></line>
-
 
                 <line
                     x1="8"
@@ -614,19 +2820,22 @@
 
 
 
-            <!-- RED NOTIFICATION -->
-
             <span
                 id="messageNotificationBadge"
                 class="message-notification-badge"
             >
+
                 0
+
             </span>
 
 
             <span>
+
                 Messages
+
             </span>
+
 
         </button>
 
@@ -638,17 +2847,21 @@
 
 
 
-<!-- SUPABASE -->
+<!-- =========================================================
+     LIBRARIES
+========================================================== -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 
 <script src="app.js"></script>
 
 <script src="push-notifications.js"></script>
 
-
 <script src="auth-guard.js"></script>
+
 
 
 <script>
@@ -656,9 +2869,216 @@
     protectPage("athlete");
 
 
-    /* =========================================
+
+    /* =========================================================
+       TWETE MINDSET
+    ========================================================== */
+
+    function loadMotivationQuote() {
+
+        const quotes = [
+
+            "Trust the process. Your work will show.",
+
+            "Consistency beats motivation.",
+
+            "One session at a time.",
+
+            "Easy days build strong race days.",
+
+            "The goal is earned before race day.",
+
+            "Small improvements create big results.",
+
+            "Train with purpose. Race with confidence.",
+
+            "Progress is built when nobody is watching.",
+
+            "Stay patient. Stay consistent.",
+
+            "Your strongest race starts with today's work.",
+
+            "Focus on the work. The results will follow.",
+
+            "Every good session has a purpose."
+
+        ];
+
+
+        const quoteElement =
+            document.getElementById(
+                "motivationQuote"
+            );
+
+
+        if (!quoteElement) {
+
+            return;
+
+        }
+
+
+        /*
+           Prevent the exact same quote from
+           appearing repeatedly if possible.
+        */
+
+        const previousQuote =
+            sessionStorage.getItem(
+                "tweteLastMotivationQuote"
+            );
+
+
+        let availableQuotes =
+            quotes.filter(
+                function (quote) {
+
+                    return (
+                        quote !== previousQuote
+                    );
+
+                }
+            );
+
+
+        if (
+            availableQuotes.length === 0
+        ) {
+
+            availableQuotes = quotes;
+
+        }
+
+
+        const randomIndex =
+            Math.floor(
+                Math.random() *
+                availableQuotes.length
+            );
+
+
+        const selectedQuote =
+            availableQuotes[
+                randomIndex
+            ];
+
+
+        quoteElement.textContent =
+            selectedQuote;
+
+
+        sessionStorage.setItem(
+            "tweteLastMotivationQuote",
+            selectedQuote
+        );
+
+    }
+
+
+
+    /* =========================================================
+       SCROLL REVEAL
+    ========================================================== */
+
+    function setupRevealAnimations() {
+
+        const sections =
+            document.querySelectorAll(
+                ".reveal-section"
+            );
+
+
+        if (
+            !sections.length
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !(
+                "IntersectionObserver"
+                in window
+            )
+        ) {
+
+            sections.forEach(
+                function (section) {
+
+                    section.classList.add(
+                        "visible"
+                    );
+
+                }
+            );
+
+            return;
+
+        }
+
+
+        const observer =
+            new IntersectionObserver(
+
+                function (entries) {
+
+                    entries.forEach(
+                        function (entry) {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target
+                                    .classList
+                                    .add(
+                                        "visible"
+                                    );
+
+
+                                observer
+                                    .unobserve(
+                                        entry.target
+                                    );
+
+                            }
+
+                        }
+                    );
+
+                },
+
+                {
+
+                    threshold: 0.10,
+
+                    rootMargin:
+                        "0px 0px -30px 0px"
+
+                }
+
+            );
+
+
+        sections.forEach(
+            function (section) {
+
+                observer.observe(
+                    section
+                );
+
+            }
+        );
+
+    }
+
+
+
+    /* =========================================================
        LOAD CURRENT GOAL
-    ========================================= */
+    ========================================================== */
 
     async function loadCurrentGoal() {
 
@@ -731,19 +3151,19 @@
                         user.id
                     )
                     .gte(
-    "target_date",
-    new Date()
-        .toISOString()
-        .split("T")[0]
-)
-.order(
-    "target_date",
-    {
-        ascending: true
-    }
-)
-.limit(1)
-.maybeSingle();
+                        "target_date",
+                        new Date()
+                            .toISOString()
+                            .split("T")[0]
+                    )
+                    .order(
+                        "target_date",
+                        {
+                            ascending: true
+                        }
+                    )
+                    .limit(1)
+                    .maybeSingle();
 
 
             if (error) {
@@ -759,6 +3179,11 @@
 
 
             if (!goal) {
+
+                /*
+                   No current goal:
+                   keep existing placeholder.
+                */
 
                 return;
 
@@ -798,12 +3223,20 @@
                     new Date(
                         goal.target_date +
                         "T00:00:00"
-                    ).toLocaleDateString(
+                    )
+                    .toLocaleDateString(
                         "en-US",
                         {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric"
+
+                            month:
+                                "short",
+
+                            day:
+                                "numeric",
+
+                            year:
+                                "numeric"
+
                         }
                     )
                 );
@@ -831,7 +3264,7 @@
 
 
             card.onclick =
-                function() {
+                function () {
 
                     window.location.href =
                         "goal.html?goal_id=" +
@@ -854,264 +3287,362 @@
     }
 
 
-/* =========================================
-   LOAD PAST GOALS
-========================================= */
 
-async function loadPastGoals() {
+    /* =========================================================
+       LOAD PAST GOALS
+    ========================================================== */
 
-    const container =
-        document.getElementById(
-            "pastGoalsContainer"
-        );
+    async function loadPastGoals() {
 
-
-    if (!container) {
-        return;
-    }
-
-
-    try {
-
-        const {
-            data: {
-                user
-            }
-        } =
-            await supabaseClient
-                .auth
-                .getUser();
-
-
-        if (!user) {
-            return;
-        }
-
-
-        const {
-            data: goals,
-            error
-        } =
-            await supabaseClient
-                .from("goals")
-                .select(`
-                    id,
-                    athlete_id,
-                    program_id,
-                    goal_name,
-                    distance,
-                    target_time,
-                    target_date,
-                    created_at
-                `)
-                .eq(
-    "athlete_id",
-    user.id
-)
-.lt(
-    "target_date",
-    new Date()
-        .toISOString()
-        .split("T")[0]
-)
-.order(
-    "target_date",
-    {
-        ascending: false
-    }
-);
-
-
-        if (error) {
-
-            console.error(
-                "Past goals loading error:",
-                error
+        const container =
+            document.getElementById(
+                "pastGoalsContainer"
             );
 
+
+        if (!container) {
+
             return;
+
         }
 
 
-        /*
-   No past goals:
-   keep the existing placeholder.
-*/
+        try {
 
-if (
-    !goals ||
-    goals.length === 0
-) {
-
-    return;
-
-}
-
-
-const pastGoals =
-    goals;
-
-
-        /*
-           Turn the placeholder into
-           a container for real past goals.
-        */
-
-        container.innerHTML = "";
-
-        container.classList.remove(
-            "no-goal-card"
-        );
-
-
-        pastGoals.forEach(
-            function (goal) {
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "past-goal-card";
-
-
-                card.style.cursor =
-                    "pointer";
-
-
-                const details = [];
-
-
-                if (goal.distance) {
-
-                    details.push(
-                        goal.distance
-                    );
-
+            const {
+                data: {
+                    user
                 }
+            } =
+                await supabaseClient
+                    .auth
+                    .getUser();
 
 
-                if (goal.target_time) {
+            if (!user) {
 
-                    details.push(
-                        goal.target_time
+                return;
+
+            }
+
+
+            const {
+                data: goals,
+                error
+            } =
+                await supabaseClient
+                    .from("goals")
+                    .select(`
+                        id,
+                        athlete_id,
+                        program_id,
+                        goal_name,
+                        distance,
+                        target_time,
+                        target_date,
+                        created_at
+                    `)
+                    .eq(
+                        "athlete_id",
+                        user.id
+                    )
+                    .lt(
+                        "target_date",
+                        new Date()
+                            .toISOString()
+                            .split("T")[0]
+                    )
+                    .order(
+                        "target_date",
+                        {
+                            ascending: false
+                        }
                     );
 
-                }
+
+            if (error) {
+
+                console.error(
+                    "Past goals loading error:",
+                    error
+                );
+
+                return;
+
+            }
 
 
-                if (goal.target_date) {
+            /*
+               No past goals:
+               keep existing placeholder.
+            */
 
-                    const date =
-                        new Date(
-                            goal.target_date +
-                            "T00:00:00"
+            if (
+                !goals ||
+                goals.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            const pastGoals =
+                goals;
+
+
+            /*
+               Turn placeholder into container.
+            */
+
+            container.innerHTML = "";
+
+
+            container.classList.remove(
+                "no-goal-card"
+            );
+
+
+            /*
+               The original placeholder itself had
+               past-goal-card styling.
+
+               Once it becomes a container for
+               several cards, remove that styling.
+            */
+
+            container.classList.remove(
+                "past-goal-card"
+            );
+
+
+            pastGoals.forEach(
+
+                function (
+                    goal,
+                    index
+                ) {
+
+                    const card =
+                        document.createElement(
+                            "div"
                         );
 
 
-                    details.push(
-                        date.toLocaleDateString(
-                            "en-US",
-                            {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric"
-                            }
+                    card.className =
+                        "past-goal-card";
+
+
+                    card.style.cursor =
+                        "pointer";
+
+
+                    /*
+                       Small stagger effect
+                       when several goals load.
+                    */
+
+                    card.style.opacity =
+                        "0";
+
+
+                    card.style.transform =
+                        "translateY(8px)";
+
+
+                    const details = [];
+
+
+                    if (goal.distance) {
+
+                        details.push(
+                            goal.distance
+                        );
+
+                    }
+
+
+                    if (goal.target_time) {
+
+                        details.push(
+                            goal.target_time
+                        );
+
+                    }
+
+
+                    if (goal.target_date) {
+
+                        const date =
+                            new Date(
+                                goal.target_date +
+                                "T00:00:00"
+                            );
+
+
+                        details.push(
+                            date.toLocaleDateString(
+                                "en-US",
+                                {
+
+                                    month:
+                                        "short",
+
+                                    day:
+                                        "numeric",
+
+                                    year:
+                                        "numeric"
+
+                                }
+                            )
+                        );
+
+                    }
+
+
+                    card.innerHTML = `
+
+                        <div class="past-goal-icon">
+
+                            <svg
+                                width="31"
+                                height="31"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+
+                                <path d="M8 21h8"></path>
+
+                                <path d="M12 17v4"></path>
+
+                                <path d="M7 4h10"></path>
+
+                                <path d="M8 4v5"></path>
+
+                                <path d="M16 4v5"></path>
+
+                                <path d="M8 9l4 4 4-4"></path>
+
+                            </svg>
+
+                        </div>
+
+
+                        <div class="past-goal-information">
+
+                            <span class="goal-status">
+
+                                PAST GOAL
+
+                            </span>
+
+                            <h3></h3>
+
+                            <p></p>
+
+                        </div>
+
+                    `;
+
+
+                    card
+                        .querySelector(
+                            "h3"
                         )
+                        .textContent =
+                            goal.goal_name ||
+                            "Goal";
+
+
+                    card
+                        .querySelector(
+                            "p"
+                        )
+                        .textContent =
+                            details.length
+                                ?
+                                details.join(
+                                    " • "
+                                )
+                                :
+                                "Completed training goal";
+
+
+                    card.addEventListener(
+                        "click",
+
+                        function () {
+
+                            window.location.href =
+                                "goal.html?goal_id=" +
+                                encodeURIComponent(
+                                    goal.id
+                                );
+
+                        }
+                    );
+
+
+                    container.appendChild(
+                        card
+                    );
+
+
+                    /*
+                       Animate dynamically generated
+                       goal cards.
+                    */
+
+                    window.setTimeout(
+
+                        function () {
+
+                            card.style.transition =
+                                "opacity 0.45s ease, " +
+                                "transform 0.45s ease, " +
+                                "border-color 0.2s ease, " +
+                                "background 0.2s ease";
+
+
+                            card.style.opacity =
+                                "1";
+
+
+                            card.style.transform =
+                                "translateY(0)";
+
+                        },
+
+                        70 * index
+
                     );
 
                 }
 
-
-                card.innerHTML = `
-                    <div class="past-goal-icon">
-
-                        <svg
-                            width="34"
-                            height="34"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.7"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                            <path d="M8 21h8"></path>
-                            <path d="M12 17v4"></path>
-                            <path d="M7 4h10"></path>
-                            <path d="M8 4v5"></path>
-                            <path d="M16 4v5"></path>
-                            <path d="M8 9l4 4 4-4"></path>
-                        </svg>
-
-                    </div>
-
-                    <div class="past-goal-information">
-
-                        <span class="goal-status">
-                            PAST GOAL
-                        </span>
-
-                        <h3></h3>
-
-                        <p></p>
-
-                    </div>
-                `;
+            );
 
 
-                card.querySelector(
-                    "h3"
-                ).textContent =
-                    goal.goal_name ||
-                    "Goal";
+        } catch (error) {
 
+            console.error(
+                "Past goals error:",
+                error
+            );
 
-                card.querySelector(
-                    "p"
-                ).textContent =
-                    details.length
-                        ? details.join(" • ")
-                        : "Completed training goal";
-
-
-                card.addEventListener(
-                    "click",
-                    function () {
-
-                        window.location.href =
-                            "goal.html?goal_id=" +
-                            encodeURIComponent(
-                                goal.id
-                            );
-
-                    }
-                );
-
-
-                container.appendChild(
-                    card
-                );
-
-            }
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Past goals error:",
-            error
-        );
+        }
 
     }
 
-}
-    /* =========================================
+
+
+    /* =========================================================
        MESSAGE NOTIFICATION
-    ========================================= */
+    ========================================================== */
 
     async function updateMessageNotification() {
 
@@ -1190,19 +3721,16 @@ const pastGoals =
                 badge.textContent =
                     "0";
 
+
                 badge.classList.remove(
                     "visible"
                 );
+
 
                 return;
 
             }
 
-
-            /*
-               Show the exact number up to 99.
-               Above 99 we show 99+.
-            */
 
             badge.textContent =
                 count > 99
@@ -1230,12 +3758,13 @@ const pastGoals =
 
 
 
-    /* =========================================
+    /* =========================================================
        REALTIME MESSAGE NOTIFICATIONS
-    ========================================= */
+    ========================================================== */
 
     let athleteMessageNotificationChannel =
         null;
+
 
 
     async function setupMessageNotifications() {
@@ -1264,6 +3793,7 @@ const pastGoals =
         await updateMessageNotification();
 
 
+
         /*
            Listen for new messages.
         */
@@ -1275,29 +3805,40 @@ const pastGoals =
                     user.id
                 )
                 .on(
+
                     "postgres_changes",
+
                     {
-                        event: "INSERT",
-                        schema: "public",
-                        table: "messages",
+
+                        event:
+                            "INSERT",
+
+                        schema:
+                            "public",
+
+                        table:
+                            "messages",
+
                         filter:
                             "receiver_id=eq." +
                             user.id
+
                     },
+
                     async function () {
 
                         await updateMessageNotification();
 
                     }
+
                 )
                 .subscribe();
 
 
-        /*
-           Small fallback check.
 
-           This makes the badge reliable even if
-           the browser temporarily loses Realtime.
+        /*
+           Fallback check if realtime
+           temporarily loses connection.
         */
 
         setInterval(
@@ -1309,19 +3850,62 @@ const pastGoals =
 
 
 
-    /* =========================================
-       START
-    ========================================= */
+    /* =========================================================
+       CLEANUP REALTIME CHANNEL
+    ========================================================== */
+
+    window.addEventListener(
+
+        "beforeunload",
+
+        function () {
+
+            if (
+                athleteMessageNotificationChannel
+            ) {
+
+                supabaseClient
+                    .removeChannel(
+                        athleteMessageNotificationChannel
+                    );
+
+            }
+
+        }
+
+    );
+
+
+
+    /* =========================================================
+       START ATHLETE DASHBOARD
+    ========================================================== */
+
+    document.addEventListener(
+
+        "DOMContentLoaded",
+
+        function () {
+
+            loadMotivationQuote();
+
+            setupRevealAnimations();
+
+        }
+
+    );
+
 
     loadCurrentGoal();
 
-loadPastGoals();
+    loadPastGoals();
 
-setupMessageNotifications();
+    setupMessageNotifications();
+
 
 </script>
 
 
 </body>
 
-</html>
+    </html>
