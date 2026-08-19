@@ -2955,10 +2955,7 @@ const cameraCapture =
     document.getElementById(
         "cameraCapture"
     );
-const cameraInput =
-    document.getElementById(
-        "cameraInput"
-    );
+
     const backButton =
         document.querySelector(
             ".back-button"
@@ -3395,107 +3392,7 @@ window.addEventListener(
 
     }
 );
-/* =====================================
-   CAMERA
-===================================== */
 
-if (
-    cameraButton &&
-    cameraInput
-) {
-
-    cameraButton.addEventListener(
-        "click",
-        function () {
-
-            cameraInput.click();
-
-        }
-    );
-
-
-    cameraInput.addEventListener(
-        "change",
-        function () {
-
-            const file =
-                cameraInput.files &&
-                cameraInput.files[0];
-
-
-            if (!file) {
-
-                cameraInput.value =
-                    "";
-
-                return;
-
-            }
-
-
-            /*
-                IMPORTANT:
-
-                Take the camera File directly.
-
-                Do not create an Image,
-                Canvas or Object URL here.
-
-                This avoids additional memory
-                usage on mobile devices.
-            */
-
-            const remainingSlots =
-                4 -
-                selectedAttachments.length;
-
-
-            if (
-                remainingSlots <= 0
-            ) {
-
-                alert(
-                    "You can attach a maximum of 4 files."
-                );
-
-                cameraInput.value =
-                    "";
-
-                return;
-
-            }
-
-
-            /*
-                Add the original camera File
-                directly to the attachments.
-            */
-
-            selectedAttachments.push(
-                file
-            );
-
-
-            /*
-                Show the normal attachment
-                preview.
-            */
-
-            renderAttachmentPreview();
-
-
-            /*
-                Reset the input so the
-                camera can be opened again.
-            */
-
-            cameraInput.value =
-                "";
-
-        }
-    );
-
-}
 
     /*
         BACK
