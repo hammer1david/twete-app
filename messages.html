@@ -256,13 +256,7 @@
     <!-- FILE INPUT -->
 <!-- CAMERA INPUT -->
 
-<input
-    type="file"
-    id="cameraInput"
-    hidden
-    accept="image/*"
-    capture="environment"
->
+
     <input
         type="file"
         id="attachmentInput"
@@ -272,7 +266,75 @@
     >
 
 </footer>
+<!-- =========================================
+     TWETE CAMERA
+========================================= -->
 
+<div
+    class="camera-overlay"
+    id="cameraOverlay"
+    hidden
+>
+
+    <div class="camera-container">
+
+        <!-- CAMERA HEADER -->
+
+        <div class="camera-header">
+
+            <button
+                class="camera-close"
+                id="cameraClose"
+                type="button"
+                aria-label="Close camera"
+            >
+                ×
+            </button>
+
+            <span>
+                Camera
+            </span>
+
+        </div>
+
+
+        <!-- CAMERA VIEW -->
+
+        <div class="camera-view">
+
+            <video
+                id="cameraVideo"
+                autoplay
+                playsinline
+                muted
+            ></video>
+
+            <canvas
+                id="cameraCanvas"
+                hidden
+            ></canvas>
+
+        </div>
+
+
+        <!-- CAMERA CONTROLS -->
+
+        <div class="camera-controls">
+
+            <button
+                class="camera-capture"
+                id="cameraCapture"
+                type="button"
+                aria-label="Take photo"
+            >
+                <span></span>
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
