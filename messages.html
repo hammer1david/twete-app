@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Twete | Messages</title>
+
+    <link
+        rel="stylesheet"
+        href="messages.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="chat-page">
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="chat-header">
+
+        <button
+            id="backButton"
+            class="back-button"
+            type="button"
+            aria-label="Go back"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+
+                <path d="M15 18L9 12L15 6"></path>
+
+            </svg>
+
+        </button>
+
+
+        <div
+            id="chatAvatar"
+            class="chat-avatar"
+        >
+
+            <span id="chatAvatarLetter">
+                T
+            </span>
+
+        </div>
+
+
+        <div class="chat-user-info">
+
+            <div
+                id="chatUserName"
+                class="chat-user-name"
+            >
+                Loading...
+            </div>
+
+            <div
+                id="chatUserStatus"
+                class="chat-user-status"
+            >
+                Coach
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================
+         CHAT
+    ========================================== -->
+
+    <main
+        id="chatMessages"
+        class="chat-messages"
+    >
+
+        <!-- Messages will be inserted here -->
+
+    </main>
+
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer class="chat-footer">
+
+        <div class="message-input-container">
+
+            <textarea
+                id="messageInput"
+                class="message-input"
+                placeholder="Write a message..."
+                rows="1"
+                maxlength="5000"
+                autocomplete="off"
+            ></textarea>
+
+        </div>
+
+
+        <button
+            id="sendButton"
+            class="send-button"
+            type="button"
+            aria-label="Send message"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+
+                <path
+                    d="M22 2L11 13"
+                ></path>
+
+                <path
+                    d="M22 2L15 22L11 13L2 9L22 2"
+                ></path>
+
+            </svg>
+
+        </button>
+
+    </footer>
+
+
+</div>
+
+
+<!-- =========================================
+     SUPABASE
+========================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- =========================================
+     CHAT JAVASCRIPT
+========================================== -->
+
+<script src="messages.js"></script>
+
+
+</body>
+
+</html>
