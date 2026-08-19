@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Twete | Academy</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="academy.css">
+
+</head>
+
+
+<body>
+
+<div class="academy-page">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="academy-page-header">
+
+        <button
+            class="academy-back-button"
+            onclick="window.location.href='athlete.html'"
+            aria-label="Go back"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M19 12H5"></path>
+                <path d="M12 19l-7-7 7-7"></path>
+            </svg>
+
+        </button>
+
+
+        <div class="academy-page-title">
+
+            <strong>
+                TWETE ACADEMY
+            </strong>
+
+            <span>
+                Learn. Train. Improve.
+            </span>
+
+        </div>
+
+
+        <div class="academy-header-spacer"></div>
+
+    </header>
+
+
+
+    <main class="academy-content">
+
+
+        <!-- =========================
+             FEATURED
+        ========================== -->
+
+        <section
+            class="academy-content-section"
+            id="featuredSection"
+        >
+
+            <div class="academy-section-heading">
+
+                <div class="academy-section-title">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 2l3 6 7 .9-5 4.8 1.3 7-6.3-3.3-6.3 3.3 1.3-7-5-4.8L9 8z"></path>
+                    </svg>
+
+                    <span>
+                        FEATURED
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                Later this card will be filled
+                automatically from Supabase.
+            -->
+
+            <article
+                class="featured-article-card"
+                data-article-id="featured-demo"
+                tabindex="0"
+                role="button"
+            >
+
+                <div class="featured-article-overlay"></div>
+
+
+                <div class="featured-article-content">
+
+                    <span class="academy-category-label">
+                        FEATURED ARTICLE
+                    </span>
+
+
+                    <h1>
+                        How to build threshold fitness
+                    </h1>
+
+
+                    <p>
+                        The complete guide to improving your
+                        lactate threshold and running stronger
+                        for longer.
+                    </p>
+
+
+                    <div class="featured-meta">
+
+                        <span>
+                            5 MIN READ
+                        </span>
+
+                        <span class="meta-divider"></span>
+
+                        <span class="meta-category">
+                            TRAINING
+                        </span>
+
+                    </div>
+
+
+                    <div class="featured-read-action">
+
+                        <span>
+                            READ ARTICLE
+                        </span>
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M5 12h14"></path>
+                            <path d="M13 6l6 6-6 6"></path>
+                        </svg>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =========================
+             LATEST ARTICLES
+        ========================== -->
+
+        <section
+            class="academy-content-section"
+            id="latestArticlesSection"
+        >
+
+            <div class="academy-section-heading">
+
+                <div class="academy-section-title">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M6 2h9l4 4v16H6z"></path>
+                        <path d="M14 2v5h5"></path>
+                        <path d="M9 12h6"></path>
+                        <path d="M9 16h6"></path>
+                    </svg>
+
+                    <span>
+                        LATEST ARTICLES
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="academy-view-all"
+                    type="button"
+                >
+                    VIEW ALL
+
+                    <span>
+                        →
+                    </span>
+                </button>
+
+            </div>
+
+
+            <!--
+                Important:
+                Later academy.js will replace
+                the cards inside this container.
+            -->
+
+            <div
+                class="academy-article-list"
+                id="latestArticlesContainer"
+            >
+
+
+                <article
+                    class="academy-article-card"
+                    data-article-id="zone-2-demo"
+                    tabindex="0"
+                    role="button"
+                >
+
+                    <div class="academy-article-image article-image-running"></div>
+
+
+                    <div class="academy-article-info">
+
+                        <h3>
+                            Zone 2 Training: The Foundation of Endurance
+                        </h3>
+
+
+                        <div class="article-meta">
+
+                            <span>
+                                4 MIN READ
+                            </span>
+
+                            <span class="meta-divider"></span>
+
+                            <span class="meta-category">
+                                TRAINING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="academy-card-arrow">
+                        ›
+                    </div>
+
+                </article>
+
+
+
+                <article
+                    class="academy-article-card"
+                    data-article-id="nutrition-demo"
+                    tabindex="0"
+                    role="button"
+                >
+
+                    <div class="academy-article-image article-image-nutrition"></div>
+
+
+                    <div class="academy-article-info">
+
+                        <h3>
+                            Nutrition for Runners: Fuel. Perform. Recover.
+                        </h3>
+
+
+                        <div class="article-meta">
+
+                            <span>
+                                6 MIN READ
+                            </span>
+
+                            <span class="meta-divider"></span>
+
+                            <span class="meta-category">
+                                NUTRITION
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="academy-card-arrow">
+                        ›
+                    </div>
+
+                </article>
+
+
+
+                <article
+                    class="academy-article-card"
+                    data-article-id="recovery-demo"
+                    tabindex="0"
+                    role="button"
+                >
+
+                    <div class="academy-article-image article-image-recovery"></div>
+
+
+                    <div class="academy-article-info">
+
+                        <h3>
+                            Recovery Strategies That Actually Work
+                        </h3>
+
+
+                        <div class="article-meta">
+
+                            <span>
+                                5 MIN READ
+                            </span>
+
+                            <span class="meta-divider"></span>
+
+                            <span class="meta-category">
+                                RECOVERY
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="academy-card-arrow">
+                        ›
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             CATEGORIES
+        ========================== -->
+
+        <section class="academy-content-section">
+
+            <div class="academy-section-heading">
+
+                <div class="academy-section-title">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <rect
+                            x="3"
+                            y="3"
+                            width="7"
+                            height="7"
+                        ></rect>
+
+                        <rect
+                            x="14"
+                            y="3"
+                            width="7"
+                            height="7"
+                        ></rect>
+
+                        <rect
+                            x="3"
+                            y="14"
+                            width="7"
+                            height="7"
+                        ></rect>
+
+                        <rect
+                            x="14"
+                            y="14"
+                            width="7"
+                            height="7"
+                        ></rect>
+                    </svg>
+
+                    <span>
+                        BROWSE BY CATEGORY
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="academy-category-grid"
+                id="academyCategoryContainer"
+            >
+
+
+                <button
+                    class="academy-category-card"
+                    data-category="training"
+                    type="button"
+                >
+
+                    <span class="academy-category-icon">
+                        🏃
+                    </span>
+
+                    <strong>
+                        TRAINING
+                    </strong>
+
+                    <span>
+                        Articles
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="academy-category-card"
+                    data-category="strength"
+                    type="button"
+                >
+
+                    <span class="academy-category-icon">
+                        ◫
+                    </span>
+
+                    <strong>
+                        STRENGTH
+                    </strong>
+
+                    <span>
+                        Articles
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="academy-category-card"
+                    data-category="recovery"
+                    type="button"
+                >
+
+                    <span class="academy-category-icon">
+                        ♡
+                    </span>
+
+                    <strong>
+                        RECOVERY
+                    </strong>
+
+                    <span>
+                        Articles
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="academy-category-card"
+                    data-category="nutrition"
+                    type="button"
+                >
+
+                    <span class="academy-category-icon">
+                        ◯
+                    </span>
+
+                    <strong>
+                        NUTRITION
+                    </strong>
+
+                    <span>
+                        Articles
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="academy-category-card"
+                    data-category="race-prep"
+                    type="button"
+                >
+
+                    <span class="academy-category-icon">
+                        ⚑
+                    </span>
+
+                    <strong>
+                        RACE PREP
+                    </strong>
+
+                    <span>
+                        Articles
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             TOOLS
+        ========================== -->
+
+        <section class="academy-content-section">
+
+            <div class="academy-section-heading">
+
+                <div class="academy-section-title">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-3 3-3-3z"></path>
+                    </svg>
+
+                    <span>
+                        TOOLS & RESOURCES
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="academy-view-all"
+                    type="button"
+                >
+                    VIEW ALL
+
+                    <span>
+                        →
+                    </span>
+                </button>
+
+            </div>
+
+
+            <div
+                class="academy-tools-grid"
+                id="academyToolsContainer"
+            >
+
+
+                <button
+                    class="academy-tool-card"
+                    type="button"
+                    data-tool="pace-calculator"
+                >
+
+                    <div class="academy-tool-icon">
+                        ▦
+                    </div>
+
+                    <strong>
+                        Pace Calculator
+                    </strong>
+
+                    <span>
+                        Calculate your training paces
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="academy-tool-card"
+                    type="button"
+                    data-tool="race-predictor"
+                >
+
+                    <div class="academy-tool-icon">
+                        ◷
+                    </div>
+
+                    <strong>
+                        Race Time Predictor
+                    </strong>
+
+                    <span>
+                        Predict your race performance
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="academy-tool-card"
+                    type="button"
+                    data-tool="warm-up"
+                >
+
+                    <div class="academy-tool-icon">
+                        🏃
+                    </div>
+
+                    <strong>
+                        Warm-up Routines
+                    </strong>
+
+                    <span>
+                        Prepare your body the right way
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="academy-tool-card"
+                    type="button"
+                    data-tool="training-zones"
+                >
+
+                    <div class="academy-tool-icon">
+                        ▥
+                    </div>
+
+                    <strong>
+                        Training Zones Guide
+                    </strong>
+
+                    <span>
+                        Understand your training zones
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             WEEKLY UPDATE
+        ========================== -->
+
+        <section class="academy-update-card">
+
+            <div class="academy-update-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <rect
+                        x="3"
+                        y="5"
+                        width="18"
+                        height="14"
+                        rx="2"
+                    ></rect>
+
+                    <path d="M3 7l9 6 9-6"></path>
+                </svg>
+
+            </div>
+
+
+            <div class="academy-update-text">
+
+                <strong>
+                    New Academy content every week
+                </strong>
+
+                <span>
+                    New articles, guides and tools
+                    to help you improve.
+                </span>
+
+            </div>
+
+
+            <button
+                class="academy-update-button"
+                type="button"
+            >
+                GET UPDATES
+            </button>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="app.js"></script>
+
+<script src="auth-guard.js"></script>
+
+
+<script>
+
+    protectPage("athlete");
+
+
+    /*
+        For now the cards deliberately
+        have no destination.
+
+        Later academy.js will attach
+        article IDs and open article.html.
+    */
+
+</script>
+
+</body>
+
+</html>
