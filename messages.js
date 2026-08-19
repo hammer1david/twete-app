@@ -2669,6 +2669,15 @@ function subscribeToMessages() {
                     const message =
                         payload.new;
 
+                   if (
+    String(message.sender_id) ===
+    String(currentUser.id)
+) {
+
+    return;
+
+                   }
+
 
                     const belongs =
                         (
