@@ -1329,6 +1329,10 @@ function createSessionCard(
         getAthleteFeedback(
             session.notes
         );
+   const detailedFeedback =
+    workoutFeedback[
+        session.id
+    ] || null;
 
 
     return `
@@ -1453,29 +1457,111 @@ function createSessionCard(
 
 
                 ${
-                    athleteFeedback
+
+    (
+        athleteFeedback ||
+        detailedFeedback
+    )
+    ?
+    `
+    <div class="athlete-feedback">
+
+        <span class="athlete-feedback-label">
+            YOUR FEEDBACK
+        </span>
+
+
+        ${
+            detailedFeedback
+            ?
+            `
+            <div class="feedback-summary">
+
+                ${
+                    detailedFeedback.feeling
                     ?
                     `
-                    <div class="athlete-feedback">
+                    <span class="feedback-feeling">
+                        ${getFeelingEmoji(
+                            detailedFeedback.feeling
+                        )}
 
-                        <span class="athlete-feedback-label">
-                            YOUR FEEDBACK
-                        </span>
-
-                        <div class="athlete-feedback-text">
-                            ${escapeHtml(
-                                athleteFeedback
-                            ).replaceAll(
-                                "\n",
-                                "<br>"
-                            )}
-                        </div>
-
-                    </div>
+                        ${escapeHtml(
+                            capitalizeFeeling(
+                                detailedFeedback.feeling
+                            )
+                        )}
+                    </span>
                     `
                     :
                     ""
                 }
+
+
+                ${
+                    detailedFeedback.effort
+                    ?
+                    `
+                    <span class="feedback-rpe">
+                        RPE
+                        ${escapeHtml(
+                            detailedFeedback.effort
+                        )}/10
+                    </span>
+                    `
+                    :
+                    ""
+                }
+
+            </div>
+            `
+            :
+            ""
+        }
+
+
+        ${
+            athleteFeedback
+            ?
+            `
+            <div class="athlete-feedback-text">
+
+                ${escapeHtml(
+                    athleteFeedback
+                ).replaceAll(
+                    "\n",
+                    "<br>"
+                )}
+
+            </div>
+            `
+            :
+            (
+                detailedFeedback?.comment
+                ?
+                `
+                <div class="athlete-feedback-text">
+
+                    ${escapeHtml(
+                        detailedFeedback.comment
+                    ).replaceAll(
+                        "\n",
+                        "<br>"
+                    )}
+
+                </div>
+                `
+                :
+                ""
+            )
+        }
+
+    </div>
+    `
+    :
+    ""
+
+}
 
 
                 <button
