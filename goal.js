@@ -1682,6 +1682,1252 @@ async function addFeedback(
         );
 
 
+    let structuredFeedback =
+        null;
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await goalSupabase
+                .from(
+                    "workout_feedback"
+                )
+                .select(`
+                    id,
+                    workout_id,
+                    athlete_id,
+                    feeling,
+                    effort,
+                    legs,
+                    temperature,
+                    wind,
+                    terrain,
+                    comment
+                `)
+                .eq(
+                    "workout_id",
+                    session.id
+                )
+                .maybeSingle();
+
+
+        if (!error) {
+
+            structuredFeedback =
+                data;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not load structured feedback:",
+            error
+        );
+
+    }
+
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+
+    modal.className =
+        "feedback-modal";
+
+
+    modal.innerHTML = `
+
+        <div class="feedback-modal-box">
+
+
+            <h3>
+                ${
+                    existingText ||
+                    structuredFeedback
+                        ? "Edit Feedback"
+                        : "Add Feedback"
+                }
+            </h3>
+
+
+            <label class="feedback-field-label">
+                Anything we should know?
+            </label>
+
+
+            <textarea
+                id="feedbackInput"
+                placeholder="Wind, weather, how the session felt, anything unusual..."
+            >${escapeHtml(
+                existingText
+            )}</textarea>
+
+
+            <button
+                type="button"
+                class="more-feedback-button"
+                id="moreFeedbackButton"
+            >
+                ${
+                    structuredFeedback
+                        ? "− Hide extra feedback"
+                        : "+ Give more feedback"
+                }
+            </button>
+
+
+            <div
+                class="extended-feedback"
+                id="extendedFeedback"
+                ${
+                    structuredFeedback
+                        ? ""
+                        : "hidden"
+                }
+            >
+
+
+                <div class="optional-header">
+
+                    <span>
+                        MORE DETAILS
+                    </span>
+
+                    <small>
+                        OPTIONAL
+                    </small>
+
+                </div>
+
+
+                <!-- FEELING -->
+
+                <div class="feedback-section">
+
+                    <div class="extended-feedback-title">
+                        How did the session feel?
+                    </div>
+
+
+                    <div class="feeling-options">
+
+                        <button
+                            type="button"
+                            class="feeling-option ${
+                                structuredFeedback?.feeling ===
+                                "great"
+                                    ? "selected"
+                                    : ""
+                            }"
+                            data-feeling="great"
+                        >
+                            😄
+                            <span>Great</span>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="feeling-option ${
+                                structuredFeedback?.feeling ===
+                                "good"
+                                    ? "selected"
+                                    : ""
+                            }"
+                            data-feeling="good"
+                        >
+                            🙂
+                            <span>Good</span>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="feeling-option ${
+                                structuredFeedback?.feeling ===
+                                "okay"
+                                    ? "selected"
+                                    : ""
+                            }"
+                            data-feeling="okay"
+                        >
+                            😐
+                            <span>Okay</span>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="feeling-option ${
+                                structuredFeedback?.feeling ===
+                                "bad"
+                                    ? "selected"
+                                    : ""
+                            }"
+                            data-feeling="bad"
+                        >
+                            😣
+                            <span>Bad</span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RPE -->
+
+                <div class="feedback-section">
+
+                    <div class="effort-header">
+
+                        <span>
+                            Effort
+                        </span>
+
+                        <strong id="effortValue">
+
+                            ${
+                                structuredFeedback?.effort
+                                    ?
+                                    structuredFeedback.effort +
+                                    "/10"
+                                    :
+                                    "Not selected"
+                            }
+
+                        </strong>
+
+                    </div>
+
+
+                    <input
+                        id="effortInput"
+                        type="range"
+                        min="1"
+                        max="10"
+                        step="1"
+                        value="${
+                            structuredFeedback?.effort ||
+                            5
+                        }"
+                        class="${
+                            structuredFeedback?.effort
+                                ? "slider-active"
+                                : ""
+                        }"
+                    >
+
+
+                    <div class="effort-labels">
+                        <span>Easy</span>
+                        <span>Hard</span>
+                    </div>
+
+                </div>
+
+
+                <!-- LEGS -->
+
+                <div class="feedback-section">
+
+                    <div class="extended-feedback-title">
+                        Legs
+                    </div>
+
+
+                    <div class="legs-options">
+
+                        <button
+                            type="button"
+                            class="detail-option ${
+                                structuredFeedback?.legs ===
+                                "fresh"
+                                    ? "selected"
+                                    : ""
+                            }"
+                            data-legs="fresh"
+                        >
+                            ⚡ Fresh
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="detail-option ${
+                                structuredFeedback?.legs ===
+                                "normal"
+                                    ? "selected"
+                                    : ""
+                            }"
+                            data-legs="normal"
+                        >
+                            🙂 Normal
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="detail-option ${
+                                structuredFeedback?.legs ===
+                                "heavy"
+                                    ? "selected"
+                                    : ""
+                            }"
+                            data-legs="heavy"
+                        >
+                            🪨 Heavy
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- WEATHER -->
+
+                <div class="feedback-section">
+
+                    <div class="extended-feedback-title">
+                        Weather
+                    </div>
+
+
+                    <div class="weather-item">
+
+                        <div class="weather-header">
+
+                            <span>
+                                Temperature
+                            </span>
+
+                            <strong id="temperatureValue">
+
+                                ${
+                                    structuredFeedback?.temperature
+                                        ?
+                                        getTemperatureLabel(
+                                            structuredFeedback.temperature
+                                        )
+                                        :
+                                        "Not selected"
+                                }
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="slider-label-row">
+                            <span>❄️ Cold</span>
+                            <span>🔥 Hot</span>
+                        </div>
+
+
+                        <input
+                            id="temperatureInput"
+                            type="range"
+                            min="1"
+                            max="5"
+                            step="1"
+                            value="${
+                                structuredFeedback?.temperature ||
+                                3
+                            }"
+                            class="${
+                                structuredFeedback?.temperature
+                                    ? "slider-active"
+                                    : ""
+                            }"
+                        >
+
+                    </div>
+
+
+                    <div class="weather-item">
+
+                        <div class="weather-header">
+
+                            <span>
+                                Wind
+                            </span>
+
+                            <strong id="windValue">
+
+                                ${
+                                    structuredFeedback?.wind
+                                        ?
+                                        getWindLabel(
+                                            structuredFeedback.wind
+                                        )
+                                        :
+                                        "Not selected"
+                                }
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="slider-label-row">
+                            <span>Calm</span>
+                            <span>💨 Windy</span>
+                        </div>
+
+
+                        <input
+                            id="windInput"
+                            type="range"
+                            min="1"
+                            max="5"
+                            step="1"
+                            value="${
+                                structuredFeedback?.wind ||
+                                3
+                            }"
+                            class="${
+                                structuredFeedback?.wind
+                                    ? "slider-active"
+                                    : ""
+                            }"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- TERRAIN -->
+
+                <div class="feedback-section">
+
+                    <div class="extended-feedback-title">
+                        Terrain
+                    </div>
+
+
+                    <div class="terrain-options">
+
+
+                        ${[
+                            ["track", "🏟 Track"],
+                            ["flat", "━ Flat"],
+                            ["rolling", "〰 Rolling"],
+                            ["hilly", "⛰ Hilly"],
+                            ["trail", "🌲 Trail"],
+                            ["grass", "🌱 Grass"],
+                            ["treadmill", "🏃 Treadmill"]
+                        ].map(
+                            function (item) {
+
+                                return `
+
+                                    <button
+                                        type="button"
+                                        class="detail-option ${
+                                            structuredFeedback?.terrain ===
+                                            item[0]
+                                                ? "selected"
+                                                : ""
+                                        }"
+                                        data-terrain="${item[0]}"
+                                    >
+                                        ${item[1]}
+                                    </button>
+
+                                `;
+
+                            }
+                        ).join("")}
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="feedback-modal-buttons">
+
+                <button
+                    type="button"
+                    class="feedback-cancel"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="button"
+                    class="feedback-save"
+                >
+                    Save Feedback
+                </button>
+
+            </div>
+
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    const textarea =
+        modal.querySelector(
+            "#feedbackInput"
+        );
+
+
+    const extended =
+        modal.querySelector(
+            "#extendedFeedback"
+        );
+
+
+    const moreButton =
+        modal.querySelector(
+            "#moreFeedbackButton"
+        );
+
+
+    const effortInput =
+        modal.querySelector(
+            "#effortInput"
+        );
+
+
+    const effortValue =
+        modal.querySelector(
+            "#effortValue"
+        );
+
+
+    const temperatureInput =
+        modal.querySelector(
+            "#temperatureInput"
+        );
+
+
+    const temperatureValue =
+        modal.querySelector(
+            "#temperatureValue"
+        );
+
+
+    const windInput =
+        modal.querySelector(
+            "#windInput"
+        );
+
+
+    const windValue =
+        modal.querySelector(
+            "#windValue"
+        );
+
+
+    let selectedFeeling =
+        structuredFeedback?.feeling ||
+        null;
+
+
+    let selectedLegs =
+        structuredFeedback?.legs ||
+        null;
+
+
+    let selectedTerrain =
+        structuredFeedback?.terrain ||
+        null;
+
+
+    let effortSelected =
+        structuredFeedback?.effort !==
+        null &&
+        structuredFeedback?.effort !==
+        undefined;
+
+
+    let temperatureSelected =
+        structuredFeedback?.temperature !==
+        null &&
+        structuredFeedback?.temperature !==
+        undefined;
+
+
+    let windSelected =
+        structuredFeedback?.wind !==
+        null &&
+        structuredFeedback?.wind !==
+        undefined;
+
+
+    /* =====================================
+       SHOW / HIDE
+    ====================================== */
+
+    moreButton.onclick =
+        function () {
+
+            const isHidden =
+                extended.hidden;
+
+
+            extended.hidden =
+                !isHidden;
+
+
+            moreButton.textContent =
+                isHidden
+                    ? "− Hide extra feedback"
+                    : "+ Give more feedback";
+
+        };
+
+
+    /* =====================================
+       FEELING
+       CLICK AGAIN = CLEAR
+    ====================================== */
+
+    modal
+        .querySelectorAll(
+            ".feeling-option"
+        )
+        .forEach(
+            function (button) {
+
+                button.onclick =
+                    function () {
+
+                        const value =
+                            button.dataset.feeling;
+
+
+                        if (
+                            selectedFeeling ===
+                            value
+                        ) {
+
+                            selectedFeeling =
+                                null;
+
+
+                            button.classList.remove(
+                                "selected"
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        modal
+                            .querySelectorAll(
+                                ".feeling-option"
+                            )
+                            .forEach(
+                                function (item) {
+
+                                    item.classList.remove(
+                                        "selected"
+                                    );
+
+                                }
+                            );
+
+
+                        selectedFeeling =
+                            value;
+
+
+                        button.classList.add(
+                            "selected"
+                        );
+
+                    };
+
+            }
+        );
+
+
+    /* =====================================
+       LEGS
+    ====================================== */
+
+    modal
+        .querySelectorAll(
+            "[data-legs]"
+        )
+        .forEach(
+            function (button) {
+
+                button.onclick =
+                    function () {
+
+                        const value =
+                            button.dataset.legs;
+
+
+                        if (
+                            selectedLegs ===
+                            value
+                        ) {
+
+                            selectedLegs =
+                                null;
+
+
+                            button.classList.remove(
+                                "selected"
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        modal
+                            .querySelectorAll(
+                                "[data-legs]"
+                            )
+                            .forEach(
+                                function (item) {
+
+                                    item.classList.remove(
+                                        "selected"
+                                    );
+
+                                }
+                            );
+
+
+                        selectedLegs =
+                            value;
+
+
+                        button.classList.add(
+                            "selected"
+                        );
+
+                    };
+
+            }
+        );
+
+
+    /* =====================================
+       TERRAIN
+    ====================================== */
+
+    modal
+        .querySelectorAll(
+            "[data-terrain]"
+        )
+        .forEach(
+            function (button) {
+
+                button.onclick =
+                    function () {
+
+                        const value =
+                            button.dataset.terrain;
+
+
+                        if (
+                            selectedTerrain ===
+                            value
+                        ) {
+
+                            selectedTerrain =
+                                null;
+
+
+                            button.classList.remove(
+                                "selected"
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        modal
+                            .querySelectorAll(
+                                "[data-terrain]"
+                            )
+                            .forEach(
+                                function (item) {
+
+                                    item.classList.remove(
+                                        "selected"
+                                    );
+
+                                }
+                            );
+
+
+                        selectedTerrain =
+                            value;
+
+
+                        button.classList.add(
+                            "selected"
+                        );
+
+                    };
+
+            }
+        );
+
+
+    /* =====================================
+       RPE
+    ====================================== */
+
+    effortInput.oninput =
+        function () {
+
+            effortSelected =
+                true;
+
+
+            effortInput.classList.add(
+                "slider-active"
+            );
+
+
+            effortValue.textContent =
+                effortInput.value +
+                "/10";
+
+        };
+
+
+    /* =====================================
+       TEMPERATURE
+    ====================================== */
+
+    temperatureInput.oninput =
+        function () {
+
+            temperatureSelected =
+                true;
+
+
+            temperatureInput.classList.add(
+                "slider-active"
+            );
+
+
+            temperatureValue.textContent =
+                getTemperatureLabel(
+                    temperatureInput.value
+                );
+
+        };
+
+
+    /* =====================================
+       WIND
+    ====================================== */
+
+    windInput.oninput =
+        function () {
+
+            windSelected =
+                true;
+
+
+            windInput.classList.add(
+                "slider-active"
+            );
+
+
+            windValue.textContent =
+                getWindLabel(
+                    windInput.value
+                );
+
+        };
+
+
+    /* =====================================
+       CANCEL
+    ====================================== */
+
+    modal
+        .querySelector(
+            ".feedback-cancel"
+        )
+        .onclick =
+        function () {
+
+            modal.remove();
+
+        };
+
+
+    /* =====================================
+       SAVE
+    ====================================== */
+
+    modal
+        .querySelector(
+            ".feedback-save"
+        )
+        .onclick =
+        async function () {
+
+            const feedbackText =
+                textarea.value.trim();
+
+
+            const hasStructuredFeedback =
+                selectedFeeling ||
+                effortSelected ||
+                selectedLegs ||
+                temperatureSelected ||
+                windSelected ||
+                selectedTerrain;
+
+
+            if (
+                !feedbackText &&
+                !hasStructuredFeedback
+            ) {
+
+                alert(
+                    "Please add at least one feedback detail."
+                );
+
+                return;
+
+            }
+
+
+            /* =================================
+               SAVE TEXT FEEDBACK
+            ================================== */
+
+            if (feedbackText) {
+
+                const newNotes =
+                    setAthleteFeedback(
+                        session.notes,
+                        feedbackText
+                    );
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await goalSupabase
+                        .from("workouts")
+                        .update({
+                            notes:
+                                newNotes
+                        })
+                        .eq(
+                            "id",
+                            session.id
+                        )
+                        .select(`
+                            id,
+                            athlete_id,
+                            week_id,
+                            workout_date,
+                            workout_type,
+                            title,
+                            distance_km,
+                            duration_minutes,
+                            pace,
+                            notes,
+                            completed
+                        `)
+                        .maybeSingle();
+
+
+                if (error) {
+
+                    console.error(
+                        "Feedback save error:",
+                        error
+                    );
+
+
+                    alert(
+                        "Could not save feedback."
+                    );
+
+
+                    return;
+
+                }
+
+
+                if (data) {
+
+                    const index =
+                        currentSessions.findIndex(
+                            function (item) {
+
+                                return (
+                                    String(item.id) ===
+                                    String(session.id)
+                                );
+
+                            }
+                        );
+
+
+                    if (index >= 0) {
+
+                        currentSessions[index] =
+                            data;
+
+                    }
+
+                }
+
+            }
+
+
+            /* =================================
+               SAVE STRUCTURED FEEDBACK
+            ================================== */
+
+            const {
+                data: {
+                    user
+                }
+            } =
+                await goalSupabase
+                    .auth
+                    .getUser();
+
+
+            if (!user) {
+
+                alert(
+                    "Please log in again."
+                );
+
+                return;
+
+            }
+
+
+            const {
+                data: savedFeedback,
+                error: structuredError
+            } =
+                await goalSupabase
+                    .from(
+                        "workout_feedback"
+                    )
+                    .upsert(
+                        {
+
+                            workout_id:
+                                session.id,
+
+                            athlete_id:
+                                user.id,
+
+                            feeling:
+                                selectedFeeling ||
+                                null,
+
+                            effort:
+                                effortSelected
+                                    ?
+                                    Number(
+                                        effortInput.value
+                                    )
+                                    :
+                                    null,
+
+                            legs:
+                                selectedLegs ||
+                                null,
+
+                            temperature:
+                                temperatureSelected
+                                    ?
+                                    Number(
+                                        temperatureInput.value
+                                    )
+                                    :
+                                    null,
+
+                            wind:
+                                windSelected
+                                    ?
+                                    Number(
+                                        windInput.value
+                                    )
+                                    :
+                                    null,
+
+                            terrain:
+                                selectedTerrain ||
+                                null,
+
+                            comment:
+                                feedbackText ||
+                                null,
+
+                            updated_at:
+                                new Date()
+                                    .toISOString()
+
+                        },
+                        {
+
+                            onConflict:
+                                "workout_id,athlete_id"
+
+                        }
+                    )
+                    .select(`
+                        id,
+                        workout_id,
+                        athlete_id,
+                        feeling,
+                        effort,
+                        legs,
+                        temperature,
+                        wind,
+                        terrain,
+                        comment,
+                        created_at,
+                        updated_at
+                    `)
+                    .single();
+
+
+            if (structuredError) {
+
+                console.error(
+                    "Structured feedback error:",
+                    structuredError
+                );
+
+
+                alert(
+                    "Could not save the additional feedback."
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+             * IMPORTANT:
+             * update local cache immediately,
+             * so feedback stays visible after save.
+             */
+
+            if (savedFeedback) {
+
+                workoutFeedback[
+                    session.id
+                ] =
+                    savedFeedback;
+
+            }
+
+
+            modal.remove();
+
+
+            renderSelectedWeek();
+
+        };
+
+}
+
+function getTemperatureLabel(
+    value
+) {
+
+    switch (
+        Number(value)
+    ) {
+
+        case 1:
+            return "Very cold";
+
+        case 2:
+            return "Cold";
+
+        case 3:
+            return "Neutral";
+
+        case 4:
+            return "Hot";
+
+        case 5:
+            return "Very hot";
+
+        default:
+            return "";
+
+    }
+
+}
+
+
+function getWindLabel(
+    value
+) {
+
+    switch (
+        Number(value)
+    ) {
+
+        case 1:
+            return "Calm";
+
+        case 2:
+            return "Light";
+
+        case 3:
+            return "Moderate";
+
+        case 4:
+            return "Windy";
+
+        case 5:
+            return "Very windy";
+
+        default:
+            return "";
+
+    }
+
+       }
     /* =====================================
        LOAD OPTIONAL STRUCTURED FEEDBACK
     ====================================== */
