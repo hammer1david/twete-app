@@ -3630,195 +3630,228 @@ deleteMessageButton
 /* =========================================
    DELETE SELECTED MESSAGE
 ========================================= */
-
 async function deleteSelectedMessage() {
 
     if (
-        !selectedMessageData ||
+        selectedMessages.size === 0 ||
         !currentUser
     ) {
         return;
     }
 
 
+    const messagesToDelete =
+        Array.from(
+            selectedMessages.values()
+        );
+
+
     /*
-        Only allow deleting our own message
+        Safety:
+        Only allow deletion when every
+        selected message belongs to us.
     */
 
-    if (
-        selectedMessageData.sender_id !==
-        currentUser.id
-    ) {
+    const allMessagesAreOwn =
+        messagesToDelete.every(
+            function (message) {
+
+                return (
+                    message.sender_id ===
+                    currentUser.id
+                );
+
+            }
+        );
+
+
+    if (!allMessagesAreOwn) {
         return;
     }
 
 
-    const messageId =
-        selectedMessageData.id;
+    /*
+        Collect message IDs
+    */
+
+    const messageIds =
+        messagesToDelete.map(
+            function (message) {
+
+                return message.id;
+
+            }
+        );
 
 
     /*
-        Collect storage files before deleting
-        the database message.
+        Collect attachment storage paths
+        before deleting the messages.
     */
 
     const storagePaths = [];
 
 
-    if (
-        Array.isArray(
-            selectedMessageData.message_attachments
-        )
-    ) {
+    messagesToDelete.forEach(
+        function (message) {
 
-        selectedMessageData
-            .message_attachments
-            .forEach(
-                function (attachment) {
+            if (
+                Array.isArray(
+                    message.message_attachments
+                )
+            ) {
 
-                    if (
-                        attachment.storage_path
-                    ) {
+                message
+                    .message_attachments
+                    .forEach(
+                        function (attachment) {
 
-                        storagePaths.push(
-                            attachment.storage_path
-                        );
+                            if (
+                                attachment.storage_path &&
+                                !storagePaths.includes(
+                                    attachment.storage_path
+                                )
+                            ) {
 
-                    }
+                                storagePaths.push(
+                                    attachment.storage_path
+                                );
 
-                }
-            );
+                            }
 
-    }
+                        }
+                    );
 
-
-    /*
-        Fallback for old messages
-    */
-
-    if (
-        selectedMessageData.attachment_path &&
-        !storagePaths.includes(
-            selectedMessageData.attachment_path
-        )
-    ) {
-
-        storagePaths.push(
-            selectedMessageData.attachment_path
-        );
-
-    }
+            }
 
 
-   /*
-    Delete message first.
+            /*
+                Fallback for old messages
+            */
 
-    message_attachments rows are removed
-    automatically by ON DELETE CASCADE.
-*/
+            if (
+                message.attachment_path &&
+                !storagePaths.includes(
+                    message.attachment_path
+                )
+            ) {
 
- const {
-    data: deletedMessages,
-    error
-} =
-    await supabaseClient
-        .from("messages")
-        .delete()
-        .eq(
-            "id",
-            messageId
-        )
-        .eq(
-            "sender_id",
-            currentUser.id
-        )
-        .select(
-            "id"
-        );
+                storagePaths.push(
+                    message.attachment_path
+                );
 
+            }
 
-if (error) {
-
-    console.error(
-        "Delete message error:",
-        error
-    );
-
-    return;
-}
-if (
-    !deletedMessages ||
-    deletedMessages.length === 0
-) {
-
-    console.error(
-        "Delete message failed: no row deleted.",
-        {
-            messageId:
-                messageId,
-
-            currentUserId:
-                currentUser.id,
-
-            senderId:
-                selectedMessageData.sender_id
         }
     );
 
-    return;
-}
 
-/*
-    Remove attachment files afterwards.
+    /*
+        Delete all selected messages.
 
-    A storage cleanup error must not prevent
-    the message itself from being deleted.
-*/
-
-if (
-    storagePaths.length > 0
-) {
+        message_attachments rows are removed
+        automatically by ON DELETE CASCADE.
+    */
 
     const {
-        error: storageError
+        data: deletedMessages,
+        error
     } =
         await supabaseClient
-            .storage
-            .from(
-                "chat-attachments"
+            .from("messages")
+            .delete()
+            .in(
+                "id",
+                messageIds
             )
-            .remove(
-                storagePaths
+            .eq(
+                "sender_id",
+                currentUser.id
+            )
+            .select(
+                "id"
             );
 
 
-    if (storageError) {
+    if (error) {
 
         console.error(
-            "Delete attachment files error:",
-            storageError
+            "Delete messages error:",
+            error
         );
 
+        return;
     }
 
-}
+
+    if (
+        !deletedMessages ||
+        deletedMessages.length === 0
+    ) {
+
+        console.error(
+            "Delete messages failed: no rows deleted."
+        );
+
+        return;
+    }
+
 
     /*
-        Remove message immediately
-        from the current chat.
+        Remove attachment files afterwards.
     */
 
-    const row =
-        document.querySelector(
-            `[data-message-id="${messageId}"]`
-        );
+    if (
+        storagePaths.length > 0
+    ) {
+
+        const {
+            error: storageError
+        } =
+            await supabaseClient
+                .storage
+                .from(
+                    "chat-attachments"
+                )
+                .remove(
+                    storagePaths
+                );
 
 
-    if (row) {
+        if (storageError) {
 
-        row.remove();
+            console.error(
+                "Delete attachment files error:",
+                storageError
+            );
+
+        }
 
     }
+
+
+    /*
+        Remove successfully deleted messages
+        immediately from this device.
+    */
+
+    deletedMessages.forEach(
+        function (message) {
+
+            const row =
+                document.querySelector(
+                    `[data-message-id="${message.id}"]`
+                );
+
+
+            if (row) {
+
+                row.remove();
+
+            }
+
+        }
+    );
 
 
     clearMessageSelection();
