@@ -3564,7 +3564,13 @@ alert(
         .select(
             "id"
         );
-
+alert(
+    "Delete result:\n" +
+    "Error: " +
+    JSON.stringify(error) +
+    "\nData: " +
+    JSON.stringify(deletedMessages)
+);
 
 if (error) {
 
