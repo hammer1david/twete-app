@@ -478,46 +478,23 @@ button {
 
 
 /* =========================================
-   INPUT CONTAINER
+   MESSAGE COMPOSER
 ========================================= */
 
-.message-input-container {
-    flex: 1;
-
+.message-composer {
+    width: 100%;
     min-width: 0;
 
     display: flex;
-}
+    align-items: flex-end;
 
-
-/* =========================================
-   TEXTAREA
-========================================= */
-
-.message-input {
-    display: block;
-
-    width: 100%;
-
-    min-width: 0;
-
-    min-height: 50px;
-
-    max-height: 130px;
-
-    resize: none;
+    gap: 6px;
 
     padding:
-        14px
+        5px
+        5px
+        5px
         17px;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.15);
-
-    border-radius: 26px;
-
-    outline: none;
 
     background:
         linear-gradient(
@@ -526,24 +503,19 @@ button {
             #111111
         );
 
-    color: #ffffff;
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.15);
 
-    font-size: 14px;
-
-    line-height: 1.4;
-
-    overflow-y: auto;
+    border-radius: 28px;
 
     transition:
         border-color 0.18s ease,
         box-shadow 0.18s ease;
 }
 
-.message-input::placeholder {
-    color: #888888;
-}
 
-.message-input:focus {
+.message-composer:focus-within {
     border-color:
         rgba(198, 255, 0, 0.38);
 
@@ -554,14 +526,57 @@ button {
 
 
 /* =========================================
+   TEXTAREA
+========================================= */
+
+.message-input {
+    display: block;
+
+    flex: 1;
+
+    width: 100%;
+    min-width: 0;
+
+    min-height: 40px;
+    max-height: 130px;
+
+    padding:
+        10px
+        4px;
+
+    margin: 0;
+
+    border: none;
+    outline: none;
+
+    resize: none;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    line-height: 20px;
+
+    overflow-y: hidden;
+}
+
+
+.message-input::placeholder {
+    color: #888888;
+}
+
+
+/* =========================================
    SEND BUTTON
 ========================================= */
 
 .send-button {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 
-    flex: 0 0 50px;
+    flex: 0 0 40px;
 
     display: flex;
     align-items: center;
@@ -580,39 +595,43 @@ button {
     cursor: pointer;
 
     box-shadow:
-        0 4px 18px
-        rgba(198, 255, 0, 0.15);
+        0 3px 12px
+        rgba(198, 255, 0, 0.14);
 
     transition:
         transform 0.15s ease,
-        box-shadow 0.18s ease,
-        opacity 0.18s ease;
+        opacity 0.18s ease,
+        box-shadow 0.18s ease;
 }
+
 
 .send-button:hover {
     box-shadow:
-        0 5px 22px
-        rgba(198, 255, 0, 0.24);
+        0 4px 16px
+        rgba(198, 255, 0, 0.22);
 }
+
 
 .send-button:active {
     transform: scale(0.91);
 }
+
 
 .send-button:disabled {
     opacity: 0.45;
     cursor: default;
 }
 
+
 .send-button svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 
     fill: none;
 
     stroke: currentColor;
 
-    stroke-width: 1.8;
+    stroke-width: 1.9;
 
     stroke-linecap: round;
     stroke-linejoin: round;
