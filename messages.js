@@ -1222,6 +1222,10 @@ function setupComposer() {
         document.querySelector(
             ".send-button"
         );
+/* =========================================
+   ATTACHMENTS
+========================================= */
+
 const attachmentButton =
     document.querySelector(
         ".attachment-button"
@@ -1232,6 +1236,28 @@ const attachmentInput =
         "attachmentInput"
     );
 
+const attachmentPreview =
+    document.getElementById(
+        "attachmentPreview"
+    );
+
+const attachmentPreviewContent =
+    document.getElementById(
+        "attachmentPreviewContent"
+    );
+
+const attachmentRemove =
+    document.getElementById(
+        "attachmentRemove"
+    );
+
+
+let selectedAttachment = null;
+
+
+/*
+    Open file picker
+*/
 
 if (
     attachmentButton &&
@@ -1248,6 +1274,10 @@ if (
     );
 
 
+    /*
+        File selected
+    */
+
     attachmentInput.addEventListener(
         "change",
         function () {
@@ -1259,14 +1289,318 @@ if (
                 return;
             }
 
-            console.log(
-                "Selected attachment:",
-                file.name,
-                file.type,
-                file.size
+
+            selectedAttachment =
+                file;
+
+
+            showAttachmentPreview(
+                file
             );
 
         }
+    );
+
+}
+
+
+/*
+    Remove attachment
+*/
+
+if (attachmentRemove) {
+
+    attachmentRemove.addEventListener(
+        "click",
+        removeAttachment
+    );
+
+}
+
+
+/* =========================================
+   SHOW ATTACHMENT PREVIEW
+========================================= */
+
+function showAttachmentPreview(
+    file
+) {
+
+    if (
+        !attachmentPreview ||
+        !attachmentPreviewContent
+    ) {
+        return;
+    }
+
+
+    attachmentPreviewContent.innerHTML =
+        "";
+
+
+    /*
+        IMAGE
+    */
+
+    if (
+        file.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+        image.className =
+            "attachment-preview-image";
+
+        image.src =
+            URL.createObjectURL(
+                file
+            );
+
+        image.alt =
+            file.name;
+
+
+        attachmentPreviewContent.appendChild(
+            image
+        );
+
+        addFileInformation(
+            file
+        );
+
+    }
+
+
+    /*
+        VIDEO
+    */
+
+    else if (
+        file.type.startsWith(
+            "video/"
+        )
+    ) {
+
+        const video =
+            document.createElement(
+                "video"
+            );
+
+        video.className =
+            "attachment-preview-video";
+
+        video.src =
+            URL.createObjectURL(
+                file
+            );
+
+        video.muted =
+            true;
+
+        video.playsInline =
+            true;
+
+
+        attachmentPreviewContent.appendChild(
+            video
+        );
+
+        addFileInformation(
+            file
+        );
+
+    }
+
+
+    /*
+        OTHER FILE
+    */
+
+    else {
+
+        const icon =
+            document.createElement(
+                "div"
+            );
+
+        icon.className =
+            "attachment-file-icon";
+
+        icon.textContent =
+            "📄";
+
+
+        attachmentPreviewContent.appendChild(
+            icon
+        );
+
+        addFileInformation(
+            file
+        );
+
+    }
+
+
+    attachmentPreview.hidden =
+        false;
+
+}
+
+
+/* =========================================
+   FILE INFORMATION
+========================================= */
+
+function addFileInformation(
+    file
+) {
+
+    const information =
+        document.createElement(
+            "div"
+        );
+
+    information.className =
+        "attachment-file-info";
+
+
+    const name =
+        document.createElement(
+            "div"
+        );
+
+    name.className =
+        "attachment-file-name";
+
+    name.textContent =
+        file.name;
+
+
+    const type =
+        document.createElement(
+            "div"
+        );
+
+    type.className =
+        "attachment-file-type";
+
+    type.textContent =
+        formatFileSize(
+            file.size
+        );
+
+
+    information.appendChild(
+        name
+    );
+
+    information.appendChild(
+        type
+    );
+
+
+    attachmentPreviewContent.appendChild(
+        information
+    );
+
+}
+
+
+/* =========================================
+   REMOVE ATTACHMENT
+========================================= */
+
+function removeAttachment() {
+
+    selectedAttachment =
+        null;
+
+
+    if (attachmentInput) {
+
+        attachmentInput.value =
+            "";
+
+    }
+
+
+    if (attachmentPreviewContent) {
+
+        attachmentPreviewContent.innerHTML =
+            "";
+
+    }
+
+
+    if (attachmentPreview) {
+
+        attachmentPreview.hidden =
+            true;
+
+    }
+
+}
+
+
+/* =========================================
+   FILE SIZE
+========================================= */
+
+function formatFileSize(
+    bytes
+) {
+
+    if (
+        !bytes ||
+        bytes <= 0
+    ) {
+
+        return "File";
+
+    }
+
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB"
+    ];
+
+
+    const index =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+
+    const size =
+        bytes /
+        Math.pow(
+            1024,
+            index
+        );
+
+
+    return (
+        size.toFixed(
+            index === 0
+                ? 0
+                : 1
+        ) +
+        " " +
+        units[
+            Math.min(
+                index,
+                units.length - 1
+            )
+        ]
     );
 
 }
