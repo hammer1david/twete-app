@@ -2252,6 +2252,85 @@ function stopChatPresence() {
     );
 
 }
+
+/* =========================================
+   LOAD ONE MESSAGE WITH ATTACHMENTS
+========================================= */
+
+async function loadMessageWithAttachments(
+    messageId
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .select(`
+                id,
+                sender_id,
+                receiver_id,
+                message,
+                created_at,
+                read_at,
+                attachment_path,
+                attachment_name,
+                attachment_type,
+                attachment_size,
+                message_attachments (
+                    id,
+                    storage_path,
+                    file_name,
+                    file_type,
+                    file_size,
+                    position
+                )
+            `)
+            .eq(
+                "id",
+                messageId
+            )
+            .maybeSingle();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        console.error(
+            "Load realtime message error:",
+            error
+        );
+
+        return null;
+    }
+
+
+    if (
+        Array.isArray(
+            data.message_attachments
+        )
+    ) {
+
+        data.message_attachments.sort(
+            function (a, b) {
+
+                return (
+                    (a.position || 0) -
+                    (b.position || 0)
+                );
+
+            }
+        );
+
+    }
+
+
+    return data;
+
+}
 /* =========================================
    REALTIME
 ========================================= */
