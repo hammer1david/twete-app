@@ -7,6 +7,7 @@
    SUPABASE
 ========================================= */
 
+
 const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
@@ -24,6 +25,26 @@ const supabaseClient =
 /* =========================================
    ELEMENTS
 ========================================= */
+const messageActionBar =
+    document.getElementById(
+        "messageActionBar"
+    );
+
+const copyMessageButton =
+    document.getElementById(
+        "copyMessageButton"
+    );
+
+const deleteMessageButton =
+    document.getElementById(
+        "deleteMessageButton"
+    );
+
+const cancelMessageSelectionButton =
+    document.getElementById(
+        "cancelMessageSelectionButton"
+    );
+
 const chatPage =
     document.getElementById(
         "chatPage"
@@ -89,7 +110,9 @@ let chatPresenceInterval = null;
 const renderingMessageIds=
    new Set();
 
-
+let selectedMessageId = null;
+let selectedMessageData = null;
+let messageLongPressTimer = null;
 /* =========================================
    START
 ========================================= */
@@ -3162,6 +3185,93 @@ function hideChatLoading() {
         chatLoadingOverlay.classList.add(
             "hidden"
         );
+
+    }
+
+}
+
+/* =========================================
+   MESSAGE SELECTION
+========================================= */
+
+function selectMessage(
+    message,
+    row
+) {
+
+    clearMessageSelection();
+
+
+    selectedMessageId =
+        message.id;
+
+    selectedMessageData =
+        message;
+
+
+    row.classList.add(
+        "message-selected"
+    );
+
+
+    if (messageActionBar) {
+
+        messageActionBar.hidden =
+            false;
+
+    }
+
+
+    if (deleteMessageButton) {
+
+        deleteMessageButton.hidden =
+            message.sender_id !==
+            currentUser.id;
+
+    }
+
+
+    if (copyMessageButton) {
+
+        copyMessageButton.disabled =
+            !(
+                message.message &&
+                message.message.trim()
+            );
+
+    }
+
+}
+
+
+function clearMessageSelection() {
+
+    selectedMessageId =
+        null;
+
+    selectedMessageData =
+        null;
+
+
+    document
+        .querySelectorAll(
+            ".message-row.message-selected"
+        )
+        .forEach(
+            function (row) {
+
+                row.classList.remove(
+                    "message-selected"
+                );
+
+            }
+        );
+
+
+    if (messageActionBar) {
+
+        messageActionBar.hidden =
+            true;
 
     }
 
