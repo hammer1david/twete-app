@@ -20,6 +20,7 @@ let currentProgram = null;
 let currentWeeks = [];
 let currentSessions = [];
 let selectedWeekId = null;
+let workoutFeedback = {};
 
 
 /* =========================================
