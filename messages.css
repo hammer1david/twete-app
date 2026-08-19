@@ -1465,52 +1465,18 @@ button {
 
 
 /* =========================================
-   MESSAGE ACTION BAR
+   MESSAGE ACTIONS IN HEADER
 ========================================= */
 
 .message-action-bar {
-    position: absolute;
-
-    top:
-        calc(
-            68px +
-            env(safe-area-inset-top)
-        );
-
-    left: 50%;
-
-    transform:
-        translateX(-50%);
-
-    z-index: 120;
+    margin-left: auto;
 
     display: flex;
     align-items: center;
 
-    gap: 8px;
+    gap: 6px;
 
-    padding:
-        8px
-        10px;
-
-    border-radius: 16px;
-
-    background:
-        rgba(20, 20, 20, 0.96);
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.10);
-
-    box-shadow:
-        0 8px 24px
-        rgba(0, 0, 0, 0.32);
-
-    backdrop-filter:
-        blur(14px);
-
-    -webkit-backdrop-filter:
-        blur(14px);
+    padding-left: 10px;
 }
 
 
@@ -1520,35 +1486,97 @@ button {
 
 
 .message-action-button {
-    min-height: 36px;
+    width: 38px;
+    height: 38px;
 
-    padding:
-        0
-        14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
 
     border: none;
-
-    border-radius: 12px;
+    border-radius: 50%;
 
     background:
-        rgba(255, 255, 255, 0.08);
+        rgba(198, 255, 0, 0.08);
 
-    color: #ffffff;
-
-    font-size: 13px;
-    font-weight: 700;
+    color: #c6ff00;
 
     cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+
+.message-action-button:hover {
+    background:
+        rgba(198, 255, 0, 0.14);
 }
 
 
 .message-action-button:active {
-    transform: scale(0.96);
+    transform: scale(0.90);
+}
+
+
+.message-action-button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+
+.message-action-button svg {
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 
 .message-action-button.danger {
-    color: #ff5d5d;
+    color: #ff6262;
+
+    background:
+        rgba(255, 98, 98, 0.08);
+}
+
+
+.message-action-button.danger:hover {
+    background:
+        rgba(255, 98, 98, 0.14);
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .message-action-bar {
+        gap: 2px;
+        padding-left: 4px;
+    }
+
+    .message-action-button {
+        width: 36px;
+        height: 36px;
+    }
+
+    .message-action-button svg {
+        width: 18px;
+        height: 18px;
+    }
+
 }
 
 
