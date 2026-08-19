@@ -880,6 +880,83 @@ async function sendMessage() {
                 .from("messages")
                 .insert({
 
+/* =========================================
+   SEND MESSAGE + ATTACHMENTS
+========================================= */
+
+async function sendMessage() {
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+    const button =
+        document.querySelector(
+            ".send-button"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    const text =
+        input.value.trim();
+
+
+    /*
+        A message can contain:
+        - text
+        - attachments
+        - or both
+    */
+
+    if (
+        !text &&
+        selectedAttachments.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    if (!conversationUserId) {
+
+        showError(
+            "No conversation is available yet."
+        );
+
+        return;
+
+    }
+
+
+    if (button) {
+
+        button.disabled =
+            true;
+
+    }
+
+
+    try {
+
+        /*
+            STEP 1
+            Create the message first.
+        */
+
+        const {
+            data: messageData,
+            error: messageError
+        } =
+            await messagesSupabase
+                .from("messages")
+                .insert({
+
                     sender_id:
                         currentUser.id,
 
@@ -889,14 +966,18 @@ async function sendMessage() {
                     message:
                         text
 
-                });
+                })
+                .select(
+                    "id"
+                )
+                .single();
 
 
-        if (error) {
+        if (messageError) {
 
             console.error(
                 "Send message error:",
-                error
+                messageError
             );
 
             showError(
@@ -904,8 +985,160 @@ async function sendMessage() {
             );
 
             return;
+
         }
 
+
+        const messageId =
+            messageData.id;
+
+
+        /*
+            STEP 2
+            Upload up to 4 attachments.
+        */
+
+        for (
+            let i = 0;
+            i < selectedAttachments.length;
+            i++
+        ) {
+
+            const file =
+                selectedAttachments[i];
+
+
+            /*
+                Make filename safe.
+            */
+
+            const safeFileName =
+                file.name
+                    .replace(
+                        /[^a-zA-Z0-9._-]/g,
+                        "_"
+                    );
+
+
+            /*
+                Unique storage path.
+            */
+
+            const filePath =
+                currentUser.id +
+                "/" +
+                messageId +
+                "/" +
+                crypto.randomUUID() +
+                "-" +
+                safeFileName;
+
+
+            /*
+                Upload to private
+                Supabase Storage bucket.
+            */
+
+            const {
+                error: uploadError
+            } =
+                await messagesSupabase
+                    .storage
+                    .from(
+                        "message-attachments"
+                    )
+                    .upload(
+                        filePath,
+                        file,
+                        {
+                            cacheControl:
+                                "3600",
+
+                            upsert:
+                                false,
+
+                            contentType:
+                                file.type ||
+                                "application/octet-stream"
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                console.error(
+                    "Attachment upload error:",
+                    uploadError
+                );
+
+                showError(
+                    "Message was created, but an attachment could not be uploaded."
+                );
+
+                return;
+
+            }
+
+
+            /*
+                STEP 3
+                Save attachment information
+                in message_attachments.
+            */
+
+            const {
+                error: attachmentError
+            } =
+                await messagesSupabase
+                    .from(
+                        "message_attachments"
+                    )
+                    .insert({
+
+                        message_id:
+                            messageId,
+
+                        file_url:
+                            null,
+
+                        file_path:
+                            filePath,
+
+                        file_name:
+                            file.name,
+
+                        file_type:
+                            file.type ||
+                            "application/octet-stream",
+
+                        file_size:
+                            file.size
+
+                    });
+
+
+            if (attachmentError) {
+
+                console.error(
+                    "Attachment database error:",
+                    attachmentError
+                );
+
+                showError(
+                    "Attachment was uploaded, but could not be saved."
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /*
+            STEP 4
+            Clear composer.
+        */
 
         input.value =
             "";
@@ -913,7 +1146,30 @@ async function sendMessage() {
         resizeComposer();
 
 
+        /*
+            Clear selected attachments.
+        */
+
+        clearAttachments();
+
+
+        /*
+            Reload chat.
+        */
+
         await loadMessages();
+
+
+    } catch (error) {
+
+        console.error(
+            "Send message exception:",
+            error
+        );
+
+        showError(
+            "Something went wrong while sending your message."
+        );
 
 
     } finally {
