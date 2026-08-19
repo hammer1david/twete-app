@@ -2,12 +2,16 @@
    TWETE MESSAGES
 ========================================= */
 
+
+/* =========================================
+   SUPABASE
+========================================= */
+
 const SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
-
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSN";
 
 const supabaseClient =
     window.supabase.createClient(
@@ -16,14 +20,17 @@ const supabaseClient =
     );
 
 
+/* =========================================
+   STATE
+========================================= */
+
 let currentUser = null;
+
 let currentRole = null;
 
-let conversationUserId = null;
+let selectedAthlete = null;
 
 let realtimeChannel = null;
-
-let athletes = [];
 
 
 /* =========================================
@@ -50,9 +57,7 @@ async function initialiseMessages() {
             },
             error
         } =
-            await supabaseClient
-                .auth
-                .getSession();
+            await supabaseClient.auth.getSession();
 
 
         if (error) {
@@ -62,11 +67,8 @@ async function initialiseMessages() {
                 error
             );
 
-            showError(
-                "Could not check your login session."
-            );
-
             return;
+
         }
 
 
@@ -75,11 +77,12 @@ async function initialiseMessages() {
             !session.user
         ) {
 
-            showError(
-                "Your login session could not be found."
+            console.error(
+                "No active session."
             );
 
             return;
+
         }
 
 
@@ -95,26 +98,19 @@ async function initialiseMessages() {
             "coach"
         ) {
 
-            await initialiseCoach();
+            await loadAthletes();
 
         } else {
 
-            await initialiseAthlete();
+            await loadCoach();
 
         }
-
-
-        setupComposer();
 
     } catch (error) {
 
         console.error(
-            "Messages error:",
+            "Messages initialisation error:",
             error
-        );
-
-        showError(
-            "Could not load Messages."
         );
 
     }
@@ -123,7 +119,7 @@ async function initialiseMessages() {
 
 
 /* =========================================
-   CURRENT PROFILE
+   LOAD CURRENT PROFILE
 ========================================= */
 
 async function loadCurrentProfile() {
@@ -134,12 +130,9 @@ async function loadCurrentProfile() {
     } =
         await supabaseClient
             .from("profiles")
-            .select(`
-                id,
-                full_name,
-                role,
-                avatar_url
-            `)
+            .select(
+                "id, full_name, role, avatar_url"
+            )
             .eq(
                 "id",
                 currentUser.id
@@ -155,152 +148,17 @@ async function loadCurrentProfile() {
         );
 
         return;
-    }
 
-
-    if (data) {
-
-        currentRole =
-            data.role;
-
-    }
-
-}
-
-
-/* =========================================
-   ATHLETE INITIALISE
-========================================= */
-
-async function initialiseAthlete() {
-
-    const listSection =
-        document.getElementById(
-            "athleteListSection"
-        );
-
-
-    if (listSection) {
-
-        listSection.classList.add(
-            "hidden"
-        );
-
-    }
-
-
-    await loadCoachForAthlete();
-
-
-    if (conversationUserId) {
-
-        showConversation();
-
-        await loadMessages();
-
-        subscribeToMessages();
-
-    } else {
-
-        showNoConversation();
-
-        showConversation();
-
-    }
-
-}
-
-
-/* =========================================
-   FIND ATHLETE'S COACH
-========================================= */
-
-async function loadCoachForAthlete() {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("coach_athletes")
-            .select(`
-                coach_id,
-                athlete_id,
-                created_at
-            `)
-            .eq(
-                "athlete_id",
-                currentUser.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(1)
-            .maybeSingle();
-
-
-    if (error) {
-
-        console.error(
-            "Coach connection error:",
-            error
-        );
-
-        conversationUserId =
-            null;
-
-        return;
     }
 
 
     if (!data) {
-
-        conversationUserId =
-            null;
-
         return;
     }
 
 
-    conversationUserId =
-        data.coach_id;
-
-
-    await loadProfileHeader(
-        conversationUserId
-    );
-
-}
-
-
-/* =========================================
-   COACH INITIALISE
-========================================= */
-
-async function initialiseCoach() {
-
-    const listSection =
-        document.getElementById(
-            "athleteListSection"
-        );
-
-
-    if (listSection) {
-
-        listSection.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    hideConversation();
-
-
-    await loadAthletes();
+    currentRole =
+        data.role;
 
 }
 
@@ -311,35 +169,42 @@ async function initialiseCoach() {
 
 async function loadAthletes() {
 
+    const section =
+        document.getElementById(
+            "athleteListSection"
+        );
+
     const list =
         document.getElementById(
             "athleteList"
         );
 
 
-    if (!list) {
+    if (!section || !list) {
         return;
     }
 
 
-    list.innerHTML = `
-
-        <div class="messages-loading">
-            Loading athletes...
-        </div>
-
-    `;
+    section.classList.remove(
+        "hidden"
+    );
 
 
     const {
-        data: connections,
+        data,
         error
     } =
         await supabaseClient
             .from("coach_athletes")
             .select(`
                 athlete_id,
-                created_at
+                created_at,
+                profiles:athlete_id (
+                    id,
+                    full_name,
+                    role,
+                    avatar_url
+                )
             `)
             .eq(
                 "coach_id",
@@ -361,169 +226,218 @@ async function loadAthletes() {
         );
 
         list.innerHTML = `
-
-            <div class="no-messages">
+            <div class="messages-loading">
                 Could not load athletes.
             </div>
-
         `;
 
         return;
+
     }
+
+
+    list.innerHTML =
+        "";
 
 
     if (
-        !connections ||
-        !connections.length
+        !data ||
+        !data.length
     ) {
 
-        athletes = [];
-
         list.innerHTML = `
-
-            <div class="no-messages">
-
-                No athletes are connected yet.
-
+            <div class="messages-loading">
+                No athletes yet.
             </div>
-
         `;
 
         return;
+
     }
 
 
-    const athleteIds =
-        connections.map(
-            function (item) {
-                return item.athlete_id;
+    data.forEach(
+        function (
+            relationship
+        ) {
+
+            const athlete =
+                relationship.profiles;
+
+
+            if (!athlete) {
+                return;
             }
-        );
 
 
-    const {
-        data: profiles,
-        error: profileError
-    } =
-        await supabaseClient
-            .from("profiles")
-            .select(`
-                id,
-                full_name,
-                role,
-                avatar_url
-            `)
-            .in(
-                "id",
-                athleteIds
+            const item =
+                document.createElement(
+                    "button"
+                );
+
+
+            item.className =
+                "athlete-list-item";
+
+
+            item.type =
+                "button";
+
+
+            item.addEventListener(
+                "click",
+                function () {
+
+                    openConversation(
+                        athlete
+                    );
+
+                }
             );
 
 
-    if (profileError) {
-
-        console.error(
-            "Athlete profile error:",
-            profileError
-        );
-
-        list.innerHTML = `
-
-            <div class="no-messages">
-                Could not load athlete profiles.
-            </div>
-
-        `;
-
-        return;
-    }
+            const avatar =
+                document.createElement(
+                    "div"
+                );
 
 
-    athletes =
-        profiles || [];
+            avatar.className =
+                "profile-avatar";
 
 
-    const enriched =
-        await Promise.all(
-            athletes.map(
-                async function (
-                    athlete
-                ) {
+            if (
+                athlete.avatar_url
+            ) {
 
-                    const info =
-                        await getLastMessageInfo(
-                            athlete.id
-                        );
-
-                    return {
-                        ...athlete,
-                        ...info
-                    };
-
-                }
-            )
-        );
+                const image =
+                    document.createElement(
+                        "img"
+                    );
 
 
-    enriched.sort(
-        function (a, b) {
+                image.src =
+                    athlete.avatar_url;
 
-            const aTime =
-                a.last_message_at
-                    ?
-                    new Date(
-                        a.last_message_at
-                    ).getTime()
-                    :
-                    0;
+                image.alt =
+                    "";
 
-            const bTime =
-                b.last_message_at
-                    ?
-                    new Date(
-                        b.last_message_at
-                    ).getTime()
-                    :
-                    0;
+                image.referrerPolicy =
+                    "no-referrer";
 
-            return bTime - aTime;
+
+                avatar.innerHTML =
+                    "";
+
+                avatar.appendChild(
+                    image
+                );
+
+            } else {
+
+                avatar.textContent =
+                    (
+                        athlete.full_name ||
+                        "A"
+                    )
+                    .charAt(0)
+                    .toUpperCase();
+
+            }
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "athlete-list-info";
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "athlete-name";
+
+
+            name.textContent =
+                athlete.full_name ||
+                "Athlete";
+
+
+            const role =
+                document.createElement(
+                    "div"
+                );
+
+
+            role.className =
+                "athlete-role";
+
+
+            role.textContent =
+                "Athlete";
+
+
+            info.appendChild(
+                name
+            );
+
+            info.appendChild(
+                role
+            );
+
+
+            item.appendChild(
+                avatar
+            );
+
+            item.appendChild(
+                info
+            );
+
+
+            list.appendChild(
+                item
+            );
 
         }
     );
-
-
-    athletes =
-        enriched;
-
-
-    renderAthleteList();
 
 }
 
 
 /* =========================================
-   LAST MESSAGE INFO
+   LOAD COACH
 ========================================= */
 
-async function getLastMessageInfo(
-    athleteId
-) {
+async function loadCoach() {
 
     const {
         data,
         error
     } =
         await supabaseClient
-            .from("messages")
+            .from("coach_athletes")
             .select(`
-                id,
-                sender_id,
-                receiver_id,
-                message,
+                coach_id,
                 created_at,
-                read_at
+                profiles:coach_id (
+                    id,
+                    full_name,
+                    role,
+                    avatar_url
+                )
             `)
-            .or(
-                `and(sender_id.eq.${currentUser.id},receiver_id.eq.${athleteId}),and(sender_id.eq.${athleteId},receiver_id.eq.${currentUser.id})`
+            .eq(
+                "athlete_id",
+                currentUser.id
             )
             .order(
                 "created_at",
@@ -535,236 +449,79 @@ async function getLastMessageInfo(
             .maybeSingle();
 
 
-    if (
-        error ||
-        !data
-    ) {
+    if (error) {
 
-        return {
-
-            last_message: "",
-            last_message_at: null,
-            unread: false
-
-        };
-
-    }
-
-
-    let unread =
-        false;
-
-
-    if (
-        String(
-            data.receiver_id
-        ) ===
-        String(
-            currentUser.id
-        ) &&
-        !data.read_at
-    ) {
-
-        unread =
-            true;
-
-    }
-
-
-    return {
-
-        last_message:
-            data.message || "",
-
-        last_message_at:
-            data.created_at,
-
-        unread:
-            unread
-
-    };
-
-}
-
-
-/* =========================================
-   RENDER ATHLETE LIST
-========================================= */
-
-function renderAthleteList() {
-
-    const list =
-        document.getElementById(
-            "athleteList"
+        console.error(
+            "Coach loading error:",
+            error
         );
 
-
-    if (!list) {
         return;
+
     }
 
 
-    if (!athletes.length) {
-
-        list.innerHTML = `
-
-            <div class="no-messages">
-                No athletes yet.
-            </div>
-
-        `;
+    if (
+        !data ||
+        !data.profiles
+    ) {
 
         return;
+
     }
 
 
-    list.innerHTML =
-        athletes
-            .map(
-                function (athlete) {
-
-                    const name =
-                        athlete.full_name ||
-                        "Athlete";
-
-
-                    const initial =
-                        name
-                            .charAt(0)
-                            .toUpperCase();
-
-
-                    return `
-
-                        <button
-                            type="button"
-                            class="
-                                athlete-item
-                                ${
-                                    athlete.unread
-                                    ?
-                                    "unread"
-                                    :
-                                    ""
-                                }
-                            "
-                            onclick="
-                                openConversation(
-                                    '${escapeAttribute(
-                                        athlete.id
-                                    )}'
-                                )
-                            "
-                        >
-
-                            <div class="athlete-avatar">
-
-                                ${
-                                    athlete.avatar_url
-                                    ?
-                                    `
-                                    <img
-                                        src="${escapeHtml(
-                                            athlete.avatar_url
-                                        )}"
-                                        alt=""
-                                    >
-                                    `
-                                    :
-                                    initial
-                                }
-
-                            </div>
-
-
-                            <div class="athlete-item-info">
-
-                                <div class="athlete-item-name">
-
-                                    ${escapeHtml(
-                                        name
-                                    )}
-
-                                </div>
-
-
-                                <div class="athlete-item-last">
-
-                                    ${
-                                        athlete.last_message
-                                        ?
-                                        escapeHtml(
-                                            athlete.last_message
-                                        )
-                                        :
-                                        "No messages yet"
-                                    }
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="athlete-item-right">
-
-                                ${
-                                    athlete.last_message_at
-                                    ?
-                                    `
-                                    <span class="athlete-item-time">
-
-                                        ${formatTime(
-                                            athlete.last_message_at
-                                        )}
-
-                                    </span>
-                                    `
-                                    :
-                                    ""
-                                }
-
-
-                                ${
-                                    athlete.unread
-                                    ?
-                                    `
-                                    <span class="unread-dot"></span>
-                                    `
-                                    :
-                                    ""
-                                }
-
-                            </div>
-
-                        </button>
-
-                    `;
-
-                }
-            )
-            .join("");
+    openConversation(
+        data.profiles
+    );
 
 }
 
 
 /* =========================================
-   OPEN COACH CONVERSATION
+   OPEN CONVERSATION
 ========================================= */
 
 async function openConversation(
-    athleteId
+    profile
 ) {
 
-    conversationUserId =
-        athleteId;
+    selectedAthlete =
+        profile;
 
 
-    await loadProfileHeader(
-        athleteId
+    const listSection =
+        document.getElementById(
+            "athleteListSection"
+        );
+
+    const conversationSection =
+        document.getElementById(
+            "conversationSection"
+        );
+
+
+    if (listSection) {
+
+        listSection.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (conversationSection) {
+
+        conversationSection.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    updateProfileHeader(
+        profile
     );
-
-
-    showConversation();
 
 
     await loadMessages();
@@ -776,104 +533,22 @@ async function openConversation(
 
 
 /* =========================================
-   LOAD PROFILE HEADER
-========================================= */
-
-async function loadProfileHeader(
-    userId
-) {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("profiles")
-            .select(`
-                id,
-                full_name,
-                role,
-                avatar_url
-            `)
-            .eq(
-                "id",
-                userId
-            )
-            .maybeSingle();
-
-
-    if (error) {
-
-        console.error(
-            "Profile loading error:",
-            error
-        );
-
-        setProfileHeader(
-            currentRole === "coach"
-                ?
-                "Athlete"
-                :
-                "Coach",
-            ""
-        );
-
-        return;
-    }
-
-
-    if (!data) {
-
-        setProfileHeader(
-            currentRole === "coach"
-                ?
-                "Athlete"
-                :
-                "Coach",
-            ""
-        );
-
-        return;
-    }
-
-
-    setProfileHeader(
-        data.full_name ||
-        (
-            currentRole === "coach"
-                ?
-                "Athlete"
-                :
-                "Coach"
-        ),
-        data.role || "",
-        data.avatar_url
-    );
-
-}
-
-
-/* =========================================
    PROFILE HEADER
 ========================================= */
 
-function setProfileHeader(
-    name,
-    role,
-    avatarUrl
+function updateProfileHeader(
+    profile
 ) {
 
-    const nameElement =
+    const name =
         document.getElementById(
             "profileName"
         );
 
-
-    const roleElement =
+    const role =
         document.getElementById(
             "profileRole"
         );
-
 
     const avatar =
         document.getElementById(
@@ -881,174 +556,71 @@ function setProfileHeader(
         );
 
 
-    if (nameElement) {
+    if (name) {
 
-        nameElement.textContent =
-            name;
-
-    }
-
-
-    if (roleElement) {
-
-        roleElement.textContent =
-            role === "coach"
-                ?
-                "Coach"
-                :
-                role === "athlete"
-                    ?
-                    "Athlete"
-                    :
-                    "";
+        name.textContent =
+            profile.full_name ||
+            (
+                profile.role === "athlete"
+                    ? "Athlete"
+                    : "Coach"
+            );
 
     }
 
 
-    if (
-        avatar &&
-        avatarUrl
-    ) {
+    if (role) {
 
-        avatar.innerHTML = `
+        role.textContent =
+            profile.role === "athlete"
+                ? "Athlete"
+                : "Coach";
 
-            <img
-                src="${escapeHtml(
-                    avatarUrl
-                )}"
-                alt=""
-            >
+    }
 
-        `;
 
-    } else if (avatar) {
+    if (!avatar) {
+        return;
+    }
+
+
+    avatar.innerHTML =
+        "";
+
+
+    if (profile.avatar_url) {
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.src =
+            profile.avatar_url;
+
+        image.alt =
+            "";
+
+        image.referrerPolicy =
+            "no-referrer";
+
+
+        avatar.appendChild(
+            image
+        );
+
+    } else {
 
         avatar.textContent =
             (
-                name ||
+                profile.full_name ||
                 "T"
             )
             .charAt(0)
             .toUpperCase();
 
     }
-
-}
-
-
-/* =========================================
-   SHOW / HIDE CONVERSATION
-========================================= */
-
-function showConversation() {
-
-    const section =
-        document.getElementById(
-            "conversationSection"
-        );
-
-
-    if (section) {
-
-        section.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    if (
-        currentRole ===
-        "coach"
-    ) {
-
-        const list =
-            document.getElementById(
-                "athleteListSection"
-            );
-
-
-        if (list) {
-
-            list.classList.add(
-                "hidden"
-            );
-
-        }
-
-    }
-
-}
-
-
-function hideConversation() {
-
-    const section =
-        document.getElementById(
-            "conversationSection"
-        );
-
-
-    if (section) {
-
-        section.classList.add(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-function showAthleteList() {
-
-    if (
-        currentRole !==
-        "coach"
-    ) {
-
-        goHome();
-
-        return;
-    }
-
-
-    conversationUserId =
-        null;
-
-
-    hideConversation();
-
-
-    const list =
-        document.getElementById(
-            "athleteListSection"
-        );
-
-
-    if (list) {
-
-        list.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    if (realtimeChannel) {
-
-        supabaseClient
-            .removeChannel(
-                realtimeChannel
-            );
-
-        realtimeChannel =
-            null;
-
-    }
-
-
-    loadAthletes();
 
 }
 
@@ -1070,12 +642,18 @@ async function loadMessages() {
     }
 
 
-    if (!conversationUserId) {
-
-        showNoConversation();
+    if (
+        !currentUser ||
+        !selectedAthlete
+    ) {
 
         return;
+
     }
+
+
+    const otherUserId =
+        selectedAthlete.id;
 
 
     const {
@@ -1093,7 +671,7 @@ async function loadMessages() {
                 read_at
             `)
             .or(
-                `and(sender_id.eq.${currentUser.id},receiver_id.eq.${conversationUserId}),and(sender_id.eq.${conversationUserId},receiver_id.eq.${currentUser.id})`
+                `and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUser.id})`
             )
             .order(
                 "created_at",
@@ -1110,121 +688,192 @@ async function loadMessages() {
             error
         );
 
-        showError(
-            "Could not load messages."
-        );
+        list.innerHTML = `
+            <div class="messages-loading">
+                Could not load messages.
+            </div>
+        `;
 
         return;
+
     }
 
 
-    renderMessages(
-        data || []
+    list.innerHTML =
+        "";
+
+
+    if (
+        !data ||
+        !data.length
+    ) {
+
+        list.innerHTML = `
+            <div class="messages-loading">
+                No messages yet.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    data.forEach(
+        function (
+            message
+        ) {
+
+            const element =
+                createMessageElement(
+                    message
+                );
+
+
+            list.appendChild(
+                element
+            );
+
+        }
     );
 
 
+    scrollToBottom();
+
+
     await markMessagesRead(
-        data || []
+        data
     );
 
 }
 
 
 /* =========================================
-   RENDER MESSAGES
+   CREATE MESSAGE
 ========================================= */
 
-function renderMessages(
-    messages
+function createMessageElement(
+    message
 ) {
 
-    const list =
-        document.getElementById(
-            "messagesList"
+    const sent =
+        String(
+            message.sender_id
+        ) ===
+        String(
+            currentUser.id
         );
 
 
-    if (!list) {
-        return;
+    const row =
+        document.createElement(
+            "div"
+        );
+
+
+    row.className =
+        sent
+            ? "message-row sent"
+            : "message-row received";
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+
+    bubble.className =
+        "message-bubble";
+
+
+    if (
+        message.message &&
+        message.message.trim()
+    ) {
+
+        const text =
+            document.createElement(
+                "div"
+            );
+
+
+        text.className =
+            "message-text";
+
+
+        text.textContent =
+            message.message;
+
+
+        bubble.appendChild(
+            text
+        );
+
     }
 
 
-    if (!messages.length) {
+    const meta =
+        document.createElement(
+            "div"
+        );
 
-        list.innerHTML = `
 
-            <div class="no-messages">
+    meta.className =
+        "message-meta";
 
-                No messages yet.<br><br>
 
-                Start the conversation.
+    const time =
+        document.createElement(
+            "span"
+        );
 
-            </div>
 
-        `;
+    time.textContent =
+        formatTime(
+            message.created_at
+        );
 
-        return;
+
+    meta.appendChild(
+        time
+    );
+
+
+    if (sent) {
+
+        const checks =
+            document.createElement(
+                "span"
+            );
+
+
+        checks.className =
+            "message-checks";
+
+
+        checks.textContent =
+            "✓✓";
+
+
+        meta.appendChild(
+            checks
+        );
+
     }
 
 
-    list.innerHTML =
-        messages
-            .map(
-                function (message) {
-
-                    const sent =
-                        String(
-                            message.sender_id
-                        ) ===
-                        String(
-                            currentUser.id
-                        );
+    bubble.appendChild(
+        meta
+    );
 
 
-                    return `
-
-                        <div
-                            class="
-                                message-row
-                                ${
-                                    sent
-                                    ?
-                                    "sent"
-                                    :
-                                    "received"
-                                }
-                            "
-                        >
-
-                            <div class="message-bubble">
-
-                                ${escapeHtml(
-                                    message.message
-                                ).replaceAll(
-                                    "\n",
-                                    "<br>"
-                                )}
-
-                                <span class="message-time">
-
-                                    ${formatTime(
-                                        message.created_at
-                                    )}
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join("");
+    row.appendChild(
+        bubble
+    );
 
 
-    scrollToBottom();
+    return row;
 
 }
 
@@ -1239,7 +888,6 @@ async function sendMessage() {
         document.getElementById(
             "messageInput"
         );
-
 
     const button =
         document.getElementById(
@@ -1261,13 +909,13 @@ async function sendMessage() {
     }
 
 
-    if (!conversationUserId) {
-
-        alert(
-            "Please select a conversation first."
-        );
+    if (
+        !currentUser ||
+        !selectedAthlete
+    ) {
 
         return;
+
     }
 
 
@@ -1282,6 +930,7 @@ async function sendMessage() {
     try {
 
         const {
+            data,
             error
         } =
             await supabaseClient
@@ -1292,12 +941,21 @@ async function sendMessage() {
                         currentUser.id,
 
                     receiver_id:
-                        conversationUserId,
+                        selectedAthlete.id,
 
                     message:
                         text
 
-                });
+                })
+                .select(`
+                    id,
+                    sender_id,
+                    receiver_id,
+                    message,
+                    created_at,
+                    read_at
+                `)
+                .single();
 
 
         if (error) {
@@ -1307,21 +965,58 @@ async function sendMessage() {
                 error
             );
 
-            alert(
-                "Could not send message."
-            );
-
             return;
+
         }
 
 
-        input.value = "";
+        input.value =
+            "";
 
-        resizeComposer();
+        input.style.height =
+            "auto";
 
 
-        await loadMessages();
+        /*
+            Add immediately to screen.
+        */
 
+        const list =
+            document.getElementById(
+                "messagesList"
+            );
+
+
+        if (list) {
+
+            const empty =
+                list.querySelector(
+                    ".messages-loading"
+                );
+
+
+            if (empty) {
+                empty.remove();
+            }
+
+
+            list.appendChild(
+                createMessageElement(
+                    data
+                )
+            );
+
+
+            scrollToBottom();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Send message exception:",
+            error
+        );
 
     } finally {
 
@@ -1345,19 +1040,19 @@ function subscribeToMessages() {
 
     if (
         !currentUser ||
-        !conversationUserId
+        !selectedAthlete
     ) {
 
         return;
+
     }
 
 
     if (realtimeChannel) {
 
-        supabaseClient
-            .removeChannel(
-                realtimeChannel
-            );
+        supabaseClient.removeChannel(
+            realtimeChannel
+        );
 
     }
 
@@ -1368,7 +1063,7 @@ function subscribeToMessages() {
                 "twete-messages-" +
                 currentUser.id +
                 "-" +
-                conversationUserId
+                selectedAthlete.id
             )
             .on(
                 "postgres_changes",
@@ -1377,7 +1072,7 @@ function subscribeToMessages() {
                     schema: "public",
                     table: "messages"
                 },
-                async function (
+                function (
                     payload
                 ) {
 
@@ -1391,22 +1086,7 @@ function subscribeToMessages() {
                                 message.sender_id
                             ) ===
                             String(
-                                currentUser.id
-                            ) &&
-                            String(
-                                message.receiver_id
-                            ) ===
-                            String(
-                                conversationUserId
-                            )
-                        )
-                        ||
-                        (
-                            String(
-                                message.sender_id
-                            ) ===
-                            String(
-                                conversationUserId
+                                selectedAthlete.id
                             ) &&
                             String(
                                 message.receiver_id
@@ -1417,19 +1097,82 @@ function subscribeToMessages() {
                         );
 
 
-                    if (belongs) {
-
-                        await loadMessages();
-
+                    if (!belongs) {
+                        return;
                     }
 
 
+                    const list =
+                        document.getElementById(
+                            "messagesList"
+                        );
+
+
+                    if (!list) {
+                        return;
+                    }
+
+
+                    /*
+                        Prevent duplicate
+                        realtime rendering.
+                    */
+
+                    const existing =
+                        Array.from(
+                            list.children
+                        ).some(
+                            function (
+                                element
+                            ) {
+
+                                return (
+                                    element.dataset &&
+                                    element.dataset.messageId ===
+                                    String(
+                                        message.id
+                                    )
+                                );
+
+                            }
+                        );
+
+
+                    if (existing) {
+                        return;
+                    }
+
+
+                    const row =
+                        createMessageElement(
+                            message
+                        );
+
+
+                    row.dataset.messageId =
+                        message.id;
+
+
+                    list.appendChild(
+                        row
+                    );
+
+
+                    scrollToBottom();
+
+
                     if (
-                        currentRole ===
-                        "coach"
+                        String(
+                            message.receiver_id
+                        ) ===
+                        String(
+                            currentUser.id
+                        )
                     ) {
 
-                        await loadAthletes();
+                        markMessagesRead(
+                            [message]
+                        );
 
                     }
 
@@ -1448,10 +1191,17 @@ async function markMessagesRead(
     messages
 ) {
 
+    if (!currentUser) {
+        return;
+    }
+
+
     const unreadIds =
         messages
             .filter(
-                function (message) {
+                function (
+                    message
+                ) {
 
                     return (
                         String(
@@ -1466,7 +1216,9 @@ async function markMessagesRead(
                 }
             )
             .map(
-                function (message) {
+                function (
+                    message
+                ) {
 
                     return message.id;
 
@@ -1479,221 +1231,38 @@ async function markMessagesRead(
     }
 
 
-    await supabaseClient
-        .from("messages")
-        .update({
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .update({
 
-            read_at:
-                new Date().toISOString()
+                read_at:
+                    new Date().toISOString()
 
-        })
-        .in(
-            "id",
-            unreadIds
+            })
+            .in(
+                "id",
+                unreadIds
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Mark read error:",
+            error
         );
+
+    }
 
 }
 
 
 /* =========================================
-   COMPOSER
+   SCROLL
 ========================================= */
-
-function setupComposer() {
-
-    const input =
-        document.getElementById(
-            "messageInput"
-        );
-
-
-    if (!input) {
-        return;
-    }
-
-
-    input.addEventListener(
-        "input",
-        resizeComposer
-    );
-
-
-    input.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key === "Enter" &&
-                !event.shiftKey
-            ) {
-
-                event.preventDefault();
-
-                sendMessage();
-
-            }
-
-        }
-    );
-
-}
-
-
-function resizeComposer() {
-
-    const input =
-        document.getElementById(
-            "messageInput"
-        );
-
-
-    if (!input) {
-        return;
-    }
-
-
-    input.style.height =
-        "auto";
-
-
-    input.style.height =
-        Math.min(
-            input.scrollHeight,
-            120
-        ) +
-        "px";
-
-}
-
-
-/* =========================================
-   NAVIGATION
-========================================= */
-
-function goHome() {
-
-    if (
-        currentRole ===
-        "coach"
-    ) {
-
-        window.location.href =
-            "coach.html";
-
-        return;
-    }
-
-
-    window.location.href =
-        "athlete.html";
-
-}
-
-
-function goBack() {
-
-    goHome();
-
-}
-
-
-/* =========================================
-   EMPTY / ERROR
-========================================= */
-
-function showNoConversation() {
-
-    const list =
-        document.getElementById(
-            "messagesList"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    list.innerHTML = `
-
-        <div class="no-messages">
-
-            No coach connection found yet.
-
-        </div>
-
-    `;
-
-}
-
-
-function showError(
-    message
-) {
-
-    const list =
-        document.getElementById(
-            "messagesList"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    list.innerHTML = `
-
-        <div class="no-messages">
-
-            ${escapeHtml(
-                message
-            )}
-
-        </div>
-
-    `;
-
-}
-
-
-/* =========================================
-   HELPERS
-========================================= */
-
-function formatTime(
-    value
-) {
-
-    const date =
-        new Date(
-            value
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-
-    }
-
-
-    return date.toLocaleString(
-        "en-US",
-        {
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        }
-    );
-
-}
-
 
 function scrollToBottom() {
 
@@ -1720,51 +1289,112 @@ function scrollToBottom() {
 }
 
 
-function escapeHtml(
-    value
-) {
+/* =========================================
+   TEXTAREA
+========================================= */
 
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+const messageInput =
+    document.getElementById(
+        "messageInput"
+    );
+
+
+if (messageInput) {
+
+    messageInput.addEventListener(
+        "input",
+        function () {
+
+            this.style.height =
+                "auto";
+
+
+            this.style.height =
+                Math.min(
+                    this.scrollHeight,
+                    130
+                ) +
+                "px";
+
+        }
+    );
+
+
+    messageInput.addEventListener(
+        "keydown",
+        function (
+            event
+        ) {
+
+            if (
+                event.key ===
+                "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
 
 }
 
 
-function escapeAttribute(
-    value
-) {
+/* =========================================
+   NAVIGATION
+========================================= */
 
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /'/g,
-            "\\'"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
+function showAthleteList() {
+
+    const conversationSection =
+        document.getElementById(
+            "conversationSection"
         );
 
+    const athleteListSection =
+        document.getElementById(
+            "athleteListSection"
+        );
+
+
+    if (conversationSection) {
+
+        conversationSection.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (
+        athleteListSection &&
+        currentRole === "coach"
+    ) {
+
+        athleteListSection.classList.remove(
+            "hidden"
+        );
+
+    }
+
 }
+
+
+function goBack() {
+
+    window.location.href =
+        "athlete.html";
+
+}
+
+
+function goHome() {
+
+    window.location.href =
+        "athlete.html";
+
+           }
