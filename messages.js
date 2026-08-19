@@ -1024,13 +1024,39 @@ async function renderMessage(message) {
 
 
     /*
-        ATTACHMENT
+    ATTACHMENTS
+*/
+
+if (
+    Array.isArray(message.message_attachments) &&
+    message.message_attachments.length > 0
+) {
+
+    /*
+        New attachment system.
+        A message can contain multiple files.
     */
 
-    if (message.attachment_path) {
+    for (
+        const attachmentData of
+        message.message_attachments
+    ) {
 
         const attachment =
-            await createMessageAttachment(message);
+            await createMessageAttachment({
+                attachment_path:
+                    attachmentData.storage_path,
+
+                attachment_name:
+                    attachmentData.file_name,
+
+                attachment_type:
+                    attachmentData.file_type,
+
+                attachment_size:
+                    attachmentData.file_size
+            });
+
 
         if (attachment) {
 
@@ -1041,6 +1067,33 @@ async function renderMessage(message) {
         }
 
     }
+
+} else if (
+    message.attachment_path
+) {
+
+    /*
+        Fallback for old messages.
+
+        Existing messages that still use
+        attachment_path continue to work.
+    */
+
+    const attachment =
+        await createMessageAttachment(
+            message
+        );
+
+
+    if (attachment) {
+
+        bubble.appendChild(
+            attachment
+        );
+
+    }
+
+}
 
 
     /*
