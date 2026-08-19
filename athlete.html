@@ -738,15 +738,21 @@ async function loadPastGoals() {
                     created_at
                 `)
                 .eq(
-                    "athlete_id",
-                    user.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+    "athlete_id",
+    user.id
+)
+.lt(
+    "target_date",
+    new Date()
+        .toISOString()
+        .split("T")[0]
+)
+.order(
+    "target_date",
+    {
+        ascending: false
+    }
+);
 
 
         if (error) {
@@ -761,35 +767,22 @@ async function loadPastGoals() {
 
 
         /*
-           No goals or only one goal:
-           keep the existing placeholder.
-        */
+   No past goals:
+   keep the existing placeholder.
+*/
 
-        if (
-            !goals ||
-            goals.length <= 1
-        ) {
+if (
+    !goals ||
+    goals.length === 0
+) {
 
-            return;
+    return;
 
-        }
-
-
-        /*
-           The newest goal is currently
-           treated as the current goal.
-           Everything older becomes a past goal.
-        */
-
-        const pastGoals =
-            goals.slice(1);
+}
 
 
-        if (
-            pastGoals.length === 0
-        ) {
-            return;
-        }
+const pastGoals =
+    goals;
 
 
         /*
