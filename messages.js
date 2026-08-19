@@ -2370,27 +2370,37 @@ function subscribeToMessages() {
                     payload
                 ) {
 
-                    const message =
-                        payload.new;
+                    const basicMessage =
+    payload.new;
 
 
-                    if (
-                        message.sender_id !==
-                        chatUser.id
-                    ) {
-
-                        return;
-                    }
-
-
-                    renderMessage(
-                        message
-                    );
+if (
+    basicMessage.sender_id !==
+    chatUser.id
+) {
+    return;
+}
 
 
-                    scrollToBottom(
-                        true
-                    );
+const message =
+    await loadMessageWithAttachments(
+        basicMessage.id
+    );
+
+
+if (!message) {
+    return;
+}
+
+
+await renderMessage(
+    message
+);
+
+
+scrollToBottom(
+    true
+);
 
 
                     await markMessageAsRead(
@@ -2417,32 +2427,41 @@ function subscribeToMessages() {
                     filter:
                         `sender_id=eq.${currentUser.id}`
                 },
-                function (
+                async function (
                     payload
                 ) {
 
-                    const message =
-                        payload.new;
+                    const basicMessage =
+    payload.new;
 
 
-                    if (
-                        message.receiver_id !==
-                        chatUser.id
-                    ) {
-
-                        return;
-                    }
-
-
-                    renderMessage(
-                        message
-                    );
+if (
+    basicMessage.receiver_id !==
+    chatUser.id
+) {
+    return;
+}
 
 
-                    scrollToBottom(
-                        true
-                    );
+const message =
+    await loadMessageWithAttachments(
+        basicMessage.id
+    );
 
+
+if (!message) {
+    return;
+}
+
+
+await renderMessage(
+    message
+);
+
+
+scrollToBottom(
+    true
+);
                 }
             )
 
