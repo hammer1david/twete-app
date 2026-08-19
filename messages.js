@@ -506,6 +506,7 @@ function setProfileHeader(
 }
 
 
+
 /* =========================================
    LOAD MESSAGES
 ========================================= */
@@ -531,8 +532,12 @@ async function loadMessages() {
     }
 
 
+    /*
+        Load messages
+    */
+
     const {
-        data,
+        data: messages,
         error
     } =
         await messagesSupabase
@@ -571,16 +576,223 @@ async function loadMessages() {
     }
 
 
+    /*
+        Load attachments belonging
+        to these messages.
+    */
+
+    const messageIds =
+        (messages || []).map(
+            message =>
+                message.id
+        );
+
+
+    let attachments = [];
+
+
+    if (messageIds.length) {
+
+        const {
+            data,
+            error:
+                attachmentError
+        } =
+            await messagesSupabase
+                .from(
+                    "message_attachments"
+                )
+                .select(`
+                    id,
+                    message_id,
+                    file_url,
+                    file_path,
+                    file_name,
+                    file_type,
+                    file_size,
+                    created_at
+                `)
+                .in(
+                    "message_id",
+                    messageIds
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (attachmentError) {
+
+            console.error(
+                "Attachment loading error:",
+                attachmentError
+            );
+
+        } else {
+
+            attachments =
+                data || [];
+
+        }
+
+    }
+
+
+    /*
+        Create temporary signed URLs
+        for private Storage files.
+    */
+
+    for (
+        const attachment of attachments
+    ) {
+
+        if (
+            !attachment.file_path
+        ) {
+            continue;
+        }
+
+
+        /*
+            View URL
+        */
+
+        const {
+            data:
+                viewData,
+            error:
+                viewError
+        } =
+            await messagesSupabase
+                .storage
+                .from(
+                    "message-attachments"
+                )
+                .createSignedUrl(
+                    attachment.file_path,
+                    3600
+                );
+
+
+        if (viewError) {
+
+            console.error(
+                "Signed URL error:",
+                viewError
+            );
+
+            continue;
+
+        }
+
+
+        attachment.view_url =
+            viewData?.signedUrl ||
+            null;
+
+
+        /*
+            Download URL
+        */
+
+        const {
+            data:
+                downloadData,
+            error:
+                downloadError
+        } =
+            await messagesSupabase
+                .storage
+                .from(
+                    "message-attachments"
+                )
+                .createSignedUrl(
+                    attachment.file_path,
+                    3600,
+                    {
+                        download:
+                            attachment.file_name
+                    }
+                );
+
+
+        if (!downloadError) {
+
+            attachment.download_url =
+                downloadData?.signedUrl ||
+                null;
+
+        }
+
+    }
+
+
+    /*
+        Attachments onto their messages
+    */
+
+    const attachmentsByMessage =
+        {};
+
+
+    attachments.forEach(
+        function (attachment) {
+
+            if (
+                !attachmentsByMessage[
+                    attachment.message_id
+                ]
+            ) {
+
+                attachmentsByMessage[
+                    attachment.message_id
+                ] = [];
+
+            }
+
+
+            attachmentsByMessage[
+                attachment.message_id
+            ].push(
+                attachment
+            );
+
+        }
+    );
+
+
+    /*
+        Add attachments to messages
+    */
+
+    (messages || []).forEach(
+        function (message) {
+
+            message.attachments =
+                attachmentsByMessage[
+                    message.id
+                ] || [];
+
+        }
+    );
+
+
     renderMessages(
-        data || []
+        messages || []
     );
 
 
     await markMessagesRead(
-        data || []
+        messages || []
     );
 
 }
+
+    
 
 
 /* =========================================
