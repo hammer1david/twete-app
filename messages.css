@@ -1,4 +1,9 @@
 /* =========================================
+   TWETE CHAT
+========================================= */
+
+
+/* =========================================
    RESET
 ========================================= */
 
@@ -8,24 +13,32 @@
     padding: 0;
 }
 
+
 html,
 body {
     width: 100%;
     height: 100%;
 }
 
+
 body {
     background: #050505;
     color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     overflow: hidden;
 }
 
+
 button,
-textarea,
-input {
+textarea {
     font-family: inherit;
 }
+
 
 button {
     -webkit-tap-highlight-color: transparent;
@@ -37,8 +50,10 @@ button {
 ========================================= */
 
 .messages-app {
+
     width: 100%;
     height: 100dvh;
+
     min-height: 0;
 
     display: flex;
@@ -60,18 +75,22 @@ button {
    HEADER
 ========================================= */
 
-.messages-header {
-    width: 100%;
-    height: 68px;
+.chat-header {
 
-    flex: 0 0 68px;
+    width: 100%;
+
+    height: 70px;
+    min-height: 70px;
+
+    flex: 0 0 70px;
 
     display: flex;
     align-items: center;
 
-    gap: 12px;
+    gap: 11px;
 
-    padding: 0 24px;
+    padding:
+        10px 20px;
 
     background:
         rgba(5,5,5,.96);
@@ -92,6 +111,7 @@ button {
 ========================================= */
 
 .back-button {
+
     width: 42px;
     height: 42px;
 
@@ -116,12 +136,17 @@ button {
         opacity .15s ease;
 }
 
+
 .back-button:active {
-    transform: scale(.9);
+
+    transform: scale(.90);
+
     opacity: .7;
 }
 
+
 .back-button svg {
+
     width: 27px;
     height: 27px;
 
@@ -137,152 +162,17 @@ button {
 
 
 /* =========================================
-   HEADER TITLE
-========================================= */
-
-.messages-header h1 {
-    color: #fff;
-
-    font-size: 19px;
-
-    line-height: 1;
-
-    font-weight: 700;
-}
-
-.header-spacer {
-    flex: 1;
-}
-
-
-/* =========================================
-   ATHLETE LIST SECTION
-========================================= */
-
-.athlete-list-section {
-    width: 100%;
-
-    flex: 1;
-
-    min-height: 0;
-
-    overflow-y: auto;
-
-    padding:
-        22px 24px 110px;
-}
-
-.athlete-list-section.hidden {
-    display: none;
-}
-
-
-/* =========================================
-   SECTION TITLE
-========================================= */
-
-.section-title {
-    margin-bottom: 14px;
-
-    color:
-        rgba(255,255,255,.55);
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-    text-transform: uppercase;
-
-    letter-spacing: .08em;
-}
-
-
-/* =========================================
-   ATHLETE LIST
-========================================= */
-
-.athlete-list {
-    width: 100%;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 8px;
-}
-
-
-/* =========================================
-   ATHLETE ITEM
-========================================= */
-
-.athlete-list-item {
-    width: 100%;
-
-    min-height: 70px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 13px;
-
-    padding: 10px 12px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.08);
-
-    border-radius: 16px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #171717,
-            #101010
-        );
-
-    color: #fff;
-
-    text-align: left;
-
-    cursor: pointer;
-
-    transition:
-        transform .15s ease,
-        border-color .18s ease,
-        background .18s ease;
-}
-
-.athlete-list-item:hover {
-    border-color:
-        rgba(198,255,0,.25);
-
-    background:
-        linear-gradient(
-            145deg,
-            #1b1b1b,
-            #121212
-        );
-}
-
-.athlete-list-item:active {
-    transform: scale(.985);
-}
-
-
-/* =========================================
    PROFILE AVATAR
 ========================================= */
 
 .profile-avatar {
-    width: 46px;
-    height: 46px;
 
-    flex: 0 0 46px;
+    width: 44px;
+    height: 44px;
+
+    flex: 0 0 44px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
@@ -299,12 +189,14 @@ button {
 
     color: #C6FF00;
 
-    font-size: 16px;
+    font-size: 15px;
 
     font-weight: 700;
 }
 
+
 .profile-avatar img {
+
     width: 100%;
     height: 100%;
 
@@ -315,151 +207,21 @@ button {
 
 
 /* =========================================
-   ATHLETE INFO
-========================================= */
-
-.athlete-list-info {
-    min-width: 0;
-
-    flex: 1;
-}
-
-.athlete-name {
-    color: #fff;
-
-    font-size: 15px;
-
-    font-weight: 700;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-.athlete-role {
-    margin-top: 4px;
-
-    color:
-        rgba(255,255,255,.45);
-
-    font-size: 11px;
-}
-
-
-/* =========================================
-   CONVERSATION
-========================================= */
-
-.conversation-section {
-    width: 100%;
-
-    flex: 1;
-
-    min-height: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    overflow: hidden;
-}
-
-.conversation-section.hidden {
-    display: none;
-}
-
-
-/* =========================================
-   CONVERSATION HEADER
-========================================= */
-
-.conversation-header {
-    width: 100%;
-
-    min-height: 70px;
-
-    flex: 0 0 70px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 11px;
-
-    padding: 10px 24px;
-
-    background:
-        rgba(5,5,5,.94);
-
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.07);
-
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-
-    z-index: 5;
-}
-
-
-/* =========================================
-   CONVERSATION BACK
-========================================= */
-
-.conversation-back {
-    width: 38px;
-    height: 38px;
-
-    flex: 0 0 38px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: none;
-
-    background: transparent;
-
-    color: #fff;
-
-    cursor: pointer;
-}
-
-.conversation-back:active {
-    transform: scale(.9);
-}
-
-.conversation-back svg {
-    width: 24px;
-    height: 24px;
-
-    fill: none;
-
-    stroke: currentColor;
-
-    stroke-width: 2;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-
-/* =========================================
    PROFILE INFO
 ========================================= */
 
 .profile-info {
+
     min-width: 0;
 
     flex: 1;
+
+    overflow: hidden;
 }
 
-.profile-info h2 {
+
+.profile-name {
+
     color: #fff;
 
     font-size: 15px;
@@ -475,8 +237,8 @@ button {
     text-overflow: ellipsis;
 }
 
-.profile-info span {
-    display: block;
+
+.profile-role {
 
     margin-top: 3px;
 
@@ -484,28 +246,30 @@ button {
         rgba(255,255,255,.45);
 
     font-size: 10px;
+
+    white-space: nowrap;
 }
 
 
 /* =========================================
-   MESSAGES LIST
+   CHAT BOX
 ========================================= */
 
-.messages-list {
+.chat-box {
+
     width: 100%;
 
-    flex: 1;
+    flex: 1 1 auto;
 
     min-height: 0;
 
     display: flex;
-
     flex-direction: column;
 
     gap: 6px;
 
     padding:
-        16px 24px;
+        16px 20px;
 
     overflow-y: auto;
 
@@ -519,14 +283,39 @@ button {
 }
 
 
+/*
+   VERY IMPORTANT:
+
+   The chat itself owns the scrolling.
+   The header and footer never enter
+   the scrolling area.
+*/
+
+
+.chat-box::-webkit-scrollbar {
+    width: 5px;
+}
+
+
+.chat-box::-webkit-scrollbar-thumb {
+
+    background:
+        rgba(255,255,255,.15);
+
+    border-radius: 10px;
+}
+
+
 /* =========================================
-   LOADING / EMPTY
+   LOADING
 ========================================= */
 
 .messages-loading {
+
     width: 100%;
 
-    padding: 30px 15px;
+    padding:
+        30px 15px;
 
     text-align: center;
 
@@ -542,20 +331,26 @@ button {
 ========================================= */
 
 .message-row {
+
     width: 100%;
 
     display: flex;
 
-    flex-shrink: 0;
+    flex: 0 0 auto;
 
-    padding: 1px 0;
+    padding:
+        1px 0;
 }
 
+
 .message-row.sent {
+
     justify-content: flex-end;
 }
 
+
 .message-row.received {
+
     justify-content: flex-start;
 }
 
@@ -565,8 +360,13 @@ button {
 ========================================= */
 
 .message-bubble {
+
+    width: fit-content;
+
     max-width:
         min(76%, 620px);
+
+    min-width: 0;
 
     padding:
         11px 14px;
@@ -576,6 +376,8 @@ button {
     font-size: 14px;
 
     line-height: 1.45;
+
+    overflow: hidden;
 
     overflow-wrap: anywhere;
 
@@ -644,6 +446,9 @@ button {
 ========================================= */
 
 .message-text {
+
+    width: 100%;
+
     font-size: 14px;
 
     line-height: 1.48;
@@ -651,6 +456,8 @@ button {
     overflow-wrap: anywhere;
 
     word-break: break-word;
+
+    white-space: pre-wrap;
 }
 
 
@@ -675,7 +482,9 @@ button {
     opacity: .48;
 }
 
+
 .message-checks {
+
     font-size: 11px;
 
     letter-spacing: -2px;
@@ -683,10 +492,10 @@ button {
 
 
 /* =========================================
-   COMPOSER
+   FOOTER
 ========================================= */
 
-.message-composer {
+.chat-footer {
 
     width: 100%;
 
@@ -699,17 +508,22 @@ button {
     gap: 10px;
 
     padding:
-        12px 20px;
+        10px 16px;
+
+    padding-bottom:
+        max(
+            10px,
+            env(safe-area-inset-bottom)
+        );
 
     background:
-        rgba(7,7,7,.97);
+        rgba(7,7,7,.98);
 
     border-top:
         1px solid
         rgba(255,255,255,.09);
 
     backdrop-filter: blur(20px);
-
     -webkit-backdrop-filter: blur(20px);
 
     z-index: 20;
@@ -717,10 +531,10 @@ button {
 
 
 /* =========================================
-   TEXT FIELD
+   MESSAGE INPUT
 ========================================= */
 
-.message-composer textarea {
+#messageInput {
 
     flex: 1;
 
@@ -763,11 +577,14 @@ button {
         box-shadow .18s ease;
 }
 
-.message-composer textarea::placeholder {
+
+#messageInput::placeholder {
+
     color: #888;
 }
 
-.message-composer textarea:focus {
+
+#messageInput:focus {
 
     border-color:
         rgba(198,255,0,.38);
@@ -790,7 +607,6 @@ button {
     flex: 0 0 48px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
@@ -816,6 +632,7 @@ button {
         opacity .18s ease;
 }
 
+
 #sendButton:hover {
 
     box-shadow:
@@ -823,15 +640,20 @@ button {
         rgba(198,255,0,.24);
 }
 
+
 #sendButton:active {
+
     transform: scale(.91);
 }
 
+
 #sendButton:disabled {
+
     opacity: .45;
 
     cursor: default;
 }
+
 
 #sendButton svg {
 
@@ -845,273 +667,75 @@ button {
     stroke-width: 1.8;
 
     stroke-linecap: round;
-
     stroke-linejoin: round;
 }
 
 
 /* =========================================
-   BOTTOM NAVIGATION
+   MOBILE
 ========================================= */
 
-.bottom-navigation {
+@media (max-width: 600px) {
 
-    width: 100%;
-
-    height: 70px;
-
-    flex: 0 0 70px;
-
-    display: flex;
-
-    align-items: stretch;
-
-    justify-content: center;
-
-    border-top:
-        1px solid
-        rgba(255,255,255,.08);
-
-    background:
-        rgba(5,5,5,.97);
-
-    backdrop-filter: blur(18px);
-
-    -webkit-backdrop-filter: blur(18px);
-
-    z-index: 30;
-}
-
-
-/* =========================================
-   NAV ITEM
-========================================= */
-
-.nav-item {
-
-    flex: 1;
-
-    max-width: 180px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 5px;
-
-    border: none;
-
-    background: transparent;
-
-    color:
-        rgba(255,255,255,.42);
-
-    cursor: pointer;
-
-    transition:
-        color .18s ease;
-}
-
-.nav-item.active {
-    color: #C6FF00;
-}
-
-.nav-item:active {
-    opacity: .7;
-}
-
-.nav-item svg {
-
-    width: 22px;
-    height: 22px;
-
-    fill: none;
-
-    stroke: currentColor;
-
-    stroke-width: 1.7;
-
-    stroke-linecap: round;
-
-    stroke-linejoin: round;
-}
-
-.nav-item span {
-    font-size: 10px;
-
-    font-weight: 600;
-}
-
-
-/* =========================================
-   TABLET
-========================================= */
-
-@media (max-width: 700px) {
-
-    .messages-header {
-
-        height: 64px;
-
-        flex-basis: 64px;
+    .chat-header {
 
         padding:
-            0 14px;
+            10px 14px;
     }
 
-    .athlete-list-section {
+
+    .chat-box {
 
         padding:
-            18px 14px 100px;
+            14px 12px;
     }
 
-    .conversation-header {
-
-        min-height: 64px;
-
-        flex-basis: 64px;
-
-        padding:
-            8px 12px;
-    }
-
-    .messages-list {
-
-        padding:
-            14px 14px;
-    }
 
     .message-bubble {
 
-        max-width: 86%;
+        max-width: 82%;
+    }
+
+
+    .chat-footer {
 
         padding:
-            10px 12px;
+            9px 10px;
+
+        padding-bottom:
+            max(
+                9px,
+                env(safe-area-inset-bottom)
+            );
     }
 
-    .message-composer {
-
-        gap: 8px;
-
-        padding:
-            9px 12px;
-    }
-
-    .message-composer textarea {
-
-        min-height: 46px;
-
-        padding:
-            12px 15px;
-
-        border-radius: 24px;
-    }
-
-    #sendButton {
-
-        width: 46px;
-
-        height: 46px;
-
-        flex-basis: 46px;
-    }
-
-    .bottom-navigation {
-
-        height: 64px;
-
-        flex-basis: 64px;
-    }
 }
 
 
 /* =========================================
-   SMALL PHONES
+   TABLET / LARGE SCREEN
 ========================================= */
 
-@media (max-width: 380px) {
+@media (min-width: 900px) {
 
-    .messages-header {
+    .chat-header {
 
-        height: 62px;
-
-        flex-basis: 62px;
+        padding-left: 28px;
+        padding-right: 28px;
     }
 
-    .messages-header h1 {
 
-        font-size: 17px;
+    .chat-box {
+
+        padding-left: 28px;
+        padding-right: 28px;
     }
 
-    .messages-list {
 
-        padding:
-            12px 10px;
+    .chat-footer {
+
+        padding-left: 24px;
+        padding-right: 24px;
     }
 
-    .message-bubble {
-
-        max-width: 89%;
-
-        font-size: 13px;
-    }
-
-    .message-composer {
-
-        gap: 7px;
-
-        padding:
-            8px 9px;
-    }
-
-    .message-composer textarea {
-
-        min-height: 42px;
-
-        padding:
-            11px 13px;
-
-        border-radius: 22px;
-
-        font-size: 12px;
-    }
-
-    #sendButton {
-
-        width: 42px;
-
-        height: 42px;
-
-        flex-basis: 42px;
-    }
-
-    #sendButton svg {
-
-        width: 21px;
-
-        height: 21px;
-    }
-
-    .bottom-navigation {
-
-        height: 60px;
-
-        flex-basis: 60px;
-    }
-
-    .nav-item svg {
-
-        width: 20px;
-
-        height: 20px;
-    }
-
-    .nav-item span {
-
-        font-size: 9px;
-    }
 }
