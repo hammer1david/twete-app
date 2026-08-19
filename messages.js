@@ -2662,7 +2662,57 @@ scrollToBottom(
                 }
             )
 
+/*
+    Deleted messages
+*/
 
+.on(
+    "postgres_changes",
+    {
+        event: "DELETE",
+        schema: "public",
+        table: "messages"
+    },
+    function (
+        payload
+    ) {
+
+        const deletedMessage =
+            payload.old;
+
+
+        if (
+            !deletedMessage ||
+            !deletedMessage.id
+        ) {
+            return;
+        }
+
+
+        const row =
+            document.querySelector(
+                `[data-message-id="${deletedMessage.id}"]`
+            );
+
+
+        if (row) {
+
+            row.remove();
+
+        }
+
+
+        if (
+            selectedMessageId ===
+            deletedMessage.id
+        ) {
+
+            clearMessageSelection();
+
+        }
+
+    }
+)
             /*
                 Read status changes
             */
