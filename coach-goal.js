@@ -748,6 +748,67 @@ async function loadWeeks() {
             sessionData ||
             [];
 
+        
+        workoutFeedback = {};
+
+
+const workoutIds =
+    sessions.map(
+        function(session) {
+            return session.id;
+        }
+    );
+
+
+if (workoutIds.length) {
+
+    const {
+        data: feedbackData,
+        error: feedbackError
+    } =
+        await supabaseClient
+            .from("workout_feedback")
+            .select(`
+                id,
+                workout_id,
+                athlete_id,
+                feeling,
+                effort,
+                comment,
+                created_at,
+                updated_at
+            `)
+            .in(
+                "workout_id",
+                workoutIds
+            );
+
+
+    if (feedbackError) {
+
+        console.error(
+            "Could not load athlete feedback:",
+            feedbackError
+        );
+
+    } else {
+
+        (
+            feedbackData || []
+        ).forEach(
+            function(feedback) {
+
+                workoutFeedback[
+                    feedback.workout_id
+                ] = feedback;
+
+            }
+        );
+
+    }
+
+}
+
     } else {
 
         sessions = [];
