@@ -3002,7 +3002,34 @@ function goBack() {
 
 }
 
+function getCoachFeelingEmoji(
+    feeling
+) {
 
+    switch (
+        String(
+            feeling || ""
+        ).toLowerCase()
+    ) {
+
+        case "great":
+            return "😄";
+
+        case "good":
+            return "🙂";
+
+        case "okay":
+            return "😐";
+
+        case "bad":
+            return "😣";
+
+        default:
+            return "";
+
+    }
+
+}
 /* =========================================
    HELPERS
 ========================================= */
