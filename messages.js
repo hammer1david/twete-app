@@ -2931,7 +2931,30 @@ const cameraButton =
     document.getElementById(
         "cameraButton"
     );
+const cameraOverlay =
+    document.getElementById(
+        "cameraOverlay"
+    );
 
+const cameraVideo =
+    document.getElementById(
+        "cameraVideo"
+    );
+
+const cameraCanvas =
+    document.getElementById(
+        "cameraCanvas"
+    );
+
+const cameraClose =
+    document.getElementById(
+        "cameraClose"
+    );
+
+const cameraCapture =
+    document.getElementById(
+        "cameraCapture"
+    );
 const cameraInput =
     document.getElementById(
         "cameraInput"
@@ -2991,6 +3014,387 @@ const cameraInput =
         );
 
     }
+
+   /* =====================================
+   TWETE CAMERA
+===================================== */
+
+let cameraStream = null;
+
+
+/* =====================================
+   OPEN CAMERA
+===================================== */
+
+async function openTweteCamera() {
+
+    if (
+        !cameraOverlay ||
+        !cameraVideo
+    ) {
+        return;
+    }
+
+
+    try {
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+                    facingMode: {
+                        ideal: "environment"
+                    }
+                },
+
+                audio: false
+
+            });
+
+
+        cameraVideo.srcObject =
+            cameraStream;
+
+
+        cameraOverlay.hidden =
+            false;
+
+
+        document.body.classList.add(
+            "camera-open"
+        );
+
+
+        await cameraVideo.play();
+
+
+    } catch (error) {
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+
+        alert(
+            "Could not access the camera."
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   CLOSE CAMERA
+===================================== */
+
+function closeTweteCamera() {
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                function (
+                    track
+                ) {
+
+                    track.stop();
+
+                }
+            );
+
+        cameraStream =
+            null;
+
+    }
+
+
+    if (cameraVideo) {
+
+        cameraVideo.srcObject =
+            null;
+
+    }
+
+
+    if (cameraOverlay) {
+
+        cameraOverlay.hidden =
+            true;
+
+    }
+
+
+    document.body.classList.remove(
+        "camera-open"
+    );
+
+}
+
+
+/* =====================================
+   CAPTURE PHOTO
+===================================== */
+
+async function captureTwetePhoto() {
+
+    if (
+        !cameraVideo ||
+        !cameraCanvas
+    ) {
+        return;
+    }
+
+
+    if (
+        cameraVideo.readyState <
+        HTMLMediaElement.HAVE_CURRENT_DATA
+    ) {
+
+        return;
+
+    }
+
+
+    const remainingSlots =
+        4 -
+        selectedAttachments.length;
+
+
+    if (
+        remainingSlots <= 0
+    ) {
+
+        alert(
+            "You can attach a maximum of 4 files."
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Limit the camera image size.
+
+        This keeps memory usage
+        reasonable on smartphones.
+    */
+
+    const MAX_SIZE =
+        1920;
+
+
+    let width =
+        cameraVideo.videoWidth;
+
+    let height =
+        cameraVideo.videoHeight;
+
+
+    if (
+        !width ||
+        !height
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        width >
+        MAX_SIZE ||
+        height >
+        MAX_SIZE
+    ) {
+
+        if (
+            width >
+            height
+        ) {
+
+            height =
+                Math.round(
+                    height *
+                    MAX_SIZE /
+                    width
+                );
+
+            width =
+                MAX_SIZE;
+
+        } else {
+
+            width =
+                Math.round(
+                    width *
+                    MAX_SIZE /
+                    height
+                );
+
+            height =
+                MAX_SIZE;
+
+        }
+
+    }
+
+
+    cameraCanvas.width =
+        width;
+
+    cameraCanvas.height =
+        height;
+
+
+    const context =
+        cameraCanvas.getContext(
+            "2d"
+        );
+
+
+    if (!context) {
+        return;
+    }
+
+
+    context.drawImage(
+        cameraVideo,
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+        Convert directly to JPEG.
+    */
+
+    const blob =
+        await new Promise(
+            function (
+                resolve
+            ) {
+
+                cameraCanvas.toBlob(
+                    resolve,
+                    "image/jpeg",
+                    0.82
+                );
+
+            }
+        );
+
+
+    if (!blob) {
+
+        alert(
+            "Could not process the photo."
+        );
+
+        return;
+
+    }
+
+
+    const file =
+        new File(
+            [
+                blob
+            ],
+            "twete-camera-" +
+            Date.now() +
+            ".jpg",
+            {
+                type:
+                    "image/jpeg",
+
+                lastModified:
+                    Date.now()
+            }
+        );
+
+
+    /*
+        Add directly to the
+        existing attachment system.
+    */
+
+    selectedAttachments.push(
+        file
+    );
+
+
+    /*
+        Close camera.
+    */
+
+    closeTweteCamera();
+
+
+    /*
+        Use the existing
+        attachment preview.
+    */
+
+    renderAttachmentPreview();
+
+}
+
+
+/* =====================================
+   CAMERA EVENTS
+===================================== */
+
+if (
+    cameraButton &&
+    cameraOverlay
+) {
+
+    cameraButton.addEventListener(
+        "click",
+        openTweteCamera
+    );
+
+}
+
+
+if (cameraClose) {
+
+    cameraClose.addEventListener(
+        "click",
+        closeTweteCamera
+    );
+
+}
+
+
+if (cameraCapture) {
+
+    cameraCapture.addEventListener(
+        "click",
+        captureTwetePhoto
+    );
+
+}
+
+
+/* =====================================
+   CLEAN UP CAMERA
+===================================== */
+
+window.addEventListener(
+    "beforeunload",
+    function () {
+
+        closeTweteCamera();
+
+    }
+);
 /* =====================================
    CAMERA
 ===================================== */
