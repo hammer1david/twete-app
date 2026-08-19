@@ -563,10 +563,11 @@ button {
 .attachment-preview {
     width: 100%;
 
-    display: grid;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
 
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+    align-items: center;
 
     gap: 8px;
 
@@ -574,12 +575,14 @@ button {
 
     border:
         1px solid
-        rgba(198,255,0,.15);
+        rgba(198, 255, 0, 0.15);
 
     border-radius: 14px;
 
     background:
-        rgba(198,255,0,.035);
+        rgba(198, 255, 0, 0.035);
+
+    overflow: hidden;
 }
 
 .attachment-preview[hidden] {
