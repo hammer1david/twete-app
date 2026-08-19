@@ -297,15 +297,17 @@ async function loadGoals() {
         await supabaseClient
             .from("goals")
             .select(`
-                id,
-                athlete_id,
-                distance,
-                current_pb,
-                target_time,
-                target_date,
-                progress,
-                created_at
-            `)
+    id,
+    athlete_id,
+    goal_name,
+    distance,
+    current_pb,
+    target_time,
+    target_date,
+    progress,
+    goal_image_id,
+    created_at
+`)
             .eq(
                 "athlete_id",
                 athleteId
@@ -1227,25 +1229,29 @@ async function saveGoal() {
             .from("goals")
             .insert({
 
-                athlete_id:
-                    athleteId,
+    athlete_id:
+        athleteId,
 
-                goal_name:
-                    goalName,
+    goal_name:
+        goalName,
 
-                distance:
-                    distance,
+    distance:
+        distance,
 
-                target_time:
-                    targetTime,
+    target_time:
+        targetTime,
 
-                target_date:
-                    targetDate,
+    target_date:
+        targetDate,
 
-                progress:
-                    0
+    progress:
+        0,
 
-            })
+    goal_image_id:
+        selectedGoalImageId ||
+        null
+
+})
             .select()
             .single();
 
