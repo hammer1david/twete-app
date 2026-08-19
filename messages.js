@@ -1068,11 +1068,18 @@ row.addEventListener(
         );
 
 
+        if (
+            isMessageSelectionMode
+        ) {
+            return;
+        }
+
+
         messageLongPressTimer =
             setTimeout(
                 function () {
 
-                    selectMessage(
+                    toggleMessageSelection(
                         message,
                         row
                     );
@@ -1115,6 +1122,30 @@ row.addEventListener(
 
         clearTimeout(
             messageLongPressTimer
+        );
+
+    }
+);
+
+
+row.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            !isMessageSelectionMode
+        ) {
+            return;
+        }
+
+
+        event.preventDefault();
+        event.stopPropagation();
+
+
+        toggleMessageSelection(
+            message,
+            row
         );
 
     }
