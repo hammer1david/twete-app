@@ -86,6 +86,8 @@ let realtimeChannel = null;
 
 let isSending = false;
 let chatPresenceInterval = null;
+const renderingMessageIds=
+   new Set();
 
 
 /* =========================================
