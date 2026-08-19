@@ -152,56 +152,90 @@
 
     <footer class="chat-composer">
 
-        <button
-            class="attachment-button"
-            type="button"
-            aria-label="Attach file"
-        >
+    <!-- ATTACHMENT PREVIEW -->
 
-            <svg viewBox="0 0 24 24">
+    <div
+        class="attachment-preview"
+        id="attachmentPreview"
+        hidden
+    >
 
-                <path
-                    d="M21.4 11.6l-8.8 8.8a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"
-                ></path>
-
-            </svg>
-
-        </button>
-
-
-        <textarea
-            id="messageInput"
-            placeholder="Write a message..."
-            rows="1"
-        ></textarea>
-
+        <div
+            class="attachment-preview-content"
+            id="attachmentPreviewContent"
+        ></div>
 
         <button
-            class="send-button"
+            class="attachment-remove"
+            id="attachmentRemove"
             type="button"
-            aria-label="Send message"
+            aria-label="Remove attachment"
         >
-
-            <svg viewBox="0 0 24 24">
-
-                <path d="M22 2L11 13"></path>
-
-                <path
-                    d="M22 2l-7 20-4-9-9-4 20-7z"
-                ></path>
-
-            </svg>
-
+            ×
         </button>
-        
-        <input
-    type="file"
-    id="attachmentInput"
-    hidden
-    accept="image/*,video/*,.pdf,.doc,.docx,.txt"
->
 
-    </footer>
+    </div>
+
+
+    <!-- ATTACHMENT BUTTON -->
+
+    <button
+        class="attachment-button"
+        type="button"
+        aria-label="Attach file"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path
+                d="M21.4 11.6l-8.8 8.8a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"
+            ></path>
+
+        </svg>
+
+    </button>
+
+
+    <!-- TEXT -->
+
+    <textarea
+        id="messageInput"
+        placeholder="Write a message..."
+        rows="1"
+    ></textarea>
+
+
+    <!-- SEND -->
+
+    <button
+        class="send-button"
+        type="button"
+        aria-label="Send message"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path d="M22 2L11 13"></path>
+
+            <path
+                d="M22 2l-7 20-4-9-9-4 20-7z"
+            ></path>
+
+        </svg>
+
+    </button>
+
+
+    <!-- FILE INPUT -->
+
+    <input
+        type="file"
+        id="attachmentInput"
+        hidden
+        accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+    >
+
+</footer>
 
 </div>
 
