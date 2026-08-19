@@ -110,9 +110,14 @@ let chatPresenceInterval = null;
 const renderingMessageIds=
    new Set();
 
-let selectedMessageId = null;
-let selectedMessageData = null;
-let messageLongPressTimer = null;
+const selectedMessages =
+    new Map();
+
+let messageLongPressTimer =
+    null;
+
+let isMessageSelectionMode =
+    false;
 /* =========================================
    START
 ========================================= */
