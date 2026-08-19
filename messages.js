@@ -1141,12 +1141,37 @@ async function createMessageAttachment(
         image.src =
             url;
 
-        image.alt =
+
+       image.alt =
             message.attachment_name ||
             "Image";
 
         image.loading =
             "lazy";
+       
+       image.addEventListener(
+    "load",
+    function () {
+
+        /*
+            Only now does the browser know
+            the real image height.
+
+            Scroll again so image + text +
+            timestamp are completely visible.
+        */
+
+        scrollToBottom(
+            false
+        );
+
+    },
+    {
+        once: true
+    }
+);
+
+        
 
 
         /*
@@ -1197,6 +1222,20 @@ async function createMessageAttachment(
 
         video.preload =
             "metadata";
+
+       video.addEventListener(
+    "loadedmetadata",
+    function () {
+
+        scrollToBottom(
+            false
+        );
+
+    },
+    {
+        once: true
+    }
+);
 
         return video;
     }
