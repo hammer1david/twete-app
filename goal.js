@@ -1701,13 +1701,17 @@ async function addFeedback(
                     "workout_feedback"
                 )
                 .select(`
-                    id,
-                    workout_id,
-                    athlete_id,
-                    feeling,
-                    effort,
-                    comment
-                `)
+    id,
+    workout_id,
+    athlete_id,
+    feeling,
+    effort,
+    legs,
+    temperature,
+    wind,
+    terrain,
+    comment
+`)
                 .eq(
                     "workout_id",
                     session.id
