@@ -105,10 +105,44 @@
     <!-- =========================================
          FOOTER
     ========================================== -->
+<footer class="chat-footer">
 
-    <footer class="chat-footer">
+    <!-- Attachment preview -->
+    <div
+        id="attachmentPreview"
+        class="attachment-preview"
+        hidden
+    ></div>
+
 
     <div class="message-composer">
+
+        <!-- Attachment button -->
+        <button
+            id="attachmentButton"
+            class="attachment-button"
+            type="button"
+            aria-label="Add attachment"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path d="M12 5V19"></path>
+                <path d="M5 12H19"></path>
+            </svg>
+        </button>
+
+
+        <!-- Hidden file picker -->
+        <input
+            id="attachmentInput"
+            type="file"
+            hidden
+            multiple
+            accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+        >
+
 
         <textarea
             id="messageInput"
@@ -127,7 +161,6 @@
             type="button"
             aria-label="Send message"
         >
-
             <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -135,12 +168,12 @@
                 <path d="M22 2L11 13"></path>
                 <path d="M22 2L15 22L11 13L2 9L22 2"></path>
             </svg>
-
         </button>
 
     </div>
 
 </footer>
+    
 
 
 </div>
