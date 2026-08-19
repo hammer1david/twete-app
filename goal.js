@@ -1514,12 +1514,10 @@ async function addFeedback(
     const session =
         currentSessions.find(
             function (item) {
-
                 return (
                     String(item.id) ===
                     String(sessionId)
                 );
-
             }
         );
 
@@ -1529,10 +1527,58 @@ async function addFeedback(
     }
 
 
-    const existing =
+    const existingText =
         getAthleteFeedback(
             session.notes
         );
+
+
+    /* =====================================
+       LOAD OPTIONAL STRUCTURED FEEDBACK
+    ====================================== */
+
+    let structuredFeedback =
+        null;
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await goalSupabase
+                .from(
+                    "workout_feedback"
+                )
+                .select(`
+                    id,
+                    workout_id,
+                    athlete_id,
+                    feeling,
+                    effort,
+                    comment
+                `)
+                .eq(
+                    "workout_id",
+                    session.id
+                )
+                .maybeSingle();
+
+
+        if (!error) {
+            structuredFeedback =
+                data;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not load structured feedback:",
+            error
+        );
+
+    }
 
 
     const modal =
@@ -1550,19 +1596,157 @@ async function addFeedback(
         <div class="feedback-modal-box">
 
             <h3>
-                ${existing
-                    ? "Edit Feedback"
-                    : "Add Feedback"
+                ${
+                    existingText
+                        ? "Edit Feedback"
+                        : "Add Feedback"
                 }
             </h3>
 
 
+            <label class="feedback-field-label">
+                Anything we should know?
+            </label>
+
+
             <textarea
                 id="feedbackInput"
-                placeholder="How did the session feel?"
+                placeholder="Wind, weather, how the session felt, anything unusual..."
             >${escapeHtml(
-                existing
+                existingText
             )}</textarea>
+
+
+            <!-- OPTIONAL EXTENDED FEEDBACK -->
+
+            <button
+                type="button"
+                class="more-feedback-button"
+                id="moreFeedbackButton"
+            >
+                + Give more feedback
+            </button>
+
+
+            <div
+                class="extended-feedback"
+                id="extendedFeedback"
+                ${
+                    structuredFeedback
+                        ? ""
+                        : "hidden"
+                }
+            >
+
+                <div class="extended-feedback-title">
+                    How did the session feel?
+                </div>
+
+
+                <div class="feeling-options">
+
+                    <button
+                        type="button"
+                        class="feeling-option ${
+                            structuredFeedback?.feeling ===
+                            "great"
+                                ? "selected"
+                                : ""
+                        }"
+                        data-feeling="great"
+                    >
+                        😄
+                        <span>Great</span>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="feeling-option ${
+                            structuredFeedback?.feeling ===
+                            "good"
+                                ? "selected"
+                                : ""
+                        }"
+                        data-feeling="good"
+                    >
+                        🙂
+                        <span>Good</span>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="feeling-option ${
+                            structuredFeedback?.feeling ===
+                            "okay"
+                                ? "selected"
+                                : ""
+                        }"
+                        data-feeling="okay"
+                    >
+                        😐
+                        <span>Okay</span>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="feeling-option ${
+                            structuredFeedback?.feeling ===
+                            "bad"
+                                ? "selected"
+                                : ""
+                        }"
+                        data-feeling="bad"
+                    >
+                        😣
+                        <span>Bad</span>
+                    </button>
+
+                </div>
+
+
+                <div class="effort-section">
+
+                    <div class="effort-header">
+
+                        <span>
+                            Effort
+                        </span>
+
+                        <strong
+                            id="effortValue"
+                        >
+                            ${
+                                structuredFeedback?.effort ||
+                                5
+                            }/10
+                        </strong>
+
+                    </div>
+
+
+                    <input
+                        id="effortInput"
+                        type="range"
+                        min="1"
+                        max="10"
+                        step="1"
+                        value="${
+                            structuredFeedback?.effort ||
+                            5
+                        }"
+                    >
+
+                    <div class="effort-labels">
+                        <span>Easy</span>
+                        <span>Hard</span>
+                    </div>
+
+                </div>
+
+            </div>
 
 
             <div class="feedback-modal-buttons">
@@ -1600,8 +1784,126 @@ async function addFeedback(
         );
 
 
-    textarea.focus();
+    const extended =
+        modal.querySelector(
+            "#extendedFeedback"
+        );
 
+
+    const moreButton =
+        modal.querySelector(
+            "#moreFeedbackButton"
+        );
+
+
+    const effortInput =
+        modal.querySelector(
+            "#effortInput"
+        );
+
+
+    const effortValue =
+        modal.querySelector(
+            "#effortValue"
+        );
+
+
+    let selectedFeeling =
+        structuredFeedback?.feeling ||
+        null;
+
+
+    /* =====================================
+       SHOW / HIDE EXTENDED FEEDBACK
+    ====================================== */
+
+    moreButton.onclick =
+        function () {
+
+            const isHidden =
+                extended.hidden;
+
+
+            extended.hidden =
+                !isHidden;
+
+
+            moreButton.textContent =
+                isHidden
+                    ? "− Hide extra feedback"
+                    : "+ Give more feedback";
+
+        };
+
+
+    if (structuredFeedback) {
+
+        moreButton.textContent =
+            "− Hide extra feedback";
+
+    }
+
+
+    /* =====================================
+       FEELING SELECTION
+    ====================================== */
+
+    modal
+        .querySelectorAll(
+            ".feeling-option"
+        )
+        .forEach(
+            function (button) {
+
+                button.onclick =
+                    function () {
+
+                        modal
+                            .querySelectorAll(
+                                ".feeling-option"
+                            )
+                            .forEach(
+                                function (item) {
+
+                                    item.classList.remove(
+                                        "selected"
+                                    );
+
+                                }
+                            );
+
+
+                        button.classList.add(
+                            "selected"
+                        );
+
+
+                        selectedFeeling =
+                            button.dataset.feeling;
+
+                    };
+
+            }
+        );
+
+
+    /* =====================================
+       EFFORT SLIDER
+    ====================================== */
+
+    effortInput.oninput =
+        function () {
+
+            effortValue.textContent =
+                effortInput.value +
+                "/10";
+
+        };
+
+
+    /* =====================================
+       CANCEL
+    ====================================== */
 
     modal
         .querySelector(
@@ -1615,6 +1917,10 @@ async function addFeedback(
         };
 
 
+    /* =====================================
+       SAVE
+    ====================================== */
+
     modal
         .querySelector(
             ".feedback-save"
@@ -1622,94 +1928,201 @@ async function addFeedback(
         .onclick =
         async function () {
 
-            const feedback =
+            const feedbackText =
                 textarea.value.trim();
 
 
-            if (!feedback) {
+            /*
+             * Text is optional if athlete
+             * provided structured feedback.
+             */
+
+            if (
+                !feedbackText &&
+                extended.hidden
+            ) {
 
                 alert(
-                    "Please enter some feedback."
+                    "Please enter some feedback or use the optional feedback section."
                 );
 
                 return;
             }
 
 
-            const newNotes =
-                setAthleteFeedback(
-                    session.notes,
-                    feedback
-                );
+            /* =================================
+               SAVE EXISTING TEXT FEEDBACK
+            ================================== */
 
+            if (feedbackText) {
 
-            const {
-                data,
-                error
-            } =
-                await goalSupabase
-                    .from("workouts")
-                    .update({
-                        notes: newNotes
-                    })
-                    .eq(
-                        "id",
-                        session.id
-                    )
-                    .select(`
-                        id,
-                        athlete_id,
-                        week_id,
-                        workout_date,
-                        workout_type,
-                        title,
-                        distance_km,
-                        duration_minutes,
-                        pace,
-                        notes,
-                        completed
-                    `)
-                    .maybeSingle();
-
-
-            if (error) {
-
-                console.error(
-                    "Feedback save error:",
-                    error
-                );
-
-                alert(
-                    "Could not save feedback."
-                );
-
-                return;
-            }
-
-
-            if (data) {
-
-                const index =
-                    currentSessions.findIndex(
-                        function (item) {
-
-                            return (
-                                String(
-                                    item.id
-                                ) ===
-                                String(
-                                    session.id
-                                )
-                            );
-
-                        }
+                const newNotes =
+                    setAthleteFeedback(
+                        session.notes,
+                        feedbackText
                     );
 
 
-                if (index >= 0) {
+                const {
+                    data,
+                    error
+                } =
+                    await goalSupabase
+                        .from("workouts")
+                        .update({
+                            notes:
+                                newNotes
+                        })
+                        .eq(
+                            "id",
+                            session.id
+                        )
+                        .select(`
+                            id,
+                            athlete_id,
+                            week_id,
+                            workout_date,
+                            workout_type,
+                            title,
+                            distance_km,
+                            duration_minutes,
+                            pace,
+                            notes,
+                            completed
+                        `)
+                        .maybeSingle();
 
-                    currentSessions[index] =
-                        data;
+
+                if (error) {
+
+                    console.error(
+                        "Feedback save error:",
+                        error
+                    );
+
+
+                    alert(
+                        "Could not save feedback."
+                    );
+
+                    return;
+                }
+
+
+                if (data) {
+
+                    const index =
+                        currentSessions
+                            .findIndex(
+                                function (item) {
+
+                                    return (
+                                        String(
+                                            item.id
+                                        ) ===
+                                        String(
+                                            session.id
+                                        )
+                                    );
+
+                                }
+                            );
+
+
+                    if (index >= 0) {
+
+                        currentSessions[index] =
+                            data;
+
+                    }
+
+                }
+
+            }
+
+
+            /* =================================
+               SAVE OPTIONAL EXTRA FEEDBACK
+            ================================== */
+
+            if (!extended.hidden) {
+
+                const {
+                    data: {
+                        user
+                    }
+                } =
+                    await goalSupabase
+                        .auth
+                        .getUser();
+
+
+                if (!user) {
+
+                    alert(
+                        "Please log in again."
+                    );
+
+                    return;
+                }
+
+
+                const {
+                    error:
+                        structuredError
+                } =
+                    await goalSupabase
+                        .from(
+                            "workout_feedback"
+                        )
+                        .upsert(
+                            {
+
+                                workout_id:
+                                    session.id,
+
+                                athlete_id:
+                                    user.id,
+
+                                feeling:
+                                    selectedFeeling,
+
+                                effort:
+                                    Number(
+                                        effortInput.value
+                                    ),
+
+                                comment:
+                                    feedbackText ||
+                                    null,
+
+                                updated_at:
+                                    new Date()
+                                        .toISOString()
+
+                            },
+                            {
+
+                                onConflict:
+                                    "workout_id,athlete_id"
+
+                            }
+                        );
+
+
+                if (structuredError) {
+
+                    console.error(
+                        "Structured feedback error:",
+                        structuredError
+                    );
+
+
+                    alert(
+                        "Your text feedback was saved, but the additional feedback could not be saved."
+                    );
+
+                    return;
 
                 }
 
