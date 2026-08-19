@@ -1054,7 +1054,66 @@ renderingMessageIds.add(
 
     row.dataset.messageId =
         message.id;
+row.addEventListener(
+    "pointerdown",
+    function () {
 
+        clearTimeout(
+            messageLongPressTimer
+        );
+
+
+        messageLongPressTimer =
+            setTimeout(
+                function () {
+
+                    selectMessage(
+                        message,
+                        row
+                    );
+
+                },
+                500
+            );
+
+    }
+);
+
+
+row.addEventListener(
+    "pointerup",
+    function () {
+
+        clearTimeout(
+            messageLongPressTimer
+        );
+
+    }
+);
+
+
+row.addEventListener(
+    "pointercancel",
+    function () {
+
+        clearTimeout(
+            messageLongPressTimer
+        );
+
+    }
+);
+
+
+row.addEventListener(
+    "pointermove",
+    function () {
+
+        clearTimeout(
+            messageLongPressTimer
+        );
+
+    }
+);
 
     const bubble =
         document.createElement("div");
@@ -3276,3 +3335,9 @@ function clearMessageSelection() {
     }
 
 }
+
+cancelMessageSelectionButton
+    ?.addEventListener(
+        "click",
+        clearMessageSelection
+    );
