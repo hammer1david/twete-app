@@ -32,7 +32,14 @@ let conversationUserId = null;
 
 let realtimeChannel = null;
 
+
+/*
+    Maximum 4 attachments
+*/
+
 let selectedAttachments = [];
+
+
 /* =========================================
    START
 ========================================= */
@@ -92,45 +99,20 @@ async function initialiseMessages() {
             session.user;
 
 
-        /*
-            Load our profile
-        */
-
         await loadCurrentProfile();
 
-
-        /*
-            Find the person
-            we are chatting with
-        */
 
         await loadConversationUser();
 
 
-        /*
-            Setup composer
-        */
-
         setupComposer();
 
-
-        /*
-            Load messages
-        */
 
         await loadMessages();
 
 
-        /*
-            Start realtime
-        */
-
         subscribeToMessages();
 
-
-        /*
-            Initial scroll
-        */
 
         scrollToBottom();
 
@@ -194,13 +176,6 @@ async function loadCurrentProfile() {
 
     currentRole =
         data.role;
-
-
-    /*
-        We can also use the current
-        user's profile information later
-        if needed.
-    */
 
 }
 
@@ -339,10 +314,6 @@ async function loadAthleteForCoach() {
             );
 
 
-    /*
-        Open requested athlete
-    */
-
     if (requestedAthleteId) {
 
         query =
@@ -352,10 +323,6 @@ async function loadAthleteForCoach() {
             );
 
     } else {
-
-        /*
-            Otherwise use latest connection
-        */
 
         query =
             query
@@ -501,10 +468,6 @@ function setProfileHeader(
         );
 
 
-    /*
-        Name
-    */
-
     if (nameElement) {
 
         nameElement.textContent =
@@ -513,10 +476,6 @@ function setProfileHeader(
     }
 
 
-    /*
-        Avatar
-    */
-
     if (!avatarElement) {
         return;
     }
@@ -524,7 +483,8 @@ function setProfileHeader(
 
     if (avatarUrl) {
 
-        avatarElement.innerHTML = "";
+        avatarElement.innerHTML =
+            "";
 
         const image =
             document.createElement(
@@ -534,7 +494,8 @@ function setProfileHeader(
         image.src =
             avatarUrl;
 
-        image.alt = "";
+        image.alt =
+            "";
 
         image.referrerPolicy =
             "no-referrer";
@@ -663,16 +624,9 @@ function renderMessages(
     }
 
 
-    /*
-        Remove old messages
-    */
+    list.innerHTML =
+        "";
 
-    list.innerHTML = "";
-
-
-    /*
-        Empty conversation
-    */
 
     if (!messages.length) {
 
@@ -695,11 +649,6 @@ function renderMessages(
     }
 
 
-    /*
-        Render messages
-        in chronological order
-    */
-
     messages.forEach(
         function (message) {
 
@@ -712,10 +661,6 @@ function renderMessages(
                 );
 
 
-            /*
-                Row
-            */
-
             const row =
                 document.createElement(
                     "div"
@@ -727,10 +672,6 @@ function renderMessages(
                     : "message-row received";
 
 
-            /*
-                Bubble
-            */
-
             const bubble =
                 document.createElement(
                     "div"
@@ -740,10 +681,6 @@ function renderMessages(
                 "message-bubble";
 
 
-            /*
-                Text
-            */
-
             const text =
                 document.createElement(
                     "div"
@@ -752,19 +689,9 @@ function renderMessages(
             text.className =
                 "message-text";
 
-
-            /*
-                textContent is intentional.
-                It prevents HTML injection.
-            */
-
             text.textContent =
                 message.message || "";
 
-
-            /*
-                Time
-            */
 
             const meta =
                 document.createElement(
@@ -793,11 +720,6 @@ function renderMessages(
             );
 
 
-            /*
-                Read checks
-                only on sent messages
-            */
-
             if (sent) {
 
                 const checks =
@@ -818,10 +740,6 @@ function renderMessages(
             }
 
 
-            /*
-                Assemble
-            */
-
             bubble.appendChild(
                 text
             );
@@ -841,12 +759,6 @@ function renderMessages(
         }
     );
 
-
-    /*
-        IMPORTANT:
-        Wait until browser has calculated
-        the actual height before scrolling.
-    */
 
     scrollToBottom();
 
@@ -870,18 +782,8 @@ function scrollToBottom() {
     }
 
 
-    /*
-        First frame:
-        browser calculates layout.
-    */
-
     requestAnimationFrame(
         function () {
-
-            /*
-                Second frame:
-                dimensions are now reliable.
-            */
 
             requestAnimationFrame(
                 function () {
@@ -923,6 +825,27 @@ async function sendMessage() {
 
     const text =
         input.value.trim();
+
+
+    /*
+        At this stage attachments
+        are only being previewed.
+
+        Uploading them to Supabase
+        comes in the next step.
+    */
+
+    if (
+        !text &&
+        selectedAttachments.length > 0
+    ) {
+
+        alert(
+            "Attachment upload will be added next."
+        );
+
+        return;
+    }
 
 
     if (!text) {
@@ -984,22 +907,11 @@ async function sendMessage() {
         }
 
 
-        /*
-            Clear input
-        */
-
-        input.value = "";
-
+        input.value =
+            "";
 
         resizeComposer();
 
-
-        /*
-            Reload messages.
-
-            This also scrolls to the
-            newest message.
-        */
 
         await loadMessages();
 
@@ -1032,10 +944,6 @@ function subscribeToMessages() {
         return;
     }
 
-
-    /*
-        Remove old channel
-    */
 
     if (realtimeChannel) {
 
@@ -1104,14 +1012,6 @@ function subscribeToMessages() {
                         return;
                     }
 
-
-                    /*
-                        If another person sends
-                        a message, reload it.
-
-                        Our own send already reloads
-                        immediately.
-                    */
 
                     if (
                         String(
@@ -1222,176 +1122,250 @@ function setupComposer() {
         document.querySelector(
             ".send-button"
         );
-   
-   /* =========================================
-   ATTACHMENTS
-========================================= */
-
-const attachmentButton =
-    document.querySelector(
-        ".attachment-button"
-    );
-
-const attachmentInput =
-    document.getElementById(
-        "attachmentInput"
-    );
-
-const attachmentPreview =
-    document.getElementById(
-        "attachmentPreview"
-    );
-
-const attachmentPreviewContent =
-    document.getElementById(
-        "attachmentPreviewContent"
-    );
 
 
-/*
-    Open file picker
-*/
-
-if (
-    attachmentButton &&
-    attachmentInput
-) {
-
-    attachmentButton.addEventListener(
-        "click",
-        function () {
-
-            attachmentInput.click();
-
-        }
-    );
+    const backButton =
+        document.querySelector(
+            ".back-button"
+        );
 
 
-    attachmentInput.addEventListener(
-        "change",
-        function () {
-
-            const files =
-                Array.from(
-                    attachmentInput.files
-                );
+    const attachmentButton =
+        document.querySelector(
+            ".attachment-button"
+        );
 
 
-            if (!files.length) {
-                return;
+    const attachmentInput =
+        document.getElementById(
+            "attachmentInput"
+        );
+
+
+    /*
+        TEXT INPUT
+    */
+
+    if (input) {
+
+        input.addEventListener(
+            "input",
+            resizeComposer
+        );
+
+
+        /*
+            Enter = new line
+        */
+
+        input.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    return;
+
+                }
+
             }
+        );
+
+    }
 
 
-            /*
-                Maximum 4 attachments
-            */
+    /*
+        SEND
+    */
 
-            const remainingSlots =
-                4 -
-                selectedAttachments.length;
+    if (sendButton) {
+
+        sendButton.addEventListener(
+            "click",
+            sendMessage
+        );
+
+    }
 
 
-            if (remainingSlots <= 0) {
+    /*
+        BACK
+    */
 
-                alert(
-                    "You can attach a maximum of 4 files."
-                );
+    if (backButton) {
+
+        backButton.addEventListener(
+            "click",
+            goBack
+        );
+
+    }
+
+
+    /*
+        ATTACHMENT BUTTON
+    */
+
+    if (
+        attachmentButton &&
+        attachmentInput
+    ) {
+
+        attachmentButton.addEventListener(
+            "click",
+            function () {
+
+                /*
+                    If already 4 files are
+                    selected, do not open
+                    another selection dialog.
+                */
+
+                if (
+                    selectedAttachments.length >= 4
+                ) {
+
+                    alert(
+                        "You can attach a maximum of 4 files."
+                    );
+
+                    return;
+                }
+
+
+                attachmentInput.click();
+
+            }
+        );
+
+
+        /*
+            FILE SELECTION
+        */
+
+        attachmentInput.addEventListener(
+            "change",
+            function () {
+
+                const files =
+                    Array.from(
+                        attachmentInput.files
+                    );
+
+
+                if (!files.length) {
+                    return;
+                }
+
+
+                const remainingSlots =
+                    4 -
+                    selectedAttachments.length;
+
+
+                const filesToAdd =
+                    files.slice(
+                        0,
+                        remainingSlots
+                    );
+
+
+                selectedAttachments =
+                    selectedAttachments.concat(
+                        filesToAdd
+                    );
+
+
+                if (
+                    files.length >
+                    remainingSlots
+                ) {
+
+                    alert(
+                        "You can attach a maximum of 4 files."
+                    );
+
+                }
+
+
+                renderAttachmentPreview();
+
+
+                /*
+                    Reset input so the same
+                    file can be selected again.
+                */
 
                 attachmentInput.value =
                     "";
 
-                return;
             }
+        );
 
-
-            /*
-                Only take files that
-                fit into the remaining slots.
-            */
-
-            const filesToAdd =
-                files.slice(
-                    0,
-                    remainingSlots
-                );
-
-
-            selectedAttachments =
-                selectedAttachments.concat(
-                    filesToAdd
-                );
-
-
-            /*
-                If user selected more
-                than allowed
-            */
-
-            if (
-                files.length >
-                remainingSlots
-            ) {
-
-                alert(
-                    "You can attach a maximum of 4 files."
-                );
-
-            }
-
-
-            renderAttachmentPreview();
-
-
-            /*
-                Reset input so the same
-                file can be selected again
-                later if necessary.
-            */
-
-            attachmentInput.value =
-                "";
-
-        }
-    );
+    }
 
 }
 
 
 /* =========================================
-   RENDER ATTACHMENTS
+   ATTACHMENT PREVIEW
 ========================================= */
 
 function renderAttachmentPreview() {
 
+    const preview =
+        document.getElementById(
+            "attachmentPreview"
+        );
+
+
+    const previewContent =
+        document.getElementById(
+            "attachmentPreviewContent"
+        );
+
+
     if (
-        !attachmentPreview ||
-        !attachmentPreviewContent
+        !preview ||
+        !previewContent
     ) {
+
         return;
+
     }
 
 
-    attachmentPreviewContent.innerHTML =
+    previewContent.innerHTML =
         "";
 
+
+    /*
+        No attachments
+    */
 
     if (
         selectedAttachments.length === 0
     ) {
 
-        attachmentPreview.hidden =
+        preview.hidden =
             true;
 
         return;
+
     }
 
 
-    attachmentPreview.hidden =
+    preview.hidden =
         false;
 
 
     selectedAttachments.forEach(
-        function (file, index) {
+        function (
+            file,
+            index
+        ) {
 
             const item =
                 document.createElement(
@@ -1515,30 +1489,30 @@ function renderAttachmentPreview() {
 
 
             /*
-                Remove button
+                REMOVE BUTTON
             */
 
-            const remove =
+            const removeButton =
                 document.createElement(
                     "button"
                 );
 
-            remove.type =
+            removeButton.type =
                 "button";
 
-            remove.className =
+            removeButton.className =
                 "attachment-remove";
 
-            remove.textContent =
+            removeButton.textContent =
                 "×";
 
-            remove.setAttribute(
+            removeButton.setAttribute(
                 "aria-label",
                 "Remove attachment"
             );
 
 
-            remove.addEventListener(
+            removeButton.addEventListener(
                 "click",
                 function () {
 
@@ -1551,11 +1525,11 @@ function renderAttachmentPreview() {
 
 
             item.appendChild(
-                remove
+                removeButton
             );
 
 
-            attachmentPreviewContent.appendChild(
+            previewContent.appendChild(
                 item
             );
 
@@ -1578,7 +1552,9 @@ function removeAttachment(
         index >=
         selectedAttachments.length
     ) {
+
         return;
+
     }
 
 
@@ -1594,13 +1570,19 @@ function removeAttachment(
 
 
 /* =========================================
-   REMOVE ALL ATTACHMENTS
+   CLEAR ALL ATTACHMENTS
 ========================================= */
 
 function clearAttachments() {
 
     selectedAttachments =
         [];
+
+
+    const attachmentInput =
+        document.getElementById(
+            "attachmentInput"
+        );
 
 
     if (attachmentInput) {
@@ -1612,357 +1594,6 @@ function clearAttachments() {
 
 
     renderAttachmentPreview();
-
-}
-
-/* =========================================
-   SHOW ATTACHMENT PREVIEW
-========================================= */
-
-function showAttachmentPreview(
-    file
-) {
-
-    if (
-        !attachmentPreview ||
-        !attachmentPreviewContent
-    ) {
-        return;
-    }
-
-
-    attachmentPreviewContent.innerHTML =
-        "";
-
-
-    /*
-        IMAGE
-    */
-
-    if (
-        file.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        const image =
-            document.createElement(
-                "img"
-            );
-
-        image.className =
-            "attachment-preview-image";
-
-        image.src =
-            URL.createObjectURL(
-                file
-            );
-
-        image.alt =
-            file.name;
-
-
-        attachmentPreviewContent.appendChild(
-            image
-        );
-
-        addFileInformation(
-            file
-        );
-
-    }
-
-
-    /*
-        VIDEO
-    */
-
-    else if (
-        file.type.startsWith(
-            "video/"
-        )
-    ) {
-
-        const video =
-            document.createElement(
-                "video"
-            );
-
-        video.className =
-            "attachment-preview-video";
-
-        video.src =
-            URL.createObjectURL(
-                file
-            );
-
-        video.muted =
-            true;
-
-        video.playsInline =
-            true;
-
-
-        attachmentPreviewContent.appendChild(
-            video
-        );
-
-        addFileInformation(
-            file
-        );
-
-    }
-
-
-    /*
-        OTHER FILE
-    */
-
-    else {
-
-        const icon =
-            document.createElement(
-                "div"
-            );
-
-        icon.className =
-            "attachment-file-icon";
-
-        icon.textContent =
-            "📄";
-
-
-        attachmentPreviewContent.appendChild(
-            icon
-        );
-
-        addFileInformation(
-            file
-        );
-
-    }
-
-
-    attachmentPreview.hidden =
-        false;
-
-}
-
-
-/* =========================================
-   FILE INFORMATION
-========================================= */
-
-function addFileInformation(
-    file
-) {
-
-    const information =
-        document.createElement(
-            "div"
-        );
-
-    information.className =
-        "attachment-file-info";
-
-
-    const name =
-        document.createElement(
-            "div"
-        );
-
-    name.className =
-        "attachment-file-name";
-
-    name.textContent =
-        file.name;
-
-
-    const type =
-        document.createElement(
-            "div"
-        );
-
-    type.className =
-        "attachment-file-type";
-
-    type.textContent =
-        formatFileSize(
-            file.size
-        );
-
-
-    information.appendChild(
-        name
-    );
-
-    information.appendChild(
-        type
-    );
-
-
-    attachmentPreviewContent.appendChild(
-        information
-    );
-
-}
-
-
-/* =========================================
-   REMOVE ATTACHMENT
-========================================= */
-
-function removeAttachment() {
-
-    selectedAttachment =
-        null;
-
-
-    if (attachmentInput) {
-
-        attachmentInput.value =
-            "";
-
-    }
-
-
-    if (attachmentPreviewContent) {
-
-        attachmentPreviewContent.innerHTML =
-            "";
-
-    }
-
-
-    if (attachmentPreview) {
-
-        attachmentPreview.hidden =
-            true;
-
-    }
-
-}
-
-
-/* =========================================
-   FILE SIZE
-========================================= */
-
-function formatFileSize(
-    bytes
-) {
-
-    if (
-        !bytes ||
-        bytes <= 0
-    ) {
-
-        return "File";
-
-    }
-
-
-    const units = [
-        "B",
-        "KB",
-        "MB",
-        "GB"
-    ];
-
-
-    const index =
-        Math.floor(
-            Math.log(bytes) /
-            Math.log(1024)
-        );
-
-
-    const size =
-        bytes /
-        Math.pow(
-            1024,
-            index
-        );
-
-
-    return (
-        size.toFixed(
-            index === 0
-                ? 0
-                : 1
-        ) +
-        " " +
-        units[
-            Math.min(
-                index,
-                units.length - 1
-            )
-        ]
-    );
-
-}
-
-    const backButton =
-        document.querySelector(
-            ".back-button"
-        );
-
-
-    if (input) {
-
-        input.addEventListener(
-            "input",
-            resizeComposer
-        );
-
-
-        input.addEventListener(
-    "keydown",
-    function (event) {
-
-        /*
-            Enter = new line
-
-            The Send button is used
-            to send the message.
-        */
-
-        if (event.key === "Enter") {
-
-            return;
-
-        }
-
-    }
-);
-
-    }
-
-
-    if (sendButton) {
-
-        sendButton.addEventListener(
-            "click",
-            sendMessage
-        );
-
-    }
-
-
-    if (backButton) {
-
-        backButton.addEventListener(
-            "click",
-            goBack
-        );
-
-    }
-
-
-    /*
-        Attachment button is not connected
-        yet. We will add it later.
-    */
 
 }
 
@@ -2027,7 +1658,8 @@ function showNoConversation() {
     }
 
 
-    list.innerHTML = "";
+    list.innerHTML =
+        "";
 
 
     const empty =
@@ -2068,7 +1700,8 @@ function showError(
     }
 
 
-    list.innerHTML = "";
+    list.innerHTML =
+        "";
 
 
     const errorElement =
@@ -2124,6 +1757,8 @@ function formatTime(
     );
 
 }
+
+
 /* =========================================
    MOBILE KEYBOARD / VISUAL VIEWPORT
 ========================================= */
@@ -2134,24 +1769,26 @@ function handleKeyboardResize() {
         return;
     }
 
+
     const chat =
-        document.querySelector(".chat");
+        document.querySelector(
+            ".chat"
+        );
+
 
     if (!chat) {
         return;
     }
 
+
     const viewportHeight =
         window.visualViewport.height;
 
+
     chat.style.height =
-        viewportHeight + "px";
+        viewportHeight +
+        "px";
 
-
-    /*
-        Keep the latest message visible
-        when the keyboard opens.
-    */
 
     requestAnimationFrame(
         function () {
@@ -2171,6 +1808,7 @@ if (window.visualViewport) {
         handleKeyboardResize
     );
 
+
     window.visualViewport.addEventListener(
         "scroll",
         handleKeyboardResize
@@ -2178,10 +1816,6 @@ if (window.visualViewport) {
 
 }
 
-
-/*
-    Initial calculation
-*/
 
 window.addEventListener(
     "load",
