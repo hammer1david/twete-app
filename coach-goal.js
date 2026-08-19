@@ -1281,27 +1281,36 @@ function createSessionCard(
 
 
                 ${
+
+    getCoachNote(
+        session.notes
+    )
+    ?
+    `
+    <div class="session-notes">
+
+        <div class="session-notes-label">
+            Notes
+        </div>
+
+        <div class="session-notes-box">
+
+            ${escapeHtml(
+                getCoachNote(
                     session.notes
-                    ?
-                    `
-                    <div class="session-notes">
+                )
+            ).replaceAll(
+                "\n",
+                "<br>"
+            )}
 
-                        <div class="session-notes-label">
-                            Notes
-                        </div>
+        </div>
 
-                        <div class="session-notes-box">
+    </div>
+    `
+    :
+    ""
 
-                            ${escapeHtml(
-                                session.notes
-                            )}
-
-                        </div>
-
-                    </div>
-                    `
-                    :
-                    ""
                 }
 
 
