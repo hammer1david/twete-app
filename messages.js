@@ -941,7 +941,26 @@ async function loadMessages() {
         return;
     }
 
+data.forEach(function (message) {
 
+    if (
+        Array.isArray(message.message_attachments)
+    ) {
+
+        message.message_attachments.sort(
+            function (a, b) {
+
+                return (
+                    (a.position || 0) -
+                    (b.position || 0)
+                );
+
+            }
+        );
+
+    }
+
+});
     chatMessages.innerHTML = "";
 
 
