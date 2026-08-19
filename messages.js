@@ -3525,72 +3525,74 @@ async function deleteSelectedMessage() {
     }
 
 
-    /*
-        Delete storage files first
-    */
+   /*
+    Delete message first.
 
-    if (
-        storagePaths.length > 0
-    ) {
+    message_attachments rows are removed
+    automatically by ON DELETE CASCADE.
+*/
 
-        const {
-            error: storageError
-        } =
-            await supabaseClient
-                .storage
-                .from(
-                    "chat-attachments"
-                )
-                .remove(
-                    storagePaths
-                );
-
-
-        if (storageError) {
-
-            console.error(
-                "Delete attachment files error:",
-                storageError
-            );
-
-            return;
-        }
-
-    }
-
-
-    /*
-        Delete message.
-        message_attachments rows are removed
-        automatically by ON DELETE CASCADE.
-    */
-
-    const {
-        error
-    } =
-        await supabaseClient
-            .from("messages")
-            .delete()
-            .eq(
-                "id",
-                messageId
-            )
-            .eq(
-                "sender_id",
-                currentUser.id
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Delete message error:",
-            error
+const {
+    error
+} =
+    await supabaseClient
+        .from("messages")
+        .delete()
+        .eq(
+            "id",
+            messageId
+        )
+        .eq(
+            "sender_id",
+            currentUser.id
         );
 
-        return;
+
+if (error) {
+
+    console.error(
+        "Delete message error:",
+        error
+    );
+
+    return;
+}
+
+
+/*
+    Remove attachment files afterwards.
+
+    A storage cleanup error must not prevent
+    the message itself from being deleted.
+*/
+
+if (
+    storagePaths.length > 0
+) {
+
+    const {
+        error: storageError
+    } =
+        await supabaseClient
+            .storage
+            .from(
+                "chat-attachments"
+            )
+            .remove(
+                storagePaths
+            );
+
+
+    if (storageError) {
+
+        console.error(
+            "Delete attachment files error:",
+            storageError
+        );
+
     }
 
+}
 
     /*
         Remove message immediately
