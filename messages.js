@@ -2917,9 +2917,9 @@ function setupComposer() {
 
 
     const attachmentButton =
-        document.querySelector(
-            ".attachment-button"
-        );
+    document.getElementById(
+        "attachmentButton"
+    );
 
 
     const attachmentInput =
