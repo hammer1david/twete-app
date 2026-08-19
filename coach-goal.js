@@ -25,6 +25,7 @@ let program = null;
 
 let weeks = [];
 let sessions = [];
+let workoutFeedback = {};
 
 let programStartDate = null;
 
