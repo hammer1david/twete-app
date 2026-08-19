@@ -2691,12 +2691,21 @@ function stopChatPresence() {
 
 function hideChatLoading() {
 
-    if (!chatLoadingOverlay) {
-        return;
+    if (chatPage) {
+
+        chatPage.classList.remove(
+            "chat-loading"
+        );
+
     }
 
-    chatLoadingOverlay.classList.add(
-        "hidden"
-    );
+
+    if (chatLoadingOverlay) {
+
+        chatLoadingOverlay.classList.add(
+            "hidden"
+        );
+
+    }
 
 }
