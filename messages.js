@@ -121,7 +121,7 @@ async function initializeChat() {
         showChatState(
             "No conversation found."
         );
-
+hideChatLoading();
         return;
     }
 
@@ -134,6 +134,7 @@ async function initializeChat() {
     subscribeToMessages();
    
 await startChatPresence();
+   hideChatLoading();
 }
 
 document.addEventListener(
