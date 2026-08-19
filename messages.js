@@ -795,6 +795,7 @@ async function loadMessages() {
     
 
 
+
 /* =========================================
    RENDER MESSAGES
 ========================================= */
@@ -813,12 +814,6 @@ function renderMessages(
         return;
     }
 
-
-    /*
-        IMPORTANT:
-        Remove static HTML messages.
-        Messages now come only from Supabase.
-    */
 
     list.innerHTML =
         "";
@@ -842,6 +837,7 @@ function renderMessages(
         );
 
         return;
+
     }
 
 
@@ -857,6 +853,10 @@ function renderMessages(
                 );
 
 
+            /*
+                Row
+            */
+
             const row =
                 document.createElement(
                     "div"
@@ -868,6 +868,10 @@ function renderMessages(
                     : "message-row received";
 
 
+            /*
+                Bubble
+            */
+
             const bubble =
                 document.createElement(
                     "div"
@@ -878,7 +882,7 @@ function renderMessages(
 
 
             /*
-                Message text
+                TEXT
             */
 
             if (
@@ -905,7 +909,271 @@ function renderMessages(
 
 
             /*
-                Time
+                ATTACHMENTS
+            */
+
+            if (
+                message.attachments &&
+                message.attachments.length
+            ) {
+
+                const attachmentContainer =
+                    document.createElement(
+                        "div"
+                    );
+
+                attachmentContainer.className =
+                    "message-attachments";
+
+
+                message.attachments.forEach(
+                    function (
+                        attachment
+                    ) {
+
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
+
+                        item.className =
+                            "message-attachment";
+
+
+                        /*
+                            IMAGE
+                        */
+
+                        if (
+                            attachment.file_type &&
+                            attachment.file_type.startsWith(
+                                "image/"
+                            ) &&
+                            attachment.view_url
+                        ) {
+
+                            const image =
+                                document.createElement(
+                                    "img"
+                                );
+
+                            image.className =
+                                "message-attachment-image";
+
+                            image.src =
+                                attachment.view_url;
+
+                            image.alt =
+                                attachment.file_name ||
+                                "Attachment";
+
+                            image.loading =
+                                "lazy";
+
+
+                            /*
+                                Clicking image opens
+                                the full image.
+                            */
+
+                            image.addEventListener(
+                                "click",
+                                function () {
+
+                                    window.open(
+                                        attachment.view_url,
+                                        "_blank"
+                                    );
+
+                                }
+                            );
+
+
+                            item.appendChild(
+                                image
+                            );
+
+                        }
+
+
+                        /*
+                            VIDEO
+                        */
+
+                        else if (
+                            attachment.file_type &&
+                            attachment.file_type.startsWith(
+                                "video/"
+                            ) &&
+                            attachment.view_url
+                        ) {
+
+                            const video =
+                                document.createElement(
+                                    "video"
+                                );
+
+                            video.className =
+                                "message-attachment-video";
+
+                            video.src =
+                                attachment.view_url;
+
+                            video.controls =
+                                true;
+
+                            video.playsInline =
+                                true;
+
+
+                            item.appendChild(
+                                video
+                            );
+
+                        }
+
+
+                        /*
+                            OTHER FILE
+                        */
+
+                        else {
+
+                            const fileBox =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            fileBox.className =
+                                "message-file";
+
+
+                            const icon =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            icon.className =
+                                "message-file-icon";
+
+                            icon.textContent =
+                                "📄";
+
+
+                            const information =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            information.className =
+                                "message-file-info";
+
+
+                            const fileName =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            fileName.className =
+                                "message-file-name";
+
+                            fileName.textContent =
+                                attachment.file_name ||
+                                "File";
+
+
+                            const fileSize =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            fileSize.className =
+                                "message-file-size";
+
+                            fileSize.textContent =
+                                formatFileSize(
+                                    attachment.file_size
+                                );
+
+
+                            information.appendChild(
+                                fileName
+                            );
+
+                            information.appendChild(
+                                fileSize
+                            );
+
+
+                            fileBox.appendChild(
+                                icon
+                            );
+
+                            fileBox.appendChild(
+                                information
+                            );
+
+
+                            item.appendChild(
+                                fileBox
+                            );
+
+                        }
+
+
+                        /*
+                            DOWNLOAD BUTTON
+                        */
+
+                        if (
+                            attachment.download_url
+                        ) {
+
+                            const download =
+                                document.createElement(
+                                    "a"
+                                );
+
+                            download.className =
+                                "message-attachment-download";
+
+                            download.href =
+                                attachment.download_url;
+
+                            download.textContent =
+                                "Download";
+
+                            download.target =
+                                "_blank";
+
+                            download.rel =
+                                "noopener";
+
+
+                            item.appendChild(
+                                download
+                            );
+
+                        }
+
+
+                        attachmentContainer.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+
+                bubble.appendChild(
+                    attachmentContainer
+                );
+
+            }
+
+
+            /*
+                TIME + CHECKS
             */
 
             const meta =
@@ -935,10 +1203,6 @@ function renderMessages(
             );
 
 
-            /*
-                Read checks
-            */
-
             if (sent) {
 
                 const checks =
@@ -963,9 +1227,11 @@ function renderMessages(
                 meta
             );
 
+
             row.appendChild(
                 bubble
             );
+
 
             list.appendChild(
                 row
@@ -977,7 +1243,10 @@ function renderMessages(
 
     scrollToBottom();
 
-}
+               }
+
+            
+
 
 
 /* =========================================
