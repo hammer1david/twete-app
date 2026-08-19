@@ -593,8 +593,105 @@ async function loadMessages() {
     }
 
 
+    /*
+        Load attachments belonging
+        to these messages.
+    */
+
+    const messageIds =
+        (data || []).map(
+            function (message) {
+                return message.id;
+            }
+        );
+
+
+    let attachments = [];
+
+
+    if (messageIds.length) {
+
+        const {
+            data: attachmentData,
+            error: attachmentError
+        } =
+            await messagesSupabase
+                .from(
+                    "message_attachments"
+                )
+                .select(`
+                    id,
+                    message_id,
+                    file_path,
+                    file_name,
+                    file_type,
+                    file_size,
+                    created_at
+                `)
+                .in(
+                    "message_id",
+                    messageIds
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (attachmentError) {
+
+            console.error(
+                "Attachment loading error:",
+                attachmentError
+            );
+
+        } else {
+
+            attachments =
+                attachmentData || [];
+
+        }
+
+    }
+
+
+    /*
+        Add attachments to their
+        corresponding messages.
+    */
+
+    const messagesWithAttachments =
+        (data || []).map(
+            function (message) {
+
+                return {
+
+                    ...message,
+
+                    attachments:
+                        attachments.filter(
+                            function (
+                                attachment
+                            ) {
+
+                                return (
+                                    attachment.message_id ===
+                                    message.id
+                                );
+
+                            }
+                        )
+
+                };
+
+            }
+        );
+
+
     renderMessages(
-        data || []
+        messagesWithAttachments
     );
 
 
@@ -609,7 +706,7 @@ async function loadMessages() {
    RENDER MESSAGES
 ========================================= */
 
-function renderMessages(
+async function renderMessages(
     messages
 ) {
 
@@ -743,7 +840,18 @@ function renderMessages(
             bubble.appendChild(
                 text
             );
+           
+if (
+    message.attachments &&
+    message.attachments.length
+) {
 
+    awaitRenderAttachments(
+        bubble,
+        message.attachments
+    );
+
+}
             bubble.appendChild(
                 meta
             );
@@ -764,7 +872,160 @@ function renderMessages(
 
 }
 
+/* =========================================
+   RENDER MESSAGE ATTACHMENTS
+========================================= */
 
+async function awaitRenderAttachments(
+    bubble,
+    attachments
+) {
+
+    for (
+        const attachment of attachments
+    ) {
+
+        const {
+            data,
+            error
+        } =
+            await messagesSupabase
+                .storage
+                .from(
+                    "message-attachments"
+                )
+                .createSignedUrl(
+                    attachment.file_path,
+                    3600
+                );
+
+
+        if (error || !data) {
+
+            console.error(
+                "Could not create attachment URL:",
+                error
+            );
+
+            continue;
+
+        }
+
+
+        const url =
+            data.signedUrl;
+
+
+        /*
+            IMAGE
+        */
+
+        if (
+            attachment.file_type &&
+            attachment.file_type.startsWith(
+                "image/"
+            )
+        ) {
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+            image.className =
+                "message-attachment-image";
+
+            image.src =
+                url;
+
+            image.alt =
+                attachment.file_name;
+
+            image.loading =
+                "lazy";
+
+
+            bubble.appendChild(
+                image
+            );
+
+        }
+
+
+        /*
+            VIDEO
+        */
+
+        else if (
+            attachment.file_type &&
+            attachment.file_type.startsWith(
+                "video/"
+            )
+        ) {
+
+            const video =
+                document.createElement(
+                    "video"
+                );
+
+            video.className =
+                "message-attachment-video";
+
+            video.src =
+                url;
+
+            video.controls =
+                true;
+
+            video.playsInline =
+                true;
+
+
+            bubble.appendChild(
+                video
+            );
+
+        }
+
+
+        /*
+            OTHER FILE
+        */
+
+        else {
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+            link.className =
+                "message-attachment-file";
+
+            link.href =
+                url;
+
+            link.target =
+                "_blank";
+
+            link.rel =
+                "noopener noreferrer";
+
+
+            link.textContent =
+                "📄 " +
+                attachment.file_name;
+
+
+            bubble.appendChild(
+                link
+            );
+
+        }
+
+    }
+
+}
 /* =========================================
    SCROLL TO LATEST MESSAGE
 ========================================= */
