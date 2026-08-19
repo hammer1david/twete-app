@@ -65,6 +65,11 @@ const attachmentPreview =
 
 let selectedAttachments = [];
 
+const chatLoadingOverlay =
+    document.getElementById(
+        "chatLoadingOverlay"
+    );
+
 
 /* =========================================
    STATE
@@ -2675,6 +2680,19 @@ function stopChatPresence() {
 
     updateChatPresence(
         false
+    );
+
+}
+
+
+function hideChatLoading() {
+
+    if (!chatLoadingOverlay) {
+        return;
+    }
+
+    chatLoadingOverlay.classList.add(
+        "hidden"
     );
 
 }
