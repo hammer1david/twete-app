@@ -48,6 +48,22 @@ const messageInput =
 
 const sendButton =
     document.getElementById("sendButton");
+const attachmentButton =
+    document.getElementById(
+        "attachmentButton"
+    );
+
+const attachmentInput =
+    document.getElementById(
+        "attachmentInput"
+    );
+
+const attachmentPreview =
+    document.getElementById(
+        "attachmentPreview"
+    );
+
+let selectedAttachments = [];
 
 
 /* =========================================
