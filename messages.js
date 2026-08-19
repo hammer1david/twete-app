@@ -2334,8 +2334,10 @@ window.addEventListener(
 
         }
 
+
+        stopChatPresence();
+
     }
-   stopChatPresence();
 );
 /* =========================================
    MOBILE KEYBOARD / VISUAL VIEWPORT
