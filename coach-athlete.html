@@ -824,7 +824,117 @@
 
         </div>
 
+<!-- =========================================
+     GOAL VISUAL
+========================================= -->
 
+<div class="goal-visual-section">
+
+    <div class="goal-visual-title">
+        Choose Goal Visual
+    </div>
+
+    <div class="goal-visual-description">
+        Select the image that will appear
+        on the athlete's Current Goal card.
+    </div>
+
+
+    <div
+        class="goal-image-grid"
+        id="goalImageGrid"
+    >
+
+        <div class="goal-images-empty">
+            Loading goal images...
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         ADD IMAGE TO LIBRARY
+    ====================================== -->
+
+    <div class="goal-image-upload">
+
+        <div class="goal-image-upload-title">
+            Add image to Twete Library
+        </div>
+
+
+        <div class="goal-image-upload-grid">
+
+            <input
+                id="goalImageName"
+                type="text"
+                placeholder="Image name"
+            >
+
+
+            <select id="goalImageCategory">
+
+                <option value="general">
+                    General
+                </option>
+
+                <option value="track">
+                    Track
+                </option>
+
+                <option value="road">
+                    Road
+                </option>
+
+                <option value="5k">
+                    5K
+                </option>
+
+                <option value="10k">
+                    10K
+                </option>
+
+                <option value="half_marathon">
+                    Half Marathon
+                </option>
+
+                <option value="marathon">
+                    Marathon
+                </option>
+
+                <option value="trail">
+                    Trail
+                </option>
+
+                <option value="mountain">
+                    Mountain
+                </option>
+
+            </select>
+
+
+            <input
+                id="goalImageFile"
+                class="goal-image-file"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+            >
+
+        </div>
+
+
+        <button
+            id="goalImageUploadButton"
+            class="goal-image-upload-button"
+            type="button"
+            onclick="uploadGoalImage()"
+        >
+            + Upload to Goal Library
+        </button>
+
+    </div>
+
+</div>
         <div class="modal-buttons">
 
             <button
