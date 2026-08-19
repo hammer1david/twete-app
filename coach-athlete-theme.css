@@ -1,0 +1,1574 @@
+/* =========================================================
+   TWETE COACH ATHLETE THEME
+   DESIGN ONLY — NO FUNCTION CHANGES
+========================================================= */
+
+:root {
+    --twete-green: #C6FF00;
+    --twete-bg: #050505;
+    --twete-card: #0B0C0A;
+    --twete-card-soft: #0F100E;
+    --twete-border: rgba(255, 255, 255, 0.075);
+    --twete-border-green: rgba(198, 255, 0, 0.24);
+    --twete-text: #F5F7F2;
+    --twete-muted: #777C77;
+    --twete-muted-light: #999E99;
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(
+            circle at 80% -5%,
+            rgba(198, 255, 0, 0.055),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 0% 70%,
+            rgba(198, 255, 0, 0.018),
+            transparent 27%
+        ),
+        var(--twete-bg);
+
+    color: var(--twete-text);
+}
+
+.page {
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    padding:
+        31px
+        22px
+        90px;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+    position: relative;
+
+    min-height: 74px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 32px;
+
+    padding-bottom: 18px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,0.055);
+}
+
+
+.topbar::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: -1px;
+
+    width: 42px;
+    height: 1px;
+
+    background: var(--twete-green);
+
+    box-shadow:
+        0 0 10px
+        rgba(198,255,0,0.35);
+}
+
+
+.logo {
+    color: var(--twete-green);
+
+    font-size: 30px;
+    font-weight: 900;
+
+    letter-spacing: 2.3px;
+
+    line-height: 1;
+
+    text-shadow:
+        0 0 18px
+        rgba(198,255,0,0.06);
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-button {
+    min-height: 42px;
+
+    padding:
+        0
+        15px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.09);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,0.025);
+
+    color: #C4C8C4;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        color .2s ease,
+        transform .15s ease;
+}
+
+
+.back-button:hover {
+    border-color:
+        rgba(198,255,0,0.35);
+
+    background:
+        rgba(198,255,0,0.04);
+
+    color: var(--twete-green);
+}
+
+
+.back-button:active {
+    transform: scale(.96);
+}
+
+
+/* =========================================================
+   ATHLETE PROFILE CARD
+========================================================= */
+
+.profile-card {
+    position: relative;
+
+    min-height: 145px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 23px;
+
+    overflow: hidden;
+
+    margin-bottom: 43px;
+
+    padding:
+        25px
+        27px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.075);
+
+    border-radius: 24px;
+
+    background:
+        radial-gradient(
+            circle at 95% 0%,
+            rgba(198,255,0,0.065),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            #0C0D0B,
+            #080908
+        );
+
+    box-shadow:
+        0 18px 48px
+        rgba(0,0,0,0.25);
+}
+
+
+.profile-card::before {
+    content: "";
+
+    position: absolute;
+
+    right: -55px;
+    bottom: -90px;
+
+    width: 205px;
+    height: 205px;
+
+    border:
+        1px solid
+        rgba(198,255,0,0.045);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+
+.profile-card::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 100px;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(198,255,0,0.6)
+        );
+}
+
+
+/* =========================================================
+   PROFILE PICTURE
+========================================================= */
+
+.profile-picture {
+    position: relative;
+
+    width: 91px;
+    height: 91px;
+
+    min-width: 91px;
+
+    border:
+        1px solid
+        rgba(198,255,0,0.18);
+
+    border-radius: 22px;
+
+    background:
+        #121411;
+
+    object-fit: cover;
+
+    box-shadow:
+        0 12px 28px
+        rgba(0,0,0,0.25);
+
+    z-index: 2;
+}
+
+
+.profile-placeholder {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: var(--twete-green);
+
+    font-size: 25px;
+    font-weight: 850;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(198,255,0,0.07),
+            #10120E
+        );
+}
+
+
+/* =========================================================
+   PROFILE INFORMATION
+========================================================= */
+
+.profile-info {
+    position: relative;
+
+    min-width: 0;
+
+    z-index: 2;
+}
+
+
+.profile-info h1 {
+    margin:
+        0
+        0
+        8px;
+
+    color: #FFFFFF;
+
+    font-size:
+        clamp(
+            25px,
+            5vw,
+            31px
+        );
+
+    font-weight: 820;
+
+    line-height: 1.08;
+
+    letter-spacing: -.8px;
+}
+
+
+.profile-email {
+    margin-bottom: 8px;
+
+    color: #767B76;
+
+    font-size: 12.5px;
+}
+
+
+.profile-details {
+    color: #9A9F9A;
+
+    font-size: 12px;
+
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   GOALS SECTION
+========================================================= */
+
+section {
+    position: relative;
+}
+
+
+.section-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 18px;
+}
+
+
+.section-header h2 {
+    margin: 0;
+
+    color: #F5F7F2;
+
+    font-size: 23px;
+    font-weight: 820;
+
+    letter-spacing: -.55px;
+}
+
+
+/* =========================================================
+   ADD GOAL BUTTON
+========================================================= */
+
+.add-goal-button {
+    min-height: 42px;
+
+    padding:
+        0
+        17px;
+
+    border:
+        1px solid
+        rgba(198,255,0,0.75);
+
+    border-radius: 12px;
+
+    background:
+        var(--twete-green);
+
+    color: #070907;
+
+    font-size: 12px;
+    font-weight: 850;
+
+    box-shadow:
+        0 5px 18px
+        rgba(198,255,0,0.08);
+
+    transition:
+        transform .16s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+}
+
+
+.add-goal-button:hover {
+    opacity: 1;
+
+    filter: brightness(1.03);
+
+    box-shadow:
+        0 7px 22px
+        rgba(198,255,0,0.13);
+}
+
+
+.add-goal-button:active {
+    transform: scale(.96);
+}
+
+
+/* =========================================================
+   GOALS LIST
+========================================================= */
+
+.goals-list {
+    display: grid;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   GOAL CARD
+========================================================= */
+
+.goal-card {
+    position: relative;
+
+    min-height: 126px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 22px;
+
+    overflow: hidden;
+
+    padding:
+        20px
+        21px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.07);
+
+    border-radius: 21px;
+
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(198,255,0,0.035),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            #0B0C0A,
+            #080908
+        );
+
+    box-shadow:
+        0 12px 35px
+        rgba(0,0,0,0.16);
+
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+.goal-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 25%;
+
+    width: 2px;
+    height: 50%;
+
+    border-radius: 10px;
+
+    background:
+        rgba(198,255,0,0.55);
+
+    opacity: .45;
+}
+
+
+.goal-card:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(198,255,0,0.25);
+
+    box-shadow:
+        0 16px 42px
+        rgba(0,0,0,0.23);
+}
+
+
+.goal-card:active {
+    transform:
+        scale(.992);
+}
+
+
+/* =========================================================
+   GOAL MAIN
+========================================================= */
+
+.goal-main {
+    position: relative;
+
+    min-width: 0;
+
+    flex: 1;
+
+    z-index: 2;
+}
+
+
+.goal-distance {
+    margin-bottom: 9px;
+
+    color: var(--twete-green);
+
+    font-size: 20px;
+    font-weight: 820;
+
+    line-height: 1.15;
+
+    letter-spacing: -.4px;
+}
+
+
+.goal-target {
+    margin-bottom: 7px;
+
+    color: #D9DDD8;
+
+    font-size: 14px;
+
+    line-height: 1.45;
+}
+
+
+.goal-target strong {
+    color: #FFFFFF;
+
+    font-weight: 800;
+}
+
+
+.goal-info {
+    color: #747974;
+
+    font-size: 11.5px;
+
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   GOAL ACTIONS
+========================================================= */
+
+.goal-actions {
+    position: relative;
+
+    display: flex;
+
+    gap: 8px;
+
+    z-index: 3;
+}
+
+
+.delete-button {
+    min-height: 38px;
+
+    padding:
+        0
+        13px;
+
+    border:
+        1px solid
+        rgba(255,90,90,0.17);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,80,80,0.025);
+
+    color: #E97A7A;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        transform .15s ease;
+}
+
+
+.delete-button:hover {
+    border-color:
+        rgba(255,100,100,0.42);
+
+    background:
+        rgba(255,80,80,0.055);
+}
+
+
+.delete-button:active {
+    transform: scale(.96);
+}
+
+
+/* =========================================================
+   EMPTY / LOADING
+========================================================= */
+
+.empty,
+.loading {
+    padding: 30px;
+
+    border:
+        1px dashed
+        rgba(255,255,255,0.10);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,0.012);
+
+    color: #747974;
+
+    text-align: center;
+
+    font-size: 13px;
+}
+
+
+.loading {
+    width: 100%;
+}
+
+
+.profile-card > .loading {
+    border: none;
+
+    background: transparent;
+
+    text-align: left;
+
+    padding: 15px 0;
+}
+
+
+.error {
+    color: #FF7474;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+========================================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    padding: 20px;
+
+    background:
+        rgba(0,0,0,0.80);
+
+    backdrop-filter:
+        blur(11px);
+
+    -webkit-backdrop-filter:
+        blur(11px);
+
+    z-index: 2000;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+    width: 100%;
+
+    max-width: 520px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding:
+        26px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.085);
+
+    border-radius: 24px;
+
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(198,255,0,0.055),
+            transparent 28%
+        ),
+        #0B0C0A;
+
+    box-shadow:
+        0 25px 80px
+        rgba(0,0,0,0.5);
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #30332F
+        transparent;
+}
+
+
+.modal h2 {
+    margin:
+        0
+        0
+        25px;
+
+    color: #FFFFFF;
+
+    font-size: 27px;
+    font-weight: 820;
+
+    letter-spacing: -.65px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #8B908B;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .7px;
+
+    text-transform: uppercase;
+}
+
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    min-height: 47px;
+
+    padding:
+        0
+        14px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.085);
+
+    border-radius: 11px;
+
+    background:
+        #070807;
+
+    color: #FFFFFF;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color:
+        rgba(198,255,0,0.55);
+
+    background:
+        #080A07;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(198,255,0,0.045);
+}
+
+
+/* =========================================================
+   GOAL VISUAL SECTION
+========================================================= */
+
+.goal-visual-section {
+    margin:
+        27px
+        0
+        24px;
+
+    padding-top: 23px;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,0.065);
+}
+
+
+.goal-visual-title {
+    margin-bottom: 7px;
+
+    color: #F4F6F2;
+
+    font-size: 15px;
+    font-weight: 820;
+}
+
+
+.goal-visual-description {
+    margin-bottom: 17px;
+
+    color: #747974;
+
+    font-size: 12px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   GOAL IMAGE GRID
+========================================================= */
+
+.goal-image-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap: 10px;
+}
+
+
+.goal-image-option {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+
+    padding: 0;
+
+    border:
+        2px solid
+        transparent;
+
+    border-radius: 15px;
+
+    background:
+        #070807;
+
+    box-shadow:
+        0 8px 24px
+        rgba(0,0,0,0.16);
+
+    transition:
+        transform .18s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.goal-image-option:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(198,255,0,0.27);
+}
+
+
+.goal-image-option.selected {
+    border-color:
+        var(--twete-green);
+
+    box-shadow:
+        0 0 0 1px
+        rgba(198,255,0,0.10),
+        0 10px 28px
+        rgba(0,0,0,0.25),
+        0 0 20px
+        rgba(198,255,0,0.06);
+}
+
+
+.goal-image-option img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform .35s ease,
+        filter .25s ease;
+}
+
+
+.goal-image-option:hover img {
+    transform: scale(1.025);
+}
+
+
+/* =========================================================
+   IMAGE CHECK
+========================================================= */
+
+.goal-image-selected-icon {
+    top: 8px;
+    right: 8px;
+
+    width: 26px;
+    height: 26px;
+
+    border:
+        2px solid
+        rgba(0,0,0,0.35);
+
+    background:
+        var(--twete-green);
+
+    color: #050705;
+
+    font-size: 13px;
+    font-weight: 900;
+
+    box-shadow:
+        0 4px 12px
+        rgba(0,0,0,0.35);
+}
+
+
+/* =========================================================
+   IMAGE NAME
+========================================================= */
+
+.goal-image-name {
+    padding:
+        26px
+        10px
+        8px;
+
+    background:
+        linear-gradient(
+            transparent,
+            rgba(0,0,0,0.92)
+        );
+
+    color: #F5F6F4;
+
+    font-size: 10px;
+    font-weight: 750;
+
+    letter-spacing: .2px;
+}
+
+
+/* =========================================================
+   EMPTY IMAGE LIBRARY
+========================================================= */
+
+.goal-images-empty {
+    padding: 24px;
+
+    border:
+        1px dashed
+        rgba(255,255,255,0.10);
+
+    border-radius: 15px;
+
+    background:
+        rgba(255,255,255,0.012);
+
+    color: #747974;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   IMAGE UPLOAD AREA
+========================================================= */
+
+.goal-image-upload {
+    margin-top: 17px;
+
+    padding:
+        17px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.07);
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(198,255,0,0.022),
+            transparent 55%
+        ),
+        #080908;
+}
+
+
+.goal-image-upload-title {
+    margin-bottom: 13px;
+
+    color: #ECEFEB;
+
+    font-size: 12px;
+    font-weight: 820;
+
+    letter-spacing: .2px;
+}
+
+
+.goal-image-upload-grid {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap: 10px;
+}
+
+
+.goal-image-upload input,
+.goal-image-upload select {
+    width: 100%;
+
+    min-width: 0;
+    min-height: 43px;
+
+    padding:
+        0
+        12px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.085);
+
+    border-radius: 10px;
+
+    background:
+        #060706;
+
+    color: #FFFFFF;
+
+    font-size: 12px;
+
+    outline: none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.goal-image-upload input:focus,
+.goal-image-upload select:focus {
+    border-color:
+        rgba(198,255,0,0.48);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(198,255,0,0.035);
+}
+
+
+.goal-image-file {
+    grid-column:
+        1 / -1;
+
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+
+/* =========================================================
+   UPLOAD BUTTON
+========================================================= */
+
+.goal-image-upload-button {
+    width: 100%;
+
+    min-height: 43px;
+
+    margin-top: 11px;
+
+    border:
+        1px solid
+        rgba(198,255,0,0.28);
+
+    border-radius: 11px;
+
+    background:
+        rgba(198,255,0,0.045);
+
+    color:
+        var(--twete-green);
+
+    font-size: 11px;
+    font-weight: 820;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        transform .15s ease;
+}
+
+
+.goal-image-upload-button:hover {
+    background:
+        rgba(198,255,0,0.08);
+
+    border-color:
+        rgba(198,255,0,0.45);
+}
+
+
+.goal-image-upload-button:active {
+    transform: scale(.985);
+}
+
+
+/* =========================================================
+   MODAL BUTTONS
+========================================================= */
+
+.modal-buttons {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1.25fr;
+
+    gap: 10px;
+
+    margin-top: 25px;
+}
+
+
+.cancel-button,
+.save-button {
+    min-height: 46px;
+
+    padding:
+        0
+        15px;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    transition:
+        transform .15s ease,
+        border-color .2s ease,
+        background .2s ease;
+}
+
+
+.cancel-button {
+    border:
+        1px solid
+        rgba(255,255,255,0.09);
+
+    background:
+        rgba(255,255,255,0.025);
+
+    color: #C3C7C3;
+}
+
+
+.cancel-button:hover {
+    border-color:
+        rgba(255,255,255,0.17);
+
+    background:
+        rgba(255,255,255,0.045);
+}
+
+
+.save-button {
+    border:
+        1px solid
+        var(--twete-green);
+
+    background:
+        var(--twete-green);
+
+    color: #060806;
+
+    box-shadow:
+        0 6px 18px
+        rgba(198,255,0,0.08);
+}
+
+
+.cancel-button:active,
+.save-button:active {
+    transform: scale(.97);
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline:
+        2px solid
+        rgba(198,255,0,0.65);
+
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   TABLET / MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .page {
+        padding:
+            22px
+            16px
+            70px;
+    }
+
+
+    .topbar {
+        min-height: 65px;
+
+        margin-bottom: 26px;
+
+        padding-bottom: 15px;
+    }
+
+
+    .logo {
+        font-size: 27px;
+    }
+
+
+    .back-button {
+        min-height: 39px;
+
+        padding:
+            0
+            13px;
+
+        font-size: 11px;
+    }
+
+
+    .profile-card {
+        min-height: 120px;
+
+        align-items: center;
+
+        gap: 17px;
+
+        margin-bottom: 37px;
+
+        padding:
+            20px;
+
+        border-radius: 21px;
+    }
+
+
+    .profile-picture {
+        width: 72px;
+        height: 72px;
+
+        min-width: 72px;
+
+        border-radius: 19px;
+    }
+
+
+    .profile-info h1 {
+        font-size: 23px;
+    }
+
+
+    .profile-email {
+        font-size: 11px;
+    }
+
+
+    .profile-details {
+        font-size: 11px;
+    }
+
+
+    .section-header h2 {
+        font-size: 21px;
+    }
+
+
+    .add-goal-button {
+        min-height: 40px;
+
+        padding:
+            0
+            14px;
+    }
+
+
+    .goal-card {
+        min-height: 120px;
+
+        padding:
+            18px;
+
+        border-radius: 19px;
+    }
+
+
+    .goal-distance {
+        font-size: 18px;
+    }
+
+
+    .goal-actions {
+        width: 100%;
+    }
+
+
+    .delete-button {
+        width: 100%;
+
+        min-height: 39px;
+    }
+
+
+    .modal-overlay {
+        align-items: flex-end;
+
+        padding:
+            12px;
+    }
+
+
+    .modal {
+        max-width: none;
+
+        max-height: 92dvh;
+
+        padding:
+            22px
+            18px
+            max(
+                20px,
+                env(safe-area-inset-bottom)
+            );
+
+        border-radius:
+            23px
+            23px
+            16px
+            16px;
+    }
+
+
+    .modal h2 {
+        font-size: 24px;
+    }
+
+
+    .goal-image-grid {
+        gap: 8px;
+    }
+
+
+    .goal-image-upload {
+        padding: 14px;
+    }
+
+
+    .goal-image-upload-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .goal-image-file {
+        grid-column:
+            auto;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 390px) {
+
+    .page {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+
+    .profile-card {
+        padding:
+            17px;
+    }
+
+
+    .profile-picture {
+        width: 65px;
+        height: 65px;
+
+        min-width: 65px;
+    }
+
+
+    .profile-info h1 {
+        font-size: 21px;
+    }
+
+
+    .section-header {
+        gap: 12px;
+    }
+
+
+    .add-goal-button {
+        padding:
+            0
+            12px;
+
+        font-size: 11px;
+    }
+
+
+    .modal-buttons {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+========================================================= */
+
+@media (hover: none) {
+
+    .goal-card:hover,
+    .goal-image-option:hover {
+        transform: none;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .goal-card,
+    .goal-image-option,
+    .goal-image-option img,
+    .back-button,
+    .add-goal-button,
+    .delete-button,
+    .cancel-button,
+    .save-button,
+    .goal-image-upload-button {
+        transition: none !important;
+    }
+
+  }
