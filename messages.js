@@ -864,8 +864,8 @@ async function loadMessages() {
         await supabaseClient
             .from("messages")
             .select(
-                "id, sender_id, receiver_id, message, created_at, read_at"
-            )
+    "id, sender_id, receiver_id, message, created_at, read_at, attachment_path, attachment_name, attachment_type, attachment_size"
+)
             .or(
                 `and(sender_id.eq.${currentUser.id},receiver_id.eq.${chatUser.id}),and(sender_id.eq.${chatUser.id},receiver_id.eq.${currentUser.id})`
             )
