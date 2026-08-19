@@ -43,7 +43,10 @@ button {
     display: grid;
 
     grid-template-rows:
-        72px
+        calc(
+            72px +
+            env(safe-area-inset-top)
+        )
         minmax(0, 1fr)
         auto;
 
@@ -65,7 +68,12 @@ button {
 
 .chat-header {
     width: 100%;
-    height: 72px;
+
+    height:
+        calc(
+            72px +
+            env(safe-area-inset-top)
+        );
 
     display: flex;
     align-items: center;
@@ -172,6 +180,11 @@ button {
     font-weight: 700;
 }
 
+.chat-avatar span {
+    display: block;
+    line-height: 1;
+}
+
 .chat-avatar img {
     width: 100%;
     height: 100%;
@@ -250,6 +263,8 @@ button {
     overflow-y: auto;
     overflow-x: hidden;
 
+    overflow-anchor: none;
+
     overscroll-behavior: contain;
 
     -webkit-overflow-scrolling: touch;
@@ -258,7 +273,9 @@ button {
 }
 
 
-/* optional scrollbar */
+/* =========================================
+   SCROLLBAR
+========================================= */
 
 .chat-messages::-webkit-scrollbar {
     width: 5px;
@@ -274,7 +291,6 @@ button {
 
 /* =========================================
    MESSAGE ROWS
-   Ready for later JS
 ========================================= */
 
 .message-row {
@@ -316,13 +332,17 @@ button {
 
     line-height: 1.48;
 
+    overflow: hidden;
+
     overflow-wrap: anywhere;
 
     word-break: break-word;
 }
 
 
-/* received */
+/* =========================================
+   RECEIVED MESSAGE
+========================================= */
 
 .message-row.received
 .message-bubble {
@@ -347,7 +367,9 @@ button {
 }
 
 
-/* sent */
+/* =========================================
+   SENT MESSAGE
+========================================= */
 
 .message-row.sent
 .message-bubble {
@@ -425,6 +447,8 @@ button {
 .chat-footer {
     width: 100%;
 
+    min-width: 0;
+
     display: flex;
 
     align-items: flex-end;
@@ -471,6 +495,8 @@ button {
 ========================================= */
 
 .message-input {
+    display: block;
+
     width: 100%;
 
     min-width: 0;
@@ -601,13 +627,20 @@ button {
 
     .chat-page {
         grid-template-rows:
-            68px
+            calc(
+                68px +
+                env(safe-area-inset-top)
+            )
             minmax(0, 1fr)
             auto;
     }
 
     .chat-header {
-        height: 68px;
+        height:
+            calc(
+                68px +
+                env(safe-area-inset-top)
+            );
 
         padding-left: 12px;
         padding-right: 12px;
