@@ -134,6 +134,25 @@ function setupInterface() {
         "input",
         autoResizeInput
     );
+   messageInput.addEventListener(
+    "focus",
+    function () {
+
+        setTimeout(
+            function () {
+
+                updateChatViewport();
+
+                scrollToBottom(
+                    false
+                );
+
+            },
+            250
+        );
+
+    }
+);
 
 }
 
