@@ -3482,7 +3482,10 @@ alert("Delete clicked");
     const messageId =
         selectedMessageData.id;
 
-
+alert(
+    "Message ID: " +
+    messageId
+);
     /*
         Collect storage files before deleting
         the database message.
