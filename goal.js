@@ -2402,7 +2402,59 @@ function setAthleteFeedback(
 
 }
 
+function getFeelingEmoji(
+    feeling
+) {
 
+    switch (
+        String(
+            feeling || ""
+        ).toLowerCase()
+    ) {
+
+        case "great":
+            return "😄";
+
+        case "good":
+            return "🙂";
+
+        case "okay":
+            return "😐";
+
+        case "bad":
+            return "😣";
+
+        default:
+            return "";
+
+    }
+
+}
+
+
+function capitalizeFeeling(
+    feeling
+) {
+
+    const value =
+        String(
+            feeling || ""
+        );
+
+
+    if (!value) {
+        return "";
+    }
+
+
+    return (
+        value
+            .charAt(0)
+            .toUpperCase() +
+        value.slice(1)
+    );
+
+}
 /* =========================================
    ICONS
 ========================================= */
