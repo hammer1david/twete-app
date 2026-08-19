@@ -38,7 +38,13 @@ const athleteId =
 let athlete = null;
 
 let goals = [];
+/* =========================================
+   GOAL IMAGE LIBRARY
+========================================= */
 
+let goalImages = [];
+
+let selectedGoalImageId = null;
 
 /* =========================================
    INITIALIZE
@@ -493,7 +499,10 @@ function openGoal(goalId) {
    OPEN GOAL MODAL
 ========================================= */
 
-function openGoalModal() {
+async function openGoalModal() {
+
+    selectedGoalImageId = null;
+
 
     document
         .getElementById(
@@ -502,6 +511,9 @@ function openGoalModal() {
         .classList.add(
             "show"
         );
+
+
+    await loadGoalImages();
 
 }
 
@@ -522,7 +534,603 @@ function closeGoalModal() {
 
 }
 
+/* =========================================
+   LOAD GOAL IMAGE LIBRARY
+========================================= */
 
+async function loadGoalImages() {
+
+    const container =
+        document.getElementById(
+            "goalImageGrid"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="goal-images-empty">
+            Loading goal images...
+        </div>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("goal_images")
+            .select(`
+                id,
+                name,
+                category,
+                storage_path,
+                alt_text,
+                sort_order,
+                active
+            `)
+            .eq(
+                "active",
+                true
+            )
+            .order(
+                "sort_order",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Goal images error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="goal-images-empty error">
+
+                Could not load
+                the image library.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    goalImages =
+        data || [];
+
+
+    renderGoalImages();
+
+}
+
+
+
+/* =========================================
+   RENDER GOAL IMAGES
+========================================= */
+
+function renderGoalImages() {
+
+    const container =
+        document.getElementById(
+            "goalImageGrid"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    if (!goalImages.length) {
+
+        container.innerHTML = `
+
+            <div class="goal-images-empty">
+
+                No images in the library yet.
+
+                <br><br>
+
+                Upload your first
+                Twete Goal image below.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        goalImages
+            .map(
+                function(image) {
+
+                    const {
+                        data
+                    } =
+                        supabaseClient
+                            .storage
+                            .from(
+                                "goal-images"
+                            )
+                            .getPublicUrl(
+                                image.storage_path
+                            );
+
+
+                    const imageUrl =
+                        data.publicUrl;
+
+
+                    const selected =
+                        image.id ===
+                        selectedGoalImageId;
+
+
+                    return `
+
+                        <button
+                            type="button"
+
+                            class="
+                                goal-image-option
+                                ${
+                                    selected
+                                        ? "selected"
+                                        : ""
+                                }
+                            "
+
+                            onclick="
+                                selectGoalImage(
+                                    '${image.id}'
+                                )
+                            "
+                        >
+
+                            <img
+                                src="${escapeHtml(
+                                    imageUrl
+                                )}"
+
+                                alt="${escapeHtml(
+                                    image.alt_text ||
+                                    image.name
+                                )}"
+                            >
+
+
+                            <span
+                                class="
+                                    goal-image-selected-icon
+                                "
+                            >
+                                ✓
+                            </span>
+
+
+                            <span
+                                class="
+                                    goal-image-name
+                                "
+                            >
+                                ${escapeHtml(
+                                    image.name
+                                )}
+                            </span>
+
+                        </button>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+
+/* =========================================
+   SELECT GOAL IMAGE
+========================================= */
+
+function selectGoalImage(
+    imageId
+) {
+
+    if (
+        selectedGoalImageId ===
+        imageId
+    ) {
+
+        /*
+           Tapping the selected image again
+           removes the selection.
+        */
+
+        selectedGoalImageId =
+            null;
+
+    } else {
+
+        selectedGoalImageId =
+            imageId;
+
+    }
+
+
+    renderGoalImages();
+
+}
+
+
+
+/* =========================================
+   UPLOAD GOAL IMAGE
+========================================= */
+
+async function uploadGoalImage() {
+
+    const nameInput =
+        document.getElementById(
+            "goalImageName"
+        );
+
+
+    const categoryInput =
+        document.getElementById(
+            "goalImageCategory"
+        );
+
+
+    const fileInput =
+        document.getElementById(
+            "goalImageFile"
+        );
+
+
+    const uploadButton =
+        document.getElementById(
+            "goalImageUploadButton"
+        );
+
+
+    const name =
+        nameInput
+            .value
+            .trim();
+
+
+    const category =
+        categoryInput
+            .value;
+
+
+    const file =
+        fileInput
+            .files[0];
+
+
+    /* =====================================
+       VALIDATE
+    ====================================== */
+
+    if (!name) {
+
+        alert(
+            "Please enter an image name."
+        );
+
+        return;
+
+    }
+
+
+    if (!file) {
+
+        alert(
+            "Please select an image."
+        );
+
+        return;
+
+    }
+
+
+    const allowedTypes = [
+
+        "image/jpeg",
+
+        "image/png",
+
+        "image/webp"
+
+    ];
+
+
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
+
+        alert(
+            "Please upload a JPG, PNG or WebP image."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        file.size >
+        10 * 1024 * 1024
+    ) {
+
+        alert(
+            "The image must be smaller than 10 MB."
+        );
+
+        return;
+
+    }
+
+
+    uploadButton.disabled =
+        true;
+
+
+    uploadButton.textContent =
+        "Uploading...";
+
+
+    let storagePath =
+        null;
+
+
+    try {
+
+        /* =================================
+           FILE EXTENSION
+        ================================== */
+
+        const originalName =
+            file.name || "";
+
+
+        const extension =
+            originalName
+                .includes(".")
+                ?
+                originalName
+                    .split(".")
+                    .pop()
+                    .toLowerCase()
+                :
+                file.type ===
+                    "image/png"
+                    ?
+                    "png"
+                    :
+                    file.type ===
+                        "image/webp"
+                        ?
+                        "webp"
+                        :
+                        "jpg";
+
+
+        /* =================================
+           UNIQUE STORAGE PATH
+        ================================== */
+
+        const uniqueId =
+            (
+                window.crypto &&
+                window.crypto.randomUUID
+            )
+                ?
+                window.crypto.randomUUID()
+                :
+                Date.now() +
+                "-" +
+                Math.random()
+                    .toString(36)
+                    .slice(2);
+
+
+        storagePath =
+            "library/" +
+            uniqueId +
+            "." +
+            extension;
+
+
+        /* =================================
+           UPLOAD TO STORAGE
+        ================================== */
+
+        const {
+            error: uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from(
+                    "goal-images"
+                )
+                .upload(
+                    storagePath,
+                    file,
+                    {
+
+                        cacheControl:
+                            "31536000",
+
+                        upsert:
+                            false,
+
+                        contentType:
+                            file.type
+
+                    }
+                );
+
+
+        if (uploadError) {
+
+            throw uploadError;
+
+        }
+
+
+        /* =================================
+           SAVE IMAGE METADATA
+        ================================== */
+
+        const {
+            data: imageRecord,
+            error: databaseError
+        } =
+            await supabaseClient
+                .from(
+                    "goal_images"
+                )
+                .insert({
+
+                    name:
+                        name,
+
+                    category:
+                        category,
+
+                    storage_path:
+                        storagePath,
+
+                    alt_text:
+                        name,
+
+                    active:
+                        true
+
+                })
+                .select()
+                .single();
+
+
+        if (databaseError) {
+
+            /*
+               Remove the Storage file again
+               if database insert failed.
+            */
+
+            await supabaseClient
+                .storage
+                .from(
+                    "goal-images"
+                )
+                .remove([
+                    storagePath
+                ]);
+
+
+            throw databaseError;
+
+        }
+
+
+        /* =================================
+           SELECT NEW IMAGE
+        ================================== */
+
+        selectedGoalImageId =
+            imageRecord.id;
+
+
+        /* =================================
+           RESET UPLOAD FORM
+        ================================== */
+
+        nameInput.value =
+            "";
+
+
+        categoryInput.value =
+            "general";
+
+
+        fileInput.value =
+            "";
+
+
+        /* =================================
+           RELOAD LIBRARY
+        ================================== */
+
+        await loadGoalImages();
+
+
+    } catch (error) {
+
+        console.error(
+            "Goal image upload error:",
+            error
+        );
+
+
+        alert(
+
+            "Could not upload the image:\n\n" +
+
+            (
+                error.message ||
+                "Unknown error"
+            )
+
+        );
+
+    } finally {
+
+        uploadButton.disabled =
+            false;
+
+
+        uploadButton.textContent =
+            "+ Upload to Goal Library";
+
+    }
+
+       }
 /* =========================================
    SAVE GOAL
 ========================================= */
