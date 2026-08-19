@@ -1126,6 +1126,8 @@ function createMessageElement(
         sent
             ? "message-row sent"
             : "message-row received";
+   row.dataset.messageId =
+    message.id;
 
 
     /*
