@@ -40,7 +40,6 @@ button {
     width: 100%;
     height: 100dvh;
     min-height: 0;
-   
 
     display: grid;
 
@@ -421,6 +420,306 @@ button {
     -webkit-backdrop-filter: blur(20px);
 
     overflow: hidden;
+
+    flex-wrap: wrap;
+}
+
+
+/* =========================================
+   CAMERA PANEL
+========================================= */
+
+.camera-overlay {
+
+    position: relative;
+
+    width: 100%;
+
+    flex: 0 0 100%;
+
+    order: -2;
+
+    padding: 10px;
+
+    border:
+        1px solid
+        rgba(198,255,0,.18);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #111,
+            #080808
+        );
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,.35);
+
+    overflow: hidden;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+.camera-overlay[hidden] {
+    display: none;
+}
+
+
+/* =========================================
+   CAMERA VIDEO
+========================================= */
+
+.camera-video {
+
+    display: block;
+
+    width: 100%;
+
+    height: min(38vh, 360px);
+
+    min-height: 180px;
+
+    object-fit: cover;
+
+    border-radius: 13px;
+
+    background: #000;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+}
+
+
+/* =========================================
+   CAMERA TOP BAR
+========================================= */
+
+.camera-top-bar {
+
+    position: absolute;
+
+    top: 18px;
+
+    left: 18px;
+
+    right: 18px;
+
+    z-index: 5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    pointer-events: none;
+}
+
+
+/* =========================================
+   CAMERA LABEL
+========================================= */
+
+.camera-label {
+
+    padding:
+        7px 12px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(0,0,0,.65);
+
+    border:
+        1px solid
+        rgba(255,255,255,.12);
+
+    color: #fff;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+
+    backdrop-filter: blur(10px);
+
+    -webkit-backdrop-filter: blur(10px);
+}
+
+
+/* =========================================
+   CAMERA CLOSE
+========================================= */
+
+.camera-close {
+
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        rgba(255,255,255,.18);
+
+    border-radius: 50%;
+
+    background:
+        rgba(0,0,0,.68);
+
+    color: #fff;
+
+    font-size: 22px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    backdrop-filter: blur(10px);
+
+    -webkit-backdrop-filter: blur(10px);
+
+    transition:
+        background .18s ease,
+        transform .15s ease;
+}
+
+.camera-close:hover {
+
+    background:
+        rgba(255,255,255,.14);
+}
+
+.camera-close:active {
+
+    transform: scale(.9);
+}
+
+
+/* =========================================
+   CAMERA CONTROLS
+========================================= */
+
+.camera-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        12px 4px 2px;
+}
+
+
+/* =========================================
+   TAKE PICTURE BUTTON
+========================================= */
+
+.camera-capture {
+
+    position: relative;
+
+    width: 100%;
+
+    max-width: 300px;
+
+    min-height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    padding:
+        0 24px;
+
+    border: none;
+
+    border-radius: 28px;
+
+    background:
+        #C6FF00;
+
+    color: #050505;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 24px
+        rgba(198,255,0,.16);
+
+    transition:
+        transform .15s ease,
+        box-shadow .18s ease;
+}
+
+.camera-capture:hover {
+
+    box-shadow:
+        0 8px 30px
+        rgba(198,255,0,.28);
+
+    transform:
+        translateY(-1px);
+}
+
+.camera-capture:active {
+
+    transform:
+        scale(.96);
+}
+
+
+/* =========================================
+   CAMERA CAPTURE ICON
+========================================= */
+
+.camera-capture::before {
+
+    content: "";
+
+    width: 13px;
+
+    height: 13px;
+
+    display: block;
+
+    border:
+        2px solid
+        #050505;
+
+    border-radius: 50%;
 }
 
 
@@ -478,6 +777,78 @@ button {
 
     width: 28px;
     height: 28px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+/* =========================================
+   CAMERA BUTTON
+========================================= */
+
+.camera-button {
+
+    width: 58px;
+    height: 58px;
+
+    flex: 0 0 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        rgba(198,255,0,.85);
+
+    border-radius: 50%;
+
+    background:
+        rgba(198,255,0,.025);
+
+    color: #C6FF00;
+
+    cursor: pointer;
+
+    transition:
+        background .18s ease,
+        box-shadow .18s ease,
+        transform .15s ease;
+}
+
+.camera-button:hover {
+
+    background:
+        rgba(198,255,0,.08);
+
+    box-shadow:
+        0 0 16px
+        rgba(198,255,0,.12);
+}
+
+.camera-button:active {
+
+    transform:
+        scale(.91);
+}
+
+.camera-button svg {
+
+    width: 27px;
+
+    height: 27px;
 
     fill: none;
 
@@ -552,15 +923,13 @@ button {
         rgba(198,255,0,.035);
 }
 
+
 /* =========================================
    ATTACHMENT PREVIEW
 ========================================= */
 
-.chat-composer {
-    flex-wrap: wrap;
-}
-
 .attachment-preview {
+
     width: 100%;
 
     flex: 0 0 100%;
@@ -602,6 +971,7 @@ button {
 ========================================= */
 
 .attachment-item {
+
     position: relative;
 
     width: 76px;
@@ -623,11 +993,13 @@ button {
         rgba(255,255,255,.10);
 }
 
+
 /* =========================================
-   IMAGE
+   ATTACHMENT IMAGE
 ========================================= */
 
 .attachment-preview-image {
+
     width: 100%;
     height: 100%;
 
@@ -638,10 +1010,11 @@ button {
 
 
 /* =========================================
-   VIDEO
+   ATTACHMENT VIDEO
 ========================================= */
 
 .attachment-preview-video {
+
     width: 100%;
     height: 100%;
 
@@ -654,16 +1027,18 @@ button {
 
 
 /* =========================================
-   FILE
+   ATTACHMENT FILE
 ========================================= */
 
 .attachment-file-icon {
+
     width: 100%;
     height: 100%;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     color: #C6FF00;
@@ -677,6 +1052,7 @@ button {
 ========================================= */
 
 .attachment-remove {
+
     position: absolute;
 
     top: 5px;
@@ -688,6 +1064,7 @@ button {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     padding: 0;
@@ -713,8 +1090,12 @@ button {
 }
 
 .attachment-remove:hover {
-    background: #C6FF00;
-    color: #050505;
+
+    background:
+        #C6FF00;
+
+    color:
+        #050505;
 }
 
 
@@ -723,6 +1104,7 @@ button {
 ========================================= */
 
 .attachment-file-name {
+
     position: absolute;
 
     left: 5px;
@@ -747,6 +1129,8 @@ button {
 
     text-overflow: ellipsis;
 }
+
+
 /* =========================================
    SEND BUTTON
 ========================================= */
@@ -770,9 +1154,11 @@ button {
 
     border-radius: 50%;
 
-    background: #C6FF00;
+    background:
+        #C6FF00;
 
-    color: #050505;
+    color:
+        #050505;
 
     cursor: pointer;
 
@@ -793,7 +1179,20 @@ button {
 }
 
 .send-button:active {
-    transform: scale(.91);
+
+    transform:
+        scale(.91);
+}
+
+.send-button:disabled {
+
+    opacity: .45;
+
+    cursor:
+        not-allowed;
+
+    box-shadow:
+        none;
 }
 
 .send-button svg {
@@ -814,162 +1213,11 @@ button {
 
 
 /* =========================================
-   TABLET / MOBILE
-========================================= */
-
-@media (max-width:700px) {
-
-    .chat {
-
-        grid-template-rows:
-            64px
-            minmax(0,1fr)
-            auto;
-    }
-
-    .chat-header {
-
-        height: 64px;
-
-        padding:
-            0 14px;
-    }
-
-    .messages-window {
-
-        padding:
-            14px 18px;
-    }
-
-    .message-bubble {
-
-        max-width: 86%;
-
-        padding:
-            10px 12px;
-    }
-
-    .chat-composer {
-
-        gap: 10px;
-
-        padding:
-            10px 15px;
-    }
-
-    .attachment-button,
-    .send-button {
-
-        width: 48px;
-
-        height: 48px;
-
-        flex-basis: 48px;
-    }
-
-    .attachment-button svg,
-    .send-button svg {
-
-        width: 24px;
-
-        height: 24px;
-    }
-
-    .chat-composer textarea {
-
-        min-height: 48px;
-
-        padding:
-            13px 16px;
-
-        border-radius: 25px;
-    }
-}
-
-
-/* =========================================
-   SMALL PHONES
-========================================= */
-
-@media (max-width:380px) {
-
-    .chat {
-
-        grid-template-rows:
-            62px
-            minmax(0,1fr)
-            auto;
-    }
-
-    .chat-header {
-        height: 62px;
-    }
-
-    .header-avatar {
-
-        width: 38px;
-
-        height: 38px;
-
-        flex-basis: 38px;
-    }
-
-    .messages-window {
-
-        padding:
-            12px 10px;
-    }
-
-    .message-bubble {
-
-        max-width: 89%;
-
-        font-size: 13px;
-    }
-
-    .chat-composer {
-
-        gap: 7px;
-
-        padding:
-            8px 9px;
-    }
-
-    .attachment-button,
-    .send-button {
-
-        width: 42px;
-
-        height: 42px;
-
-        flex-basis: 42px;
-    }
-
-    .attachment-button svg,
-    .send-button svg {
-
-        width: 21px;
-
-        height: 21px;
-    }
-
-    .chat-composer textarea {
-
-        min-height: 42px;
-
-        padding:
-            11px 13px;
-
-        border-radius: 22px;
-
-        font-size: 12px;
-    }
-}
-/* =========================================
    MESSAGE ATTACHMENTS
 ========================================= */
 
 .message-attachments {
+
     display: grid;
 
     grid-template-columns:
@@ -984,10 +1232,11 @@ button {
 
 
 /* =========================================
-   ATTACHMENT ITEM
+   MESSAGE ATTACHMENT
 ========================================= */
 
 .message-attachment {
+
     position: relative;
 
     overflow: hidden;
@@ -996,7 +1245,8 @@ button {
 
     border-radius: 12px;
 
-    background: #151515;
+    background:
+        #151515;
 
     border:
         1px solid
@@ -1005,10 +1255,11 @@ button {
 
 
 /* =========================================
-   IMAGE
+   MESSAGE IMAGE
 ========================================= */
 
 .message-attachment-image {
+
     display: block;
 
     width: 100%;
@@ -1023,31 +1274,37 @@ button {
 }
 
 .message-attachment-image:hover {
-    transform: scale(1.02);
+
+    transform:
+        scale(1.02);
 }
 
 
 /* =========================================
-   VIDEO
+   MESSAGE VIDEO
 ========================================= */
 
 .message-attachment-video {
+
     display: block;
 
     width: 240px;
+
     max-width: 100%;
 
     max-height: 220px;
 
-    background: #000;
+    background:
+        #000;
 }
 
 
 /* =========================================
-   FILE
+   MESSAGE FILE
 ========================================= */
 
 .message-file {
+
     display: flex;
 
     align-items: center;
@@ -1059,20 +1316,20 @@ button {
     padding: 12px;
 }
 
-
 .message-file-icon {
+
     font-size: 28px;
 
     flex-shrink: 0;
 }
 
-
 .message-file-info {
+
     min-width: 0;
 }
 
-
 .message-file-name {
+
     color: #fff;
 
     font-size: 14px;
@@ -1084,8 +1341,8 @@ button {
     text-overflow: ellipsis;
 }
 
-
 .message-file-size {
+
     margin-top: 3px;
 
     color:
@@ -1100,6 +1357,7 @@ button {
 ========================================= */
 
 .message-attachment-download {
+
     display: block;
 
     padding:
@@ -1109,7 +1367,8 @@ button {
         1px solid
         rgba(255,255,255,.10);
 
-    color: #C6FF00;
+    color:
+        #C6FF00;
 
     font-size: 12px;
 
@@ -1124,32 +1383,9 @@ button {
 }
 
 .message-attachment-download:hover {
+
     background:
         rgba(198,255,0,.08);
-}
-
-
-/* =========================================
-   MOBILE
-========================================= */
-
-@media (max-width: 600px) {
-
-    .message-attachment-image {
-
-        width: 100%;
-
-        height: 130px;
-
-    }
-
-    .message-attachment-video {
-
-        width: 100%;
-       max-width: 100%;
-
-    }
-
 }
 
 
@@ -1162,11 +1398,14 @@ button {
 .chat-loading
 .chat-composer {
 
-    filter: blur(5px);
+    filter:
+        blur(5px);
 
-    opacity: .62;
+    opacity:
+        .62;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
     transition:
         filter .22s ease,
@@ -1216,7 +1455,8 @@ button {
 
     gap: 7px;
 
-    padding: 14px 18px;
+    padding:
+        14px 18px;
 
     border:
         1px solid
@@ -1231,9 +1471,11 @@ button {
         0 8px 30px
         rgba(0,0,0,.35);
 
-    backdrop-filter: blur(12px);
+    backdrop-filter:
+        blur(12px);
 
-    -webkit-backdrop-filter: blur(12px);
+    -webkit-backdrop-filter:
+        blur(12px);
 }
 
 
@@ -1260,23 +1502,18 @@ button {
 
     animation-delay:
         0s;
-
 }
-
 
 .chat-loading-dots span:nth-child(2) {
 
     animation-delay:
         .18s;
-
 }
-
 
 .chat-loading-dots span:nth-child(3) {
 
     animation-delay:
         .36s;
-
 }
 
 
@@ -1294,8 +1531,8 @@ button {
             translateY(0)
             scale(.75);
 
-        opacity: .25;
-
+        opacity:
+            .25;
     }
 
     30% {
@@ -1304,8 +1541,8 @@ button {
             translateY(-5px)
             scale(1);
 
-        opacity: 1;
-
+        opacity:
+            1;
     }
 
 }
@@ -1317,32 +1554,345 @@ button {
 
 .chat-loading-overlay.chat-loading-finished {
 
-    opacity: 0;
+    opacity:
+        0;
+}
+
+
+/* =========================================
+   TABLET / MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .chat {
+
+        grid-template-rows:
+            64px
+            minmax(0,1fr)
+            auto;
+    }
+
+
+    .chat-header {
+
+        height: 64px;
+
+        padding:
+            0 14px;
+    }
+
+
+    .messages-window {
+
+        padding:
+            14px 18px;
+    }
+
+
+    .message-bubble {
+
+        max-width:
+            86%;
+
+        padding:
+            10px 12px;
+    }
+
+
+    .chat-composer {
+
+        gap:
+            8px;
+
+        padding:
+            9px 12px;
+    }
+
+
+    .attachment-button,
+    .camera-button,
+    .send-button {
+
+        width:
+            48px;
+
+        height:
+            48px;
+
+        flex-basis:
+            48px;
+    }
+
+
+    .attachment-button svg,
+    .camera-button svg,
+    .send-button svg {
+
+        width:
+            23px;
+
+        height:
+            23px;
+    }
+
+
+    .chat-composer textarea {
+
+        min-height:
+            48px;
+
+        padding:
+            13px 16px;
+
+        border-radius:
+            25px;
+    }
+
+
+    .camera-overlay {
+
+        padding:
+            8px;
+
+        border-radius:
+            16px;
+    }
+
+
+    .camera-video {
+
+        height:
+            min(34vh, 300px);
+
+        min-height:
+            170px;
+
+        border-radius:
+            11px;
+    }
+
+
+    .camera-top-bar {
+
+        top:
+            15px;
+
+        left:
+            15px;
+
+        right:
+            15px;
+    }
+
+
+    .camera-close {
+
+        width:
+            36px;
+
+        height:
+            36px;
+    }
+
+
+    .camera-capture {
+
+        max-width:
+            none;
+
+        min-height:
+            50px;
+    }
+
+
+    .message-attachment-image {
+
+        width:
+            100%;
+
+        height:
+            130px;
+    }
+
+
+    .message-attachment-video {
+
+        width:
+            100%;
+
+        max-width:
+            100%;
+    }
+
+
+    .chat-loading-dots {
+
+        gap:
+            6px;
+
+        padding:
+            12px 16px;
+    }
+
+
+    .chat-loading-dots span {
+
+        width:
+            6px;
+
+        height:
+            6px;
+    }
 
 }
 
 
 /* =========================================
-   MOBILE
+   SMALL PHONES
 ========================================= */
 
-@media (max-width:700px) {
+@media (max-width: 380px) {
 
-    .chat-loading-dots {
+    .chat {
 
-        gap: 6px;
+        grid-template-rows:
+            62px
+            minmax(0,1fr)
+            auto;
+    }
+
+
+    .chat-header {
+
+        height:
+            62px;
+    }
+
+
+    .header-avatar {
+
+        width:
+            38px;
+
+        height:
+            38px;
+
+        flex-basis:
+            38px;
+    }
+
+
+    .messages-window {
 
         padding:
-            12px 16px;
-
+            12px 10px;
     }
 
-    .chat-loading-dots span {
 
-        width: 6px;
+    .message-bubble {
 
-        height: 6px;
+        max-width:
+            89%;
 
+        font-size:
+            13px;
     }
 
-}
+
+    .chat-composer {
+
+        gap:
+            6px;
+
+        padding:
+            7px 8px;
+    }
+
+
+    .attachment-button,
+    .camera-button,
+    .send-button {
+
+        width:
+            42px;
+
+        height:
+            42px;
+
+        flex-basis:
+            42px;
+    }
+
+
+    .attachment-button svg,
+    .camera-button svg,
+    .send-button svg {
+
+        width:
+            20px;
+
+        height:
+            20px;
+    }
+
+
+    .chat-composer textarea {
+
+        min-height:
+            42px;
+
+        padding:
+            11px 13px;
+
+        border-radius:
+            22px;
+
+        font-size:
+            12px;
+    }
+
+
+    .camera-video {
+
+        height:
+            190px;
+
+        min-height:
+            160px;
+    }
+
+
+    .camera-label {
+
+        padding:
+            6px 9px;
+
+        font-size:
+            8px;
+    }
+
+
+    .camera-close {
+
+        width:
+            32px;
+
+        height:
+            32px;
+
+        font-size:
+            19px;
+    }
+
+
+    .camera-capture {
+
+        min-height:
+            46px;
+
+        font-size:
+            11px;
+    }
+
+   }
