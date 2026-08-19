@@ -1094,7 +1094,7 @@ if (
     */
 
     if (
-        imageAttachments.length > 0
+        mediaAttachments.length > 0
     ) {
 
         const imageGrid =
