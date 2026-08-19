@@ -28,94 +28,125 @@
     >
 
 
-    <!-- =========================================
-         HEADER
-    ========================================== -->
-
     <header class="chat-header">
 
-        <button
-            id="backButton"
-            class="back-button"
-            type="button"
-            aria-label="Go back"
+    <button
+        id="backButton"
+        class="back-button"
+        type="button"
+        aria-label="Go back"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
         >
+            <path d="M15 18L9 12L15 6"></path>
+        </svg>
+    </button>
 
+
+    <div
+        id="chatAvatar"
+        class="chat-avatar"
+        aria-hidden="true"
+    >
+        <span id="chatAvatarLetter">
+            T
+        </span>
+    </div>
+
+
+    <div class="chat-user-info">
+
+        <div
+            id="chatUserName"
+            class="chat-user-name"
+        >
+            Loading...
+        </div>
+
+        <div
+            id="chatUserStatus"
+            class="chat-user-status"
+        >
+            Loading...
+        </div>
+
+    </div>
+
+
+    <div
+        id="messageActionBar"
+        class="message-action-bar"
+        hidden
+    >
+
+        <button
+            id="copyMessageButton"
+            class="message-action-button"
+            type="button"
+            aria-label="Copy"
+            title="Copy"
+        >
             <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
             >
+                <rect
+                    x="9"
+                    y="9"
+                    width="11"
+                    height="11"
+                    rx="2"
+                ></rect>
 
-                <path d="M15 18L9 12L15 6"></path>
-
+                <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                ></path>
             </svg>
-
         </button>
 
 
-        <div
-            id="chatAvatar"
-            class="chat-avatar"
-            aria-hidden="true"
+        <button
+            id="deleteMessageButton"
+            class="message-action-button danger"
+            type="button"
+            aria-label="Delete"
+            title="Delete"
+            hidden
         >
-
-            <span id="chatAvatarLetter">
-                T
-            </span>
-
-        </div>
-
-
-        <div class="chat-user-info">
-
-            <div
-                id="chatUserName"
-                class="chat-user-name"
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
             >
-                Loading...
-            </div>
+                <path d="M3 6H21"></path>
+                <path d="M8 6V4H16V6"></path>
+                <path d="M19 6L18 20H6L5 6"></path>
+                <path d="M10 11V16"></path>
+                <path d="M14 11V16"></path>
+            </svg>
+        </button>
 
-            <div
-                id="chatUserStatus"
-                class="chat-user-status"
+
+        <button
+            id="cancelMessageSelectionButton"
+            class="message-action-button"
+            type="button"
+            aria-label="Cancel selection"
+            title="Cancel"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
             >
-                Loading...
-            </div>
+                <path d="M6 6L18 18"></path>
+                <path d="M18 6L6 18"></path>
+            </svg>
+        </button>
 
-        </div>
+    </div>
 
     </header>
-
-<div
-    id="messageActionBar"
-    class="message-action-bar"
-    hidden
->
-    <button
-        id="copyMessageButton"
-        class="message-action-button"
-        type="button"
-    >
-        Copy
-    </button>
-
-    <button
-        id="deleteMessageButton"
-        class="message-action-button danger"
-        type="button"
-        hidden
-    >
-        Delete
-    </button>
-
-    <button
-        id="cancelMessageSelectionButton"
-        class="message-action-button"
-        type="button"
-    >
-        Cancel
-    </button>
-</div>
 
     <!-- =========================================
          CHAT
