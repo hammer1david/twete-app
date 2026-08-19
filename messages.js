@@ -3538,26 +3538,64 @@ copyMessageButton
         async function () {
 
             if (
-                !selectedMessageData ||
-                !selectedMessageData.message
+                selectedMessages.size === 0
             ) {
                 return;
             }
 
 
-            const text =
-                selectedMessageData.message.trim();
+            const texts =
+                Array.from(
+                    selectedMessages.values()
+                )
+                    .filter(
+                        function (message) {
+
+                            return (
+                                message.message &&
+                                message.message.trim()
+                            );
+
+                        }
+                    )
+                    .sort(
+                        function (a, b) {
+
+                            return (
+                                new Date(a.created_at) -
+                                new Date(b.created_at)
+                            );
+
+                        }
+                    )
+                    .map(
+                        function (message) {
+
+                            return (
+                                message.message.trim()
+                            );
+
+                        }
+                    );
 
 
-            if (!text) {
+            if (
+                texts.length === 0
+            ) {
                 return;
             }
+
+
+            const textToCopy =
+                texts.join(
+                    "\n"
+                );
 
 
             try {
 
                 await navigator.clipboard.writeText(
-                    text
+                    textToCopy
                 );
 
 
@@ -3566,7 +3604,7 @@ copyMessageButton
             } catch (error) {
 
                 console.error(
-                    "Copy message error:",
+                    "Copy messages error:",
                     error
                 );
 
