@@ -25,20 +25,19 @@ const messagesSupabase =
 ========================================= */
 
 let currentUser = null;
-
 let currentRole = null;
-
 let conversationUserId = null;
-
 let realtimeChannel = null;
-
 let selectedAttachments = [];
-
 let messagesCache = [];
-
 let isInitialLoading = true;
 
-let isSendingMessage = false;
+
+/* =========================================
+   CAMERA STATE
+========================================= */
+
+let cameraStream = null;
 
 
 /* =========================================
@@ -104,50 +103,20 @@ async function initialiseMessages() {
             session.user;
 
 
-        /*
-            Load profile and
-            conversation information.
-        */
-
         await loadCurrentProfile();
 
         await loadConversationUser();
 
-
-        /*
-            Composer can be prepared
-            while the message data is loading.
-        */
-
         setupComposer();
 
-
-        /*
-            Load initial messages.
-        */
-
-        await loadMessages(
-            true
-        );
-
-
-        /*
-            Start realtime only after
-            initial data is ready.
-        */
+        await loadMessages(true);
 
         subscribeToMessages();
-
-
-        /*
-            Initial loading finished.
-        */
 
         isInitialLoading =
             false;
 
         hideChatLoading();
-
 
         scrollToBottom();
 
@@ -189,11 +158,6 @@ function showChatLoading() {
         "chat-loading"
     );
 
-
-    /*
-        Do not create the loader
-        more than once.
-    */
 
     let loader =
         document.getElementById(
@@ -644,6 +608,7 @@ function setProfileHeader(
                 "img"
             );
 
+
         image.src =
             avatarUrl;
 
@@ -664,6 +629,7 @@ function setProfileHeader(
 
         image.style.borderRadius =
             "50%";
+
 
         avatarElement.appendChild(
             image
@@ -712,10 +678,6 @@ async function loadMessages(
     }
 
 
-    /*
-        Fetch messages.
-    */
-
     const {
         data: messages,
         error
@@ -760,10 +722,6 @@ async function loadMessages(
     const messageList =
         messages || [];
 
-
-    /*
-        Load attachments in ONE query.
-    */
 
     const messageIds =
         messageList.map(
@@ -824,12 +782,6 @@ async function loadMessages(
 
     }
 
-
-    /*
-        Create signed URLs in parallel.
-        This is considerably faster than
-        waiting for every URL one by one.
-    */
 
     await Promise.all(
         attachments.map(
@@ -923,10 +875,6 @@ async function loadMessages(
     );
 
 
-    /*
-        Group attachments.
-    */
-
     const attachmentsByMessage =
         {};
 
@@ -959,10 +907,6 @@ async function loadMessages(
     );
 
 
-    /*
-        Add attachments to messages.
-    */
-
     messageList.forEach(
         function (
             message
@@ -977,35 +921,19 @@ async function loadMessages(
     );
 
 
-    /*
-        Save local cache.
-    */
-
     messagesCache =
         messageList;
 
-
-    /*
-        Render.
-    */
 
     renderMessages(
         messageList
     );
 
 
-    /*
-        Mark unread messages as read.
-    */
-
     await markMessagesRead(
         messageList
     );
 
-
-    /*
-        The initial load has finished.
-    */
 
     if (initialLoad) {
 
@@ -1048,15 +976,19 @@ function renderMessages(
                 "div"
             );
 
+
         empty.className =
             "no-messages";
+
 
         empty.textContent =
             "No messages yet.";
 
+
         list.appendChild(
             empty
         );
+
 
         return;
 
@@ -1076,6 +1008,7 @@ function renderMessages(
                 createMessageElement(
                     message
                 );
+
 
             fragment.appendChild(
                 row
@@ -1126,13 +1059,11 @@ function createMessageElement(
         sent
             ? "message-row sent"
             : "message-row received";
-   row.dataset.messageId =
-    message.id;
 
 
-    /*
-        Bubble
-    */
+    row.dataset.messageId =
+        message.id;
+
 
     const bubble =
         document.createElement(
@@ -1144,10 +1075,6 @@ function createMessageElement(
         "message-bubble";
 
 
-    /*
-        Text
-    */
-
     if (
         message.message &&
         message.message.trim()
@@ -1158,11 +1085,14 @@ function createMessageElement(
                 "div"
             );
 
+
         text.className =
             "message-text";
 
+
         text.textContent =
             message.message;
+
 
         bubble.appendChild(
             text
@@ -1170,10 +1100,6 @@ function createMessageElement(
 
     }
 
-
-    /*
-        Attachments
-    */
 
     if (
         message.attachments &&
@@ -1184,6 +1110,7 @@ function createMessageElement(
             document.createElement(
                 "div"
             );
+
 
         attachmentContainer.className =
             "message-attachments";
@@ -1215,10 +1142,6 @@ function createMessageElement(
     }
 
 
-    /*
-        Time
-    */
-
     const meta =
         document.createElement(
             "div"
@@ -1248,10 +1171,6 @@ function createMessageElement(
     );
 
 
-    /*
-        Checks
-    */
-
     if (sent) {
 
         const checks =
@@ -1259,11 +1178,14 @@ function createMessageElement(
                 "span"
             );
 
+
         checks.className =
             "message-checks";
 
+
         checks.textContent =
             "✓✓";
+
 
         meta.appendChild(
             checks
@@ -1305,9 +1227,7 @@ function createAttachmentElement(
         "message-attachment";
 
 
-    /*
-        IMAGE
-    */
+    /* IMAGE */
 
     if (
         attachment.file_type &&
@@ -1360,9 +1280,7 @@ function createAttachmentElement(
     }
 
 
-    /*
-        VIDEO
-    */
+    /* VIDEO */
 
     else if (
         attachment.file_type &&
@@ -1405,9 +1323,7 @@ function createAttachmentElement(
     }
 
 
-    /*
-        OTHER FILE
-    */
+    /* OTHER FILE */
 
     else {
 
@@ -1505,9 +1421,7 @@ function createAttachmentElement(
     }
 
 
-    /*
-        DOWNLOAD
-    */
+    /* DOWNLOAD */
 
     if (
         attachment.download_url
@@ -1683,8 +1597,10 @@ function formatFileSize(
         size < 1024
     ) {
 
-        return size +
-            " B";
+        return (
+            size +
+            " B"
+        );
 
     }
 
@@ -1697,7 +1613,7 @@ function formatFileSize(
             size /
             1024
         ).toFixed(1) +
-            " KB";
+        " KB";
 
     }
 
@@ -1710,7 +1626,7 @@ function formatFileSize(
             size /
             (1024 * 1024)
         ).toFixed(1) +
-            " MB";
+        " MB";
 
     }
 
@@ -1753,18 +1669,13 @@ function scrollToBottom() {
 }
 
 
-
 /* =========================================
-   ADD SINGLE MESSAGE
+   ADD SINGLE REALTIME MESSAGE
 ========================================= */
 
 async function addRealtimeMessage(
     message
 ) {
-
-    /*
-        Prevent duplicate messages.
-    */
 
     const alreadyExists =
         messagesCache.some(
@@ -1790,20 +1701,13 @@ async function addRealtimeMessage(
     }
 
 
-    /*
-        Wait for attachments to appear
-        in the database.
-
-        The realtime INSERT for the
-        message can arrive slightly before
-        the attachment INSERT.
-    */
-
     let attachments = [];
 
-    const maxAttempts = 10;
+    const maxAttempts =
+        10;
 
-    const delay = 200;
+    const delay =
+        200;
 
 
     for (
@@ -1858,10 +1762,6 @@ async function addRealtimeMessage(
             data || [];
 
 
-        /*
-            Attachments found.
-        */
-
         if (
             attachments.length > 0
         ) {
@@ -1870,10 +1770,6 @@ async function addRealtimeMessage(
 
         }
 
-
-        /*
-            Wait before checking again.
-        */
 
         if (
             attempt <
@@ -1897,10 +1793,6 @@ async function addRealtimeMessage(
 
     }
 
-
-    /*
-        Generate signed URLs.
-    */
 
     await Promise.all(
         attachments.map(
@@ -1980,17 +1872,9 @@ async function addRealtimeMessage(
     );
 
 
-    /*
-        Add attachments to message.
-    */
-
     message.attachments =
         attachments;
 
-
-    /*
-        Add message to local cache.
-    */
 
     messagesCache.push(
         message
@@ -2016,10 +1900,6 @@ async function addRealtimeMessage(
     );
 
 
-    /*
-        Add message to chat.
-    */
-
     const list =
         document.getElementById(
             "messagesWindow"
@@ -2030,10 +1910,6 @@ async function addRealtimeMessage(
         return;
     }
 
-
-    /*
-        Remove empty state.
-    */
 
     const empty =
         list.querySelector(
@@ -2048,10 +1924,6 @@ async function addRealtimeMessage(
     }
 
 
-    /*
-        Create complete message.
-    */
-
     const row =
         createMessageElement(
             message
@@ -2063,16 +1935,8 @@ async function addRealtimeMessage(
     );
 
 
-    /*
-        Keep newest message visible.
-    */
-
     scrollToBottom();
 
-
-    /*
-        Mark received message as read.
-    */
 
     if (
         String(
@@ -2090,6 +1954,8 @@ async function addRealtimeMessage(
     }
 
 }
+
+
 /* =========================================
    SEND MESSAGE + ATTACHMENTS
 ========================================= */
@@ -2100,6 +1966,7 @@ async function sendMessage() {
         document.getElementById(
             "messageInput"
         );
+
 
     const button =
         document.querySelector(
@@ -2115,11 +1982,6 @@ async function sendMessage() {
     const text =
         input.value.trim();
 
-
-    /*
-        TEXT OR ATTACHMENTS
-        ARE ENOUGH TO SEND
-    */
 
     if (
         !text &&
@@ -2150,21 +2012,15 @@ async function sendMessage() {
     }
 
 
-    /*
-        Keep the selected files before
-        clearing the composer.
-    */
-
     const filesToUpload =
-        [...selectedAttachments];
+        [
+            ...selectedAttachments
+        ];
 
 
     try {
 
-        /* =====================================
-           STEP 1
-           CREATE MESSAGE
-        ===================================== */
+        /* STEP 1: CREATE MESSAGE */
 
         const {
             data: messageData,
@@ -2217,10 +2073,7 @@ async function sendMessage() {
             messageData.id;
 
 
-        /* =====================================
-           STEP 2
-           UPLOAD ATTACHMENTS
-        ===================================== */
+        /* STEP 2: UPLOAD ATTACHMENTS */
 
         const uploadedAttachments =
             [];
@@ -2252,10 +2105,6 @@ async function sendMessage() {
                 "-" +
                 safeFileName;
 
-
-            /*
-                UPLOAD FILE
-            */
 
             const {
                 error: uploadError
@@ -2297,10 +2146,6 @@ async function sendMessage() {
 
             }
 
-
-            /*
-                SAVE ATTACHMENT METADATA
-            */
 
             const {
                 data:
@@ -2365,11 +2210,6 @@ async function sendMessage() {
             }
 
 
-            /*
-                Create the VIEW signed URL
-                immediately.
-            */
-
             let viewUrl =
                 null;
 
@@ -2406,11 +2246,6 @@ async function sendMessage() {
 
             }
 
-
-            /*
-                Create DOWNLOAD signed URL
-                immediately.
-            */
 
             let downloadUrl =
                 null;
@@ -2453,11 +2288,6 @@ async function sendMessage() {
             }
 
 
-            /*
-                Add the complete attachment
-                to our local message.
-            */
-
             uploadedAttachments.push({
 
                 id:
@@ -2498,32 +2328,18 @@ async function sendMessage() {
         }
 
 
-        /* =====================================
-           STEP 3
-           BUILD THE NEW MESSAGE LOCALLY
-        ===================================== */
+        /* STEP 3: BUILD MESSAGE */
 
         messageData.attachments =
             uploadedAttachments;
 
-
-        /*
-            IMPORTANT:
-
-            We render the new message directly.
-            We do NOT wait for another
-            loadMessages() request.
-        */
 
         appendMessageToChat(
             messageData
         );
 
 
-        /* =====================================
-           STEP 4
-           CLEAR COMPOSER
-        ===================================== */
+        /* STEP 4: CLEAR COMPOSER */
 
         input.value =
             "";
@@ -2531,11 +2347,6 @@ async function sendMessage() {
         resizeComposer();
 
         clearAttachments();
-
-
-        /*
-            Keep the newest message visible.
-        */
 
         scrollToBottom();
 
@@ -2585,10 +2396,6 @@ function appendMessageToChat(
     }
 
 
-    /*
-        Prevent duplicate messages
-    */
-
     const alreadyExists =
         messagesCache.some(
             function (
@@ -2612,10 +2419,6 @@ function appendMessageToChat(
         return;
     }
 
-
-    /*
-        Add message to local cache
-    */
 
     messagesCache.push(
         message
@@ -2641,10 +2444,6 @@ function appendMessageToChat(
     );
 
 
-    /*
-        Remove empty state
-    */
-
     const empty =
         list.querySelector(
             ".no-messages"
@@ -2658,12 +2457,6 @@ function appendMessageToChat(
     }
 
 
-    /*
-        Create message using
-        the SAME renderer as
-        the rest of the chat.
-    */
-
     const row =
         createMessageElement(
             message
@@ -2675,13 +2468,10 @@ function appendMessageToChat(
     );
 
 
-    /*
-        Keep newest message visible
-    */
-
     scrollToBottom();
 
 }
+
 
 /* =========================================
    REALTIME
@@ -2731,14 +2521,19 @@ function subscribeToMessages() {
                     const message =
                         payload.new;
 
-                   if (
-    String(message.sender_id) ===
-    String(currentUser.id)
-) {
 
-    return;
+                    if (
+                        String(
+                            message.sender_id
+                        ) ===
+                        String(
+                            currentUser.id
+                        )
+                    ) {
 
-                   }
+                        return;
+
+                    }
 
 
                     const belongs =
@@ -2777,14 +2572,6 @@ function subscribeToMessages() {
                         return;
                     }
 
-
-                    /*
-                        We do NOT call loadMessages()
-                        anymore.
-
-                        Only the new message
-                        is loaded and rendered.
-                    */
 
                     await addRealtimeMessage(
                         message
@@ -2845,6 +2632,10 @@ async function markMessagesRead(
     }
 
 
+    const readTimestamp =
+        new Date().toISOString();
+
+
     const {
         error
     } =
@@ -2853,7 +2644,7 @@ async function markMessagesRead(
             .update({
 
                 read_at:
-                    new Date().toISOString()
+                    readTimestamp
 
             })
             .in(
@@ -2872,10 +2663,6 @@ async function markMessagesRead(
     }
 
 
-    /*
-        Keep local cache updated.
-    */
-
     messagesCache.forEach(
         function (
             message
@@ -2888,7 +2675,7 @@ async function markMessagesRead(
             ) {
 
                 message.read_at =
-                    new Date().toISOString();
+                    readTimestamp;
 
             }
 
@@ -2917,9 +2704,9 @@ function setupComposer() {
 
 
     const attachmentButton =
-    document.getElementById(
-        "attachmentButton"
-    );
+        document.getElementById(
+            "attachmentButton"
+        );
 
 
     const attachmentInput =
@@ -2927,34 +2714,42 @@ function setupComposer() {
             "attachmentInput"
         );
 
-const cameraButton =
-    document.getElementById(
-        "cameraButton"
-    );
-const cameraOverlay =
-    document.getElementById(
-        "cameraOverlay"
-    );
 
-const cameraVideo =
-    document.getElementById(
-        "cameraVideo"
-    );
+    const cameraButton =
+        document.getElementById(
+            "cameraButton"
+        );
 
-const cameraCanvas =
-    document.getElementById(
-        "cameraCanvas"
-    );
 
-const cameraClose =
-    document.getElementById(
-        "cameraClose"
-    );
+    const cameraOverlay =
+        document.getElementById(
+            "cameraOverlay"
+        );
 
-const cameraCapture =
-    document.getElementById(
-        "cameraCapture"
-    );
+
+    const cameraVideo =
+        document.getElementById(
+            "cameraVideo"
+        );
+
+
+    const cameraCanvas =
+        document.getElementById(
+            "cameraCanvas"
+        );
+
+
+    const cameraClose =
+        document.getElementById(
+            "cameraClose"
+        );
+
+
+    const cameraCapture =
+        document.getElementById(
+            "cameraCapture"
+        );
+
 
     const backButton =
         document.querySelector(
@@ -2962,9 +2757,9 @@ const cameraCapture =
         );
 
 
-    /*
-        SEND
-    */
+    /* =====================================
+       SEND
+    ===================================== */
 
     if (sendButton) {
 
@@ -2976,9 +2771,9 @@ const cameraCapture =
     }
 
 
-    /*
-        TEXTAREA
-    */
+    /* =====================================
+       TEXTAREA
+    ===================================== */
 
     if (input) {
 
@@ -2987,416 +2782,348 @@ const cameraCapture =
             resizeComposer
         );
 
-
-        input.addEventListener(
-            "keydown",
-            function (
-                event
-            ) {
-
-                /*
-                    Enter = new line.
-                */
-
-                if (
-                    event.key ===
-                    "Enter"
-                ) {
-
-                    return;
-
-                }
-
-            }
-        );
-
-    }
-
-   /* =====================================
-   TWETE CAMERA
-===================================== */
-
-let cameraStream = null;
-
-
-/* =====================================
-   OPEN CAMERA
-===================================== */
-
-async function openTweteCamera() {
-
-    if (
-        !cameraOverlay ||
-        !cameraVideo
-    ) {
-        return;
     }
 
 
-    try {
-
-        cameraStream =
-            await navigator.mediaDevices.getUserMedia({
-
-                video: {
-                    facingMode: {
-                        ideal: "environment"
-                    }
-                },
-
-                audio: false
-
-            });
-
-
-        cameraVideo.srcObject =
-            cameraStream;
-
-
-        cameraOverlay.hidden =
-            false;
-
-
-        document.body.classList.add(
-            "camera-open"
-        );
-
-
-        await cameraVideo.play();
-
-
-    } catch (error) {
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
-
-        alert(
-            "Could not access the camera."
-        );
-
-    }
-
-}
-
-
-/* =====================================
-   CLOSE CAMERA
-===================================== */
-
-function closeTweteCamera() {
-
-    if (cameraStream) {
-
-        cameraStream
-            .getTracks()
-            .forEach(
-                function (
-                    track
-                ) {
-
-                    track.stop();
-
-                }
-            );
-
-        cameraStream =
-            null;
-
-    }
-
-
-    if (cameraVideo) {
-
-        cameraVideo.srcObject =
-            null;
-
-    }
-
-
-    if (cameraOverlay) {
-
-        cameraOverlay.hidden =
-            true;
-
-    }
-
-
-    document.body.classList.remove(
-        "camera-open"
-    );
-
-}
-
-
-/* =====================================
-   CAPTURE PHOTO
-===================================== */
-
-async function captureTwetePhoto() {
-
-    if (
-        !cameraVideo ||
-        !cameraCanvas
-    ) {
-        return;
-    }
-
-
-    if (
-        cameraVideo.readyState <
-        HTMLMediaElement.HAVE_CURRENT_DATA
-    ) {
-
-        return;
-
-    }
-
-
-    const remainingSlots =
-        4 -
-        selectedAttachments.length;
-
-
-    if (
-        remainingSlots <= 0
-    ) {
-
-        alert(
-            "You can attach a maximum of 4 files."
-        );
-
-        return;
-
-    }
-
-
-    /*
-        Limit the camera image size.
-
-        This keeps memory usage
-        reasonable on smartphones.
-    */
-
-    const MAX_SIZE =
-        1920;
-
-
-    let width =
-        cameraVideo.videoWidth;
-
-    let height =
-        cameraVideo.videoHeight;
-
-
-    if (
-        !width ||
-        !height
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        width >
-        MAX_SIZE ||
-        height >
-        MAX_SIZE
-    ) {
+    /* =====================================
+       CAMERA
+    ===================================== */
+
+    async function openTweteCamera() {
 
         if (
-            width >
-            height
+            !cameraOverlay ||
+            !cameraVideo
         ) {
+            return;
+        }
 
-            height =
-                Math.round(
-                    height *
-                    MAX_SIZE /
-                    width
-                );
 
-            width =
-                MAX_SIZE;
+        try {
 
-        } else {
+            cameraStream =
+                await navigator.mediaDevices.getUserMedia({
 
-            width =
-                Math.round(
-                    width *
-                    MAX_SIZE /
-                    height
-                );
+                    video: {
+                        facingMode: {
+                            ideal:
+                                "environment"
+                        }
+                    },
 
-            height =
-                MAX_SIZE;
+                    audio:
+                        false
+
+                });
+
+
+            cameraVideo.srcObject =
+                cameraStream;
+
+
+            cameraOverlay.hidden =
+                false;
+
+
+            document.body.classList.add(
+                "camera-open"
+            );
+
+
+            await cameraVideo.play();
+
+
+        } catch (error) {
+
+            console.error(
+                "Camera error:",
+                error
+            );
+
+
+            alert(
+                "Could not access the camera."
+            );
 
         }
 
     }
 
 
-    cameraCanvas.width =
-        width;
+    function closeTweteCamera() {
 
-    cameraCanvas.height =
-        height;
+        if (cameraStream) {
 
+            cameraStream
+                .getTracks()
+                .forEach(
+                    function (
+                        track
+                    ) {
 
-    const context =
-        cameraCanvas.getContext(
-            "2d"
-        );
+                        track.stop();
 
-
-    if (!context) {
-        return;
-    }
-
-
-    context.drawImage(
-        cameraVideo,
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    /*
-        Convert directly to JPEG.
-    */
-
-    const blob =
-        await new Promise(
-            function (
-                resolve
-            ) {
-
-                cameraCanvas.toBlob(
-                    resolve,
-                    "image/jpeg",
-                    0.82
+                    }
                 );
 
-            }
+
+            cameraStream =
+                null;
+
+        }
+
+
+        if (cameraVideo) {
+
+            cameraVideo.srcObject =
+                null;
+
+        }
+
+
+        if (cameraOverlay) {
+
+            cameraOverlay.hidden =
+                true;
+
+        }
+
+
+        document.body.classList.remove(
+            "camera-open"
         );
-
-
-    if (!blob) {
-
-        alert(
-            "Could not process the photo."
-        );
-
-        return;
 
     }
 
 
-    const file =
-        new File(
-            [
-                blob
-            ],
-            "twete-camera-" +
-            Date.now() +
-            ".jpg",
-            {
-                type:
-                    "image/jpeg",
+    async function captureTwetePhoto() {
 
-                lastModified:
-                    Date.now()
+        if (
+            !cameraVideo ||
+            !cameraCanvas
+        ) {
+            return;
+        }
+
+
+        if (
+            cameraVideo.readyState <
+            HTMLMediaElement.HAVE_CURRENT_DATA
+        ) {
+
+            return;
+
+        }
+
+
+        const remainingSlots =
+            4 -
+            selectedAttachments.length;
+
+
+        if (
+            remainingSlots <= 0
+        ) {
+
+            alert(
+                "You can attach a maximum of 4 files."
+            );
+
+            return;
+
+        }
+
+
+        const MAX_SIZE =
+            1920;
+
+
+        let width =
+            cameraVideo.videoWidth;
+
+
+        let height =
+            cameraVideo.videoHeight;
+
+
+        if (
+            !width ||
+            !height
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            width > MAX_SIZE ||
+            height > MAX_SIZE
+        ) {
+
+            if (
+                width > height
+            ) {
+
+                height =
+                    Math.round(
+                        height *
+                        MAX_SIZE /
+                        width
+                    );
+
+                width =
+                    MAX_SIZE;
+
+            } else {
+
+                width =
+                    Math.round(
+                        width *
+                        MAX_SIZE /
+                        height
+                    );
+
+                height =
+                    MAX_SIZE;
+
             }
+
+        }
+
+
+        cameraCanvas.width =
+            width;
+
+
+        cameraCanvas.height =
+            height;
+
+
+        const context =
+            cameraCanvas.getContext(
+                "2d"
+            );
+
+
+        if (!context) {
+            return;
+        }
+
+
+        context.drawImage(
+            cameraVideo,
+            0,
+            0,
+            width,
+            height
         );
 
 
-    /*
-        Add directly to the
-        existing attachment system.
-    */
+        const blob =
+            await new Promise(
+                function (
+                    resolve
+                ) {
 
-    selectedAttachments.push(
-        file
-    );
+                    cameraCanvas.toBlob(
+                        resolve,
+                        "image/jpeg",
+                        0.82
+                    );
 
-
-    /*
-        Close camera.
-    */
-
-    closeTweteCamera();
-
-
-    /*
-        Use the existing
-        attachment preview.
-    */
-
-    renderAttachmentPreview();
-
-}
+                }
+            );
 
 
-/* =====================================
-   CAMERA EVENTS
-===================================== */
+        if (!blob) {
 
-if (
-    cameraButton &&
-    cameraOverlay
-) {
+            alert(
+                "Could not process the photo."
+            );
 
-    cameraButton.addEventListener(
-        "click",
-        openTweteCamera
-    );
+            return;
 
-}
+        }
 
 
-if (cameraClose) {
+        const file =
+            new File(
+                [
+                    blob
+                ],
+                "twete-camera-" +
+                Date.now() +
+                ".jpg",
+                {
+                    type:
+                        "image/jpeg",
 
-    cameraClose.addEventListener(
-        "click",
-        closeTweteCamera
-    );
+                    lastModified:
+                        Date.now()
 
-}
-
-
-if (cameraCapture) {
-
-    cameraCapture.addEventListener(
-        "click",
-        captureTwetePhoto
-    );
-
-}
+                }
+            );
 
 
-/* =====================================
-   CLEAN UP CAMERA
-===================================== */
+        selectedAttachments.push(
+            file
+        );
 
-window.addEventListener(
-    "beforeunload",
-    function () {
 
         closeTweteCamera();
 
+        renderAttachmentPreview();
+
     }
-);
 
 
-    /*
-        BACK
-    */
+    if (
+        cameraButton &&
+        cameraOverlay
+    ) {
+
+        cameraButton.addEventListener(
+            "click",
+            openTweteCamera
+        );
+
+    }
+
+
+    if (cameraClose) {
+
+        cameraClose.addEventListener(
+            "click",
+            closeTweteCamera
+        );
+
+    }
+
+
+    if (cameraCapture) {
+
+        cameraCapture.addEventListener(
+            "click",
+            captureTwetePhoto
+        );
+
+    }
+
+
+    /* =====================================
+       CLEAN UP CAMERA
+    ===================================== */
+
+    window.addEventListener(
+        "beforeunload",
+        closeTweteCamera
+    );
+
+
+    /* =====================================
+       BACK
+    ===================================== */
 
     if (backButton) {
 
@@ -3408,9 +3135,9 @@ window.addEventListener(
     }
 
 
-    /*
-        ATTACHMENTS
-    */
+    /* =====================================
+       ATTACHMENTS
+    ===================================== */
 
     if (
         attachmentButton &&
@@ -3564,9 +3291,7 @@ function renderAttachmentPreview() {
                 "attachment-item";
 
 
-            /*
-                IMAGE
-            */
+            /* IMAGE */
 
             if (
                 file.type.startsWith(
@@ -3615,9 +3340,7 @@ function renderAttachmentPreview() {
             }
 
 
-            /*
-                VIDEO
-            */
+            /* VIDEO */
 
             else if (
                 file.type.startsWith(
@@ -3674,9 +3397,7 @@ function renderAttachmentPreview() {
             }
 
 
-            /*
-                OTHER FILE
-            */
+            /* OTHER FILE */
 
             else {
 
@@ -3722,9 +3443,7 @@ function renderAttachmentPreview() {
             }
 
 
-            /*
-                REMOVE BUTTON
-            */
+            /* REMOVE BUTTON */
 
             const remove =
                 document.createElement(
@@ -3962,7 +3681,6 @@ function showError(
         errorElement
     );
 
-
 }
 
 
@@ -3994,8 +3712,12 @@ function formatTime(
     return date.toLocaleTimeString(
         [],
         {
-            hour: "2-digit",
-            minute: "2-digit"
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit"
+
         }
     );
 
