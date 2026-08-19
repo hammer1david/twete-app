@@ -145,6 +145,18 @@ function setupInterface() {
         "click",
         sendMessage
     );
+   attachmentButton.addEventListener(
+    "click",
+    function () {
+
+        attachmentInput.click();
+
+    }
+);
+   attachmentInput.addEventListener(
+    "change",
+    handleAttachmentSelection
+);
 
     messageInput.addEventListener(
         "input",
@@ -172,7 +184,227 @@ function setupInterface() {
 
 }
 
+/* =========================================
+   ATTACHMENT SELECTION
+========================================= */
 
+function handleAttachmentSelection(event) {
+
+    const files =
+        Array.from(
+            event.target.files || []
+        );
+
+
+    if (!files.length) {
+        return;
+    }
+
+
+    const availableSlots =
+        4 - selectedAttachments.length;
+
+
+    const filesToAdd =
+        files.slice(
+            0,
+            availableSlots
+        );
+
+
+    selectedAttachments.push(
+        ...filesToAdd
+    );
+
+
+    renderAttachmentPreview();
+
+
+    attachmentInput.value =
+        "";
+
+}
+/* =========================================
+   ATTACHMENT PREVIEW
+========================================= */
+
+function renderAttachmentPreview() {
+
+    attachmentPreview.innerHTML =
+        "";
+
+
+    if (
+        selectedAttachments.length === 0
+    ) {
+
+        attachmentPreview.hidden =
+            true;
+
+        return;
+    }
+
+
+    attachmentPreview.hidden =
+        false;
+
+
+    selectedAttachments.forEach(
+        function (
+            file,
+            index
+        ) {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "attachment-preview-item";
+
+
+            if (
+                file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                const image =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                const objectUrl =
+                    URL.createObjectURL(
+                        file
+                    );
+
+
+                image.src =
+                    objectUrl;
+
+                image.alt =
+                    file.name;
+
+
+                image.addEventListener(
+                    "load",
+                    function () {
+
+                        URL.revokeObjectURL(
+                            objectUrl
+                        );
+
+                    },
+                    {
+                        once: true
+                    }
+                );
+
+
+                item.appendChild(
+                    image
+                );
+
+            } else {
+
+                const fileInfo =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                fileInfo.className =
+                    "attachment-file";
+
+
+                const name =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                name.className =
+                    "attachment-file-name";
+
+
+                name.textContent =
+                    file.name;
+
+
+                fileInfo.appendChild(
+                    name
+                );
+
+
+                item.appendChild(
+                    fileInfo
+                );
+
+            }
+
+
+            const removeButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            removeButton.type =
+                "button";
+
+
+            removeButton.className =
+                "attachment-remove";
+
+
+            removeButton.textContent =
+                "×";
+
+
+            removeButton.addEventListener(
+                "click",
+                function () {
+
+                    removeAttachment(
+                        index
+                    );
+
+                }
+            );
+
+
+            item.appendChild(
+                removeButton
+            );
+
+
+            attachmentPreview.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+/* =========================================
+   REMOVE ATTACHMENT
+========================================= */
+
+function removeAttachment(index) {
+
+    selectedAttachments.splice(
+        index,
+        1
+    );
+
+
+    renderAttachmentPreview();
+
+}
 /* =========================================
    BACK
 ========================================= */
