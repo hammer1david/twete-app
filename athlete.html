@@ -681,7 +681,268 @@
     }
 
 
+/* =========================================
+   LOAD PAST GOALS
+========================================= */
 
+async function loadPastGoals() {
+
+    const container =
+        document.getElementById(
+            "pastGoalsContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        if (!user) {
+            return;
+        }
+
+
+        const {
+            data: goals,
+            error
+        } =
+            await supabaseClient
+                .from("goals")
+                .select(`
+                    id,
+                    athlete_id,
+                    program_id,
+                    goal_name,
+                    distance,
+                    target_time,
+                    target_date,
+                    created_at
+                `)
+                .eq(
+                    "athlete_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Past goals loading error:",
+                error
+            );
+
+            return;
+        }
+
+
+        /*
+           No goals or only one goal:
+           keep the existing placeholder.
+        */
+
+        if (
+            !goals ||
+            goals.length <= 1
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+           The newest goal is currently
+           treated as the current goal.
+           Everything older becomes a past goal.
+        */
+
+        const pastGoals =
+            goals.slice(1);
+
+
+        if (
+            pastGoals.length === 0
+        ) {
+            return;
+        }
+
+
+        /*
+           Turn the placeholder into
+           a container for real past goals.
+        */
+
+        container.innerHTML = "";
+
+        container.classList.remove(
+            "no-goal-card"
+        );
+
+
+        pastGoals.forEach(
+            function (goal) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "past-goal-card";
+
+
+                card.style.cursor =
+                    "pointer";
+
+
+                const details = [];
+
+
+                if (goal.distance) {
+
+                    details.push(
+                        goal.distance
+                    );
+
+                }
+
+
+                if (goal.target_time) {
+
+                    details.push(
+                        goal.target_time
+                    );
+
+                }
+
+
+                if (goal.target_date) {
+
+                    const date =
+                        new Date(
+                            goal.target_date +
+                            "T00:00:00"
+                        );
+
+
+                    details.push(
+                        date.toLocaleDateString(
+                            "en-US",
+                            {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric"
+                            }
+                        )
+                    );
+
+                }
+
+
+                card.innerHTML = `
+                    <div class="past-goal-icon">
+
+                        <svg
+                            width="34"
+                            height="34"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M8 21h8"></path>
+                            <path d="M12 17v4"></path>
+                            <path d="M7 4h10"></path>
+                            <path d="M8 4v5"></path>
+                            <path d="M16 4v5"></path>
+                            <path d="M8 9l4 4 4-4"></path>
+                        </svg>
+
+                    </div>
+
+                    <div class="past-goal-information">
+
+                        <span class="goal-status">
+                            PAST GOAL
+                        </span>
+
+                        <h3></h3>
+
+                        <p></p>
+
+                    </div>
+                `;
+
+
+                card.querySelector(
+                    "h3"
+                ).textContent =
+                    goal.goal_name ||
+                    "Goal";
+
+
+                card.querySelector(
+                    "p"
+                ).textContent =
+                    details.length
+                        ? details.join(" • ")
+                        : "Completed training goal";
+
+
+                card.addEventListener(
+                    "click",
+                    function () {
+
+                        window.location.href =
+                            "goal.html?goal_id=" +
+                            encodeURIComponent(
+                                goal.id
+                            );
+
+                    }
+                );
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Past goals error:",
+            error
+        );
+
+    }
+
+}
     /* =========================================
        MESSAGE NOTIFICATION
     ========================================= */
@@ -888,8 +1149,9 @@
 
     loadCurrentGoal();
 
+loadPastGoals();
 
-    setupMessageNotifications();
+setupMessageNotifications();
 
 </script>
 
