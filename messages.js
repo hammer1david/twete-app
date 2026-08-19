@@ -2739,13 +2739,25 @@ scrollToBottom(
 
 
         if (
-            selectedMessageId ===
-            deletedMessage.id
-        ) {
+    selectedMessages.has(
+        deletedMessage.id
+    )
+) {
 
-            clearMessageSelection();
+    selectedMessages.delete(
+        deletedMessage.id
+    );
 
-        }
+
+    if (
+        selectedMessages.size === 0
+    ) {
+
+        clearMessageSelection();
+
+    }
+
+}
 
     }
 )
