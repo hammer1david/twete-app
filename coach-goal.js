@@ -2931,7 +2931,48 @@ async function updateAthlete() {
     );
 
 }
+function getCoachNote(
+    notes
+) {
 
+    if (!notes) {
+        return "";
+    }
+
+
+    const text =
+        String(
+            notes
+        );
+
+
+    const match =
+        text.match(
+            /\[COACH_NOTE\]([\s\S]*?)(?=\[ATHLETE_FEEDBACK\]|$)/
+        );
+
+
+    if (match) {
+
+        return match[1].trim();
+
+    }
+
+
+    if (
+        !text.includes(
+            "[ATHLETE_FEEDBACK]"
+        )
+    ) {
+
+        return text.trim();
+
+    }
+
+
+    return "";
+
+}
 
 /* =========================================
    UNSYNCED STATUS
