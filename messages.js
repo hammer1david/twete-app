@@ -506,7 +506,6 @@ function setProfileHeader(
 }
 
 
-
 /* =========================================
    LOAD MESSAGES
 ========================================= */
@@ -531,10 +530,6 @@ async function loadMessages() {
         return;
     }
 
-
-    /*
-        Load messages
-    */
 
     const {
         data: messages,
@@ -577,8 +572,7 @@ async function loadMessages() {
 
 
     /*
-        Load attachments belonging
-        to these messages.
+        Load attachments
     */
 
     const messageIds =
@@ -642,8 +636,7 @@ async function loadMessages() {
 
 
     /*
-        Create temporary signed URLs
-        for private Storage files.
+        Create signed URLs
     */
 
     for (
@@ -658,7 +651,7 @@ async function loadMessages() {
 
 
         /*
-            View URL
+            VIEW URL
         */
 
         const {
@@ -681,22 +674,21 @@ async function loadMessages() {
         if (viewError) {
 
             console.error(
-                "Signed URL error:",
+                "View signed URL error:",
                 viewError
             );
 
-            continue;
+        } else {
+
+            attachment.view_url =
+                viewData?.signedUrl ||
+                null;
 
         }
 
 
-        attachment.view_url =
-            viewData?.signedUrl ||
-            null;
-
-
         /*
-            Download URL
+            DOWNLOAD URL
         */
 
         const {
@@ -720,7 +712,14 @@ async function loadMessages() {
                 );
 
 
-        if (!downloadError) {
+        if (downloadError) {
+
+            console.error(
+                "Download signed URL error:",
+                downloadError
+            );
+
+        } else {
 
             attachment.download_url =
                 downloadData?.signedUrl ||
@@ -732,7 +731,7 @@ async function loadMessages() {
 
 
     /*
-        Attachments onto their messages
+        Group attachments by message
     */
 
     const attachmentsByMessage =
@@ -791,9 +790,6 @@ async function loadMessages() {
     );
 
 }
-
-    
-
 
 
 /* =========================================
@@ -854,7 +850,7 @@ function renderMessages(
 
 
             /*
-                Row
+                MESSAGE ROW
             */
 
             const row =
@@ -869,7 +865,7 @@ function renderMessages(
 
 
             /*
-                Bubble
+                MESSAGE BUBBLE
             */
 
             const bubble =
@@ -882,7 +878,7 @@ function renderMessages(
 
 
             /*
-                TEXT
+                MESSAGE TEXT
             */
 
             if (
@@ -971,11 +967,6 @@ function renderMessages(
                                 "lazy";
 
 
-                            /*
-                                Clicking image opens
-                                the full image.
-                            */
-
                             image.addEventListener(
                                 "click",
                                 function () {
@@ -1025,6 +1016,9 @@ function renderMessages(
                             video.playsInline =
                                 true;
 
+                            video.preload =
+                                "metadata";
+
 
                             item.appendChild(
                                 video
@@ -1057,7 +1051,9 @@ function renderMessages(
                                 "message-file-icon";
 
                             icon.textContent =
-                                "📄";
+                                getFileIcon(
+                                    attachment.file_type
+                                );
 
 
                             const information =
@@ -1122,7 +1118,7 @@ function renderMessages(
 
 
                         /*
-                            DOWNLOAD BUTTON
+                            DOWNLOAD
                         */
 
                         if (
@@ -1147,7 +1143,13 @@ function renderMessages(
                                 "_blank";
 
                             download.rel =
-                                "noopener";
+                                "noopener noreferrer";
+
+                            download.setAttribute(
+                                "download",
+                                attachment.file_name ||
+                                ""
+                            );
 
 
                             item.appendChild(
@@ -1243,10 +1245,173 @@ function renderMessages(
 
     scrollToBottom();
 
-               }
+}
 
-            
 
+/* =========================================
+   FILE ICON
+========================================= */
+
+function getFileIcon(
+    fileType
+) {
+
+    if (!fileType) {
+        return "📄";
+    }
+
+
+    if (
+        fileType.includes(
+            "pdf"
+        )
+    ) {
+
+        return "📕";
+
+    }
+
+
+    if (
+        fileType.includes(
+            "word"
+        ) ||
+        fileType.includes(
+            "document"
+        )
+    ) {
+
+        return "📘";
+
+    }
+
+
+    if (
+        fileType.includes(
+            "sheet"
+        ) ||
+        fileType.includes(
+            "excel"
+        ) ||
+        fileType.includes(
+            "spreadsheet"
+        )
+    ) {
+
+        return "📗";
+
+    }
+
+
+    if (
+        fileType.includes(
+            "zip"
+        ) ||
+        fileType.includes(
+            "compressed"
+        )
+    ) {
+
+        return "🗜️";
+
+    }
+
+
+    if (
+        fileType.startsWith(
+            "audio/"
+        )
+    ) {
+
+        return "🎵";
+
+    }
+
+
+    return "📄";
+
+}
+
+
+/* =========================================
+   FORMAT FILE SIZE
+========================================= */
+
+function formatFileSize(
+    bytes
+) {
+
+    if (
+        bytes === null ||
+        bytes === undefined ||
+        bytes === ""
+    ) {
+
+        return "";
+
+    }
+
+
+    const size =
+        Number(
+            bytes
+        );
+
+
+    if (
+        Number.isNaN(
+            size
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    if (
+        size < 1024
+    ) {
+
+        return size +
+            " B";
+
+    }
+
+
+    if (
+        size < 1024 * 1024
+    ) {
+
+        return (
+            size /
+            1024
+        ).toFixed(1) +
+            " KB";
+
+    }
+
+
+    if (
+        size < 1024 * 1024 * 1024
+    ) {
+
+        return (
+            size /
+            (1024 * 1024)
+        ).toFixed(1) +
+            " MB";
+
+    }
+
+
+    return (
+        size /
+        (1024 * 1024 * 1024)
+    ).toFixed(1) +
+        " GB";
+
+}
 
 
 /* =========================================
@@ -1312,7 +1477,6 @@ async function sendMessage() {
 
     /*
         Text OR attachments
-        are enough to send.
     */
 
     if (
@@ -1348,7 +1512,7 @@ async function sendMessage() {
 
         /*
             STEP 1
-            Create message
+            CREATE MESSAGE
         */
 
         const {
@@ -1397,7 +1561,7 @@ async function sendMessage() {
 
         /*
             STEP 2
-            Upload attachments
+            UPLOAD ATTACHMENTS
         */
 
         for (
@@ -1469,8 +1633,8 @@ async function sendMessage() {
 
 
             /*
-                STEP 3
-                Save attachment metadata
+                SAVE ATTACHMENT
+                METADATA
             */
 
             const {
@@ -1523,8 +1687,7 @@ async function sendMessage() {
 
 
         /*
-            STEP 4
-            Clear composer
+            CLEAR COMPOSER
         */
 
         input.value =
@@ -1536,8 +1699,7 @@ async function sendMessage() {
 
 
         /*
-            STEP 5
-            Reload messages
+            RELOAD MESSAGES
         */
 
         await loadMessages();
@@ -1798,7 +1960,7 @@ function setupComposer() {
 
 
         /*
-            Enter creates a new line.
+            Enter = new line
         */
 
         input.addEventListener(
@@ -1835,7 +1997,7 @@ function setupComposer() {
 
 
     /*
-        ATTACHMENT BUTTON
+        ATTACHMENTS
     */
 
     if (
@@ -2007,13 +2169,25 @@ function renderAttachmentPreview() {
                 image.className =
                     "attachment-preview-image";
 
-                image.src =
+                const objectUrl =
                     URL.createObjectURL(
                         file
                     );
 
+                image.src =
+                    objectUrl;
+
                 image.alt =
                     file.name;
+
+                image.onload =
+                    function () {
+
+                        URL.revokeObjectURL(
+                            objectUrl
+                        );
+
+                    };
 
                 item.appendChild(
                     image
@@ -2040,16 +2214,31 @@ function renderAttachmentPreview() {
                 video.className =
                     "attachment-preview-video";
 
-                video.src =
+                const objectUrl =
                     URL.createObjectURL(
                         file
                     );
+
+                video.src =
+                    objectUrl;
 
                 video.muted =
                     true;
 
                 video.playsInline =
                     true;
+
+                video.preload =
+                    "metadata";
+
+                video.onloadeddata =
+                    function () {
+
+                        URL.revokeObjectURL(
+                            objectUrl
+                        );
+
+                    };
 
                 item.appendChild(
                     video
@@ -2073,17 +2262,35 @@ function renderAttachmentPreview() {
                     "attachment-file-icon";
 
                 icon.textContent =
-                    "📄";
+                    getFileIcon(
+                        file.type
+                    );
 
                 item.appendChild(
                     icon
+                );
+
+
+                const fileName =
+                    document.createElement(
+                        "div"
+                    );
+
+                fileName.className =
+                    "attachment-file-name";
+
+                fileName.textContent =
+                    file.name;
+
+                item.appendChild(
+                    fileName
                 );
 
             }
 
 
             /*
-                Remove button
+                REMOVE BUTTON
             */
 
             const remove =
