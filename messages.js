@@ -3439,7 +3439,14 @@ copyMessageButton
 deleteMessageButton
     ?.addEventListener(
         "click",
-        deleteSelectedMessage
+        async function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            await deleteSelectedMessage();
+
+        }
     );
 
 /* =========================================
