@@ -1404,3 +1404,61 @@ button {
     }
 
 }
+
+/* =========================================
+   FORCE VIDEO SIZE INSIDE MEDIA GRID
+========================================= */
+
+.message-image-grid > .message-attachment-video {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: 150px !important;
+    max-height: 150px !important;
+
+    margin: 0 !important;
+
+    object-fit: cover !important;
+}
+
+
+.message-image-grid[data-count="1"]
+> .message-attachment-video {
+    height: 220px !important;
+    max-height: 220px !important;
+}
+
+
+.message-image-grid[data-count="2"]
+> .message-attachment-video {
+    height: 170px !important;
+    max-height: 170px !important;
+}
+
+
+.message-image-grid[data-count="3"]
+> .message-attachment-video,
+.message-image-grid[data-count="4"]
+> .message-attachment-video {
+    height: 140px !important;
+    max-height: 140px !important;
+}
+
+
+@media (max-width: 600px) {
+
+    .message-image-grid[data-count="2"]
+    > .message-attachment-video {
+        height: 145px !important;
+        max-height: 145px !important;
+    }
+
+    .message-image-grid[data-count="3"]
+    > .message-attachment-video,
+    .message-image-grid[data-count="4"]
+    > .message-attachment-video {
+        height: 120px !important;
+        max-height: 120px !important;
+    }
+
+}
