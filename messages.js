@@ -77,6 +77,7 @@ let chatUser = null;
 let realtimeChannel = null;
 
 let isSending = false;
+let chatPresenceInterval = null;
 
 
 /* =========================================
@@ -2413,3 +2414,122 @@ window.addEventListener(
     "load",
     updateChatViewport
 );
+
+/* =========================================
+   CHAT PRESENCE
+========================================= */
+
+async function updateChatPresence(
+    isActive
+) {
+
+    if (
+        !currentUser ||
+        !chatUser
+    ) {
+        return;
+    }
+
+
+    try {
+
+        await supabaseClient
+            .from("chat_presence")
+            .upsert(
+                {
+                    user_id:
+                        currentUser.id,
+
+                    chat_partner_id:
+                        chatUser.id,
+
+                    is_active:
+                        isActive,
+
+                    last_seen:
+                        new Date()
+                            .toISOString()
+                },
+                {
+                    onConflict:
+                        "user_id"
+                }
+            );
+
+    } catch (error) {
+
+        console.error(
+            "Chat presence error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   START CHAT PRESENCE
+========================================= */
+
+async function startChatPresence() {
+
+    await updateChatPresence(
+        true
+    );
+
+
+    if (chatPresenceInterval) {
+
+        clearInterval(
+            chatPresenceInterval
+        );
+
+    }
+
+
+    chatPresenceInterval =
+        setInterval(
+            function () {
+
+                if (
+                    document.visibilityState ===
+                    "visible"
+                ) {
+
+                    updateChatPresence(
+                        true
+                    );
+
+                }
+
+            },
+            15000
+        );
+
+}
+
+
+/* =========================================
+   STOP CHAT PRESENCE
+========================================= */
+
+function stopChatPresence() {
+
+    if (chatPresenceInterval) {
+
+        clearInterval(
+            chatPresenceInterval
+        );
+
+        chatPresenceInterval =
+            null;
+
+    }
+
+
+    updateChatPresence(
+        false
+    );
+
+}
