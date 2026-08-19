@@ -395,6 +395,68 @@ async function loadWeeks() {
 
     currentSessions =
         sessions || [];
+   /* =========================================
+   LOAD SAVED WORKOUT FEEDBACK
+========================================= */
+
+workoutFeedback = {};
+
+const workoutIds =
+    currentSessions.map(
+        function(session) {
+            return session.id;
+        }
+    );
+
+
+if (workoutIds.length) {
+
+    const {
+        data: feedbackData,
+        error: feedbackError
+    } =
+        await goalSupabase
+            .from("workout_feedback")
+            .select(`
+                id,
+                workout_id,
+                athlete_id,
+                feeling,
+                effort,
+                comment,
+                created_at,
+                updated_at
+            `)
+            .in(
+                "workout_id",
+                workoutIds
+            );
+
+
+    if (feedbackError) {
+
+        console.error(
+            "Feedback loading error:",
+            feedbackError
+        );
+
+    } else {
+
+        (
+            feedbackData || []
+        ).forEach(
+            function(feedback) {
+
+                workoutFeedback[
+                    feedback.workout_id
+                ] = feedback;
+
+            }
+        );
+
+    }
+
+}
 
 }
 
