@@ -3339,54 +3339,151 @@ function hideChatLoading() {
    MESSAGE SELECTION
 ========================================= */
 
-function selectMessage(
+function toggleMessageSelection(
     message,
     row
 ) {
 
-    clearMessageSelection();
+    if (
+        !message ||
+        !message.id ||
+        !row
+    ) {
+        return;
+    }
 
 
-    selectedMessageId =
+    const messageId =
         message.id;
 
-    selectedMessageData =
-        message;
+
+    /*
+        Remove when already selected
+    */
+
+    if (
+        selectedMessages.has(
+            messageId
+        )
+    ) {
+
+        selectedMessages.delete(
+            messageId
+        );
+
+        row.classList.remove(
+            "message-selected"
+        );
+
+    } else {
+
+        /*
+            Add message
+        */
+
+        selectedMessages.set(
+            messageId,
+            message
+        );
+
+        row.classList.add(
+            "message-selected"
+        );
+
+    }
 
 
-    row.classList.add(
-        "message-selected"
-    );
+    /*
+        Selection mode is active as long
+        as at least one message is selected.
+    */
+
+    isMessageSelectionMode =
+        selectedMessages.size > 0;
 
 
     if (messageActionBar) {
 
         messageActionBar.hidden =
-            false;
+            !isMessageSelectionMode;
 
     }
 
+
+    /*
+        Delete is shown only when every
+        selected message belongs to us.
+    */
 
     if (deleteMessageButton) {
 
+        const allMessagesAreOwn =
+            selectedMessages.size > 0 &&
+            Array.from(
+                selectedMessages.values()
+            )
+                .every(
+                    function (item) {
+
+                        return (
+                            item.sender_id ===
+                            currentUser.id
+                        );
+
+                    }
+                );
+
+
         deleteMessageButton.hidden =
-            message.sender_id !==
-            currentUser.id;
+            !allMessagesAreOwn;
 
     }
 
 
+    /*
+        Copy is available when at least
+        one selected message contains text.
+    */
+
     if (copyMessageButton) {
 
+        const hasText =
+            Array.from(
+                selectedMessages.values()
+            )
+                .some(
+                    function (item) {
+
+                        return (
+                            item.message &&
+                            item.message.trim()
+                        );
+
+                    }
+                );
+
+
         copyMessageButton.disabled =
-            !(
-                message.message &&
-                message.message.trim()
-            );
+            !hasText;
+
+    }
+
+
+    /*
+        If the last selected message
+        was removed, close selection mode.
+    */
+
+    if (
+        selectedMessages.size === 0
+    ) {
+
+        clearMessageSelection();
 
     }
 
 }
+    
 
 
 function clearMessageSelection() {
