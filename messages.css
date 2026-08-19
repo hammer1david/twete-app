@@ -887,3 +887,255 @@ button {
     }
 
 }
+
+/* =========================================
+   MESSAGE ATTACHMENTS
+========================================= */
+
+.message-attachment-image,
+.message-attachment-video {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+
+    height: auto;
+
+    border-radius: 14px;
+
+    object-fit: cover;
+
+    margin-bottom: 8px;
+
+    background: #0d0d0d;
+}
+
+
+/* =========================================
+   IMAGE
+========================================= */
+
+.message-attachment-image {
+    max-height: 420px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   VIDEO
+========================================= */
+
+.message-attachment-video {
+    max-height: 420px;
+
+    background: #000000;
+}
+
+
+/* =========================================
+   FILE CARD
+========================================= */
+
+.message-attachment-file {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        10px
+        12px;
+
+    margin-bottom: 8px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.10);
+
+    color: inherit;
+
+    overflow: hidden;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.message-attachment-file:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================================
+   FILE ICON
+========================================= */
+
+.message-attachment-file-icon {
+    width: 36px;
+    height: 36px;
+
+    flex: 0 0 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.12);
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   FILE INFO
+========================================= */
+
+.message-attachment-file-info {
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.message-attachment-file-name {
+    width: 100%;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.message-attachment-file-size {
+    font-size: 10px;
+
+    opacity: 0.55;
+}
+
+
+/* =========================================
+   BROKEN / UNAVAILABLE ATTACHMENT
+========================================= */
+
+.message-attachment-error {
+    width: 100%;
+
+    padding:
+        10px
+        12px;
+
+    margin-bottom: 8px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 255, 255, 0.06);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.10);
+
+    font-size: 12px;
+
+    opacity: 0.65;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================
+   SENT ATTACHMENT ADJUSTMENTS
+========================================= */
+
+.message-row.sent
+.message-attachment-file {
+    background:
+        rgba(0, 0, 0, 0.10);
+
+    border-color:
+        rgba(0, 0, 0, 0.12);
+}
+
+
+.message-row.sent
+.message-attachment-file-icon {
+    background:
+        rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================
+   ATTACHMENT-ONLY MESSAGES
+========================================= */
+
+.message-bubble:has(
+    .message-attachment-image
+),
+.message-bubble:has(
+    .message-attachment-video
+) {
+    padding: 6px;
+}
+
+
+/*
+   If there is also text,
+   give it some breathing room.
+*/
+
+.message-bubble
+.message-attachment-image
++
+.message-text,
+.message-bubble
+.message-attachment-video
++
+.message-text,
+.message-bubble
+.message-attachment-file
++
+.message-text {
+    margin-top: 4px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .message-attachment-image,
+    .message-attachment-video {
+        max-height: 340px;
+    }
+
+}
