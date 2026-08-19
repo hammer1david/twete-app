@@ -3532,7 +3532,8 @@ async function deleteSelectedMessage() {
     automatically by ON DELETE CASCADE.
 */
 
-const {
+ const {
+    data: deletedMessages,
     error
 } =
     await supabaseClient
@@ -3545,6 +3546,9 @@ const {
         .eq(
             "sender_id",
             currentUser.id
+        )
+        .select(
+            "id"
         );
 
 
@@ -3557,7 +3561,27 @@ if (error) {
 
     return;
 }
+if (
+    !deletedMessages ||
+    deletedMessages.length === 0
+) {
 
+    console.error(
+        "Delete message failed: no row deleted.",
+        {
+            messageId:
+                messageId,
+
+            currentUserId:
+                currentUser.id,
+
+            senderId:
+                selectedMessageData.sender_id
+        }
+    );
+
+    return;
+}
 
 /*
     Remove attachment files afterwards.
