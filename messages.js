@@ -127,10 +127,33 @@ async function initializeChat() {
     await markMessagesAsRead();
 
     subscribeToMessages();
-
+   
+await startChatPresence();
 }
 
+document.addEventListener(
+    "visibilitychange",
+    function () {
 
+        if (
+            document.visibilityState ===
+            "visible"
+        ) {
+
+            updateChatPresence(
+                true
+            );
+
+        } else {
+
+            updateChatPresence(
+                false
+            );
+
+        }
+
+    }
+);
 /* =========================================
    INTERFACE
 ========================================= */
