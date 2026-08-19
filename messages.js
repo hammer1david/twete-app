@@ -3454,7 +3454,7 @@ deleteMessageButton
 ========================================= */
 
 async function deleteSelectedMessage() {
-
+alert("Delete clicked");
    console.log(
     "DELETE BUTTON CLICKED",
     selectedMessageData
