@@ -1760,6 +1760,12 @@ body {
 
 .academy-open-bar {
     margin-top: 22px;
+   cursor: pointer;
+
+transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
     padding: 14px 16px;
 
     display: flex;
@@ -1777,7 +1783,15 @@ body {
         rgba(255, 255, 255, 0.025);
 }
 
+.academy-open-bar:active {
+    transform: scale(0.98);
 
+    background:
+        rgba(198, 255, 0, 0.06);
+
+    border-color:
+        rgba(198, 255, 0, 0.38);
+}
 .academy-open-brand {
     min-width: 0;
 
