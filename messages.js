@@ -1049,19 +1049,24 @@ if (
     message.message_attachments.length > 0
 ) {
 
-    const imageAttachments =
-        message.message_attachments.filter(
-            function (item) {
+    const mediaAttachments =
+    message.message_attachments.filter(
+        function (item) {
 
-                return (
-                    item.file_type &&
+            return (
+                item.file_type &&
+                (
                     item.file_type.startsWith(
                         "image/"
+                    ) ||
+                    item.file_type.startsWith(
+                        "video/"
                     )
-                );
+                )
+            );
 
-            }
-        );
+        }
+    );
 
 
     const otherAttachments =
@@ -1069,11 +1074,16 @@ if (
             function (item) {
 
                 return !(
-                    item.file_type &&
-                    item.file_type.startsWith(
-                        "image/"
-                    )
-                );
+    item.file_type &&
+    (
+        item.file_type.startsWith(
+            "image/"
+        ) ||
+        item.file_type.startsWith(
+            "video/"
+        )
+    )
+);
 
             }
         );
@@ -1097,13 +1107,13 @@ if (
 
         imageGrid.dataset.count =
             String(
-                imageAttachments.length
+                mediaAttachments.length
             );
 
 
         for (
             const attachmentData of
-            imageAttachments
+            mediaAttachments
         ) {
 
             const attachment =
