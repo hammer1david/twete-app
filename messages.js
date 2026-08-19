@@ -2927,7 +2927,15 @@ function setupComposer() {
             "attachmentInput"
         );
 
+const cameraButton =
+    document.getElementById(
+        "cameraButton"
+    );
 
+const cameraInput =
+    document.getElementById(
+        "cameraInput"
+    );
     const backButton =
         document.querySelector(
             ".back-button"
@@ -2983,7 +2991,110 @@ function setupComposer() {
         );
 
     }
+/* =====================================
+   CAMERA
+===================================== */
 
+if (
+    cameraButton &&
+    cameraInput
+) {
+
+    cameraButton.addEventListener(
+        "click",
+        function () {
+
+            cameraInput.click();
+
+        }
+    );
+
+
+    cameraInput.addEventListener(
+        "change",
+        async function () {
+
+            const file =
+                cameraInput.files?.[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            try {
+
+                /*
+                    Compress camera image
+                    before keeping it in memory.
+                */
+
+                const compressedFile =
+                    await compressCameraImage(
+                        file
+                    );
+
+
+                const remainingSlots =
+                    4 -
+                    selectedAttachments.length;
+
+
+                if (
+                    remainingSlots <= 0
+                ) {
+
+                    alert(
+                        "You can attach a maximum of 4 files."
+                    );
+
+                    cameraInput.value =
+                        "";
+
+                    return;
+
+                }
+
+
+                selectedAttachments.push(
+                    compressedFile
+                );
+
+
+                renderAttachmentPreview();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Camera image processing error:",
+                    error
+                );
+
+
+                /*
+                    If compression fails,
+                    use the original file.
+                */
+
+                selectedAttachments.push(
+                    file
+                );
+
+
+                renderAttachmentPreview();
+
+            }
+
+
+            cameraInput.value =
+                "";
+
+        }
+    );
+
+}
 
     /*
         BACK
