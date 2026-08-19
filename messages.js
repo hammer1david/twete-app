@@ -1205,6 +1205,10 @@ if (
         row
     );
 
+   renderingMessageIds.delete(
+      message.id
+      );
+
 }
 
 /* =========================================
