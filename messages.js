@@ -32,11 +32,6 @@ let conversationUserId = null;
 
 let realtimeChannel = null;
 
-
-/*
-    Maximum 4 attachments
-*/
-
 let selectedAttachments = [];
 
 
@@ -101,18 +96,13 @@ async function initialiseMessages() {
 
         await loadCurrentProfile();
 
-
         await loadConversationUser();
-
 
         setupComposer();
 
-
         await loadMessages();
 
-
         subscribeToMessages();
-
 
         scrollToBottom();
 
@@ -186,10 +176,6 @@ async function loadCurrentProfile() {
 
 async function loadConversationUser() {
 
-    /*
-        ATHLETE → COACH
-    */
-
     if (
         currentRole ===
         "athlete"
@@ -201,10 +187,6 @@ async function loadConversationUser() {
     }
 
 
-    /*
-        COACH → ATHLETE
-    */
-
     if (
         currentRole ===
         "coach"
@@ -215,10 +197,6 @@ async function loadConversationUser() {
         return;
     }
 
-
-    /*
-        Fallback
-    */
 
     await loadCoachForAthlete();
 
@@ -624,6 +602,12 @@ function renderMessages(
     }
 
 
+    /*
+        IMPORTANT:
+        Remove static HTML messages.
+        Messages now come only from Supabase.
+    */
+
     list.innerHTML =
         "";
 
@@ -681,17 +665,36 @@ function renderMessages(
                 "message-bubble";
 
 
-            const text =
-                document.createElement(
-                    "div"
+            /*
+                Message text
+            */
+
+            if (
+                message.message &&
+                message.message.trim()
+            ) {
+
+                const text =
+                    document.createElement(
+                        "div"
+                    );
+
+                text.className =
+                    "message-text";
+
+                text.textContent =
+                    message.message;
+
+                bubble.appendChild(
+                    text
                 );
 
-            text.className =
-                "message-text";
+            }
 
-            text.textContent =
-                message.message || "";
 
+            /*
+                Time
+            */
 
             const meta =
                 document.createElement(
@@ -720,6 +723,10 @@ function renderMessages(
             );
 
 
+            /*
+                Read checks
+            */
+
             if (sent) {
 
                 const checks =
@@ -739,10 +746,6 @@ function renderMessages(
 
             }
 
-
-            bubble.appendChild(
-                text
-            );
 
             bubble.appendChild(
                 meta
@@ -801,86 +804,6 @@ function scrollToBottom() {
 
 
 /* =========================================
-   SEND MESSAGE
-========================================= */
-
-async function sendMessage() {
-
-    const input =
-        document.getElementById(
-            "messageInput"
-        );
-
-
-    const button =
-        document.querySelector(
-            ".send-button"
-        );
-
-
-    if (!input) {
-        return;
-    }
-
-
-    const text =
-        input.value.trim();
-
-
-    /*
-        At this stage attachments
-        are only being previewed.
-
-        Uploading them to Supabase
-        comes in the next step.
-    */
-
-    if (
-        !text &&
-        selectedAttachments.length > 0
-    ) {
-
-        alert(
-            "Attachment upload will be added next."
-        );
-
-        return;
-    }
-
-
-    if (!text) {
-        return;
-    }
-
-
-    if (!conversationUserId) {
-
-        showError(
-            "No conversation is available yet."
-        );
-
-        return;
-    }
-
-
-    if (button) {
-
-        button.disabled =
-            true;
-
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await messagesSupabase
-                .from("messages")
-                .insert({
-
-/* =========================================
    SEND MESSAGE + ATTACHMENTS
 ========================================= */
 
@@ -907,10 +830,8 @@ async function sendMessage() {
 
 
     /*
-        A message can contain:
-        - text
-        - attachments
-        - or both
+        Text OR attachments
+        are enough to send.
     */
 
     if (
@@ -946,7 +867,7 @@ async function sendMessage() {
 
         /*
             STEP 1
-            Create the message first.
+            Create message
         */
 
         const {
@@ -995,7 +916,7 @@ async function sendMessage() {
 
         /*
             STEP 2
-            Upload up to 4 attachments.
+            Upload attachments
         */
 
         for (
@@ -1008,21 +929,12 @@ async function sendMessage() {
                 selectedAttachments[i];
 
 
-            /*
-                Make filename safe.
-            */
-
             const safeFileName =
-                file.name
-                    .replace(
-                        /[^a-zA-Z0-9._-]/g,
-                        "_"
-                    );
+                file.name.replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
 
-
-            /*
-                Unique storage path.
-            */
 
             const filePath =
                 currentUser.id +
@@ -1033,11 +945,6 @@ async function sendMessage() {
                 "-" +
                 safeFileName;
 
-
-            /*
-                Upload to private
-                Supabase Storage bucket.
-            */
 
             const {
                 error: uploadError
@@ -1082,8 +989,7 @@ async function sendMessage() {
 
             /*
                 STEP 3
-                Save attachment information
-                in message_attachments.
+                Save attachment metadata
             */
 
             const {
@@ -1137,7 +1043,7 @@ async function sendMessage() {
 
         /*
             STEP 4
-            Clear composer.
+            Clear composer
         */
 
         input.value =
@@ -1145,16 +1051,12 @@ async function sendMessage() {
 
         resizeComposer();
 
-
-        /*
-            Clear selected attachments.
-        */
-
         clearAttachments();
 
 
         /*
-            Reload chat.
+            STEP 5
+            Reload messages
         */
 
         await loadMessages();
@@ -1198,6 +1100,7 @@ function subscribeToMessages() {
     ) {
 
         return;
+
     }
 
 
@@ -1269,18 +1172,7 @@ function subscribeToMessages() {
                     }
 
 
-                    if (
-                        String(
-                            message.sender_id
-                        ) !==
-                        String(
-                            currentUser.id
-                        )
-                    ) {
-
-                        await loadMessages();
-
-                    }
+                    await loadMessages();
 
                 }
             )
@@ -1380,12 +1272,6 @@ function setupComposer() {
         );
 
 
-    const backButton =
-        document.querySelector(
-            ".back-button"
-        );
-
-
     const attachmentButton =
         document.querySelector(
             ".attachment-button"
@@ -1398,38 +1284,10 @@ function setupComposer() {
         );
 
 
-    /*
-        TEXT INPUT
-    */
-
-    if (input) {
-
-        input.addEventListener(
-            "input",
-            resizeComposer
+    const backButton =
+        document.querySelector(
+            ".back-button"
         );
-
-
-        /*
-            Enter = new line
-        */
-
-        input.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key === "Enter"
-                ) {
-
-                    return;
-
-                }
-
-            }
-        );
-
-    }
 
 
     /*
@@ -1441,6 +1299,41 @@ function setupComposer() {
         sendButton.addEventListener(
             "click",
             sendMessage
+        );
+
+    }
+
+
+    /*
+        TEXTAREA
+    */
+
+    if (input) {
+
+        input.addEventListener(
+            "input",
+            resizeComposer
+        );
+
+
+        /*
+            Enter creates a new line.
+        */
+
+        input.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    return;
+
+                }
+
+            }
         );
 
     }
@@ -1473,33 +1366,11 @@ function setupComposer() {
             "click",
             function () {
 
-                /*
-                    If already 4 files are
-                    selected, do not open
-                    another selection dialog.
-                */
-
-                if (
-                    selectedAttachments.length >= 4
-                ) {
-
-                    alert(
-                        "You can attach a maximum of 4 files."
-                    );
-
-                    return;
-                }
-
-
                 attachmentInput.click();
 
             }
         );
 
-
-        /*
-            FILE SELECTION
-        */
 
         attachmentInput.addEventListener(
             "change",
@@ -1519,6 +1390,22 @@ function setupComposer() {
                 const remainingSlots =
                     4 -
                     selectedAttachments.length;
+
+
+                if (
+                    remainingSlots <= 0
+                ) {
+
+                    alert(
+                        "You can attach a maximum of 4 files."
+                    );
+
+                    attachmentInput.value =
+                        "";
+
+                    return;
+
+                }
 
 
                 const filesToAdd =
@@ -1549,11 +1436,6 @@ function setupComposer() {
                 renderAttachmentPreview();
 
 
-                /*
-                    Reset input so the same
-                    file can be selected again.
-                */
-
                 attachmentInput.value =
                     "";
 
@@ -1566,7 +1448,7 @@ function setupComposer() {
 
 
 /* =========================================
-   ATTACHMENT PREVIEW
+   RENDER ATTACHMENT PREVIEW
 ========================================= */
 
 function renderAttachmentPreview() {
@@ -1577,7 +1459,7 @@ function renderAttachmentPreview() {
         );
 
 
-    const previewContent =
+    const content =
         document.getElementById(
             "attachmentPreviewContent"
         );
@@ -1585,21 +1467,15 @@ function renderAttachmentPreview() {
 
     if (
         !preview ||
-        !previewContent
+        !content
     ) {
-
         return;
-
     }
 
 
-    previewContent.innerHTML =
+    content.innerHTML =
         "";
 
-
-    /*
-        No attachments
-    */
 
     if (
         selectedAttachments.length === 0
@@ -1658,7 +1534,6 @@ function renderAttachmentPreview() {
                 image.alt =
                     file.name;
 
-
                 item.appendChild(
                     image
                 );
@@ -1695,7 +1570,6 @@ function renderAttachmentPreview() {
                 video.playsInline =
                     true;
 
-
                 item.appendChild(
                     video
                 );
@@ -1720,55 +1594,38 @@ function renderAttachmentPreview() {
                 icon.textContent =
                     "📄";
 
-
                 item.appendChild(
-                    icon );
-
-
-                const fileName =
-                    document.createElement(
-                        "div"
-                    );
-
-                fileName.className =
-                    "attachment-file-name";
-
-                fileName.textContent =
-                    file.name;
-
-
-                item.appendChild(
-                    fileName
+                    icon
                 );
 
             }
 
 
             /*
-                REMOVE BUTTON
+                Remove button
             */
 
-            const removeButton =
+            const remove =
                 document.createElement(
                     "button"
                 );
 
-            removeButton.type =
+            remove.type =
                 "button";
 
-            removeButton.className =
+            remove.className =
                 "attachment-remove";
 
-            removeButton.textContent =
+            remove.textContent =
                 "×";
 
-            removeButton.setAttribute(
+            remove.setAttribute(
                 "aria-label",
                 "Remove attachment"
             );
 
 
-            removeButton.addEventListener(
+            remove.addEventListener(
                 "click",
                 function () {
 
@@ -1781,11 +1638,11 @@ function renderAttachmentPreview() {
 
 
             item.appendChild(
-                removeButton
+                remove
             );
 
 
-            previewContent.appendChild(
+            content.appendChild(
                 item
             );
 
@@ -1826,7 +1683,7 @@ function removeAttachment(
 
 
 /* =========================================
-   CLEAR ALL ATTACHMENTS
+   REMOVE ALL ATTACHMENTS
 ========================================= */
 
 function clearAttachments() {
