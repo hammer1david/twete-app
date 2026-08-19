@@ -1222,7 +1222,54 @@ function setupComposer() {
         document.querySelector(
             ".send-button"
         );
+const attachmentButton =
+    document.querySelector(
+        ".attachment-button"
+    );
 
+const attachmentInput =
+    document.getElementById(
+        "attachmentInput"
+    );
+
+
+if (
+    attachmentButton &&
+    attachmentInput
+) {
+
+    attachmentButton.addEventListener(
+        "click",
+        function () {
+
+            attachmentInput.click();
+
+        }
+    );
+
+
+    attachmentInput.addEventListener(
+        "change",
+        function () {
+
+            const file =
+                attachmentInput.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            console.log(
+                "Selected attachment:",
+                file.name,
+                file.type,
+                file.size
+            );
+
+        }
+    );
+
+}
 
     const backButton =
         document.querySelector(
