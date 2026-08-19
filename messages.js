@@ -799,7 +799,123 @@ function scrollToBottom() {
 
 }
 
+/* =========================================
+   UPLOAD ATTACHMENTS
+========================================= */
 
+async function uploadAttachments(
+    messageId
+) {
+
+    if (
+        !selectedAttachments.length
+    ) {
+        return true;
+    }
+
+
+    for (
+        const file of selectedAttachments
+    ) {
+
+        const safeFileName =
+            file.name
+                .replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
+
+
+        const filePath =
+            currentUser.id +
+            "/" +
+            messageId +
+            "/" +
+            Date.now() +
+            "_" +
+            safeFileName;
+
+
+        /* Upload file to Storage */
+
+        const {
+            error: uploadError
+        } =
+            await messagesSupabase
+                .storage
+                .from(
+                    "message-attachments"
+                )
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        cacheControl: "3600",
+                        upsert: false,
+                        contentType:
+                            file.type
+                    }
+                );
+
+
+        if (uploadError) {
+
+            console.error(
+                "Attachment upload error:",
+                uploadError
+            );
+
+            return false;
+
+        }
+
+
+        /* Save attachment information */
+
+        const {
+            error: attachmentError
+        } =
+            await messagesSupabase
+                .from(
+                    "message_attachments"
+                )
+                .insert({
+
+                    message_id:
+                        messageId,
+
+                    file_path:
+                        filePath,
+
+                    file_name:
+                        file.name,
+
+                    file_type:
+                        file.type,
+
+                    file_size:
+                        file.size
+
+                });
+
+
+        if (attachmentError) {
+
+            console.error(
+                "Attachment database error:",
+                attachmentError
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    return true;
+
+}
 /* =========================================
    SEND MESSAGE
 ========================================= */
@@ -827,29 +943,14 @@ async function sendMessage() {
         input.value.trim();
 
 
-    /*
-        At this stage attachments
-        are only being previewed.
+    
 
-        Uploading them to Supabase
-        comes in the next step.
-    */
 
     if (
-        !text &&
-        selectedAttachments.length > 0
-    ) {
-
-        alert(
-            "Attachment upload will be added next."
-        );
-
-        return;
-    }
-
-
-    if (!text) {
-        return;
+    !text &&
+    selectedAttachments.length === 0
+) {
+    return;
     }
 
 
@@ -874,22 +975,30 @@ async function sendMessage() {
     try {
 
         const {
-            error
-        } =
-            await messagesSupabase
-                .from("messages")
-                .insert({
+    data: newMessage,
+    error
+} =
+    await messagesSupabase
+        .from("messages")
+        .insert({
 
-                    sender_id:
-                        currentUser.id,
+            sender_id:
+                currentUser.id,
 
-                    receiver_id:
-                        conversationUserId,
+            receiver_id:
+                conversationUserId,
 
-                    message:
-                        text
+            message:
+                text || null
 
-                });
+        })
+        .select(
+            "id"
+        )
+        .single();
+
+
+       
 
 
         if (error) {
@@ -906,14 +1015,40 @@ async function sendMessage() {
             return;
         }
 
+/* =====================================
+   UPLOAD ATTACHMENTS
+===================================== */
 
+if (
+    selectedAttachments.length > 0
+) {
+
+    const uploaded =
+        await uploadAttachments(
+            newMessage.id
+        );
+
+
+    if (!uploaded) {
+
+        showError(
+            "Message was sent, but the attachment could not be uploaded."
+        );
+
+        return;
+
+    }
+
+}
         input.value =
-            "";
+    "";
 
-        resizeComposer();
+resizeComposer();
+
+clearAttachments();
 
 
-        await loadMessages();
+await loadMessages();
 
 
     } finally {
