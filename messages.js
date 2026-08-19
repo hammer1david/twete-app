@@ -990,19 +990,34 @@ data.forEach(function (message) {
 async function renderMessage(message) {
 
     /*
-        Prevent duplicate messages
+        Prevent duplicate messages that are
+        already visible OR currently rendering.
     */
 
+if (
+   !message ||
+   !message.id
+   ) {
+     return
+   }
+
+
+   
     if (
         document.querySelector(
             `[data-message-id="${message.id}"]`
-        )
+        ) ||
+       renderingMessageIds.has(
+           message.id
+          )
     ) {
 
         updateMessageReadState(message);
         return;
     }
-
+renderingMessageIds.add(
+   message.id
+   );
 
     const isSent =
         message.sender_id === currentUser.id;
