@@ -1,0 +1,450 @@
+/* =========================================================
+   TWETE CHAT THEME
+   DESIGN ONLY
+========================================================= */
+
+:root {
+    --twete-green: #C6FF00;
+    --twete-bg: #050505;
+    --twete-card: #0B0C0A;
+    --twete-border: rgba(255,255,255,0.075);
+}
+
+
+/* =========================================================
+   CHAT BACKGROUND
+========================================================= */
+
+.chat-page {
+    background:
+        radial-gradient(
+            circle at 88% 0%,
+            rgba(198,255,0,0.045),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 5% 85%,
+            rgba(198,255,0,0.018),
+            transparent 30%
+        ),
+        #050505;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.chat-header {
+    background:
+        rgba(5,5,5,0.92);
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.055);
+
+    backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
+        blur(20px);
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,0.12);
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-button {
+    border-radius: 50%;
+
+    color:
+        #C7CBC7;
+
+    transition:
+        color .2s ease,
+        background .2s ease,
+        transform .15s ease;
+}
+
+.back-button:hover {
+    color:
+        var(--twete-green);
+
+    background:
+        rgba(198,255,0,0.035);
+}
+
+
+/* =========================================================
+   CHAT AVATAR
+========================================================= */
+
+.chat-avatar {
+    border:
+        1px solid
+        rgba(198,255,0,0.32);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(198,255,0,0.08),
+            rgba(198,255,0,0.025)
+        );
+
+    box-shadow:
+        0 0 18px
+        rgba(198,255,0,0.04);
+}
+
+
+/* =========================================================
+   USER
+========================================================= */
+
+.chat-user-name {
+    font-weight: 780;
+
+    letter-spacing:
+        -.15px;
+}
+
+.chat-user-status {
+    color:
+        #737873;
+}
+
+
+/* =========================================================
+   MESSAGE AREA
+========================================================= */
+
+.chat-messages {
+    gap: 8px;
+
+    padding-top: 21px;
+    padding-bottom: 21px;
+}
+
+
+/* =========================================================
+   MESSAGE BUBBLES
+========================================================= */
+
+.message-bubble {
+    border-radius: 19px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0,0,0,0.13);
+
+    transition:
+        transform .14s ease,
+        border-color .2s ease;
+}
+
+
+/* RECEIVED */
+
+.message-row.received
+.message-bubble {
+    background:
+        linear-gradient(
+            145deg,
+            #151615,
+            #101110
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,0.07);
+
+    color:
+        #EBEEEA;
+
+    border-bottom-left-radius: 6px;
+}
+
+
+/* SENT */
+
+.message-row.sent
+.message-bubble {
+    background:
+        linear-gradient(
+            145deg,
+            #C6FF00,
+            #B6ED00
+        );
+
+    border:
+        1px solid
+        rgba(198,255,0,0.45);
+
+    color:
+        #060806;
+
+    border-bottom-right-radius: 6px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(198,255,0,0.055);
+}
+
+
+/* =========================================================
+   MESSAGE META
+========================================================= */
+
+.message-meta {
+    margin-top: 6px;
+
+    font-size: 9px;
+
+    opacity:
+        .43;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.chat-footer {
+    background:
+        rgba(5,5,5,0.93);
+
+    border-top:
+        1px solid
+        rgba(255,255,255,0.055);
+
+    backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
+        blur(20px);
+
+    box-shadow:
+        0 -10px 35px
+        rgba(0,0,0,0.15);
+}
+
+
+/* =========================================================
+   COMPOSER
+========================================================= */
+
+.message-composer {
+    padding:
+        5px
+        5px
+        5px
+        15px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.085);
+
+    border-radius:
+        25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.035),
+            rgba(255,255,255,0.015)
+        ),
+        #0D0E0D;
+
+    box-shadow:
+        0 8px 26px
+        rgba(0,0,0,0.18);
+}
+
+.message-composer:focus-within {
+    border-color:
+        rgba(198,255,0,0.34);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(198,255,0,0.025),
+        0 8px 26px
+        rgba(0,0,0,0.18);
+}
+
+
+/* =========================================================
+   TEXT INPUT
+========================================================= */
+
+.message-input {
+    color:
+        #F4F6F3;
+
+    font-size:
+        14px;
+}
+
+.message-input::placeholder {
+    color:
+        #6E736E;
+}
+
+
+/* =========================================================
+   ATTACHMENT BUTTON
+========================================================= */
+
+.attachment-button {
+    color:
+        #9FA49F;
+
+    transition:
+        color .2s ease,
+        background .2s ease,
+        transform .15s ease;
+}
+
+.attachment-button:hover {
+    color:
+        var(--twete-green);
+
+    background:
+        rgba(198,255,0,0.04);
+}
+
+
+/* =========================================================
+   SEND BUTTON
+========================================================= */
+
+.send-button {
+    background:
+        var(--twete-green);
+
+    border:
+        1px solid
+        rgba(198,255,0,0.65);
+
+    box-shadow:
+        0 4px 16px
+        rgba(198,255,0,0.10);
+}
+
+.send-button:hover {
+    box-shadow:
+        0 5px 20px
+        rgba(198,255,0,0.17);
+}
+
+
+/* =========================================================
+   ATTACHMENT PREVIEW
+========================================================= */
+
+.attachment-preview-item {
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    border-radius:
+        14px;
+
+    background:
+        #0D0E0D;
+
+    box-shadow:
+        0 6px 18px
+        rgba(0,0,0,0.18);
+}
+
+
+/* =========================================================
+   ACTION BAR BUTTONS
+========================================================= */
+
+.message-action-button {
+    border-radius:
+        10px;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .15s ease;
+}
+
+.message-action-button:hover {
+    background:
+        rgba(255,255,255,0.045);
+}
+
+.message-action-button.danger:hover {
+    background:
+        rgba(255,70,70,0.055);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .chat-messages {
+        padding-left:
+            14px;
+
+        padding-right:
+            14px;
+    }
+
+    .message-bubble {
+        max-width:
+            82%;
+    }
+
+    .chat-footer {
+        padding-left:
+            12px;
+
+        padding-right:
+            12px;
+    }
+
+}
+
+
+/* =========================================================
+   TOUCH
+========================================================= */
+
+@media (hover: none) {
+
+    .message-bubble:hover {
+        transform:
+            none;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .message-bubble,
+    .back-button,
+    .attachment-button,
+    .send-button,
+    .message-action-button {
+        transition:
+            none !important;
+    }
+
+}
