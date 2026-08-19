@@ -11,7 +11,7 @@ const MESSAGES_SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
 const MESSAGES_SUPABASE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSN";
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
 
 const messagesSupabase =
     window.supabase.createClient(
@@ -25,21 +25,14 @@ const messagesSupabase =
 ========================================= */
 
 let currentUser = null;
+
 let currentRole = null;
+
 let conversationUserId = null;
+
 let realtimeChannel = null;
 
 let selectedAttachments = [];
-let messagesCache = [];
-
-let isInitialLoading = true;
-
-
-/* =========================================
-   CAMERA STATE
-========================================= */
-
-let cameraStream = null;
 
 
 /* =========================================
@@ -57,8 +50,6 @@ document.addEventListener(
 ========================================= */
 
 async function initialiseMessages() {
-
-    showChatLoading();
 
     try {
 
@@ -83,7 +74,6 @@ async function initialiseMessages() {
             );
 
             return;
-
         }
 
 
@@ -97,7 +87,6 @@ async function initialiseMessages() {
             );
 
             return;
-
         }
 
 
@@ -111,16 +100,12 @@ async function initialiseMessages() {
 
         setupComposer();
 
-        await loadMessages(true);
+        await loadMessages();
 
         subscribeToMessages();
 
-        isInitialLoading =
-            false;
-
-        hideChatLoading();
-
         scrollToBottom();
+
 
     } catch (error) {
 
@@ -131,114 +116,6 @@ async function initialiseMessages() {
 
         showError(
             "Could not load Messages."
-        );
-
-    }
-
-}
-
-
-/* =========================================
-   LOADING UI
-========================================= */
-
-function showChatLoading() {
-
-    const chat =
-        document.querySelector(".chat");
-
-
-    if (!chat) {
-        return;
-    }
-
-
-    chat.classList.add(
-        "chat-loading"
-    );
-
-
-    let loader =
-        document.getElementById(
-            "chatLoadingOverlay"
-        );
-
-
-    if (loader) {
-        return;
-    }
-
-
-    loader =
-        document.createElement("div");
-
-
-    loader.id =
-        "chatLoadingOverlay";
-
-    loader.className =
-        "chat-loading-overlay";
-
-
-    loader.innerHTML = `
-        <div class="chat-loading-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    `;
-
-
-    chat.appendChild(loader);
-
-}
-
-
-function hideChatLoading() {
-
-    const chat =
-        document.querySelector(".chat");
-
-
-    if (!chat) {
-        return;
-    }
-
-
-    chat.classList.remove(
-        "chat-loading"
-    );
-
-
-    const loader =
-        document.getElementById(
-            "chatLoadingOverlay"
-        );
-
-
-    if (loader) {
-
-        loader.classList.add(
-            "chat-loading-finished"
-        );
-
-
-        setTimeout(
-            function () {
-
-                if (
-                    loader &&
-                    loader.parentNode
-                ) {
-
-                    loader.parentNode.removeChild(
-                        loader
-                    );
-
-                }
-
-            },
-            220
         );
 
     }
@@ -279,7 +156,6 @@ async function loadCurrentProfile() {
         );
 
         return;
-
     }
 
 
@@ -301,24 +177,24 @@ async function loadCurrentProfile() {
 async function loadConversationUser() {
 
     if (
-        currentRole === "athlete"
+        currentRole ===
+        "athlete"
     ) {
 
         await loadCoachForAthlete();
 
         return;
-
     }
 
 
     if (
-        currentRole === "coach"
+        currentRole ===
+        "coach"
     ) {
 
         await loadAthleteForCoach();
 
         return;
-
     }
 
 
@@ -368,7 +244,6 @@ async function loadCoachForAthlete() {
         showNoConversation();
 
         return;
-
     }
 
 
@@ -377,7 +252,6 @@ async function loadCoachForAthlete() {
         showNoConversation();
 
         return;
-
     }
 
 
@@ -458,7 +332,6 @@ async function loadAthleteForCoach() {
         showNoConversation();
 
         return;
-
     }
 
 
@@ -467,7 +340,6 @@ async function loadAthleteForCoach() {
         showNoConversation();
 
         return;
-
     }
 
 
@@ -524,7 +396,6 @@ async function loadProfileHeader(
         );
 
         return;
-
     }
 
 
@@ -538,7 +409,6 @@ async function loadProfileHeader(
         );
 
         return;
-
     }
 
 
@@ -595,8 +465,9 @@ function setProfileHeader(
             "";
 
         const image =
-            document.createElement("img");
-
+            document.createElement(
+                "img"
+            );
 
         image.src =
             avatarUrl;
@@ -615,10 +486,6 @@ function setProfileHeader(
 
         image.style.objectFit =
             "cover";
-
-        image.style.borderRadius =
-            "50%";
-
 
         avatarElement.appendChild(
             image
@@ -639,13 +506,12 @@ function setProfileHeader(
 }
 
 
+
 /* =========================================
    LOAD MESSAGES
 ========================================= */
 
-async function loadMessages(
-    initialLoad = false
-) {
+async function loadMessages() {
 
     const list =
         document.getElementById(
@@ -663,9 +529,12 @@ async function loadMessages(
         showNoConversation();
 
         return;
-
     }
 
+
+    /*
+        Load messages
+    */
 
     const {
         data: messages,
@@ -704,16 +573,16 @@ async function loadMessages(
         );
 
         return;
-
     }
 
 
-    const messageList =
-        messages || [];
-
+    /*
+        Load attachments belonging
+        to these messages.
+    */
 
     const messageIds =
-        messageList.map(
+        (messages || []).map(
             message =>
                 message.id
         );
@@ -772,92 +641,106 @@ async function loadMessages(
     }
 
 
-    await Promise.all(
-        attachments.map(
-            async function (
-                attachment
-            ) {
+    /*
+        Create temporary signed URLs
+        for private Storage files.
+    */
 
-                if (
-                    !attachment.file_path
-                ) {
+    for (
+        const attachment of attachments
+    ) {
 
-                    return;
-
-                }
-
-
-                const [
-                    viewResult,
-                    downloadResult
-                ] =
-                    await Promise.all([
-
-                        messagesSupabase
-                            .storage
-                            .from(
-                                "message-attachments"
-                            )
-                            .createSignedUrl(
-                                attachment.file_path,
-                                3600
-                            ),
-
-                        messagesSupabase
-                            .storage
-                            .from(
-                                "message-attachments"
-                            )
-                            .createSignedUrl(
-                                attachment.file_path,
-                                3600,
-                                {
-                                    download:
-                                        attachment.file_name
-                                }
-                            )
-
-                    ]);
+        if (
+            !attachment.file_path
+        ) {
+            continue;
+        }
 
 
-                if (
-                    !viewResult.error
-                ) {
+        /*
+            View URL
+        */
 
-                    attachment.view_url =
-                        viewResult
-                            .data
-                            ?.signedUrl ||
-                        null;
+        const {
+            data:
+                viewData,
+            error:
+                viewError
+        } =
+            await messagesSupabase
+                .storage
+                .from(
+                    "message-attachments"
+                )
+                .createSignedUrl(
+                    attachment.file_path,
+                    3600
+                );
 
-                }
+
+        if (viewError) {
+
+            console.error(
+                "Signed URL error:",
+                viewError
+            );
+
+            continue;
+
+        }
 
 
-                if (
-                    !downloadResult.error
-                ) {
+        attachment.view_url =
+            viewData?.signedUrl ||
+            null;
 
-                    attachment.download_url =
-                        downloadResult
-                            .data
-                            ?.signedUrl ||
-                        null;
 
-                }
+        /*
+            Download URL
+        */
 
-            }
-        )
-    );
+        const {
+            data:
+                downloadData,
+            error:
+                downloadError
+        } =
+            await messagesSupabase
+                .storage
+                .from(
+                    "message-attachments"
+                )
+                .createSignedUrl(
+                    attachment.file_path,
+                    3600,
+                    {
+                        download:
+                            attachment.file_name
+                    }
+                );
 
+
+        if (!downloadError) {
+
+            attachment.download_url =
+                downloadData?.signedUrl ||
+                null;
+
+        }
+
+    }
+
+
+    /*
+        Attachments onto their messages
+    */
 
     const attachmentsByMessage =
         {};
 
 
     attachments.forEach(
-        function (
-            attachment
-        ) {
+        function (attachment) {
 
             if (
                 !attachmentsByMessage[
@@ -882,10 +765,12 @@ async function loadMessages(
     );
 
 
-    messageList.forEach(
-        function (
-            message
-        ) {
+    /*
+        Add attachments to messages
+    */
+
+    (messages || []).forEach(
+        function (message) {
 
             message.attachments =
                 attachmentsByMessage[
@@ -896,28 +781,18 @@ async function loadMessages(
     );
 
 
-    messagesCache =
-        messageList;
-
-
     renderMessages(
-        messageList
+        messages || []
     );
 
 
     await markMessagesRead(
-        messageList
+        messages || []
     );
 
-
-    if (initialLoad) {
-
-        isInitialLoading =
-            false;
-
-    }
-
 }
+
+    
 
 
 /* =========================================
@@ -925,8 +800,7 @@ async function loadMessages(
 ========================================= */
 
 function renderMessages(
-    messages,
-    shouldScroll = true
+    messages
 ) {
 
     const list =
@@ -940,6 +814,12 @@ function renderMessages(
     }
 
 
+    /*
+        IMPORTANT:
+        Remove static HTML messages.
+        Messages now come only from Supabase.
+    */
+
     list.innerHTML =
         "";
 
@@ -947,8 +827,9 @@ function renderMessages(
     if (!messages.length) {
 
         const empty =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         empty.className =
             "no-messages";
@@ -956,561 +837,145 @@ function renderMessages(
         empty.textContent =
             "No messages yet.";
 
-
         list.appendChild(
             empty
         );
 
         return;
-
     }
 
 
-    const fragment =
-        document.createDocumentFragment();
-
-
     messages.forEach(
-        function (
-            message
-        ) {
+        function (message) {
 
-            fragment.appendChild(
-                createMessageElement(
-                    message
-                )
+            const sent =
+                String(
+                    message.sender_id
+                ) ===
+                String(
+                    currentUser.id
+                );
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                sent
+                    ? "message-row sent"
+                    : "message-row received";
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+            bubble.className =
+                "message-bubble";
+
+
+            /*
+                Message text
+            */
+
+            if (
+                message.message &&
+                message.message.trim()
+            ) {
+
+                const text =
+                    document.createElement(
+                        "div"
+                    );
+
+                text.className =
+                    "message-text";
+
+                text.textContent =
+                    message.message;
+
+                bubble.appendChild(
+                    text
+                );
+
+            }
+
+
+            /*
+                Time
+            */
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+            meta.className =
+                sent
+                    ? "message-meta"
+                    : "message-time";
+
+
+            const time =
+                document.createElement(
+                    "span"
+                );
+
+            time.textContent =
+                formatTime(
+                    message.created_at
+                );
+
+
+            meta.appendChild(
+                time
+            );
+
+
+            /*
+                Read checks
+            */
+
+            if (sent) {
+
+                const checks =
+                    document.createElement(
+                        "span"
+                    );
+
+                checks.className =
+                    "message-checks";
+
+                checks.textContent =
+                    "✓✓";
+
+                meta.appendChild(
+                    checks
+                );
+
+            }
+
+
+            bubble.appendChild(
+                meta
+            );
+
+            row.appendChild(
+                bubble
+            );
+
+            list.appendChild(
+                row
             );
 
         }
     );
 
 
-    list.appendChild(
-        fragment
-    );
-
-
-    if (shouldScroll) {
-
-        scrollToBottom();
-
-    }
-
-}
-
-
-/* =========================================
-   CREATE MESSAGE ELEMENT
-========================================= */
-
-function createMessageElement(
-    message
-) {
-
-    const sent =
-        String(
-            message.sender_id
-        ) ===
-        String(
-            currentUser.id
-        );
-
-
-    const row =
-        document.createElement("div");
-
-
-    row.className =
-        sent
-            ? "message-row sent"
-            : "message-row received";
-
-
-    row.dataset.messageId =
-        message.id;
-
-
-    const bubble =
-        document.createElement("div");
-
-
-    bubble.className =
-        "message-bubble";
-
-
-    if (
-        message.message &&
-        message.message.trim()
-    ) {
-
-        const text =
-            document.createElement("div");
-
-
-        text.className =
-            "message-text";
-
-
-        text.textContent =
-            message.message;
-
-
-        bubble.appendChild(
-            text
-        );
-
-    }
-
-
-    if (
-        message.attachments &&
-        message.attachments.length
-    ) {
-
-        const attachmentContainer =
-            document.createElement("div");
-
-
-        attachmentContainer.className =
-            "message-attachments";
-
-
-        message.attachments.forEach(
-            function (
-                attachment
-            ) {
-
-                attachmentContainer.appendChild(
-                    createAttachmentElement(
-                        attachment
-                    )
-                );
-
-            }
-        );
-
-
-        bubble.appendChild(
-            attachmentContainer
-        );
-
-    }
-
-
-    const meta =
-        document.createElement("div");
-
-
-    meta.className =
-        sent
-            ? "message-meta"
-            : "message-time";
-
-
-    const time =
-        document.createElement("span");
-
-
-    time.textContent =
-        formatTime(
-            message.created_at
-        );
-
-
-    meta.appendChild(
-        time
-    );
-
-
-    if (sent) {
-
-        const checks =
-            document.createElement("span");
-
-
-        checks.className =
-            "message-checks";
-
-
-        checks.textContent =
-            "✓✓";
-
-
-        meta.appendChild(
-            checks
-        );
-
-    }
-
-
-    bubble.appendChild(
-        meta
-    );
-
-
-    row.appendChild(
-        bubble
-    );
-
-
-    return row;
-
-}
-
-
-/* =========================================
-   CREATE ATTACHMENT ELEMENT
-========================================= */
-
-function createAttachmentElement(
-    attachment
-) {
-
-    const item =
-        document.createElement("div");
-
-
-    item.className =
-        "message-attachment";
-
-
-    if (
-        attachment.file_type &&
-        attachment.file_type.startsWith(
-            "image/"
-        ) &&
-        attachment.view_url
-    ) {
-
-        const image =
-            document.createElement("img");
-
-
-        image.className =
-            "message-attachment-image";
-
-
-        image.src =
-            attachment.view_url;
-
-
-        image.alt =
-            attachment.file_name ||
-            "Attachment";
-
-
-        image.loading =
-            "lazy";
-
-
-        image.addEventListener(
-            "click",
-            function () {
-
-                window.open(
-                    attachment.view_url,
-                    "_blank"
-                );
-
-            }
-        );
-
-
-        item.appendChild(
-            image
-        );
-
-    }
-
-    else if (
-        attachment.file_type &&
-        attachment.file_type.startsWith(
-            "video/"
-        ) &&
-        attachment.view_url
-    ) {
-
-        const video =
-            document.createElement("video");
-
-
-        video.className =
-            "message-attachment-video";
-
-
-        video.src =
-            attachment.view_url;
-
-
-        video.controls =
-            true;
-
-        video.playsInline =
-            true;
-
-        video.preload =
-            "metadata";
-
-
-        item.appendChild(
-            video
-        );
-
-    }
-
-    else {
-
-        const fileBox =
-            document.createElement("div");
-
-
-        fileBox.className =
-            "message-file";
-
-
-        const icon =
-            document.createElement("div");
-
-
-        icon.className =
-            "message-file-icon";
-
-
-        icon.textContent =
-            getFileIcon(
-                attachment.file_type
-            );
-
-
-        const information =
-            document.createElement("div");
-
-
-        information.className =
-            "message-file-info";
-
-
-        const fileName =
-            document.createElement("div");
-
-
-        fileName.className =
-            "message-file-name";
-
-
-        fileName.textContent =
-            attachment.file_name ||
-            "File";
-
-
-        const fileSize =
-            document.createElement("div");
-
-
-        fileSize.className =
-            "message-file-size";
-
-
-        fileSize.textContent =
-            formatFileSize(
-                attachment.file_size
-            );
-
-
-        information.appendChild(
-            fileName
-        );
-
-        information.appendChild(
-            fileSize
-        );
-
-
-        fileBox.appendChild(
-            icon
-        );
-
-        fileBox.appendChild(
-            information
-        );
-
-
-        item.appendChild(
-            fileBox
-        );
-
-    }
-
-
-    if (
-        attachment.download_url
-    ) {
-
-        const download =
-            document.createElement("a");
-
-
-        download.className =
-            "message-attachment-download";
-
-
-        download.href =
-            attachment.download_url;
-
-
-        download.textContent =
-            "Download";
-
-
-        download.target =
-            "_blank";
-
-
-        download.rel =
-            "noopener noreferrer";
-
-
-        download.setAttribute(
-            "download",
-            attachment.file_name || ""
-        );
-
-
-        item.appendChild(
-            download
-        );
-
-    }
-
-
-    return item;
-
-}
-
-
-/* =========================================
-   FILE ICON
-========================================= */
-
-function getFileIcon(
-    fileType
-) {
-
-    if (!fileType) {
-        return "📄";
-    }
-
-
-    if (
-        fileType.includes("pdf")
-    ) {
-        return "📕";
-    }
-
-
-    if (
-        fileType.includes("word") ||
-        fileType.includes("document")
-    ) {
-        return "📘";
-    }
-
-
-    if (
-        fileType.includes("sheet") ||
-        fileType.includes("excel") ||
-        fileType.includes("spreadsheet")
-    ) {
-        return "📗";
-    }
-
-
-    if (
-        fileType.includes("zip") ||
-        fileType.includes("compressed")
-    ) {
-        return "🗜️";
-    }
-
-
-    if (
-        fileType.startsWith("audio/")
-    ) {
-        return "🎵";
-    }
-
-
-    return "📄";
-
-}
-
-
-/* =========================================
-   FORMAT FILE SIZE
-========================================= */
-
-function formatFileSize(
-    bytes
-) {
-
-    if (
-        bytes === null ||
-        bytes === undefined ||
-        bytes === ""
-    ) {
-
-        return "";
-
-    }
-
-
-    const size =
-        Number(bytes);
-
-
-    if (
-        Number.isNaN(size)
-    ) {
-
-        return "";
-
-    }
-
-
-    if (
-        size < 1024
-    ) {
-
-        return size + " B";
-
-    }
-
-
-    if (
-        size < 1024 * 1024
-    ) {
-
-        return (
-            size / 1024
-        ).toFixed(1) + " KB";
-
-    }
-
-
-    if (
-        size < 1024 * 1024 * 1024
-    ) {
-
-        return (
-            size / (1024 * 1024)
-        ).toFixed(1) + " MB";
-
-    }
-
-
-    return (
-        size / (1024 * 1024 * 1024)
-    ).toFixed(1) + " GB";
+    scrollToBottom();
 
 }
 
@@ -1535,275 +1000,17 @@ function scrollToBottom() {
     requestAnimationFrame(
         function () {
 
-            list.scrollTop =
-                list.scrollHeight;
+            requestAnimationFrame(
+                function () {
 
-        }
-    );
-
-}
-
-
-/* =========================================
-   ADD REALTIME MESSAGE
-========================================= */
-
-async function addRealtimeMessage(
-    message
-) {
-
-    const alreadyExists =
-        messagesCache.some(
-            function (
-                existing
-            ) {
-
-                return (
-                    String(existing.id) ===
-                    String(message.id)
-                );
-
-            }
-        );
-
-
-    if (alreadyExists) {
-        return;
-    }
-
-
-    let attachments = [];
-
-    const maxAttempts = 10;
-    const delay = 200;
-
-
-    for (
-        let attempt = 0;
-        attempt < maxAttempts;
-        attempt++
-    ) {
-
-        const {
-            data,
-            error
-        } =
-            await messagesSupabase
-                .from(
-                    "message_attachments"
-                )
-                .select(`
-                    id,
-                    message_id,
-                    file_url,
-                    file_path,
-                    file_name,
-                    file_type,
-                    file_size,
-                    created_at
-                `)
-                .eq(
-                    "message_id",
-                    message.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: true
-                    }
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Realtime attachment error:",
-                error
-            );
-
-            break;
-
-        }
-
-
-        attachments =
-            data || [];
-
-
-        if (
-            attachments.length > 0
-        ) {
-
-            break;
-
-        }
-
-
-        if (
-            attempt <
-            maxAttempts - 1
-        ) {
-
-            await new Promise(
-                function (
-                    resolve
-                ) {
-
-                    setTimeout(
-                        resolve,
-                        delay
-                    );
+                    list.scrollTop =
+                        list.scrollHeight;
 
                 }
             );
 
         }
-
-    }
-
-
-    await Promise.all(
-        attachments.map(
-            async function (
-                attachment
-            ) {
-
-                if (
-                    !attachment.file_path
-                ) {
-                    return;
-                }
-
-
-                const [
-                    viewResult,
-                    downloadResult
-                ] =
-                    await Promise.all([
-
-                        messagesSupabase
-                            .storage
-                            .from(
-                                "message-attachments"
-                            )
-                            .createSignedUrl(
-                                attachment.file_path,
-                                3600
-                            ),
-
-                        messagesSupabase
-                            .storage
-                            .from(
-                                "message-attachments"
-                            )
-                            .createSignedUrl(
-                                attachment.file_path,
-                                3600,
-                                {
-                                    download:
-                                        attachment.file_name
-                                }
-                            )
-
-                    ]);
-
-
-                if (
-                    !viewResult.error
-                ) {
-
-                    attachment.view_url =
-                        viewResult
-                            .data
-                            ?.signedUrl ||
-                        null;
-
-                }
-
-
-                if (
-                    !downloadResult.error
-                ) {
-
-                    attachment.download_url =
-                        downloadResult
-                            .data
-                            ?.signedUrl ||
-                        null;
-
-                }
-
-            }
-        )
     );
-
-
-    message.attachments =
-        attachments;
-
-
-    messagesCache.push(
-        message
-    );
-
-
-    messagesCache.sort(
-        function (
-            a,
-            b
-        ) {
-
-            return (
-                new Date(a.created_at) -
-                new Date(b.created_at)
-            );
-
-        }
-    );
-
-
-    const list =
-        document.getElementById(
-            "messagesWindow"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    const empty =
-        list.querySelector(
-            ".no-messages"
-        );
-
-
-    if (empty) {
-        empty.remove();
-    }
-
-
-    list.appendChild(
-        createMessageElement(
-            message
-        )
-    );
-
-
-    scrollToBottom();
-
-
-    if (
-        String(message.receiver_id) ===
-        String(currentUser.id)
-    ) {
-
-        await markMessagesRead(
-            [message]
-        );
-
-    }
 
 }
 
@@ -1819,7 +1026,6 @@ async function sendMessage() {
             "messageInput"
         );
 
-
     const button =
         document.querySelector(
             ".send-button"
@@ -1834,6 +1040,11 @@ async function sendMessage() {
     const text =
         input.value.trim();
 
+
+    /*
+        Text OR attachments
+        are enough to send.
+    */
 
     if (
         !text &&
@@ -1857,15 +1068,19 @@ async function sendMessage() {
 
 
     if (button) {
-        button.disabled = true;
+
+        button.disabled =
+            true;
+
     }
 
 
-    const filesToUpload =
-        [...selectedAttachments];
-
-
     try {
+
+        /*
+            STEP 1
+            Create message
+        */
 
         const {
             data: messageData,
@@ -1885,14 +1100,9 @@ async function sendMessage() {
                         text
 
                 })
-                .select(`
-                    id,
-                    sender_id,
-                    receiver_id,
-                    message,
-                    created_at,
-                    read_at
-                `)
+                .select(
+                    "id"
+                )
                 .single();
 
 
@@ -1916,18 +1126,19 @@ async function sendMessage() {
             messageData.id;
 
 
-        const uploadedAttachments =
-            [];
-
+        /*
+            STEP 2
+            Upload attachments
+        */
 
         for (
             let i = 0;
-            i < filesToUpload.length;
+            i < selectedAttachments.length;
             i++
         ) {
 
             const file =
-                filesToUpload[i];
+                selectedAttachments[i];
 
 
             const safeFileName =
@@ -1988,11 +1199,13 @@ async function sendMessage() {
             }
 
 
+            /*
+                STEP 3
+                Save attachment metadata
+            */
+
             const {
-                data:
-                    attachmentData,
-                error:
-                    attachmentError
+                error: attachmentError
             } =
                 await messagesSupabase
                     .from(
@@ -2019,18 +1232,7 @@ async function sendMessage() {
                         file_size:
                             file.size
 
-                    })
-                    .select(`
-                        id,
-                        message_id,
-                        file_url,
-                        file_path,
-                        file_name,
-                        file_type,
-                        file_size,
-                        created_at
-                    `)
-                    .single();
+                    });
 
 
             if (attachmentError) {
@@ -2048,131 +1250,13 @@ async function sendMessage() {
 
             }
 
-
-            let viewUrl = null;
-
-
-            const {
-                data:
-                    viewData,
-                error:
-                    viewError
-            } =
-                await messagesSupabase
-                    .storage
-                    .from(
-                        "message-attachments"
-                    )
-                    .createSignedUrl(
-                        filePath,
-                        3600
-                    );
-
-
-            if (viewError) {
-
-                console.error(
-                    "View signed URL error:",
-                    viewError
-                );
-
-            } else {
-
-                viewUrl =
-                    viewData?.signedUrl ||
-                    null;
-
-            }
-
-
-            let downloadUrl = null;
-
-
-            const {
-                data:
-                    downloadData,
-                error:
-                    downloadError
-            } =
-                await messagesSupabase
-                    .storage
-                    .from(
-                        "message-attachments"
-                    )
-                    .createSignedUrl(
-                        filePath,
-                        3600,
-                        {
-                            download:
-                                file.name
-                        }
-                    );
-
-
-            if (downloadError) {
-
-                console.error(
-                    "Download signed URL error:",
-                    downloadError
-                );
-
-            } else {
-
-                downloadUrl =
-                    downloadData?.signedUrl ||
-                    null;
-
-            }
-
-
-            uploadedAttachments.push({
-
-                id:
-                    attachmentData?.id ||
-                    crypto.randomUUID(),
-
-                message_id:
-                    messageId,
-
-                file_url:
-                    null,
-
-                file_path:
-                    filePath,
-
-                file_name:
-                    file.name,
-
-                file_type:
-                    file.type ||
-                    "application/octet-stream",
-
-                file_size:
-                    file.size,
-
-                created_at:
-                    attachmentData?.created_at ||
-                    new Date().toISOString(),
-
-                view_url:
-                    viewUrl,
-
-                download_url:
-                    downloadUrl
-
-            });
-
         }
 
 
-        messageData.attachments =
-            uploadedAttachments;
-
-
-        appendMessageToChat(
-            messageData
-        );
-
+        /*
+            STEP 4
+            Clear composer
+        */
 
         input.value =
             "";
@@ -2181,7 +1265,13 @@ async function sendMessage() {
 
         clearAttachments();
 
-        scrollToBottom();
+
+        /*
+            STEP 5
+            Reload messages
+        */
+
+        await loadMessages();
 
 
     } catch (error) {
@@ -2195,95 +1285,17 @@ async function sendMessage() {
             "Something went wrong while sending your message."
         );
 
+
     } finally {
 
         if (button) {
-            button.disabled = false;
-        }
 
-    }
-
-}
-
-
-/* =========================================
-   APPEND SINGLE MESSAGE
-========================================= */
-
-function appendMessageToChat(
-    message
-) {
-
-    const list =
-        document.getElementById(
-            "messagesWindow"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    const alreadyExists =
-        messagesCache.some(
-            function (
-                existing
-            ) {
-
-                return (
-                    String(existing.id) ===
-                    String(message.id)
-                );
-
-            }
-        );
-
-
-    if (alreadyExists) {
-        return;
-    }
-
-
-    messagesCache.push(
-        message
-    );
-
-
-    messagesCache.sort(
-        function (
-            a,
-            b
-        ) {
-
-            return (
-                new Date(a.created_at) -
-                new Date(b.created_at)
-            );
+            button.disabled =
+                false;
 
         }
-    );
 
-
-    const empty =
-        list.querySelector(
-            ".no-messages"
-        );
-
-
-    if (empty) {
-        empty.remove();
     }
-
-
-    list.appendChild(
-        createMessageElement(
-            message
-        )
-    );
-
-
-    scrollToBottom();
 
 }
 
@@ -2306,9 +1318,10 @@ function subscribeToMessages() {
 
     if (realtimeChannel) {
 
-        messagesSupabase.removeChannel(
-            realtimeChannel
-        );
+        messagesSupabase
+            .removeChannel(
+                realtimeChannel
+            );
 
     }
 
@@ -2317,9 +1330,7 @@ function subscribeToMessages() {
         messagesSupabase
             .channel(
                 "twete-messages-" +
-                currentUser.id +
-                "-" +
-                conversationUserId
+                currentUser.id
             )
             .on(
                 "postgres_changes",
@@ -2336,29 +1347,35 @@ function subscribeToMessages() {
                         payload.new;
 
 
-                    if (
-                        String(message.sender_id) ===
-                        String(currentUser.id)
-                    ) {
-
-                        return;
-
-                    }
-
-
                     const belongs =
                         (
-                            String(message.sender_id) ===
-                            String(currentUser.id) &&
-                            String(message.receiver_id) ===
-                            String(conversationUserId)
+                            String(
+                                message.sender_id
+                            ) ===
+                            String(
+                                currentUser.id
+                            ) &&
+                            String(
+                                message.receiver_id
+                            ) ===
+                            String(
+                                conversationUserId
+                            )
                         )
                         ||
                         (
-                            String(message.sender_id) ===
-                            String(conversationUserId) &&
-                            String(message.receiver_id) ===
-                            String(currentUser.id)
+                            String(
+                                message.sender_id
+                            ) ===
+                            String(
+                                conversationUserId
+                            ) &&
+                            String(
+                                message.receiver_id
+                            ) ===
+                            String(
+                                currentUser.id
+                            )
                         );
 
 
@@ -2367,9 +1384,7 @@ function subscribeToMessages() {
                     }
 
 
-                    await addRealtimeMessage(
-                        message
-                    );
+                    await loadMessages();
 
                 }
             )
@@ -2394,9 +1409,7 @@ async function markMessagesRead(
     const unreadIds =
         messages
             .filter(
-                function (
-                    message
-                ) {
+                function (message) {
 
                     return (
                         String(
@@ -2411,9 +1424,7 @@ async function markMessagesRead(
                 }
             )
             .map(
-                function (
-                    message
-                ) {
+                function (message) {
 
                     return message.id;
 
@@ -2426,17 +1437,16 @@ async function markMessagesRead(
     }
 
 
-    const readTime =
-        new Date().toISOString();
-
-
     const {
         error
     } =
         await messagesSupabase
             .from("messages")
             .update({
-                read_at: readTime
+
+                read_at:
+                    new Date().toISOString()
+
             })
             .in(
                 "id",
@@ -2452,26 +1462,6 @@ async function markMessagesRead(
         );
 
     }
-
-
-    messagesCache.forEach(
-        function (
-            message
-        ) {
-
-            if (
-                unreadIds.includes(
-                    message.id
-                )
-            ) {
-
-                message.read_at =
-                    readTime;
-
-            }
-
-        }
-    );
 
 }
 
@@ -2495,8 +1485,8 @@ function setupComposer() {
 
 
     const attachmentButton =
-        document.getElementById(
-            "attachmentButton"
+        document.querySelector(
+            ".attachment-button"
         );
 
 
@@ -2506,51 +1496,15 @@ function setupComposer() {
         );
 
 
-    const cameraButton =
-        document.getElementById(
-            "cameraButton"
-        );
-
-
-    const cameraOverlay =
-        document.getElementById(
-            "cameraOverlay"
-        );
-
-
-    const cameraVideo =
-        document.getElementById(
-            "cameraVideo"
-        );
-
-
-    const cameraCanvas =
-        document.getElementById(
-            "cameraCanvas"
-        );
-
-
-    const cameraClose =
-        document.getElementById(
-            "cameraClose"
-        );
-
-
-    const cameraCapture =
-        document.getElementById(
-            "cameraCapture"
-        );
-
-
     const backButton =
         document.querySelector(
             ".back-button"
         );
 
 
-    /* =====================================
-       SEND
-    ===================================== */
+    /*
+        SEND
+    */
 
     if (sendButton) {
 
@@ -2562,9 +1516,9 @@ function setupComposer() {
     }
 
 
-    /* =====================================
-       TEXTAREA
-    ===================================== */
+    /*
+        TEXTAREA
+    */
 
     if (input) {
 
@@ -2573,49 +1527,47 @@ function setupComposer() {
             resizeComposer
         );
 
-    }
 
+        /*
+            Enter creates a new line.
+        */
 
-    /* =====================================
-       CAMERA
-    ===================================== */
+        input.addEventListener(
+            "keydown",
+            function (event) {
 
-    if (
-        cameraButton &&
-        cameraOverlay
-    ) {
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
 
-        cameraButton.addEventListener(
-            "click",
-            openTweteCamera
+                    return;
+
+                }
+
+            }
         );
 
     }
 
 
-    if (cameraClose) {
+    /*
+        BACK
+    */
 
-        cameraClose.addEventListener(
+    if (backButton) {
+
+        backButton.addEventListener(
             "click",
-            closeTweteCamera
+            goBack
         );
 
     }
 
 
-    if (cameraCapture) {
-
-        cameraCapture.addEventListener(
-            "click",
-            captureTwetePhoto
-        );
-
-    }
-
-
-    /* =====================================
-       ATTACHMENTS
-    ===================================== */
+    /*
+        ATTACHMENT BUTTON
+    */
 
     if (
         attachmentButton &&
@@ -2704,393 +1656,7 @@ function setupComposer() {
 
     }
 
-
-    /* =====================================
-       BACK
-    ===================================== */
-
-    if (backButton) {
-
-        backButton.addEventListener(
-            "click",
-            goBack
-        );
-
-    }
-
 }
-
-
-/* =========================================
-   CAMERA
-========================================= */
-
-async function openTweteCamera() {
-
-    const overlay =
-        document.getElementById(
-            "cameraOverlay"
-        );
-
-
-    const video =
-        document.getElementById(
-            "cameraVideo"
-        );
-
-
-    if (
-        !overlay ||
-        !video
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia
-    ) {
-
-        alert(
-            "Camera access is not available on this device."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        if (cameraStream) {
-
-            closeTweteCamera();
-
-        }
-
-
-        cameraStream =
-            await navigator.mediaDevices.getUserMedia({
-
-                video: {
-                    facingMode: {
-                        ideal: "environment"
-                    }
-                },
-
-                audio: false
-
-            });
-
-
-        video.srcObject =
-            cameraStream;
-
-
-        overlay.hidden =
-            false;
-
-
-        document.body.classList.add(
-            "camera-open"
-        );
-
-
-        await video.play();
-
-
-    } catch (error) {
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
-
-        alert(
-            "Could not access the camera."
-        );
-
-    }
-
-}
-
-
-/* =========================================
-   CLOSE CAMERA
-========================================= */
-
-function closeTweteCamera() {
-
-    if (cameraStream) {
-
-        cameraStream
-            .getTracks()
-            .forEach(
-                function (
-                    track
-                ) {
-
-                    track.stop();
-
-                }
-            );
-
-
-        cameraStream =
-            null;
-
-    }
-
-
-    const video =
-        document.getElementById(
-            "cameraVideo"
-        );
-
-
-    const overlay =
-        document.getElementById(
-            "cameraOverlay"
-        );
-
-
-    if (video) {
-
-        video.srcObject =
-            null;
-
-    }
-
-
-    if (overlay) {
-
-        overlay.hidden =
-            true;
-
-    }
-
-
-    document.body.classList.remove(
-        "camera-open"
-    );
-
-}
-
-
-/* =========================================
-   CAPTURE PHOTO
-========================================= */
-
-async function captureTwetePhoto() {
-
-    const video =
-        document.getElementById(
-            "cameraVideo"
-        );
-
-
-    const canvas =
-        document.getElementById(
-            "cameraCanvas"
-        );
-
-
-    if (
-        !video ||
-        !canvas
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        video.readyState <
-        HTMLMediaElement.HAVE_CURRENT_DATA
-    ) {
-
-        return;
-
-    }
-
-
-    const remainingSlots =
-        4 -
-        selectedAttachments.length;
-
-
-    if (
-        remainingSlots <= 0
-    ) {
-
-        alert(
-            "You can attach a maximum of 4 files."
-        );
-
-        return;
-
-    }
-
-
-    const MAX_SIZE =
-        1920;
-
-
-    let width =
-        video.videoWidth;
-
-
-    let height =
-        video.videoHeight;
-
-
-    if (
-        !width ||
-        !height
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        width > MAX_SIZE ||
-        height > MAX_SIZE
-    ) {
-
-        if (
-            width > height
-        ) {
-
-            height =
-                Math.round(
-                    height *
-                    MAX_SIZE /
-                    width
-                );
-
-            width =
-                MAX_SIZE;
-
-        } else {
-
-            width =
-                Math.round(
-                    width *
-                    MAX_SIZE /
-                    height
-                );
-
-            height =
-                MAX_SIZE;
-
-        }
-
-    }
-
-
-    canvas.width =
-        width;
-
-
-    canvas.height =
-        height;
-
-
-    const context =
-        canvas.getContext(
-            "2d"
-        );
-
-
-    if (!context) {
-        return;
-    }
-
-
-    context.drawImage(
-        video,
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    const blob =
-        await new Promise(
-            function (
-                resolve
-            ) {
-
-                canvas.toBlob(
-                    resolve,
-                    "image/jpeg",
-                    0.82
-                );
-
-            }
-        );
-
-
-    if (!blob) {
-
-        alert(
-            "Could not process the photo."
-        );
-
-        return;
-
-    }
-
-
-    const file =
-        new File(
-            [blob],
-            "twete-camera-" +
-            Date.now() +
-            ".jpg",
-            {
-                type:
-                    "image/jpeg",
-
-                lastModified:
-                    Date.now()
-            }
-        );
-
-
-    selectedAttachments.push(
-        file
-    );
-
-
-    closeTweteCamera();
-
-
-    renderAttachmentPreview();
-
-}
-
-
-/* =========================================
-   CAMERA CLEANUP
-========================================= */
-
-window.addEventListener(
-    "beforeunload",
-    function () {
-
-        closeTweteCamera();
-
-    }
-);
 
 
 /* =========================================
@@ -3115,9 +1681,7 @@ function renderAttachmentPreview() {
         !preview ||
         !content
     ) {
-
         return;
-
     }
 
 
@@ -3152,10 +1716,13 @@ function renderAttachmentPreview() {
                     "div"
                 );
 
-
             item.className =
                 "attachment-item";
 
+
+            /*
+                IMAGE
+            */
 
             if (
                 file.type.startsWith(
@@ -3168,40 +1735,27 @@ function renderAttachmentPreview() {
                         "img"
                     );
 
-
                 image.className =
                     "attachment-preview-image";
 
-
-                const objectUrl =
+                image.src =
                     URL.createObjectURL(
                         file
                     );
 
-
-                image.src =
-                    objectUrl;
-
-
                 image.alt =
                     file.name;
-
-
-                image.onload =
-                    function () {
-
-                        URL.revokeObjectURL(
-                            objectUrl
-                        );
-
-                    };
-
 
                 item.appendChild(
                     image
                 );
 
             }
+
+
+            /*
+                VIDEO
+            */
 
             else if (
                 file.type.startsWith(
@@ -3214,48 +1768,30 @@ function renderAttachmentPreview() {
                         "video"
                     );
 
-
                 video.className =
                     "attachment-preview-video";
 
-
-                const objectUrl =
+                video.src =
                     URL.createObjectURL(
                         file
                     );
 
-
-                video.src =
-                    objectUrl;
-
-
                 video.muted =
                     true;
 
-
                 video.playsInline =
                     true;
-
-
-                video.preload =
-                    "metadata";
-
-
-                video.onloadeddata =
-                    function () {
-
-                        URL.revokeObjectURL(
-                            objectUrl
-                        );
-
-                    };
-
 
                 item.appendChild(
                     video
                 );
 
             }
+
+
+            /*
+                OTHER FILE
+            */
 
             else {
 
@@ -3264,60 +1800,36 @@ function renderAttachmentPreview() {
                         "div"
                     );
 
-
                 icon.className =
                     "attachment-file-icon";
 
-
                 icon.textContent =
-                    getFileIcon(
-                        file.type
-                    );
-
+                    "📄";
 
                 item.appendChild(
                     icon
                 );
 
-
-                const fileName =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                fileName.className =
-                    "attachment-file-name";
-
-
-                fileName.textContent =
-                    file.name;
-
-
-                item.appendChild(
-                    fileName
-                );
-
             }
 
+
+            /*
+                Remove button
+            */
 
             const remove =
                 document.createElement(
                     "button"
                 );
 
-
             remove.type =
                 "button";
-
 
             remove.className =
                 "attachment-remove";
 
-
             remove.textContent =
                 "×";
-
 
             remove.setAttribute(
                 "aria-label",
@@ -3480,10 +1992,8 @@ function showNoConversation() {
             "div"
         );
 
-
     empty.className =
         "no-messages";
-
 
     empty.textContent =
         "No conversation found yet.";
@@ -3524,10 +2034,8 @@ function showError(
             "div"
         );
 
-
     errorElement.className =
         "no-messages";
-
 
     errorElement.textContent =
         message;
@@ -3549,7 +2057,9 @@ function formatTime(
 ) {
 
     const date =
-        new Date(value);
+        new Date(
+            value
+        );
 
 
     if (
