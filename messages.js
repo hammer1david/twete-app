@@ -2524,8 +2524,63 @@ function appendMessageToChat(
 
 
     /*
-        Remove "No messages yet."
-        if this was the first message.
+        Prevent duplicate messages
+    */
+
+    const alreadyExists =
+        messagesCache.some(
+            function (
+                existing
+            ) {
+
+                return (
+                    String(
+                        existing.id
+                    ) ===
+                    String(
+                        message.id
+                    )
+                );
+
+            }
+        );
+
+
+    if (alreadyExists) {
+        return;
+    }
+
+
+    /*
+        Add message to local cache
+    */
+
+    messagesCache.push(
+        message
+    );
+
+
+    messagesCache.sort(
+        function (
+            a,
+            b
+        ) {
+
+            return (
+                new Date(
+                    a.created_at
+                ) -
+                new Date(
+                    b.created_at
+                )
+            );
+
+        }
+    );
+
+
+    /*
+        Remove empty state
     */
 
     const empty =
@@ -2542,419 +2597,15 @@ function appendMessageToChat(
 
 
     /*
-        Prevent duplicate rendering.
-    */
-
-    const existing =
-        list.querySelector(
-            `[data-message-id="${message.id}"]`
-        );
-
-
-    if (existing) {
-
-        return;
-
-    }
-
-
-    const sent =
-        String(
-            message.sender_id
-        ) ===
-        String(
-            currentUser.id
-        );
-
-
-    /*
-        MESSAGE ROW
+        Create message using
+        the SAME renderer as
+        the rest of the chat.
     */
 
     const row =
-        document.createElement(
-            "div"
+        createMessageElement(
+            message
         );
-
-    row.className =
-        sent
-            ? "message-row sent"
-            : "message-row received";
-
-
-    row.dataset.messageId =
-        message.id;
-
-
-    /*
-        MESSAGE BUBBLE
-    */
-
-    const bubble =
-        document.createElement(
-            "div"
-        );
-
-    bubble.className =
-        "message-bubble";
-
-
-    /*
-        MESSAGE TEXT
-    */
-
-    if (
-        message.message &&
-        message.message.trim()
-    ) {
-
-        const text =
-            document.createElement(
-                "div"
-            );
-
-        text.className =
-            "message-text";
-
-        text.textContent =
-            message.message;
-
-        bubble.appendChild(
-            text
-        );
-
-    }
-
-
-    /*
-        ATTACHMENTS
-    */
-
-    if (
-        message.attachments &&
-        message.attachments.length
-    ) {
-
-        const attachmentContainer =
-            document.createElement(
-                "div"
-            );
-
-        attachmentContainer.className =
-            "message-attachments";
-
-
-        message.attachments.forEach(
-            function (
-                attachment
-            ) {
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-                item.className =
-                    "message-attachment";
-
-
-                /*
-                    IMAGE
-                */
-
-                if (
-                    attachment.file_type &&
-                    attachment.file_type.startsWith(
-                        "image/"
-                    ) &&
-                    attachment.view_url
-                ) {
-
-                    const image =
-                        document.createElement(
-                            "img"
-                        );
-
-                    image.className =
-                        "message-attachment-image";
-
-                    image.src =
-                        attachment.view_url;
-
-                    image.alt =
-                        attachment.file_name ||
-                        "Attachment";
-
-                    image.loading =
-                        "lazy";
-
-
-                    image.addEventListener(
-                        "click",
-                        function () {
-
-                            window.open(
-                                attachment.view_url,
-                                "_blank"
-                            );
-
-                        }
-                    );
-
-
-                    item.appendChild(
-                        image
-                    );
-
-                }
-
-
-                /*
-                    VIDEO
-                */
-
-                else if (
-                    attachment.file_type &&
-                    attachment.file_type.startsWith(
-                        "video/"
-                    ) &&
-                    attachment.view_url
-                ) {
-
-                    const video =
-                        document.createElement(
-                            "video"
-                        );
-
-                    video.className =
-                        "message-attachment-video";
-
-                    video.src =
-                        attachment.view_url;
-
-                    video.controls =
-                        true;
-
-                    video.playsInline =
-                        true;
-
-                    video.preload =
-                        "metadata";
-
-
-                    item.appendChild(
-                        video
-                    );
-
-                }
-
-
-                /*
-                    OTHER FILE
-                */
-
-                else {
-
-                    const fileBox =
-                        document.createElement(
-                            "div"
-                        );
-
-                    fileBox.className =
-                        "message-file";
-
-
-                    const icon =
-                        document.createElement(
-                            "div"
-                        );
-
-                    icon.className =
-                        "message-file-icon";
-
-                    icon.textContent =
-                        getFileIcon(
-                            attachment.file_type
-                        );
-
-
-                    const information =
-                        document.createElement(
-                            "div"
-                        );
-
-                    information.className =
-                        "message-file-info";
-
-
-                    const fileName =
-                        document.createElement(
-                            "div"
-                        );
-
-                    fileName.className =
-                        "message-file-name";
-
-                    fileName.textContent =
-                        attachment.file_name ||
-                        "File";
-
-
-                    const fileSize =
-                        document.createElement(
-                            "div"
-                        );
-
-                    fileSize.className =
-                        "message-file-size";
-
-                    fileSize.textContent =
-                        formatFileSize(
-                            attachment.file_size
-                        );
-
-
-                    information.appendChild(
-                        fileName
-                    );
-
-                    information.appendChild(
-                        fileSize
-                    );
-
-
-                    fileBox.appendChild(
-                        icon
-                    );
-
-                    fileBox.appendChild(
-                        information
-                    );
-
-
-                    item.appendChild(
-                        fileBox
-                    );
-
-                }
-
-
-                /*
-                    DOWNLOAD
-                */
-
-                if (
-                    attachment.download_url
-                ) {
-
-                    const download =
-                        document.createElement(
-                            "a"
-                        );
-
-                    download.className =
-                        "message-attachment-download";
-
-                    download.href =
-                        attachment.download_url;
-
-                    download.textContent =
-                        "Download";
-
-                    download.target =
-                        "_blank";
-
-                    download.rel =
-                        "noopener noreferrer";
-
-                    download.setAttribute(
-                        "download",
-                        attachment.file_name ||
-                        ""
-                    );
-
-
-                    item.appendChild(
-                        download
-                    );
-
-                }
-
-
-                attachmentContainer.appendChild(
-                    item
-                );
-
-            }
-        );
-
-
-        bubble.appendChild(
-            attachmentContainer
-        );
-
-    }
-
-
-    /*
-        TIME + CHECKS
-    */
-
-    const meta =
-        document.createElement(
-            "div"
-        );
-
-    meta.className =
-        sent
-            ? "message-meta"
-            : "message-time";
-
-
-    const time =
-        document.createElement(
-            "span"
-        );
-
-    time.textContent =
-        formatTime(
-            message.created_at
-        );
-
-
-    meta.appendChild(
-        time
-    );
-
-
-    if (sent) {
-
-        const checks =
-            document.createElement(
-                "span"
-            );
-
-        checks.className =
-            "message-checks";
-
-        checks.textContent =
-            "✓✓";
-
-        meta.appendChild(
-            checks
-        );
-
-    }
-
-
-    bubble.appendChild(
-        meta
-    );
-
-
-    row.appendChild(
-        bubble
-    );
 
 
     list.appendChild(
@@ -2963,7 +2614,7 @@ function appendMessageToChat(
 
 
     /*
-        Scroll after DOM insertion.
+        Keep newest message visible
     */
 
     scrollToBottom();
