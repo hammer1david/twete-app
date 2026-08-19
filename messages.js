@@ -1049,14 +1049,104 @@ if (
     message.message_attachments.length > 0
 ) {
 
+    const imageAttachments =
+        message.message_attachments.filter(
+            function (item) {
+
+                return (
+                    item.file_type &&
+                    item.file_type.startsWith(
+                        "image/"
+                    )
+                );
+
+            }
+        );
+
+
+    const otherAttachments =
+        message.message_attachments.filter(
+            function (item) {
+
+                return !(
+                    item.file_type &&
+                    item.file_type.startsWith(
+                        "image/"
+                    )
+                );
+
+            }
+        );
+
+
     /*
-        New attachment system.
-        A message can contain multiple files.
+        IMAGE GRID
+    */
+
+    if (
+        imageAttachments.length > 0
+    ) {
+
+        const imageGrid =
+            document.createElement(
+                "div"
+            );
+
+        imageGrid.className =
+            "message-image-grid";
+
+        imageGrid.dataset.count =
+            String(
+                imageAttachments.length
+            );
+
+
+        for (
+            const attachmentData of
+            imageAttachments
+        ) {
+
+            const attachment =
+                await createMessageAttachment({
+                    attachment_path:
+                        attachmentData.storage_path,
+
+                    attachment_name:
+                        attachmentData.file_name,
+
+                    attachment_type:
+                        attachmentData.file_type,
+
+                    attachment_size:
+                        attachmentData.file_size
+                });
+
+
+            if (attachment) {
+
+                imageGrid.appendChild(
+                    attachment
+                );
+
+            }
+
+        }
+
+
+        bubble.appendChild(
+            imageGrid
+        );
+
+    }
+
+
+    /*
+        DOCUMENTS / VIDEOS
     */
 
     for (
         const attachmentData of
-        message.message_attachments
+        otherAttachments
     ) {
 
         const attachment =
@@ -1089,13 +1179,6 @@ if (
     message.attachment_path
 ) {
 
-    /*
-        Fallback for old messages.
-
-        Existing messages that still use
-        attachment_path continue to work.
-    */
-
     const attachment =
         await createMessageAttachment(
             message
@@ -1111,6 +1194,7 @@ if (
     }
 
 }
+
 
 
     /*
