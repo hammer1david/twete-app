@@ -1536,19 +1536,16 @@ async function sendMessage() {
         messageInput.value.trim();
 
 
-    const attachment =
-        selectedAttachments.length > 0
-            ? selectedAttachments[0]
-            : null;
+    const attachments =
+        selectedAttachments.slice(
+            0,
+            4
+        );
 
-
-    /*
-        Nothing to send
-    */
 
     if (
         !message &&
-        !attachment
+        attachments.length === 0
     ) {
         return;
     }
@@ -1558,27 +1555,53 @@ async function sendMessage() {
     sendButton.disabled = true;
 
 
-    let attachmentData = {
-        attachment_path: null,
-        attachment_name: null,
-        attachment_type: null,
-        attachment_size: null
-    };
+    const uploadedAttachments = [];
 
 
     /*
-        Upload attachment first
+        Upload all attachments first
     */
 
-    if (attachment) {
+    for (
+        let index = 0;
+        index < attachments.length;
+        index++
+    ) {
+
+        const file =
+            attachments[index];
+
 
         const uploadResult =
             await uploadChatAttachment(
-                attachment
+                file
             );
 
 
         if (!uploadResult) {
+
+            /*
+                Cleanup already uploaded files
+                if one upload fails.
+            */
+
+            if (
+                uploadedAttachments.length > 0
+            ) {
+
+                await supabaseClient
+                    .storage
+                    .from("chat-attachments")
+                    .remove(
+                        uploadedAttachments.map(
+                            function (item) {
+                                return item.attachment_path;
+                            }
+                        )
+                    );
+
+            }
+
 
             isSending = false;
             sendButton.disabled = false;
@@ -1587,14 +1610,28 @@ async function sendMessage() {
         }
 
 
-        attachmentData =
-            uploadResult;
+        uploadedAttachments.push({
+            ...uploadResult,
+            position:
+                index
+        });
+
     }
 
 
     /*
-        Create message
+        Create the message first.
+
+        We keep the first attachment in the
+        old columns temporarily for backwards
+        compatibility.
     */
+
+    const firstAttachment =
+        uploadedAttachments.length > 0
+            ? uploadedAttachments[0]
+            : null;
+
 
     const {
         data,
@@ -1614,16 +1651,24 @@ async function sendMessage() {
                     message || null,
 
                 attachment_path:
-                    attachmentData.attachment_path,
+                    firstAttachment
+                        ? firstAttachment.attachment_path
+                        : null,
 
                 attachment_name:
-                    attachmentData.attachment_name,
+                    firstAttachment
+                        ? firstAttachment.attachment_name
+                        : null,
 
                 attachment_type:
-                    attachmentData.attachment_type,
+                    firstAttachment
+                        ? firstAttachment.attachment_type
+                        : null,
 
                 attachment_size:
-                    attachmentData.attachment_size
+                    firstAttachment
+                        ? firstAttachment.attachment_size
+                        : null
 
             })
             .select(
@@ -1631,11 +1676,6 @@ async function sendMessage() {
             )
             .single();
 
-
-    /*
-        If message creation fails,
-        remove the uploaded orphan file.
-    */
 
     if (error) {
 
@@ -1646,15 +1686,19 @@ async function sendMessage() {
 
 
         if (
-            attachmentData.attachment_path
+            uploadedAttachments.length > 0
         ) {
 
             await supabaseClient
                 .storage
                 .from("chat-attachments")
-                .remove([
-                    attachmentData.attachment_path
-                ]);
+                .remove(
+                    uploadedAttachments.map(
+                        function (item) {
+                            return item.attachment_path;
+                        }
+                    )
+                );
 
         }
 
@@ -1667,7 +1711,119 @@ async function sendMessage() {
 
 
     /*
-        Clear composer only after success
+        Save attachment rows
+    */
+
+    if (
+        uploadedAttachments.length > 0
+    ) {
+
+        const attachmentRows =
+            uploadedAttachments.map(
+                function (item) {
+
+                    return {
+
+                        message_id:
+                            data.id,
+
+                        storage_path:
+                            item.attachment_path,
+
+                        file_name:
+                            item.attachment_name,
+
+                        file_type:
+                            item.attachment_type,
+
+                        file_size:
+                            item.attachment_size,
+
+                        position:
+                            item.position
+
+                    };
+
+                }
+            );
+
+
+        const {
+            data: savedAttachments,
+            error: attachmentError
+        } =
+            await supabaseClient
+                .from("message_attachments")
+                .insert(
+                    attachmentRows
+                )
+                .select(
+                    "id, storage_path, file_name, file_type, file_size, position"
+                );
+
+
+        if (attachmentError) {
+
+            console.error(
+                "Save message attachments error:",
+                attachmentError
+            );
+
+
+            /*
+                Remove message and files
+                if attachment DB save fails.
+            */
+
+            await supabaseClient
+                .from("messages")
+                .delete()
+                .eq(
+                    "id",
+                    data.id
+                );
+
+
+            await supabaseClient
+                .storage
+                .from("chat-attachments")
+                .remove(
+                    uploadedAttachments.map(
+                        function (item) {
+                            return item.attachment_path;
+                        }
+                    )
+                );
+
+
+            isSending = false;
+            sendButton.disabled = false;
+
+            return;
+        }
+
+
+        data.message_attachments =
+            savedAttachments.sort(
+                function (a, b) {
+
+                    return (
+                        (a.position || 0) -
+                        (b.position || 0)
+                    );
+
+                }
+            );
+
+    } else {
+
+        data.message_attachments = [];
+
+    }
+
+
+    /*
+        Clear composer
     */
 
     messageInput.value = "";
@@ -1684,27 +1840,26 @@ async function sendMessage() {
 
 
     /*
-        Render immediately.
-        Realtime duplicate protection
-        prevents duplicate messages.
+        Render immediately
     */
 
     await renderMessage(
-    data
-);
+        data
+    );
 
 
-/*
-    Scroll only after the complete
-    message structure exists.
-*/
+    scrollToBottom(
+        false
+    );
 
-scrollToBottom(
-    false
-);
-   sendChatPush(
-    data
-);
+
+    /*
+        Push notification
+    */
+
+    sendChatPush(
+        data
+    );
 
 }
 
