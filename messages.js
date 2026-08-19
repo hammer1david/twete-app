@@ -3202,7 +3202,218 @@ if (
     }
 
 }
+/* =========================================
+   COMPRESS CAMERA IMAGE
+========================================= */
 
+async function compressCameraImage(
+    file
+) {
+
+    /*
+        Only process images.
+    */
+
+    if (
+        !file.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        return file;
+
+    }
+
+
+    /*
+        Read image.
+    */
+
+    const objectUrl =
+        URL.createObjectURL(
+            file
+        );
+
+
+    try {
+
+        const image =
+            new Image();
+
+
+        await new Promise(
+            function (
+                resolve,
+                reject
+            ) {
+
+                image.onload =
+                    resolve;
+
+                image.onerror =
+                    reject;
+
+                image.src =
+                    objectUrl;
+
+            }
+        );
+
+
+        /*
+            Maximum camera resolution
+            for mobile uploads.
+        */
+
+        const MAX_SIZE =
+            1920;
+
+
+        let width =
+            image.naturalWidth;
+
+        let height =
+            image.naturalHeight;
+
+
+        /*
+            Scale down large images.
+        */
+
+        if (
+            width >
+            MAX_SIZE ||
+            height >
+            MAX_SIZE
+        ) {
+
+            if (
+                width >
+                height
+            ) {
+
+                height =
+                    Math.round(
+                        height *
+                        MAX_SIZE /
+                        width
+                    );
+
+                width =
+                    MAX_SIZE;
+
+            } else {
+
+                width =
+                    Math.round(
+                        width *
+                        MAX_SIZE /
+                        height
+                    );
+
+                height =
+                    MAX_SIZE;
+
+            }
+
+        }
+
+
+        /*
+            Canvas.
+        */
+
+        const canvas =
+            document.createElement(
+                "canvas"
+            );
+
+
+        canvas.width =
+            width;
+
+        canvas.height =
+            height;
+
+
+        const context =
+            canvas.getContext(
+                "2d"
+            );
+
+
+        if (!context) {
+
+            return file;
+
+        }
+
+
+        context.drawImage(
+            image,
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        /*
+            Convert to JPEG.
+        */
+
+        const blob =
+            await new Promise(
+                function (
+                    resolve
+                ) {
+
+                    canvas.toBlob(
+                        resolve,
+                        "image/jpeg",
+                        0.82
+                    );
+
+                }
+            );
+
+
+        if (!blob) {
+
+            return file;
+
+        }
+
+
+        return new File(
+            [
+                blob
+            ],
+            file.name
+                .replace(
+                    /\.[^/.]+$/,
+                    ""
+                ) +
+                ".jpg",
+            {
+                type:
+                    "image/jpeg",
+
+                lastModified:
+                    Date.now()
+            }
+        );
+
+
+    } finally {
+
+        URL.revokeObjectURL(
+            objectUrl
+        );
+
+    }
+
+}
 
 /* =========================================
    RENDER ATTACHMENT PREVIEW
