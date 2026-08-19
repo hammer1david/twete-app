@@ -2304,74 +2304,98 @@ async function sendMessage() {
 
 
         /*
-            Generate URLs for the
-            attachments we just sent.
-        */
+    Generate URLs for the
+    attachments we just sent.
+*/
 
-        await Promise.all(
-            uploadedAttachments.map(
-                async function (
-                    attachment
+if (
+    uploadedAttachments.length
+) {
+
+    await Promise.all(
+        uploadedAttachments.map(
+            async function (
+                attachment
+            ) {
+
+                if (
+                    !attachment ||
+                    !attachment.file_path
                 ) {
 
+                    return;
+
+                }
+
+
+                try {
+
+                    const viewResult =
+                        await messagesSupabase
+                            .storage
+                            .from(
+                                "message-attachments"
+                            )
+                            .createSignedUrl(
+                                attachment.file_path,
+                                3600
+                            );
+
+
                     if (
-                        !attachment.file_path
+                        viewResult &&
+                        viewResult.data &&
+                        viewResult.data.signedUrl
                     ) {
 
-                        return;
+                        attachment.view_url =
+                            viewResult.data.signedUrl;
 
                     }
 
 
-                    const [
-                        viewResult,
-                        downloadResult
-                    ] =
-                        await Promise.all([
-
-                            messagesSupabase
-                                .storage
-                                .from(
-                                    "message-attachments"
-                                )
-                                .createSignedUrl(
-                                    attachment.file_path,
-                                    3600
-                                ),
-
-                            messagesSupabase
-                                .storage
-                                .from(
-                                    "message-attachments"
-                                )
-                                .createSignedUrl(
-                                    attachment.file_path,
-                                    3600,
-                                    {
-                                        download:
-                                            attachment.file_name
-                                    }
-                                )
-
-                        ]);
+                    const downloadResult =
+                        await messagesSupabase
+                            .storage
+                            .from(
+                                "message-attachments"
+                            )
+                            .createSignedUrl(
+                                attachment.file_path,
+                                3600,
+                                {
+                                    download:
+                                        attachment.file_name
+                                }
+                            );
 
 
-                    attachment.view_url =
-                        viewResult
-                            .data
-                            ?.signedUrl ||
-                        null;
+                    if (
+                        downloadResult &&
+                        downloadResult.data &&
+                        downloadResult.data.signedUrl
+                    ) {
 
+                        attachment.download_url =
+                            downloadResult.data.signedUrl;
 
-                    attachment.download_url =
-                        downloadResult
-                            .data
-                            ?.signedUrl ||
-                        null;
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Attachment URL error:",
+                        error
+                    );
 
                 }
-            )
-        );
+
+            }
+        )
+    );
+
+}
+                
 
 
         /*
