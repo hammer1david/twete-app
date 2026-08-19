@@ -3454,11 +3454,7 @@ deleteMessageButton
 ========================================= */
 
 async function deleteSelectedMessage() {
-alert("Delete clicked");
-   console.log(
-    "DELETE BUTTON CLICKED",
-    selectedMessageData
-);
+
     if (
         !selectedMessageData ||
         !currentUser
@@ -3482,10 +3478,7 @@ alert("Delete clicked");
     const messageId =
         selectedMessageData.id;
 
-alert(
-    "Message ID: " +
-    messageId
-);
+
     /*
         Collect storage files before deleting
         the database message.
@@ -3564,13 +3557,7 @@ alert(
         .select(
             "id"
         );
-alert(
-    "Delete result:\n" +
-    "Error: " +
-    JSON.stringify(error) +
-    "\nData: " +
-    JSON.stringify(deletedMessages)
-);
+
 
 if (error) {
 
