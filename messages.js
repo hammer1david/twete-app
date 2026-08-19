@@ -3012,81 +3012,78 @@ if (
 
     cameraInput.addEventListener(
         "change",
-        async function () {
+        function () {
 
             const file =
-                cameraInput.files?.[0];
+                cameraInput.files &&
+                cameraInput.files[0];
 
 
             if (!file) {
+
+                cameraInput.value =
+                    "";
+
                 return;
-            }
-
-
-            try {
-
-                /*
-                    Compress camera image
-                    before keeping it in memory.
-                */
-
-                const compressedFile =
-                    await compressCameraImage(
-                        file
-                    );
-
-
-                const remainingSlots =
-                    4 -
-                    selectedAttachments.length;
-
-
-                if (
-                    remainingSlots <= 0
-                ) {
-
-                    alert(
-                        "You can attach a maximum of 4 files."
-                    );
-
-                    cameraInput.value =
-                        "";
-
-                    return;
-
-                }
-
-
-                selectedAttachments.push(
-                    compressedFile
-                );
-
-
-                renderAttachmentPreview();
-
-
-            } catch (error) {
-
-                console.error(
-                    "Camera image processing error:",
-                    error
-                );
-
-
-                /*
-                    If compression fails,
-                    use the original file.
-                */
-
-                selectedAttachments.push(
-                    file
-                );
-
-
-                renderAttachmentPreview();
 
             }
 
+
+            /*
+                IMPORTANT:
+
+                Take the camera File directly.
+
+                Do not create an Image,
+                Canvas or Object URL here.
+
+                This avoids additional memory
+                usage on mobile devices.
+            */
+
+            const remainingSlots =
+                4 -
+                selectedAttachments.length;
+
+
+            if (
+                remainingSlots <= 0
+            ) {
+
+                alert(
+                    "You can attach a maximum of 4 files."
+                );
+
+                cameraInput.value =
+                    "";
+
+                return;
+
+            }
+
+
+            /*
+                Add the original camera File
+                directly to the attachments.
+            */
+
+            selectedAttachments.push(
+                file
+            );
+
+
+            /*
+                Show the normal attachment
+                preview.
+            */
+
+            renderAttachmentPreview();
+
+
+            /*
+                Reset the input so the
+                camera can be opened again.
+            */
 
             cameraInput.value =
                 "";
@@ -3202,218 +3199,7 @@ if (
     }
 
 }
-/* =========================================
-   COMPRESS CAMERA IMAGE
-========================================= */
 
-async function compressCameraImage(
-    file
-) {
-
-    /*
-        Only process images.
-    */
-
-    if (
-        !file.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        return file;
-
-    }
-
-
-    /*
-        Read image.
-    */
-
-    const objectUrl =
-        URL.createObjectURL(
-            file
-        );
-
-
-    try {
-
-        const image =
-            new Image();
-
-
-        await new Promise(
-            function (
-                resolve,
-                reject
-            ) {
-
-                image.onload =
-                    resolve;
-
-                image.onerror =
-                    reject;
-
-                image.src =
-                    objectUrl;
-
-            }
-        );
-
-
-        /*
-            Maximum camera resolution
-            for mobile uploads.
-        */
-
-        const MAX_SIZE =
-            1920;
-
-
-        let width =
-            image.naturalWidth;
-
-        let height =
-            image.naturalHeight;
-
-
-        /*
-            Scale down large images.
-        */
-
-        if (
-            width >
-            MAX_SIZE ||
-            height >
-            MAX_SIZE
-        ) {
-
-            if (
-                width >
-                height
-            ) {
-
-                height =
-                    Math.round(
-                        height *
-                        MAX_SIZE /
-                        width
-                    );
-
-                width =
-                    MAX_SIZE;
-
-            } else {
-
-                width =
-                    Math.round(
-                        width *
-                        MAX_SIZE /
-                        height
-                    );
-
-                height =
-                    MAX_SIZE;
-
-            }
-
-        }
-
-
-        /*
-            Canvas.
-        */
-
-        const canvas =
-            document.createElement(
-                "canvas"
-            );
-
-
-        canvas.width =
-            width;
-
-        canvas.height =
-            height;
-
-
-        const context =
-            canvas.getContext(
-                "2d"
-            );
-
-
-        if (!context) {
-
-            return file;
-
-        }
-
-
-        context.drawImage(
-            image,
-            0,
-            0,
-            width,
-            height
-        );
-
-
-        /*
-            Convert to JPEG.
-        */
-
-        const blob =
-            await new Promise(
-                function (
-                    resolve
-                ) {
-
-                    canvas.toBlob(
-                        resolve,
-                        "image/jpeg",
-                        0.82
-                    );
-
-                }
-            );
-
-
-        if (!blob) {
-
-            return file;
-
-        }
-
-
-        return new File(
-            [
-                blob
-            ],
-            file.name
-                .replace(
-                    /\.[^/.]+$/,
-                    ""
-                ) +
-                ".jpg",
-            {
-                type:
-                    "image/jpeg",
-
-                lastModified:
-                    Date.now()
-            }
-        );
-
-
-    } finally {
-
-        URL.revokeObjectURL(
-            objectUrl
-        );
-
-    }
-
-}
 
 /* =========================================
    RENDER ATTACHMENT PREVIEW
