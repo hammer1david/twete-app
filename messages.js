@@ -899,7 +899,7 @@ async function loadMessages() {
         const message of data
     ) {
 
-        renderMessage(
+        await renderMessage(
             message
         );
 
@@ -1528,14 +1528,19 @@ async function sendMessage() {
         prevents duplicate messages.
     */
 
-    renderMessage(
-        data
-    );
+    await renderMessage(
+    data
+);
 
 
-    scrollToBottom(
-        true
-    );
+/*
+    Scroll only after the complete
+    message structure exists.
+*/
+
+scrollToBottom(
+    false
+);
 
 }
 
