@@ -11,7 +11,7 @@ const MESSAGES_SUPABASE_URL =
     "https://uhbhsyuodizauwhhdffu.supabase.co";
 
 const MESSAGES_SUPABASE_KEY =
-    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSN";
 
 const messagesSupabase =
     window.supabase.createClient(
@@ -28,8 +28,10 @@ let currentUser = null;
 let currentRole = null;
 let conversationUserId = null;
 let realtimeChannel = null;
+
 let selectedAttachments = [];
 let messagesCache = [];
+
 let isInitialLoading = true;
 
 
@@ -120,7 +122,6 @@ async function initialiseMessages() {
 
         scrollToBottom();
 
-
     } catch (error) {
 
         console.error(
@@ -144,9 +145,7 @@ async function initialiseMessages() {
 function showChatLoading() {
 
     const chat =
-        document.querySelector(
-            ".chat"
-        );
+        document.querySelector(".chat");
 
 
     if (!chat) {
@@ -171,9 +170,7 @@ function showChatLoading() {
 
 
     loader =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     loader.id =
@@ -192,9 +189,7 @@ function showChatLoading() {
     `;
 
 
-    chat.appendChild(
-        loader
-    );
+    chat.appendChild(loader);
 
 }
 
@@ -202,9 +197,7 @@ function showChatLoading() {
 function hideChatLoading() {
 
     const chat =
-        document.querySelector(
-            ".chat"
-        );
+        document.querySelector(".chat");
 
 
     if (!chat) {
@@ -308,8 +301,7 @@ async function loadCurrentProfile() {
 async function loadConversationUser() {
 
     if (
-        currentRole ===
-        "athlete"
+        currentRole === "athlete"
     ) {
 
         await loadCoachForAthlete();
@@ -320,8 +312,7 @@ async function loadConversationUser() {
 
 
     if (
-        currentRole ===
-        "coach"
+        currentRole === "coach"
     ) {
 
         await loadAthleteForCoach();
@@ -604,9 +595,7 @@ function setProfileHeader(
             "";
 
         const image =
-            document.createElement(
-                "img"
-            );
+            document.createElement("img");
 
 
         image.src =
@@ -832,15 +821,8 @@ async function loadMessages(
 
 
                 if (
-                    viewResult.error
+                    !viewResult.error
                 ) {
-
-                    console.error(
-                        "View signed URL error:",
-                        viewResult.error
-                    );
-
-                } else {
 
                     attachment.view_url =
                         viewResult
@@ -852,15 +834,8 @@ async function loadMessages(
 
 
                 if (
-                    downloadResult.error
+                    !downloadResult.error
                 ) {
-
-                    console.error(
-                        "Download signed URL error:",
-                        downloadResult.error
-                    );
-
-                } else {
 
                     attachment.download_url =
                         downloadResult
@@ -972,14 +947,11 @@ function renderMessages(
     if (!messages.length) {
 
         const empty =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         empty.className =
             "no-messages";
-
 
         empty.textContent =
             "No messages yet.";
@@ -988,7 +960,6 @@ function renderMessages(
         list.appendChild(
             empty
         );
-
 
         return;
 
@@ -1004,14 +975,10 @@ function renderMessages(
             message
         ) {
 
-            const row =
+            fragment.appendChild(
                 createMessageElement(
                     message
-                );
-
-
-            fragment.appendChild(
-                row
+                )
             );
 
         }
@@ -1050,9 +1017,7 @@ function createMessageElement(
 
 
     const row =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     row.className =
@@ -1066,9 +1031,7 @@ function createMessageElement(
 
 
     const bubble =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     bubble.className =
@@ -1081,9 +1044,7 @@ function createMessageElement(
     ) {
 
         const text =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         text.className =
@@ -1107,9 +1068,7 @@ function createMessageElement(
     ) {
 
         const attachmentContainer =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         attachmentContainer.className =
@@ -1121,14 +1080,10 @@ function createMessageElement(
                 attachment
             ) {
 
-                const item =
+                attachmentContainer.appendChild(
                     createAttachmentElement(
                         attachment
-                    );
-
-
-                attachmentContainer.appendChild(
-                    item
+                    )
                 );
 
             }
@@ -1143,9 +1098,7 @@ function createMessageElement(
 
 
     const meta =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     meta.className =
@@ -1155,9 +1108,7 @@ function createMessageElement(
 
 
     const time =
-        document.createElement(
-            "span"
-        );
+        document.createElement("span");
 
 
     time.textContent =
@@ -1174,9 +1125,7 @@ function createMessageElement(
     if (sent) {
 
         const checks =
-            document.createElement(
-                "span"
-            );
+            document.createElement("span");
 
 
         checks.className =
@@ -1218,16 +1167,12 @@ function createAttachmentElement(
 ) {
 
     const item =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     item.className =
         "message-attachment";
 
-
-    /* IMAGE */
 
     if (
         attachment.file_type &&
@@ -1238,9 +1183,7 @@ function createAttachmentElement(
     ) {
 
         const image =
-            document.createElement(
-                "img"
-            );
+            document.createElement("img");
 
 
         image.className =
@@ -1279,9 +1222,6 @@ function createAttachmentElement(
 
     }
 
-
-    /* VIDEO */
-
     else if (
         attachment.file_type &&
         attachment.file_type.startsWith(
@@ -1291,9 +1231,7 @@ function createAttachmentElement(
     ) {
 
         const video =
-            document.createElement(
-                "video"
-            );
+            document.createElement("video");
 
 
         video.className =
@@ -1307,10 +1245,8 @@ function createAttachmentElement(
         video.controls =
             true;
 
-
         video.playsInline =
             true;
-
 
         video.preload =
             "metadata";
@@ -1322,15 +1258,10 @@ function createAttachmentElement(
 
     }
 
-
-    /* OTHER FILE */
-
     else {
 
         const fileBox =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         fileBox.className =
@@ -1338,9 +1269,7 @@ function createAttachmentElement(
 
 
         const icon =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         icon.className =
@@ -1354,9 +1283,7 @@ function createAttachmentElement(
 
 
         const information =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         information.className =
@@ -1364,9 +1291,7 @@ function createAttachmentElement(
 
 
         const fileName =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         fileName.className =
@@ -1379,9 +1304,7 @@ function createAttachmentElement(
 
 
         const fileSize =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         fileSize.className =
@@ -1398,7 +1321,6 @@ function createAttachmentElement(
             fileName
         );
 
-
         information.appendChild(
             fileSize
         );
@@ -1407,7 +1329,6 @@ function createAttachmentElement(
         fileBox.appendChild(
             icon
         );
-
 
         fileBox.appendChild(
             information
@@ -1421,16 +1342,12 @@ function createAttachmentElement(
     }
 
 
-    /* DOWNLOAD */
-
     if (
         attachment.download_url
     ) {
 
         const download =
-            document.createElement(
-                "a"
-            );
+            document.createElement("a");
 
 
         download.className =
@@ -1455,8 +1372,7 @@ function createAttachmentElement(
 
         download.setAttribute(
             "download",
-            attachment.file_name ||
-            ""
+            attachment.file_name || ""
         );
 
 
@@ -1486,69 +1402,41 @@ function getFileIcon(
 
 
     if (
-        fileType.includes(
-            "pdf"
-        )
+        fileType.includes("pdf")
     ) {
-
         return "📕";
-
     }
 
 
     if (
-        fileType.includes(
-            "word"
-        ) ||
-        fileType.includes(
-            "document"
-        )
+        fileType.includes("word") ||
+        fileType.includes("document")
     ) {
-
         return "📘";
-
     }
 
 
     if (
-        fileType.includes(
-            "sheet"
-        ) ||
-        fileType.includes(
-            "excel"
-        ) ||
-        fileType.includes(
-            "spreadsheet"
-        )
+        fileType.includes("sheet") ||
+        fileType.includes("excel") ||
+        fileType.includes("spreadsheet")
     ) {
-
         return "📗";
-
     }
 
 
     if (
-        fileType.includes(
-            "zip"
-        ) ||
-        fileType.includes(
-            "compressed"
-        )
+        fileType.includes("zip") ||
+        fileType.includes("compressed")
     ) {
-
         return "🗜️";
-
     }
 
 
     if (
-        fileType.startsWith(
-            "audio/"
-        )
+        fileType.startsWith("audio/")
     ) {
-
         return "🎵";
-
     }
 
 
@@ -1577,15 +1465,11 @@ function formatFileSize(
 
 
     const size =
-        Number(
-            bytes
-        );
+        Number(bytes);
 
 
     if (
-        Number.isNaN(
-            size
-        )
+        Number.isNaN(size)
     ) {
 
         return "";
@@ -1597,10 +1481,7 @@ function formatFileSize(
         size < 1024
     ) {
 
-        return (
-            size +
-            " B"
-        );
+        return size + " B";
 
     }
 
@@ -1610,10 +1491,8 @@ function formatFileSize(
     ) {
 
         return (
-            size /
-            1024
-        ).toFixed(1) +
-        " KB";
+            size / 1024
+        ).toFixed(1) + " KB";
 
     }
 
@@ -1623,19 +1502,15 @@ function formatFileSize(
     ) {
 
         return (
-            size /
-            (1024 * 1024)
-        ).toFixed(1) +
-        " MB";
+            size / (1024 * 1024)
+        ).toFixed(1) + " MB";
 
     }
 
 
     return (
-        size /
-        (1024 * 1024 * 1024)
-    ).toFixed(1) +
-        " GB";
+        size / (1024 * 1024 * 1024)
+    ).toFixed(1) + " GB";
 
 }
 
@@ -1670,7 +1545,7 @@ function scrollToBottom() {
 
 
 /* =========================================
-   ADD SINGLE REALTIME MESSAGE
+   ADD REALTIME MESSAGE
 ========================================= */
 
 async function addRealtimeMessage(
@@ -1684,12 +1559,8 @@ async function addRealtimeMessage(
             ) {
 
                 return (
-                    String(
-                        existing.id
-                    ) ===
-                    String(
-                        message.id
-                    )
+                    String(existing.id) ===
+                    String(message.id)
                 );
 
             }
@@ -1703,11 +1574,8 @@ async function addRealtimeMessage(
 
     let attachments = [];
 
-    const maxAttempts =
-        10;
-
-    const delay =
-        200;
+    const maxAttempts = 10;
+    const delay = 200;
 
 
     for (
@@ -1803,9 +1671,7 @@ async function addRealtimeMessage(
                 if (
                     !attachment.file_path
                 ) {
-
                     return;
-
                 }
 
 
@@ -1888,12 +1754,8 @@ async function addRealtimeMessage(
         ) {
 
             return (
-                new Date(
-                    a.created_at
-                ) -
-                new Date(
-                    b.created_at
-                )
+                new Date(a.created_at) -
+                new Date(b.created_at)
             );
 
         }
@@ -1918,20 +1780,14 @@ async function addRealtimeMessage(
 
 
     if (empty) {
-
         empty.remove();
-
     }
 
 
-    const row =
+    list.appendChild(
         createMessageElement(
             message
-        );
-
-
-    list.appendChild(
-        row
+        )
     );
 
 
@@ -1939,12 +1795,8 @@ async function addRealtimeMessage(
 
 
     if (
-        String(
-            message.receiver_id
-        ) ===
-        String(
-            currentUser.id
-        )
+        String(message.receiver_id) ===
+        String(currentUser.id)
     ) {
 
         await markMessagesRead(
@@ -2005,22 +1857,15 @@ async function sendMessage() {
 
 
     if (button) {
-
-        button.disabled =
-            true;
-
+        button.disabled = true;
     }
 
 
     const filesToUpload =
-        [
-            ...selectedAttachments
-        ];
+        [...selectedAttachments];
 
 
     try {
-
-        /* STEP 1: CREATE MESSAGE */
 
         const {
             data: messageData,
@@ -2040,16 +1885,14 @@ async function sendMessage() {
                         text
 
                 })
-                .select(
-                    `
+                .select(`
                     id,
                     sender_id,
                     receiver_id,
                     message,
                     created_at,
                     read_at
-                    `
-                )
+                `)
                 .single();
 
 
@@ -2072,8 +1915,6 @@ async function sendMessage() {
         const messageId =
             messageData.id;
 
-
-        /* STEP 2: UPLOAD ATTACHMENTS */
 
         const uploadedAttachments =
             [];
@@ -2179,8 +2020,7 @@ async function sendMessage() {
                             file.size
 
                     })
-                    .select(
-                        `
+                    .select(`
                         id,
                         message_id,
                         file_url,
@@ -2189,8 +2029,7 @@ async function sendMessage() {
                         file_type,
                         file_size,
                         created_at
-                        `
-                    )
+                    `)
                     .single();
 
 
@@ -2210,8 +2049,7 @@ async function sendMessage() {
             }
 
 
-            let viewUrl =
-                null;
+            let viewUrl = null;
 
 
             const {
@@ -2247,8 +2085,7 @@ async function sendMessage() {
             }
 
 
-            let downloadUrl =
-                null;
+            let downloadUrl = null;
 
 
             const {
@@ -2328,8 +2165,6 @@ async function sendMessage() {
         }
 
 
-        /* STEP 3: BUILD MESSAGE */
-
         messageData.attachments =
             uploadedAttachments;
 
@@ -2338,8 +2173,6 @@ async function sendMessage() {
             messageData
         );
 
-
-        /* STEP 4: CLEAR COMPOSER */
 
         input.value =
             "";
@@ -2362,14 +2195,10 @@ async function sendMessage() {
             "Something went wrong while sending your message."
         );
 
-
     } finally {
 
         if (button) {
-
-            button.disabled =
-                false;
-
+            button.disabled = false;
         }
 
     }
@@ -2403,12 +2232,8 @@ function appendMessageToChat(
             ) {
 
                 return (
-                    String(
-                        existing.id
-                    ) ===
-                    String(
-                        message.id
-                    )
+                    String(existing.id) ===
+                    String(message.id)
                 );
 
             }
@@ -2432,12 +2257,8 @@ function appendMessageToChat(
         ) {
 
             return (
-                new Date(
-                    a.created_at
-                ) -
-                new Date(
-                    b.created_at
-                )
+                new Date(a.created_at) -
+                new Date(b.created_at)
             );
 
         }
@@ -2451,20 +2272,14 @@ function appendMessageToChat(
 
 
     if (empty) {
-
         empty.remove();
-
     }
 
 
-    const row =
+    list.appendChild(
         createMessageElement(
             message
-        );
-
-
-    list.appendChild(
-        row
+        )
     );
 
 
@@ -2491,10 +2306,9 @@ function subscribeToMessages() {
 
     if (realtimeChannel) {
 
-        messagesSupabase
-            .removeChannel(
-                realtimeChannel
-            );
+        messagesSupabase.removeChannel(
+            realtimeChannel
+        );
 
     }
 
@@ -2523,12 +2337,8 @@ function subscribeToMessages() {
 
 
                     if (
-                        String(
-                            message.sender_id
-                        ) ===
-                        String(
-                            currentUser.id
-                        )
+                        String(message.sender_id) ===
+                        String(currentUser.id)
                     ) {
 
                         return;
@@ -2538,33 +2348,17 @@ function subscribeToMessages() {
 
                     const belongs =
                         (
-                            String(
-                                message.sender_id
-                            ) ===
-                            String(
-                                currentUser.id
-                            ) &&
-                            String(
-                                message.receiver_id
-                            ) ===
-                            String(
-                                conversationUserId
-                            )
+                            String(message.sender_id) ===
+                            String(currentUser.id) &&
+                            String(message.receiver_id) ===
+                            String(conversationUserId)
                         )
                         ||
                         (
-                            String(
-                                message.sender_id
-                            ) ===
-                            String(
-                                conversationUserId
-                            ) &&
-                            String(
-                                message.receiver_id
-                            ) ===
-                            String(
-                                currentUser.id
-                            )
+                            String(message.sender_id) ===
+                            String(conversationUserId) &&
+                            String(message.receiver_id) ===
+                            String(currentUser.id)
                         );
 
 
@@ -2632,7 +2426,7 @@ async function markMessagesRead(
     }
 
 
-    const readTimestamp =
+    const readTime =
         new Date().toISOString();
 
 
@@ -2642,10 +2436,7 @@ async function markMessagesRead(
         await messagesSupabase
             .from("messages")
             .update({
-
-                read_at:
-                    readTimestamp
-
+                read_at: readTime
             })
             .in(
                 "id",
@@ -2675,7 +2466,7 @@ async function markMessagesRead(
             ) {
 
                 message.read_at =
-                    readTimestamp;
+                    readTime;
 
             }
 
@@ -2789,295 +2580,6 @@ function setupComposer() {
        CAMERA
     ===================================== */
 
-    async function openTweteCamera() {
-
-        if (
-            !cameraOverlay ||
-            !cameraVideo
-        ) {
-            return;
-        }
-
-
-        try {
-
-            cameraStream =
-                await navigator.mediaDevices.getUserMedia({
-
-                    video: {
-                        facingMode: {
-                            ideal:
-                                "environment"
-                        }
-                    },
-
-                    audio:
-                        false
-
-                });
-
-
-            cameraVideo.srcObject =
-                cameraStream;
-
-
-            cameraOverlay.hidden =
-                false;
-
-
-            document.body.classList.add(
-                "camera-open"
-            );
-
-
-            await cameraVideo.play();
-
-
-        } catch (error) {
-
-            console.error(
-                "Camera error:",
-                error
-            );
-
-
-            alert(
-                "Could not access the camera."
-            );
-
-        }
-
-    }
-
-
-    function closeTweteCamera() {
-
-        if (cameraStream) {
-
-            cameraStream
-                .getTracks()
-                .forEach(
-                    function (
-                        track
-                    ) {
-
-                        track.stop();
-
-                    }
-                );
-
-
-            cameraStream =
-                null;
-
-        }
-
-
-        if (cameraVideo) {
-
-            cameraVideo.srcObject =
-                null;
-
-        }
-
-
-        if (cameraOverlay) {
-
-            cameraOverlay.hidden =
-                true;
-
-        }
-
-
-        document.body.classList.remove(
-            "camera-open"
-        );
-
-    }
-
-
-    async function captureTwetePhoto() {
-
-        if (
-            !cameraVideo ||
-            !cameraCanvas
-        ) {
-            return;
-        }
-
-
-        if (
-            cameraVideo.readyState <
-            HTMLMediaElement.HAVE_CURRENT_DATA
-        ) {
-
-            return;
-
-        }
-
-
-        const remainingSlots =
-            4 -
-            selectedAttachments.length;
-
-
-        if (
-            remainingSlots <= 0
-        ) {
-
-            alert(
-                "You can attach a maximum of 4 files."
-            );
-
-            return;
-
-        }
-
-
-        const MAX_SIZE =
-            1920;
-
-
-        let width =
-            cameraVideo.videoWidth;
-
-
-        let height =
-            cameraVideo.videoHeight;
-
-
-        if (
-            !width ||
-            !height
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            width > MAX_SIZE ||
-            height > MAX_SIZE
-        ) {
-
-            if (
-                width > height
-            ) {
-
-                height =
-                    Math.round(
-                        height *
-                        MAX_SIZE /
-                        width
-                    );
-
-                width =
-                    MAX_SIZE;
-
-            } else {
-
-                width =
-                    Math.round(
-                        width *
-                        MAX_SIZE /
-                        height
-                    );
-
-                height =
-                    MAX_SIZE;
-
-            }
-
-        }
-
-
-        cameraCanvas.width =
-            width;
-
-
-        cameraCanvas.height =
-            height;
-
-
-        const context =
-            cameraCanvas.getContext(
-                "2d"
-            );
-
-
-        if (!context) {
-            return;
-        }
-
-
-        context.drawImage(
-            cameraVideo,
-            0,
-            0,
-            width,
-            height
-        );
-
-
-        const blob =
-            await new Promise(
-                function (
-                    resolve
-                ) {
-
-                    cameraCanvas.toBlob(
-                        resolve,
-                        "image/jpeg",
-                        0.82
-                    );
-
-                }
-            );
-
-
-        if (!blob) {
-
-            alert(
-                "Could not process the photo."
-            );
-
-            return;
-
-        }
-
-
-        const file =
-            new File(
-                [
-                    blob
-                ],
-                "twete-camera-" +
-                Date.now() +
-                ".jpg",
-                {
-                    type:
-                        "image/jpeg",
-
-                    lastModified:
-                        Date.now()
-
-                }
-            );
-
-
-        selectedAttachments.push(
-            file
-        );
-
-
-        closeTweteCamera();
-
-        renderAttachmentPreview();
-
-    }
-
-
     if (
         cameraButton &&
         cameraOverlay
@@ -3106,30 +2608,6 @@ function setupComposer() {
         cameraCapture.addEventListener(
             "click",
             captureTwetePhoto
-        );
-
-    }
-
-
-    /* =====================================
-       CLEAN UP CAMERA
-    ===================================== */
-
-    window.addEventListener(
-        "beforeunload",
-        closeTweteCamera
-    );
-
-
-    /* =====================================
-       BACK
-    ===================================== */
-
-    if (backButton) {
-
-        backButton.addEventListener(
-            "click",
-            goBack
         );
 
     }
@@ -3226,7 +2704,393 @@ function setupComposer() {
 
     }
 
+
+    /* =====================================
+       BACK
+    ===================================== */
+
+    if (backButton) {
+
+        backButton.addEventListener(
+            "click",
+            goBack
+        );
+
+    }
+
 }
+
+
+/* =========================================
+   CAMERA
+========================================= */
+
+async function openTweteCamera() {
+
+    const overlay =
+        document.getElementById(
+            "cameraOverlay"
+        );
+
+
+    const video =
+        document.getElementById(
+            "cameraVideo"
+        );
+
+
+    if (
+        !overlay ||
+        !video
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        alert(
+            "Camera access is not available on this device."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        if (cameraStream) {
+
+            closeTweteCamera();
+
+        }
+
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+                    facingMode: {
+                        ideal: "environment"
+                    }
+                },
+
+                audio: false
+
+            });
+
+
+        video.srcObject =
+            cameraStream;
+
+
+        overlay.hidden =
+            false;
+
+
+        document.body.classList.add(
+            "camera-open"
+        );
+
+
+        await video.play();
+
+
+    } catch (error) {
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+
+        alert(
+            "Could not access the camera."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CLOSE CAMERA
+========================================= */
+
+function closeTweteCamera() {
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                function (
+                    track
+                ) {
+
+                    track.stop();
+
+                }
+            );
+
+
+        cameraStream =
+            null;
+
+    }
+
+
+    const video =
+        document.getElementById(
+            "cameraVideo"
+        );
+
+
+    const overlay =
+        document.getElementById(
+            "cameraOverlay"
+        );
+
+
+    if (video) {
+
+        video.srcObject =
+            null;
+
+    }
+
+
+    if (overlay) {
+
+        overlay.hidden =
+            true;
+
+    }
+
+
+    document.body.classList.remove(
+        "camera-open"
+    );
+
+}
+
+
+/* =========================================
+   CAPTURE PHOTO
+========================================= */
+
+async function captureTwetePhoto() {
+
+    const video =
+        document.getElementById(
+            "cameraVideo"
+        );
+
+
+    const canvas =
+        document.getElementById(
+            "cameraCanvas"
+        );
+
+
+    if (
+        !video ||
+        !canvas
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        video.readyState <
+        HTMLMediaElement.HAVE_CURRENT_DATA
+    ) {
+
+        return;
+
+    }
+
+
+    const remainingSlots =
+        4 -
+        selectedAttachments.length;
+
+
+    if (
+        remainingSlots <= 0
+    ) {
+
+        alert(
+            "You can attach a maximum of 4 files."
+        );
+
+        return;
+
+    }
+
+
+    const MAX_SIZE =
+        1920;
+
+
+    let width =
+        video.videoWidth;
+
+
+    let height =
+        video.videoHeight;
+
+
+    if (
+        !width ||
+        !height
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        width > MAX_SIZE ||
+        height > MAX_SIZE
+    ) {
+
+        if (
+            width > height
+        ) {
+
+            height =
+                Math.round(
+                    height *
+                    MAX_SIZE /
+                    width
+                );
+
+            width =
+                MAX_SIZE;
+
+        } else {
+
+            width =
+                Math.round(
+                    width *
+                    MAX_SIZE /
+                    height
+                );
+
+            height =
+                MAX_SIZE;
+
+        }
+
+    }
+
+
+    canvas.width =
+        width;
+
+
+    canvas.height =
+        height;
+
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    if (!context) {
+        return;
+    }
+
+
+    context.drawImage(
+        video,
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const blob =
+        await new Promise(
+            function (
+                resolve
+            ) {
+
+                canvas.toBlob(
+                    resolve,
+                    "image/jpeg",
+                    0.82
+                );
+
+            }
+        );
+
+
+    if (!blob) {
+
+        alert(
+            "Could not process the photo."
+        );
+
+        return;
+
+    }
+
+
+    const file =
+        new File(
+            [blob],
+            "twete-camera-" +
+            Date.now() +
+            ".jpg",
+            {
+                type:
+                    "image/jpeg",
+
+                lastModified:
+                    Date.now()
+            }
+        );
+
+
+    selectedAttachments.push(
+        file
+    );
+
+
+    closeTweteCamera();
+
+
+    renderAttachmentPreview();
+
+}
+
+
+/* =========================================
+   CAMERA CLEANUP
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function () {
+
+        closeTweteCamera();
+
+    }
+);
 
 
 /* =========================================
@@ -3251,7 +3115,9 @@ function renderAttachmentPreview() {
         !preview ||
         !content
     ) {
+
         return;
+
     }
 
 
@@ -3290,8 +3156,6 @@ function renderAttachmentPreview() {
             item.className =
                 "attachment-item";
 
-
-            /* IMAGE */
 
             if (
                 file.type.startsWith(
@@ -3338,9 +3202,6 @@ function renderAttachmentPreview() {
                 );
 
             }
-
-
-            /* VIDEO */
 
             else if (
                 file.type.startsWith(
@@ -3396,9 +3257,6 @@ function renderAttachmentPreview() {
 
             }
 
-
-            /* OTHER FILE */
-
             else {
 
                 const icon =
@@ -3442,8 +3300,6 @@ function renderAttachmentPreview() {
 
             }
 
-
-            /* REMOVE BUTTON */
 
             const remove =
                 document.createElement(
@@ -3693,9 +3549,7 @@ function formatTime(
 ) {
 
     const date =
-        new Date(
-            value
-        );
+        new Date(value);
 
 
     if (
@@ -3712,12 +3566,8 @@ function formatTime(
     return date.toLocaleTimeString(
         [],
         {
-            hour:
-                "2-digit",
-
-            minute:
-                "2-digit"
-
+            hour: "2-digit",
+            minute: "2-digit"
         }
     );
 
