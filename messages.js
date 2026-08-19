@@ -3341,3 +3341,225 @@ cancelMessageSelectionButton
         "click",
         clearMessageSelection
     );
+
+copyMessageButton
+    ?.addEventListener(
+        "click",
+        async function () {
+
+            if (
+                !selectedMessageData ||
+                !selectedMessageData.message
+            ) {
+                return;
+            }
+
+
+            const text =
+                selectedMessageData.message.trim();
+
+
+            if (!text) {
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+
+                clearMessageSelection();
+
+            } catch (error) {
+
+                console.error(
+                    "Copy message error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+deleteMessageButton
+    ?.addEventListener(
+        "click",
+        deleteSelectedMessage
+    );
+
+/* =========================================
+   DELETE SELECTED MESSAGE
+========================================= */
+
+async function deleteSelectedMessage() {
+
+    if (
+        !selectedMessageData ||
+        !currentUser
+    ) {
+        return;
+    }
+
+
+    /*
+        Only allow deleting our own message
+    */
+
+    if (
+        selectedMessageData.sender_id !==
+        currentUser.id
+    ) {
+        return;
+    }
+
+
+    const messageId =
+        selectedMessageData.id;
+
+
+    /*
+        Collect storage files before deleting
+        the database message.
+    */
+
+    const storagePaths = [];
+
+
+    if (
+        Array.isArray(
+            selectedMessageData.message_attachments
+        )
+    ) {
+
+        selectedMessageData
+            .message_attachments
+            .forEach(
+                function (attachment) {
+
+                    if (
+                        attachment.storage_path
+                    ) {
+
+                        storagePaths.push(
+                            attachment.storage_path
+                        );
+
+                    }
+
+                }
+            );
+
+    }
+
+
+    /*
+        Fallback for old messages
+    */
+
+    if (
+        selectedMessageData.attachment_path &&
+        !storagePaths.includes(
+            selectedMessageData.attachment_path
+        )
+    ) {
+
+        storagePaths.push(
+            selectedMessageData.attachment_path
+        );
+
+    }
+
+
+    /*
+        Delete storage files first
+    */
+
+    if (
+        storagePaths.length > 0
+    ) {
+
+        const {
+            error: storageError
+        } =
+            await supabaseClient
+                .storage
+                .from(
+                    "chat-attachments"
+                )
+                .remove(
+                    storagePaths
+                );
+
+
+        if (storageError) {
+
+            console.error(
+                "Delete attachment files error:",
+                storageError
+            );
+
+            return;
+        }
+
+    }
+
+
+    /*
+        Delete message.
+        message_attachments rows are removed
+        automatically by ON DELETE CASCADE.
+    */
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .delete()
+            .eq(
+                "id",
+                messageId
+            )
+            .eq(
+                "sender_id",
+                currentUser.id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Delete message error:",
+            error
+        );
+
+        return;
+    }
+
+
+    /*
+        Remove message immediately
+        from the current chat.
+    */
+
+    const row =
+        document.querySelector(
+            `[data-message-id="${messageId}"]`
+        );
+
+
+    if (row) {
+
+        row.remove();
+
+    }
+
+
+    clearMessageSelection();
+
+}
