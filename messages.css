@@ -451,9 +451,9 @@ button {
 
     display: flex;
 
-    align-items: flex-end;
+    flex-direction: column;
 
-    gap: 10px;
+    gap: 8px;
 
     padding:
         10px
@@ -475,7 +475,189 @@ button {
 
     z-index: 20;
 }
+/* =========================================
+   ATTACHMENT BUTTON
+========================================= */
 
+.attachment-button {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+    color: #C6FF00;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.attachment-button:active {
+    transform: scale(0.9);
+
+    background:
+        rgba(198, 255, 0, 0.08);
+}
+
+.attachment-button svg {
+    width: 24px;
+    height: 24px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 2;
+
+    stroke-linecap: round;
+}
+
+
+/* =========================================
+   ATTACHMENT PREVIEW
+========================================= */
+
+.attachment-preview {
+    width: 100%;
+
+    display: flex;
+    gap: 8px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 2px 2px 4px;
+
+    scrollbar-width: none;
+}
+
+.attachment-preview[hidden] {
+    display: none;
+}
+
+.attachment-preview::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* =========================================
+   PREVIEW ITEM
+========================================= */
+
+.attachment-preview-item {
+    position: relative;
+
+    width: 72px;
+    height: 72px;
+
+    flex: 0 0 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    background: #171717;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+}
+
+
+/* =========================================
+   IMAGE PREVIEW
+========================================= */
+
+.attachment-preview-item img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* =========================================
+   FILE PREVIEW
+========================================= */
+
+.attachment-file {
+    width: 100%;
+
+    padding: 8px;
+
+    text-align: center;
+
+    color:
+        rgba(255, 255, 255, 0.75);
+
+    font-size: 10px;
+
+    line-height: 1.2;
+
+    overflow: hidden;
+}
+
+.attachment-file-name {
+    display: block;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   REMOVE ATTACHMENT
+========================================= */
+
+.attachment-remove {
+    position: absolute;
+
+    top: 3px;
+    right: 3px;
+
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background:
+        rgba(0, 0, 0, 0.78);
+
+    color: #ffffff;
+
+    font-size: 16px;
+    line-height: 1;
+
+    cursor: pointer;
+}
 
 /* =========================================
    MESSAGE COMPOSER
