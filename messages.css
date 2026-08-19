@@ -1232,3 +1232,26 @@ button {
     }
 
 }
+
+/* =========================================
+   HIDE CHAT CONTENT WHILE LOADING
+========================================= */
+
+.chat-page.chat-loading
+.chat-header,
+
+.chat-page.chat-loading
+.chat-messages,
+
+.chat-page.chat-loading
+.chat-footer {
+    opacity: 0;
+}
+
+
+.chat-header,
+.chat-messages,
+.chat-footer {
+    transition:
+        opacity 0.22s ease;
+}
