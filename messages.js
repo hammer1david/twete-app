@@ -2032,16 +2032,10 @@ async function addRealtimeMessage(
 
 async function sendMessage() {
 
-    if (isSendingMessage) {
-        return;
-    }
-
-
     const input =
         document.getElementById(
             "messageInput"
         );
-
 
     const button =
         document.querySelector(
@@ -2059,7 +2053,8 @@ async function sendMessage() {
 
 
     /*
-        Text OR attachments.
+        TEXT OR ATTACHMENTS
+        ARE ENOUGH TO SEND
     */
 
     if (
@@ -2083,10 +2078,6 @@ async function sendMessage() {
     }
 
 
-    isSendingMessage =
-        true;
-
-
     if (button) {
 
         button.disabled =
@@ -2095,11 +2086,21 @@ async function sendMessage() {
     }
 
 
+    /*
+        Keep the selected files before
+        clearing the composer.
+    */
+
+    const filesToUpload =
+        [...selectedAttachments];
+
+
     try {
 
-        /*
-            CREATE MESSAGE
-        */
+        /* =====================================
+           STEP 1
+           CREATE MESSAGE
+        ===================================== */
 
         const {
             data: messageData,
@@ -2152,9 +2153,10 @@ async function sendMessage() {
             messageData.id;
 
 
-        /*
-            UPLOAD ATTACHMENTS
-        */
+        /* =====================================
+           STEP 2
+           UPLOAD ATTACHMENTS
+        ===================================== */
 
         const uploadedAttachments =
             [];
@@ -2162,12 +2164,12 @@ async function sendMessage() {
 
         for (
             let i = 0;
-            i < selectedAttachments.length;
+            i < filesToUpload.length;
             i++
         ) {
 
             const file =
-                selectedAttachments[i];
+                filesToUpload[i];
 
 
             const safeFileName =
@@ -2187,9 +2189,12 @@ async function sendMessage() {
                 safeFileName;
 
 
+            /*
+                UPLOAD FILE
+            */
+
             const {
-                error:
-                    uploadError
+                error: uploadError
             } =
                 await messagesSupabase
                     .storage
@@ -2230,7 +2235,7 @@ async function sendMessage() {
 
 
             /*
-                Save metadata.
+                SAVE ATTACHMENT METADATA
             */
 
             const {
@@ -2296,205 +2301,165 @@ async function sendMessage() {
             }
 
 
-            uploadedAttachments.push(
-                attachmentData
-            );
+            /*
+                Create the VIEW signed URL
+                immediately.
+            */
+
+            let viewUrl =
+                null;
+
+
+            const {
+                data:
+                    viewData,
+                error:
+                    viewError
+            } =
+                await messagesSupabase
+                    .storage
+                    .from(
+                        "message-attachments"
+                    )
+                    .createSignedUrl(
+                        filePath,
+                        3600
+                    );
+
+
+            if (viewError) {
+
+                console.error(
+                    "View signed URL error:",
+                    viewError
+                );
+
+            } else {
+
+                viewUrl =
+                    viewData?.signedUrl ||
+                    null;
+
+            }
+
+
+            /*
+                Create DOWNLOAD signed URL
+                immediately.
+            */
+
+            let downloadUrl =
+                null;
+
+
+            const {
+                data:
+                    downloadData,
+                error:
+                    downloadError
+            } =
+                await messagesSupabase
+                    .storage
+                    .from(
+                        "message-attachments"
+                    )
+                    .createSignedUrl(
+                        filePath,
+                        3600,
+                        {
+                            download:
+                                file.name
+                        }
+                    );
+
+
+            if (downloadError) {
+
+                console.error(
+                    "Download signed URL error:",
+                    downloadError
+                );
+
+            } else {
+
+                downloadUrl =
+                    downloadData?.signedUrl ||
+                    null;
+
+            }
+
+
+            /*
+                Add the complete attachment
+                to our local message.
+            */
+
+            uploadedAttachments.push({
+
+                id:
+                    attachmentData?.id ||
+                    crypto.randomUUID(),
+
+                message_id:
+                    messageId,
+
+                file_url:
+                    null,
+
+                file_path:
+                    filePath,
+
+                file_name:
+                    file.name,
+
+                file_type:
+                    file.type ||
+                    "application/octet-stream",
+
+                file_size:
+                    file.size,
+
+                created_at:
+                    attachmentData?.created_at ||
+                    new Date().toISOString(),
+
+                view_url:
+                    viewUrl,
+
+                download_url:
+                    downloadUrl
+
+            });
 
         }
 
 
-        /*
-    Generate URLs for the
-    attachments we just sent.
-*/
-
-if (
-    uploadedAttachments.length
-) {
-
-    await Promise.all(
-        uploadedAttachments.map(
-            async function (
-                attachment
-            ) {
-
-                if (
-                    !attachment ||
-                    !attachment.file_path
-                ) {
-
-                    return;
-
-                }
-
-
-                try {
-
-                    const viewResult =
-                        await messagesSupabase
-                            .storage
-                            .from(
-                                "message-attachments"
-                            )
-                            .createSignedUrl(
-                                attachment.file_path,
-                                3600
-                            );
-
-
-                    if (
-                        viewResult &&
-                        viewResult.data &&
-                        viewResult.data.signedUrl
-                    ) {
-
-                        attachment.view_url =
-                            viewResult.data.signedUrl;
-
-                    }
-
-
-                    const downloadResult =
-                        await messagesSupabase
-                            .storage
-                            .from(
-                                "message-attachments"
-                            )
-                            .createSignedUrl(
-                                attachment.file_path,
-                                3600,
-                                {
-                                    download:
-                                        attachment.file_name
-                                }
-                            );
-
-
-                    if (
-                        downloadResult &&
-                        downloadResult.data &&
-                        downloadResult.data.signedUrl
-                    ) {
-
-                        attachment.download_url =
-                            downloadResult.data.signedUrl;
-
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        "Attachment URL error:",
-                        error
-                    );
-
-                }
-
-            }
-        )
-    );
-
-}
-                
-
-
-        /*
-            Add the new message
-            directly to local cache.
-        */
+        /* =====================================
+           STEP 3
+           BUILD THE NEW MESSAGE LOCALLY
+        ===================================== */
 
         messageData.attachments =
             uploadedAttachments;
 
 
         /*
-            Avoid duplicate realtime
-            insertion.
+            IMPORTANT:
+
+            We render the new message directly.
+            We do NOT wait for another
+            loadMessages() request.
         */
 
-        const exists =
-            messagesCache.some(
-                function (
-                    message
-                ) {
-
-                    return (
-                        String(
-                            message.id
-                        ) ===
-                        String(
-                            messageData.id
-                        )
-                    );
-
-                }
-            );
+        appendMessageToChat(
+            messageData
+        );
 
 
-        if (!exists) {
-
-            messagesCache.push(
-                messageData
-            );
-
-            messagesCache.sort(
-                function (
-                    a,
-                    b
-                ) {
-
-                    return (
-                        new Date(
-                            a.created_at
-                        ) -
-                        new Date(
-                            b.created_at
-                        )
-                    );
-
-                }
-            );
-
-
-            const list =
-                document.getElementById(
-                    "messagesWindow"
-                );
-
-
-            if (list) {
-
-                const empty =
-                    list.querySelector(
-                        ".no-messages"
-                    );
-
-
-                if (empty) {
-
-                    list.innerHTML =
-                        "";
-
-                }
-
-
-                list.appendChild(
-                    createMessageElement(
-                        messageData
-                    )
-                );
-
-
-                scrollToBottom();
-
-            }
-
-        }
-
-
-        /*
-            CLEAR COMPOSER
-        */
+        /* =====================================
+           STEP 4
+           CLEAR COMPOSER
+        ===================================== */
 
         input.value =
             "";
@@ -2502,6 +2467,13 @@ if (
         resizeComposer();
 
         clearAttachments();
+
+
+        /*
+            Keep the newest message visible.
+        */
+
+        scrollToBottom();
 
 
     } catch (error) {
@@ -2515,11 +2487,8 @@ if (
             "Something went wrong while sending your message."
         );
 
+
     } finally {
-
-        isSendingMessage =
-            false;
-
 
         if (button) {
 
@@ -2532,6 +2501,472 @@ if (
 
 }
 
+
+/* =========================================
+   APPEND SINGLE MESSAGE
+========================================= */
+
+function appendMessageToChat(
+    message
+) {
+
+    const list =
+        document.getElementById(
+            "messagesWindow"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    /*
+        Remove "No messages yet."
+        if this was the first message.
+    */
+
+    const empty =
+        list.querySelector(
+            ".no-messages"
+        );
+
+
+    if (empty) {
+
+        empty.remove();
+
+    }
+
+
+    /*
+        Prevent duplicate rendering.
+    */
+
+    const existing =
+        list.querySelector(
+            `[data-message-id="${message.id}"]`
+        );
+
+
+    if (existing) {
+
+        return;
+
+    }
+
+
+    const sent =
+        String(
+            message.sender_id
+        ) ===
+        String(
+            currentUser.id
+        );
+
+
+    /*
+        MESSAGE ROW
+    */
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+    row.className =
+        sent
+            ? "message-row sent"
+            : "message-row received";
+
+
+    row.dataset.messageId =
+        message.id;
+
+
+    /*
+        MESSAGE BUBBLE
+    */
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+    bubble.className =
+        "message-bubble";
+
+
+    /*
+        MESSAGE TEXT
+    */
+
+    if (
+        message.message &&
+        message.message.trim()
+    ) {
+
+        const text =
+            document.createElement(
+                "div"
+            );
+
+        text.className =
+            "message-text";
+
+        text.textContent =
+            message.message;
+
+        bubble.appendChild(
+            text
+        );
+
+    }
+
+
+    /*
+        ATTACHMENTS
+    */
+
+    if (
+        message.attachments &&
+        message.attachments.length
+    ) {
+
+        const attachmentContainer =
+            document.createElement(
+                "div"
+            );
+
+        attachmentContainer.className =
+            "message-attachments";
+
+
+        message.attachments.forEach(
+            function (
+                attachment
+            ) {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+                item.className =
+                    "message-attachment";
+
+
+                /*
+                    IMAGE
+                */
+
+                if (
+                    attachment.file_type &&
+                    attachment.file_type.startsWith(
+                        "image/"
+                    ) &&
+                    attachment.view_url
+                ) {
+
+                    const image =
+                        document.createElement(
+                            "img"
+                        );
+
+                    image.className =
+                        "message-attachment-image";
+
+                    image.src =
+                        attachment.view_url;
+
+                    image.alt =
+                        attachment.file_name ||
+                        "Attachment";
+
+                    image.loading =
+                        "lazy";
+
+
+                    image.addEventListener(
+                        "click",
+                        function () {
+
+                            window.open(
+                                attachment.view_url,
+                                "_blank"
+                            );
+
+                        }
+                    );
+
+
+                    item.appendChild(
+                        image
+                    );
+
+                }
+
+
+                /*
+                    VIDEO
+                */
+
+                else if (
+                    attachment.file_type &&
+                    attachment.file_type.startsWith(
+                        "video/"
+                    ) &&
+                    attachment.view_url
+                ) {
+
+                    const video =
+                        document.createElement(
+                            "video"
+                        );
+
+                    video.className =
+                        "message-attachment-video";
+
+                    video.src =
+                        attachment.view_url;
+
+                    video.controls =
+                        true;
+
+                    video.playsInline =
+                        true;
+
+                    video.preload =
+                        "metadata";
+
+
+                    item.appendChild(
+                        video
+                    );
+
+                }
+
+
+                /*
+                    OTHER FILE
+                */
+
+                else {
+
+                    const fileBox =
+                        document.createElement(
+                            "div"
+                        );
+
+                    fileBox.className =
+                        "message-file";
+
+
+                    const icon =
+                        document.createElement(
+                            "div"
+                        );
+
+                    icon.className =
+                        "message-file-icon";
+
+                    icon.textContent =
+                        getFileIcon(
+                            attachment.file_type
+                        );
+
+
+                    const information =
+                        document.createElement(
+                            "div"
+                        );
+
+                    information.className =
+                        "message-file-info";
+
+
+                    const fileName =
+                        document.createElement(
+                            "div"
+                        );
+
+                    fileName.className =
+                        "message-file-name";
+
+                    fileName.textContent =
+                        attachment.file_name ||
+                        "File";
+
+
+                    const fileSize =
+                        document.createElement(
+                            "div"
+                        );
+
+                    fileSize.className =
+                        "message-file-size";
+
+                    fileSize.textContent =
+                        formatFileSize(
+                            attachment.file_size
+                        );
+
+
+                    information.appendChild(
+                        fileName
+                    );
+
+                    information.appendChild(
+                        fileSize
+                    );
+
+
+                    fileBox.appendChild(
+                        icon
+                    );
+
+                    fileBox.appendChild(
+                        information
+                    );
+
+
+                    item.appendChild(
+                        fileBox
+                    );
+
+                }
+
+
+                /*
+                    DOWNLOAD
+                */
+
+                if (
+                    attachment.download_url
+                ) {
+
+                    const download =
+                        document.createElement(
+                            "a"
+                        );
+
+                    download.className =
+                        "message-attachment-download";
+
+                    download.href =
+                        attachment.download_url;
+
+                    download.textContent =
+                        "Download";
+
+                    download.target =
+                        "_blank";
+
+                    download.rel =
+                        "noopener noreferrer";
+
+                    download.setAttribute(
+                        "download",
+                        attachment.file_name ||
+                        ""
+                    );
+
+
+                    item.appendChild(
+                        download
+                    );
+
+                }
+
+
+                attachmentContainer.appendChild(
+                    item
+                );
+
+            }
+        );
+
+
+        bubble.appendChild(
+            attachmentContainer
+        );
+
+    }
+
+
+    /*
+        TIME + CHECKS
+    */
+
+    const meta =
+        document.createElement(
+            "div"
+        );
+
+    meta.className =
+        sent
+            ? "message-meta"
+            : "message-time";
+
+
+    const time =
+        document.createElement(
+            "span"
+        );
+
+    time.textContent =
+        formatTime(
+            message.created_at
+        );
+
+
+    meta.appendChild(
+        time
+    );
+
+
+    if (sent) {
+
+        const checks =
+            document.createElement(
+                "span"
+            );
+
+        checks.className =
+            "message-checks";
+
+        checks.textContent =
+            "✓✓";
+
+        meta.appendChild(
+            checks
+        );
+
+    }
+
+
+    bubble.appendChild(
+        meta
+    );
+
+
+    row.appendChild(
+        bubble
+    );
+
+
+    list.appendChild(
+        row
+    );
+
+
+    /*
+        Scroll after DOM insertion.
+    */
+
+    scrollToBottom();
+
+}
 
 /* =========================================
    REALTIME
