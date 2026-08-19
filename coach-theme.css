@@ -1,0 +1,910 @@
+/* =========================================================
+   TWETE COACH THEME
+   Visual overrides only
+========================================================= */
+
+:root {
+    --twete-green: #C6FF00;
+    --twete-bg: #050505;
+    --twete-surface: #0B0C0A;
+    --twete-surface-2: #10110F;
+    --twete-border: rgba(255,255,255,0.075);
+    --twete-muted: #777C77;
+    --twete-text: #F5F7F2;
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+html,
+body {
+    background:
+        radial-gradient(
+            circle at 80% -10%,
+            rgba(198,255,0,0.055),
+            transparent 32%
+        ),
+        #050505;
+}
+
+body {
+    color: var(--twete-text);
+    padding-bottom: 105px;
+}
+
+.page {
+    width: 100%;
+    max-width: 1050px;
+
+    margin: 0 auto;
+
+    padding:
+        34px
+        22px
+        120px;
+}
+
+
+/* =========================================================
+   BRAND HEADER
+========================================================= */
+
+header {
+    position: relative;
+
+    min-height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 43px;
+
+    padding-bottom: 20px;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.055);
+}
+
+.logo {
+    color: var(--twete-green);
+
+    font-size: 30px;
+    font-weight: 900;
+
+    letter-spacing: 2.4px;
+
+    line-height: 1;
+}
+
+.coach-label {
+    margin-top: 7px;
+
+    color: #6F746D;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 3.2px;
+}
+
+
+/* small glow */
+
+header::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: -1px;
+
+    width: 44px;
+    height: 1px;
+
+    background:
+        var(--twete-green);
+
+    box-shadow:
+        0 0 12px
+        rgba(198,255,0,0.35);
+}
+
+
+/* =========================================================
+   PAGE INTRO
+========================================================= */
+
+main > h1 {
+    margin:
+        0
+        0
+        9px;
+
+    font-size:
+        clamp(
+            30px,
+            5vw,
+            42px
+        );
+
+    line-height: 1.05;
+
+    letter-spacing: -1.2px;
+
+    font-weight: 850;
+}
+
+.subtitle {
+    max-width: 500px;
+
+    color: #7C817B;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   PUSH NOTIFICATION CARD
+========================================================= */
+
+.push-settings {
+    position: relative;
+
+    margin:
+        30px
+        0
+        45px;
+
+    min-height: 95px;
+
+    padding:
+        20px
+        20px
+        20px
+        23px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--twete-border);
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(198,255,0,0.035),
+            transparent 45%
+        ),
+        #0B0C0A;
+
+    box-shadow:
+        0 15px 45px
+        rgba(0,0,0,0.18);
+}
+
+
+/* green accent */
+
+.push-settings::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 24%;
+
+    width: 2px;
+    height: 52%;
+
+    border-radius: 10px;
+
+    background:
+        var(--twete-green);
+
+    box-shadow:
+        0 0 12px
+        rgba(198,255,0,0.35);
+}
+
+.push-title {
+    margin-bottom: 7px;
+
+    color: #F3F5F0;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.push-description {
+    max-width: 520px;
+
+    color: #747974;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   PUSH TOGGLE
+========================================================= */
+
+.push-toggle {
+    min-width: 66px;
+    height: 37px;
+
+    padding:
+        0
+        14px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.09);
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    color: #737773;
+
+    font-size: 11px;
+    font-weight: 850;
+
+    letter-spacing: .6px;
+
+    transition:
+        transform .18s ease,
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        box-shadow .2s ease;
+}
+
+.push-toggle:hover {
+    border-color:
+        rgba(198,255,0,0.28);
+}
+
+.push-toggle:active {
+    transform: scale(.95);
+}
+
+.push-toggle.on {
+    border-color:
+        rgba(198,255,0,0.65);
+
+    background:
+        var(--twete-green);
+
+    color:
+        #080A06;
+
+    box-shadow:
+        0 0 18px
+        rgba(198,255,0,0.14);
+}
+
+
+/* =========================================================
+   ATHLETES SECTION HEADER
+========================================================= */
+
+.athletes-header {
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 17px;
+}
+
+.athletes-header h2 {
+    margin: 0;
+
+    color: #F5F7F2;
+
+    font-size: 21px;
+    font-weight: 800;
+
+    letter-spacing: -.35px;
+}
+
+.athlete-count {
+    padding:
+        6px
+        10px;
+
+    border:
+        1px solid
+        rgba(198,255,0,0.12);
+
+    border-radius: 999px;
+
+    background:
+        rgba(198,255,0,0.035);
+
+    color:
+        var(--twete-green);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .45px;
+}
+
+
+/* =========================================================
+   ATHLETE GRID
+========================================================= */
+
+.athletes-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(290px,1fr)
+        );
+
+    gap: 13px;
+}
+
+
+/* =========================================================
+   ATHLETE CARD
+========================================================= */
+
+.athlete-card {
+    position: relative;
+
+    min-height: 105px;
+
+    padding:
+        17px
+        17px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.07);
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.018),
+            transparent 55%
+        ),
+        #0B0C0A;
+
+    box-shadow:
+        0 10px 35px
+        rgba(0,0,0,0.13);
+
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        background .22s ease,
+        box-shadow .22s ease;
+}
+
+
+/* subtle light */
+
+.athlete-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: -55px;
+    right: -55px;
+
+    width: 125px;
+    height: 125px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(198,255,0,0.035);
+
+    filter: blur(22px);
+
+    pointer-events: none;
+}
+
+
+.athlete-card:hover {
+    transform:
+        translateY(-3px);
+
+    border-color:
+        rgba(198,255,0,0.30);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(198,255,0,0.025),
+            transparent 60%
+        ),
+        #0D0E0C;
+
+    box-shadow:
+        0 16px 40px
+        rgba(0,0,0,0.23);
+}
+
+.athlete-card:active {
+    transform:
+        scale(.985);
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.avatar {
+    position: relative;
+
+    width: 62px;
+    height: 62px;
+
+    min-width: 62px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    border-radius: 18px;
+
+    background:
+        #121411;
+
+    object-fit: cover;
+
+    box-shadow:
+        0 7px 20px
+        rgba(0,0,0,0.22);
+}
+
+.avatar-placeholder {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color:
+        var(--twete-green);
+
+    font-size: 18px;
+    font-weight: 850;
+}
+
+
+/* =========================================================
+   ATHLETE INFORMATION
+========================================================= */
+
+.athlete-info {
+    position: relative;
+
+    min-width: 0;
+
+    flex: 1;
+
+    z-index: 2;
+}
+
+.athlete-name {
+    margin-bottom: 6px;
+
+    color:
+        #F4F6F1;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    letter-spacing: -.15px;
+}
+
+.athlete-email {
+    color:
+        #717671;
+
+    font-size: 11.5px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.athlete-details {
+    margin-top: 6px;
+
+    color:
+        #939893;
+
+    font-size: 10.5px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   CARD ARROW
+========================================================= */
+
+.arrow {
+    position: relative;
+
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(198,255,0,0.10);
+
+    border-radius: 50%;
+
+    background:
+        rgba(198,255,0,0.025);
+
+    color:
+        var(--twete-green);
+
+    font-size: 21px;
+
+    line-height: 1;
+
+    z-index: 2;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+.athlete-card:hover
+.arrow {
+    transform:
+        translateX(3px);
+
+    background:
+        rgba(198,255,0,0.07);
+}
+
+
+/* =========================================================
+   LOADING / EMPTY / ERROR
+========================================================= */
+
+.loading,
+.empty {
+    grid-column:
+        1 / -1;
+
+    padding: 30px;
+
+    border:
+        1px dashed
+        rgba(255,255,255,0.10);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,0.012);
+
+    color:
+        #747974;
+
+    text-align: center;
+
+    font-size: 13px;
+}
+
+.error {
+    color:
+        #FF7373;
+}
+
+
+/* =========================================================
+   BOTTOM NAVIGATION
+========================================================= */
+
+.bottom-navigation {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: auto;
+    min-height: 76px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    align-items: center;
+
+    gap: 0;
+
+    padding:
+        8px
+        max(12px,env(safe-area-inset-right))
+        max(10px,env(safe-area-inset-bottom))
+        max(12px,env(safe-area-inset-left));
+
+    border-top:
+        1px solid
+        rgba(255,255,255,0.055);
+
+    background:
+        rgba(5,5,5,0.91);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
+
+    z-index: 1100;
+}
+
+.nav-item {
+    position: relative;
+
+    min-width: 0;
+
+    height: 58px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    padding: 0;
+
+    border: none;
+
+    background:
+        transparent;
+
+    color:
+        #727672;
+
+    transition:
+        color .2s ease,
+        transform .15s ease;
+}
+
+.nav-item svg {
+    width: 25px;
+    height: 25px;
+}
+
+.nav-item span {
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.nav-item:hover {
+    color:
+        #B8BCB8;
+}
+
+.nav-item:active {
+    transform:
+        scale(.94);
+}
+
+.nav-item.active {
+    color:
+        var(--twete-green);
+}
+
+
+/* active navigation line */
+
+.nav-item.active::before {
+    content: "";
+
+    position: absolute;
+
+    top: -8px;
+    left: 50%;
+
+    width: 29px;
+    height: 2px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 20px;
+
+    background:
+        var(--twete-green);
+
+    box-shadow:
+        0 0 9px
+        rgba(198,255,0,0.3);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .page {
+        padding:
+            24px
+            17px
+            115px;
+    }
+
+    header {
+        min-height: 66px;
+
+        margin-bottom: 37px;
+
+        padding-bottom: 17px;
+    }
+
+    .logo {
+        font-size: 28px;
+    }
+
+    main > h1 {
+        font-size: 31px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+    }
+
+    .push-settings {
+        margin:
+            27px
+            0
+            40px;
+
+        min-height: 90px;
+
+        padding:
+            18px
+            17px
+            18px
+            20px;
+
+        border-radius: 19px;
+    }
+
+    .push-description {
+        max-width: 220px;
+    }
+
+    .athletes-header {
+        align-items: center;
+    }
+
+    .athletes-header h2 {
+        font-size: 19px;
+    }
+
+    .athletes-grid {
+        grid-template-columns:
+            1fr;
+
+        gap: 11px;
+    }
+
+    .athlete-card {
+        min-height: 101px;
+
+        padding: 16px;
+
+        border-radius: 19px;
+    }
+
+    .avatar {
+        width: 59px;
+        height: 59px;
+
+        min-width: 59px;
+
+        border-radius: 17px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 390px) {
+
+    .page {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .push-settings {
+        gap: 12px;
+    }
+
+    .push-description {
+        max-width: 190px;
+    }
+
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+========================================================= */
+
+@media (hover: none) {
+
+    .athlete-card:hover {
+        transform: none;
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY / REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .athlete-card,
+    .arrow,
+    .push-toggle,
+    .nav-item {
+        transition:
+            none !important;
+    }
+
+             }
