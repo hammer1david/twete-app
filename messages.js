@@ -916,14 +916,10 @@ async function loadMessages() {
 /* =========================================
    RENDER MESSAGE
 ========================================= */
-
-function renderMessage(
-    message
-) {
+async function renderMessage(message) {
 
     /*
-        Prevent duplicates when a message
-        appears through INSERT + Realtime.
+        Prevent duplicate messages
     */
 
     if (
@@ -932,30 +928,20 @@ function renderMessage(
         )
     ) {
 
-        updateMessageReadState(
-            message
-        );
-
+        updateMessageReadState(message);
         return;
     }
 
 
     const isSent =
-        message.sender_id ===
-        currentUser.id;
+        message.sender_id === currentUser.id;
 
 
     const row =
         document.createElement("div");
 
-
     row.className =
-        `message-row ${
-            isSent
-                ? "sent"
-                : "received"
-        }`;
-
+        `message-row ${isSent ? "sent" : "received"}`;
 
     row.dataset.messageId =
         message.id;
@@ -964,31 +950,64 @@ function renderMessage(
     const bubble =
         document.createElement("div");
 
-
     bubble.className =
         "message-bubble";
 
 
-    const text =
-        document.createElement("div");
+    /*
+        ATTACHMENT
+    */
 
+    if (message.attachment_path) {
 
-    text.className =
-        "message-text";
+        const attachment =
+            await createMessageAttachment(message);
+
+        if (attachment) {
+
+            bubble.appendChild(
+                attachment
+            );
+
+        }
+
+    }
 
 
     /*
-        textContent is deliberate.
-        It prevents message HTML injection.
+        TEXT
+
+        Only create the text element when
+        the message actually contains text.
     */
 
-    text.textContent =
-        message.message;
+    if (
+        message.message &&
+        message.message.trim()
+    ) {
 
+        const text =
+            document.createElement("div");
+
+        text.className =
+            "message-text";
+
+        text.textContent =
+            message.message;
+
+        bubble.appendChild(
+            text
+        );
+
+    }
+
+
+    /*
+        MESSAGE META
+    */
 
     const meta =
         document.createElement("div");
-
 
     meta.className =
         "message-meta";
@@ -997,10 +1016,8 @@ function renderMessage(
     const time =
         document.createElement("span");
 
-
     time.className =
         "message-time";
-
 
     time.textContent =
         formatMessageTime(
@@ -1014,8 +1031,7 @@ function renderMessage(
 
 
     /*
-        Read indicators only belong
-        to messages we sent.
+        Read indicator
     */
 
     if (isSent) {
@@ -1023,16 +1039,13 @@ function renderMessage(
         const checks =
             document.createElement("span");
 
-
         checks.className =
             "message-checks";
-
 
         checks.textContent =
             message.read_at
                 ? "✓✓"
                 : "✓";
-
 
         meta.appendChild(
             checks
@@ -1040,10 +1053,6 @@ function renderMessage(
 
     }
 
-
-    bubble.appendChild(
-        text
-    );
 
     bubble.appendChild(
         meta
@@ -1059,6 +1068,294 @@ function renderMessage(
 
 }
 
+/* =========================================
+   MESSAGE ATTACHMENT
+========================================= */
+
+async function createMessageAttachment(
+    message
+) {
+
+    if (!message.attachment_path) {
+        return null;
+    }
+
+
+    /*
+        Create temporary signed URL.
+
+        The bucket stays private.
+    */
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from("chat-attachments")
+            .createSignedUrl(
+                message.attachment_path,
+                3600
+            );
+
+
+    if (
+        error ||
+        !data ||
+        !data.signedUrl
+    ) {
+
+        console.error(
+            "Attachment URL error:",
+            error
+        );
+
+        return createBrokenAttachment(
+            message
+        );
+    }
+
+
+    const url =
+        data.signedUrl;
+
+
+    /*
+        IMAGE
+    */
+
+    if (
+        message.attachment_type &&
+        message.attachment_type.startsWith(
+            "image/"
+        )
+    ) {
+
+        const image =
+            document.createElement("img");
+
+        image.className =
+            "message-attachment-image";
+
+        image.src =
+            url;
+
+        image.alt =
+            message.attachment_name ||
+            "Image";
+
+        image.loading =
+            "lazy";
+
+
+        /*
+            Clicking the image opens
+            the full image.
+        */
+
+        image.addEventListener(
+            "click",
+            function () {
+
+                window.open(
+                    url,
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+
+            }
+        );
+
+
+        return image;
+    }
+
+
+    /*
+        VIDEO
+    */
+
+    if (
+        message.attachment_type &&
+        message.attachment_type.startsWith(
+            "video/"
+        )
+    ) {
+
+        const video =
+            document.createElement("video");
+
+        video.className =
+            "message-attachment-video";
+
+        video.src =
+            url;
+
+        video.controls =
+            true;
+
+        video.preload =
+            "metadata";
+
+        return video;
+    }
+
+
+    /*
+        DOCUMENT / OTHER FILE
+    */
+
+    const file =
+        document.createElement("a");
+
+    file.className =
+        "message-attachment-file";
+
+    file.href =
+        url;
+
+    file.target =
+        "_blank";
+
+    file.rel =
+        "noopener noreferrer";
+
+
+    const icon =
+        document.createElement("span");
+
+    icon.className =
+        "message-attachment-file-icon";
+
+    icon.textContent =
+        "↓";
+
+
+    const information =
+        document.createElement("span");
+
+    information.className =
+        "message-attachment-file-info";
+
+
+    const name =
+        document.createElement("span");
+
+    name.className =
+        "message-attachment-file-name";
+
+    name.textContent =
+        message.attachment_name ||
+        "Attachment";
+
+
+    const size =
+        document.createElement("span");
+
+    size.className =
+        "message-attachment-file-size";
+
+    size.textContent =
+        formatFileSize(
+            message.attachment_size
+        );
+
+
+    information.appendChild(
+        name
+    );
+
+    information.appendChild(
+        size
+    );
+
+
+    file.appendChild(
+        icon
+    );
+
+    file.appendChild(
+        information
+    );
+
+
+    return file;
+
+}
+
+
+/* =========================================
+   BROKEN ATTACHMENT
+========================================= */
+
+function createBrokenAttachment(
+    message
+) {
+
+    const element =
+        document.createElement("div");
+
+    element.className =
+        "message-attachment-error";
+
+    element.textContent =
+        message.attachment_name ||
+        "Attachment unavailable";
+
+    return element;
+
+}
+
+
+/* =========================================
+   FILE SIZE
+========================================= */
+
+function formatFileSize(bytes) {
+
+    const size =
+        Number(bytes);
+
+
+    if (
+        !size ||
+        size < 1
+    ) {
+        return "";
+    }
+
+
+    if (
+        size < 1024
+    ) {
+
+        return `${size} B`;
+
+    }
+
+
+    if (
+        size < 1024 * 1024
+    ) {
+
+        return `${
+            (
+                size / 1024
+            ).toFixed(1)
+        } KB`;
+
+    }
+
+
+    return `${
+        (
+            size /
+            (1024 * 1024)
+        ).toFixed(1)
+    } MB`;
+
+}
 
 /* =========================================
    SEND MESSAGE
