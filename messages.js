@@ -1,0 +1,1348 @@
+/* =========================================
+   TWETE CHAT
+========================================= */
+
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+    "https://uhbhsyuodizauwhhdffu.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_o-hfeydDJf5J-xPQyxwVow_DJ3StSNn";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const backButton =
+    document.getElementById("backButton");
+
+const chatAvatar =
+    document.getElementById("chatAvatar");
+
+const chatAvatarLetter =
+    document.getElementById("chatAvatarLetter");
+
+const chatUserName =
+    document.getElementById("chatUserName");
+
+const chatUserStatus =
+    document.getElementById("chatUserStatus");
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+const messageInput =
+    document.getElementById("messageInput");
+
+const sendButton =
+    document.getElementById("sendButton");
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let currentUser = null;
+let currentProfile = null;
+let chatUser = null;
+
+let realtimeChannel = null;
+
+let isSending = false;
+
+
+/* =========================================
+   START
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeChat
+);
+
+
+async function initializeChat() {
+
+    setupInterface();
+
+    const authenticated =
+        await loadCurrentUser();
+
+    if (!authenticated) {
+        return;
+    }
+
+    const profileLoaded =
+        await loadCurrentProfile();
+
+    if (!profileLoaded) {
+        return;
+    }
+
+    const chatUserFound =
+        await findChatUser();
+
+    if (!chatUserFound) {
+
+        showChatState(
+            "No conversation found."
+        );
+
+        return;
+    }
+
+    renderChatHeader();
+
+    await loadMessages();
+
+    await markMessagesAsRead();
+
+    subscribeToMessages();
+
+}
+
+
+/* =========================================
+   INTERFACE
+========================================= */
+
+function setupInterface() {
+
+    backButton.addEventListener(
+        "click",
+        goBack
+    );
+
+    sendButton.addEventListener(
+        "click",
+        sendMessage
+    );
+
+    messageInput.addEventListener(
+        "input",
+        autoResizeInput
+    );
+
+}
+
+
+/* =========================================
+   BACK
+========================================= */
+
+function goBack() {
+
+    if (
+        currentProfile &&
+        currentProfile.role === "coach"
+    ) {
+
+        window.location.href =
+            "coach.html";
+
+        return;
+    }
+
+    window.location.href =
+        "athlete.html";
+
+}
+
+
+/* =========================================
+   CURRENT USER
+========================================= */
+
+async function loadCurrentUser() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (
+        error ||
+        !data ||
+        !data.user
+    ) {
+
+        window.location.href =
+            "index.html";
+
+        return false;
+    }
+
+
+    currentUser =
+        data.user;
+
+    return true;
+
+}
+
+
+/* =========================================
+   CURRENT PROFILE
+========================================= */
+
+async function loadCurrentProfile() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, full_name, role, avatar_url"
+            )
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .single();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        console.error(
+            "Profile error:",
+            error
+        );
+
+        showChatState(
+            "Profile could not be loaded."
+        );
+
+        return false;
+    }
+
+
+    currentProfile =
+        data;
+
+    return true;
+
+}
+
+
+/* =========================================
+   FIND CHAT USER
+========================================= */
+
+async function findChatUser() {
+
+    /*
+        COACH
+
+        A coach can open a specific athlete with:
+
+        messages.html?athlete_id=USER_ID
+    */
+
+    if (
+        currentProfile.role === "coach"
+    ) {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const requestedAthleteId =
+            params.get("athlete_id");
+
+
+        if (requestedAthleteId) {
+
+            const {
+                data: connection,
+                error: connectionError
+            } =
+                await supabaseClient
+                    .from("coach_athletes")
+                    .select(
+                        "athlete_id"
+                    )
+                    .eq(
+                        "coach_id",
+                        currentUser.id
+                    )
+                    .eq(
+                        "athlete_id",
+                        requestedAthleteId
+                    )
+                    .maybeSingle();
+
+
+            if (
+                connectionError ||
+                !connection
+            ) {
+
+                console.error(
+                    "Coach-athlete connection error:",
+                    connectionError
+                );
+
+                return false;
+            }
+
+
+            return await loadChatUserProfile(
+                requestedAthleteId
+            );
+
+        }
+
+
+        /*
+            If no athlete was supplied in the URL,
+            use the first connected athlete for now.
+        */
+
+        const {
+            data: connection,
+            error: connectionError
+        } =
+            await supabaseClient
+                .from("coach_athletes")
+                .select(
+                    "athlete_id"
+                )
+                .eq(
+                    "coach_id",
+                    currentUser.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                )
+                .limit(1)
+                .maybeSingle();
+
+
+        if (
+            connectionError ||
+            !connection
+        ) {
+
+            console.error(
+                "Athlete connection error:",
+                connectionError
+            );
+
+            return false;
+        }
+
+
+        return await loadChatUserProfile(
+            connection.athlete_id
+        );
+
+    }
+
+
+    /*
+        ATHLETE
+
+        Athlete automatically gets
+        their connected coach.
+    */
+
+    if (
+        currentProfile.role === "athlete"
+    ) {
+
+        const {
+            data: connection,
+            error: connectionError
+        } =
+            await supabaseClient
+                .from("coach_athletes")
+                .select(
+                    "coach_id"
+                )
+                .eq(
+                    "athlete_id",
+                    currentUser.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                )
+                .limit(1)
+                .maybeSingle();
+
+
+        if (
+            connectionError ||
+            !connection
+        ) {
+
+            console.error(
+                "Coach connection error:",
+                connectionError
+            );
+
+            return false;
+        }
+
+
+        return await loadChatUserProfile(
+            connection.coach_id
+        );
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =========================================
+   LOAD CHAT USER PROFILE
+========================================= */
+
+async function loadChatUserProfile(
+    userId
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, full_name, role, avatar_url"
+            )
+            .eq(
+                "id",
+                userId
+            )
+            .maybeSingle();
+
+
+    if (
+        error ||
+        !data
+    ) {
+
+        console.error(
+            "Chat user profile error:",
+            error
+        );
+
+        return false;
+    }
+
+
+    chatUser =
+        data;
+
+    return true;
+
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+function renderChatHeader() {
+
+    const name =
+        chatUser.full_name ||
+        (
+            chatUser.role === "coach"
+                ? "Coach"
+                : "Athlete"
+        );
+
+
+    chatUserName.textContent =
+        name;
+
+
+    chatUserStatus.textContent =
+        chatUser.role === "coach"
+            ? "Coach"
+            : "Athlete";
+
+
+    renderAvatar(
+        name,
+        chatUser.avatar_url
+    );
+
+}
+
+
+/* =========================================
+   AVATAR
+========================================= */
+
+function renderAvatar(
+    name,
+    avatarUrl
+) {
+
+    chatAvatar.innerHTML = "";
+
+
+    if (avatarUrl) {
+
+        const image =
+            document.createElement("img");
+
+        image.src =
+            avatarUrl;
+
+        image.alt =
+            "";
+
+        image.addEventListener(
+            "error",
+            function () {
+
+                renderAvatarLetter(
+                    name
+                );
+
+            },
+            {
+                once: true
+            }
+        );
+
+
+        chatAvatar.appendChild(
+            image
+        );
+
+        return;
+    }
+
+
+    renderAvatarLetter(
+        name
+    );
+
+}
+
+
+function renderAvatarLetter(
+    name
+) {
+
+    chatAvatar.innerHTML = "";
+
+
+    const span =
+        document.createElement("span");
+
+
+    span.textContent =
+        (
+            name &&
+            name.trim()
+        )
+            ? name
+                .trim()
+                .charAt(0)
+                .toUpperCase()
+            : "T";
+
+
+    chatAvatar.appendChild(
+        span
+    );
+
+}
+
+
+/* =========================================
+   LOAD MESSAGES
+========================================= */
+
+async function loadMessages() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .select(
+                "id, sender_id, receiver_id, message, created_at, read_at"
+            )
+            .or(
+                `and(sender_id.eq.${currentUser.id},receiver_id.eq.${chatUser.id}),and(sender_id.eq.${chatUser.id},receiver_id.eq.${currentUser.id})`
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Messages error:",
+            error
+        );
+
+        showChatState(
+            "Messages could not be loaded."
+        );
+
+        return;
+    }
+
+
+    chatMessages.innerHTML = "";
+
+
+    for (
+        const message of data
+    ) {
+
+        renderMessage(
+            message
+        );
+
+    }
+
+
+    scrollToBottom(
+        false
+    );
+
+}
+
+
+/* =========================================
+   RENDER MESSAGE
+========================================= */
+
+function renderMessage(
+    message
+) {
+
+    /*
+        Prevent duplicates when a message
+        appears through INSERT + Realtime.
+    */
+
+    if (
+        document.querySelector(
+            `[data-message-id="${message.id}"]`
+        )
+    ) {
+
+        updateMessageReadState(
+            message
+        );
+
+        return;
+    }
+
+
+    const isSent =
+        message.sender_id ===
+        currentUser.id;
+
+
+    const row =
+        document.createElement("div");
+
+
+    row.className =
+        `message-row ${
+            isSent
+                ? "sent"
+                : "received"
+        }`;
+
+
+    row.dataset.messageId =
+        message.id;
+
+
+    const bubble =
+        document.createElement("div");
+
+
+    bubble.className =
+        "message-bubble";
+
+
+    const text =
+        document.createElement("div");
+
+
+    text.className =
+        "message-text";
+
+
+    /*
+        textContent is deliberate.
+        It prevents message HTML injection.
+    */
+
+    text.textContent =
+        message.message;
+
+
+    const meta =
+        document.createElement("div");
+
+
+    meta.className =
+        "message-meta";
+
+
+    const time =
+        document.createElement("span");
+
+
+    time.className =
+        "message-time";
+
+
+    time.textContent =
+        formatMessageTime(
+            message.created_at
+        );
+
+
+    meta.appendChild(
+        time
+    );
+
+
+    /*
+        Read indicators only belong
+        to messages we sent.
+    */
+
+    if (isSent) {
+
+        const checks =
+            document.createElement("span");
+
+
+        checks.className =
+            "message-checks";
+
+
+        checks.textContent =
+            message.read_at
+                ? "✓✓"
+                : "✓";
+
+
+        meta.appendChild(
+            checks
+        );
+
+    }
+
+
+    bubble.appendChild(
+        text
+    );
+
+    bubble.appendChild(
+        meta
+    );
+
+    row.appendChild(
+        bubble
+    );
+
+    chatMessages.appendChild(
+        row
+    );
+
+}
+
+
+/* =========================================
+   SEND MESSAGE
+========================================= */
+
+async function sendMessage() {
+
+    if (
+        isSending ||
+        !currentUser ||
+        !chatUser
+    ) {
+
+        return;
+    }
+
+
+    const message =
+        messageInput.value.trim();
+
+
+    if (!message) {
+        return;
+    }
+
+
+    isSending =
+        true;
+
+    sendButton.disabled =
+        true;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .insert({
+                sender_id:
+                    currentUser.id,
+
+                receiver_id:
+                    chatUser.id,
+
+                message:
+                    message
+            })
+            .select(
+                "id, sender_id, receiver_id, message, created_at, read_at"
+            )
+            .single();
+
+
+    isSending =
+        false;
+
+    sendButton.disabled =
+        false;
+
+
+    if (error) {
+
+        console.error(
+            "Send message error:",
+            error
+        );
+
+        return;
+    }
+
+
+    messageInput.value =
+        "";
+
+    resetInputHeight();
+
+
+    /*
+        Render immediately.
+
+        If Realtime also delivers it,
+        duplicate protection handles it.
+    */
+
+    renderMessage(
+        data
+    );
+
+
+    scrollToBottom(
+        true
+    );
+
+}
+
+
+/* =========================================
+   REALTIME
+========================================= */
+
+function subscribeToMessages() {
+
+    if (realtimeChannel) {
+
+        supabaseClient.removeChannel(
+            realtimeChannel
+        );
+
+    }
+
+
+    realtimeChannel =
+        supabaseClient
+            .channel(
+                `twete-chat-${currentUser.id}-${chatUser.id}`
+            )
+
+
+            /*
+                New messages received by us
+            */
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "messages",
+                    filter:
+                        `receiver_id=eq.${currentUser.id}`
+                },
+                async function (
+                    payload
+                ) {
+
+                    const message =
+                        payload.new;
+
+
+                    if (
+                        message.sender_id !==
+                        chatUser.id
+                    ) {
+
+                        return;
+                    }
+
+
+                    renderMessage(
+                        message
+                    );
+
+
+                    scrollToBottom(
+                        true
+                    );
+
+
+                    await markMessageAsRead(
+                        message.id
+                    );
+
+                }
+            )
+
+
+            /*
+                Messages sent by us.
+
+                Useful when another tab/device
+                sends the message.
+            */
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "messages",
+                    filter:
+                        `sender_id=eq.${currentUser.id}`
+                },
+                function (
+                    payload
+                ) {
+
+                    const message =
+                        payload.new;
+
+
+                    if (
+                        message.receiver_id !==
+                        chatUser.id
+                    ) {
+
+                        return;
+                    }
+
+
+                    renderMessage(
+                        message
+                    );
+
+
+                    scrollToBottom(
+                        true
+                    );
+
+                }
+            )
+
+
+            /*
+                Read status changes
+            */
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "messages",
+                    filter:
+                        `sender_id=eq.${currentUser.id}`
+                },
+                function (
+                    payload
+                ) {
+
+                    if (
+                        payload.new.receiver_id !==
+                        chatUser.id
+                    ) {
+
+                        return;
+                    }
+
+
+                    updateMessageReadState(
+                        payload.new
+                    );
+
+                }
+            )
+
+
+            .subscribe();
+
+}
+
+
+/* =========================================
+   MARK ALL RECEIVED AS READ
+========================================= */
+
+async function markMessagesAsRead() {
+
+    if (
+        !currentUser ||
+        !chatUser
+    ) {
+
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .update({
+                read_at:
+                    new Date()
+                        .toISOString()
+            })
+            .eq(
+                "sender_id",
+                chatUser.id
+            )
+            .eq(
+                "receiver_id",
+                currentUser.id
+            )
+            .is(
+                "read_at",
+                null
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Mark messages read error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   MARK ONE MESSAGE AS READ
+========================================= */
+
+async function markMessageAsRead(
+    messageId
+) {
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .update({
+                read_at:
+                    new Date()
+                        .toISOString()
+            })
+            .eq(
+                "id",
+                messageId
+            )
+            .eq(
+                "receiver_id",
+                currentUser.id
+            )
+            .is(
+                "read_at",
+                null
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Mark message read error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   UPDATE READ INDICATOR
+========================================= */
+
+function updateMessageReadState(
+    message
+) {
+
+    if (
+        !message ||
+        message.sender_id !==
+        currentUser.id
+    ) {
+
+        return;
+    }
+
+
+    const row =
+        document.querySelector(
+            `[data-message-id="${message.id}"]`
+        );
+
+
+    if (!row) {
+        return;
+    }
+
+
+    const checks =
+        row.querySelector(
+            ".message-checks"
+        );
+
+
+    if (!checks) {
+        return;
+    }
+
+
+    checks.textContent =
+        message.read_at
+            ? "✓✓"
+            : "✓";
+
+}
+
+
+/* =========================================
+   MESSAGE TIME
+========================================= */
+
+function formatMessageTime(
+    timestamp
+) {
+
+    if (!timestamp) {
+        return "";
+    }
+
+
+    const date =
+        new Date(
+            timestamp
+        );
+
+
+    return date.toLocaleTimeString(
+        [],
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+/* =========================================
+   INPUT AUTO RESIZE
+========================================= */
+
+function autoResizeInput() {
+
+    messageInput.style.height =
+        "auto";
+
+
+    const newHeight =
+        Math.min(
+            messageInput.scrollHeight,
+            130
+        );
+
+
+    messageInput.style.height =
+        `${newHeight}px`;
+
+
+    messageInput.style.overflowY =
+        messageInput.scrollHeight > 130
+            ? "auto"
+            : "hidden";
+
+}
+
+
+function resetInputHeight() {
+
+    messageInput.style.height =
+        "";
+
+    messageInput.style.overflowY =
+        "hidden";
+
+}
+
+
+/* =========================================
+   SCROLL
+========================================= */
+
+function scrollToBottom(
+    smooth = true
+) {
+
+    requestAnimationFrame(
+        function () {
+
+            chatMessages.scrollTo({
+                top:
+                    chatMessages.scrollHeight,
+
+                behavior:
+                    smooth
+                        ? "smooth"
+                        : "auto"
+            });
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   CHAT STATE
+========================================= */
+
+function showChatState(
+    text
+) {
+
+    chatMessages.innerHTML =
+        "";
+
+
+    const state =
+        document.createElement("div");
+
+
+    state.style.margin =
+        "auto";
+
+    state.style.padding =
+        "24px";
+
+    state.style.textAlign =
+        "center";
+
+    state.style.color =
+        "rgba(255,255,255,0.5)";
+
+    state.style.fontSize =
+        "14px";
+
+
+    state.textContent =
+        text;
+
+
+    chatMessages.appendChild(
+        state
+    );
+
+}
+
+
+/* =========================================
+   CLEANUP
+========================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function () {
+
+        if (realtimeChannel) {
+
+            supabaseClient.removeChannel(
+                realtimeChannel
+            );
+
+        }
+
+    }
+);
