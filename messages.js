@@ -1753,6 +1753,7 @@ function scrollToBottom() {
 }
 
 
+
 /* =========================================
    ADD SINGLE MESSAGE
 ========================================= */
@@ -1790,60 +1791,115 @@ async function addRealtimeMessage(
 
 
     /*
-        Load attachments only
-        for this new message.
+        Wait for attachments to appear
+        in the database.
+
+        The realtime INSERT for the
+        message can arrive slightly before
+        the attachment INSERT.
     */
 
     let attachments = [];
 
+    const maxAttempts = 10;
 
-    const {
-        data,
-        error
-    } =
-        await messagesSupabase
-            .from(
-                "message_attachments"
-            )
-            .select(`
-                id,
-                message_id,
-                file_url,
-                file_path,
-                file_name,
-                file_type,
-                file_size,
-                created_at
-            `)
-            .eq(
-                "message_id",
-                message.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: true
-                }
+    const delay = 200;
+
+
+    for (
+        let attempt = 0;
+        attempt < maxAttempts;
+        attempt++
+    ) {
+
+        const {
+            data,
+            error
+        } =
+            await messagesSupabase
+                .from(
+                    "message_attachments"
+                )
+                .select(`
+                    id,
+                    message_id,
+                    file_url,
+                    file_path,
+                    file_name,
+                    file_type,
+                    file_size,
+                    created_at
+                `)
+                .eq(
+                    "message_id",
+                    message.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Realtime attachment error:",
+                error
             );
 
+            break;
 
-    if (error) {
+        }
 
-        console.error(
-            "Realtime attachment error:",
-            error
-        );
-
-    } else {
 
         attachments =
             data || [];
+
+
+        /*
+            Attachments found.
+        */
+
+        if (
+            attachments.length > 0
+        ) {
+
+            break;
+
+        }
+
+
+        /*
+            Wait before checking again.
+        */
+
+        if (
+            attempt <
+            maxAttempts - 1
+        ) {
+
+            await new Promise(
+                function (
+                    resolve
+                ) {
+
+                    setTimeout(
+                        resolve,
+                        delay
+                    );
+
+                }
+            );
+
+        }
 
     }
 
 
     /*
-        Generate URLs in parallel.
+        Generate signed URLs.
     */
 
     await Promise.all(
@@ -1924,12 +1980,16 @@ async function addRealtimeMessage(
     );
 
 
+    /*
+        Add attachments to message.
+    */
+
     message.attachments =
         attachments;
 
 
     /*
-        Add to local cache.
+        Add message to local cache.
     */
 
     messagesCache.push(
@@ -1957,8 +2017,7 @@ async function addRealtimeMessage(
 
 
     /*
-        Add only the new message
-        to the DOM.
+        Add message to chat.
     */
 
     const list =
@@ -1973,8 +2032,7 @@ async function addRealtimeMessage(
 
 
     /*
-        Remove "No messages yet."
-        if this is the first message.
+        Remove empty state.
     */
 
     const empty =
@@ -1985,11 +2043,14 @@ async function addRealtimeMessage(
 
     if (empty) {
 
-        list.innerHTML =
-            "";
+        empty.remove();
 
     }
 
+
+    /*
+        Create complete message.
+    */
 
     const row =
         createMessageElement(
@@ -2002,12 +2063,15 @@ async function addRealtimeMessage(
     );
 
 
+    /*
+        Keep newest message visible.
+    */
+
     scrollToBottom();
 
 
     /*
-        Mark as read if this message
-        was received.
+        Mark received message as read.
     */
 
     if (
@@ -2026,8 +2090,6 @@ async function addRealtimeMessage(
     }
 
 }
-
-
 /* =========================================
    SEND MESSAGE + ATTACHMENTS
 ========================================= */
