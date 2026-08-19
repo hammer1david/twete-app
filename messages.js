@@ -3488,11 +3488,10 @@ function toggleMessageSelection(
 
 function clearMessageSelection() {
 
-    selectedMessageId =
-        null;
+    selectedMessages.clear();
 
-    selectedMessageData =
-        null;
+    isMessageSelectionMode =
+        false;
 
 
     document
@@ -3513,6 +3512,14 @@ function clearMessageSelection() {
     if (messageActionBar) {
 
         messageActionBar.hidden =
+            true;
+
+    }
+
+
+    if (deleteMessageButton) {
+
+        deleteMessageButton.hidden =
             true;
 
     }
