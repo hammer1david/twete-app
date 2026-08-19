@@ -3455,6 +3455,10 @@ deleteMessageButton
 
 async function deleteSelectedMessage() {
 
+   console.log(
+    "DELETE BUTTON CLICKED",
+    selectedMessageData
+);
     if (
         !selectedMessageData ||
         !currentUser
