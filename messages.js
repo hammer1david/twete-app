@@ -1879,7 +1879,126 @@ function getFileExtension(fileName) {
     return extension;
 
 }
+/* =========================================
+   CHAT PRESENCE
+========================================= */
 
+async function updateChatPresence(
+    isActive
+) {
+
+    if (
+        !currentUser ||
+        !chatUser
+    ) {
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("chat_presence")
+            .upsert(
+                {
+                    user_id:
+                        currentUser.id,
+
+                    chat_partner_id:
+                        chatUser.id,
+
+                    is_active:
+                        isActive,
+
+                    last_seen:
+                        new Date()
+                            .toISOString()
+                },
+                {
+                    onConflict:
+                        "user_id"
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Chat presence error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   START CHAT PRESENCE
+========================================= */
+
+async function startChatPresence() {
+
+    await updateChatPresence(
+        true
+    );
+
+
+    if (chatPresenceInterval) {
+
+        clearInterval(
+            chatPresenceInterval
+        );
+
+    }
+
+
+    chatPresenceInterval =
+        setInterval(
+            function () {
+
+                if (
+                    document.visibilityState ===
+                    "visible"
+                ) {
+
+                    updateChatPresence(
+                        true
+                    );
+
+                }
+
+            },
+            15000
+        );
+
+}
+
+
+/* =========================================
+   STOP CHAT PRESENCE
+========================================= */
+
+function stopChatPresence() {
+
+    if (chatPresenceInterval) {
+
+        clearInterval(
+            chatPresenceInterval
+        );
+
+        chatPresenceInterval =
+            null;
+
+    }
+
+
+    updateChatPresence(
+        false
+    );
+
+}
 /* =========================================
    REALTIME
 ========================================= */
