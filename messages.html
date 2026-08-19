@@ -53,6 +53,7 @@
         <div
             id="chatAvatar"
             class="chat-avatar"
+            aria-hidden="true"
         >
 
             <span id="chatAvatarLetter">
@@ -75,7 +76,7 @@
                 id="chatUserStatus"
                 class="chat-user-status"
             >
-                Coach
+                Loading...
             </div>
 
         </div>
@@ -91,6 +92,8 @@
     <main
         id="chatMessages"
         class="chat-messages"
+        aria-live="polite"
+        aria-relevant="additions"
     >
 
         <!-- Messages will be inserted here -->
@@ -114,6 +117,7 @@
                 rows="1"
                 maxlength="5000"
                 autocomplete="off"
+                aria-label="Message"
             ></textarea>
 
         </div>
