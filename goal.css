@@ -1468,3 +1468,31 @@ button {
     }
 
 }
+
+.feedback-detail {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 27px;
+
+    padding:
+        0
+        9px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    color:
+        #D0D4D0;
+
+    font-size: 10px;
+
+    font-weight: 750;
+}
