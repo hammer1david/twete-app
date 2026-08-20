@@ -389,7 +389,15 @@ function appendFitnessFocusSelector() {
 
     <div class="ai-goal-form-error"></div>
 
-  `;
+<button
+  type="button"
+  class="ai-goal-review-button"
+  data-fitness-continue
+>
+  Continue →
+</button>
+
+`;
 
 
   messages.appendChild(card);
