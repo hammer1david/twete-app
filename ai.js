@@ -163,6 +163,7 @@ function formatActionField(field) {
     goal_name: "Goal name",
     distance: "Distance",
     current_pb: "Current PB",
+    current_performance: "Current performance",
     progress: "Progress"
   };
 
