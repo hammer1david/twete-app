@@ -1465,27 +1465,50 @@ createPlanButton.addEventListener(
   }
 
 
-  if (!data?.training_week) {
-    throw new Error(
-      "No training week returned."
-    );
-  }
+const generatedWeeks =
+  Array.isArray(data?.training_weeks)
+    ? data.training_weeks
+    : data?.training_week
+      ? [data.training_week]
+      : [];
 
 
-  console.log(
-    "Generated training week:",
-    data.training_week
+if (!generatedWeeks.length) {
+  throw new Error(
+    "No training week returned."
   );
+}
 
+
+console.log(
+  "Generated training weeks:",
+  generatedWeeks
+);
+
+
+if (generatedWeeks.length === 2) {
 
   createPlanButton.textContent =
-    `Week ${weekContext.nextWeekNumber} ready ✓`;
+    `Weeks ${generatedWeeks[0].week_number}–${generatedWeeks[1].week_number} ready ✓`;
+
+} else {
+
+  createPlanButton.textContent =
+    `Week ${generatedWeeks[0].week_number} ready ✓`;
+
+}
 
 
-  appendTrainingWeekPreview(
-    data.training_week,
-    weekContext
-  );
+generatedWeeks.forEach(
+  (trainingWeek) => {
+
+    appendTrainingWeekPreview(
+      trainingWeek,
+      weekContext
+    );
+
+  }
+);
 
 
 } catch (error) {
