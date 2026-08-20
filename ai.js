@@ -428,7 +428,7 @@ async function handlePendingAction(
           "twete-ai-action",
           {
             body: {
-              action_id: actionid,
+              action_id: action.id,
               decision: decision
             }
           }
