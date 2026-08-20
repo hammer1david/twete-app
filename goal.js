@@ -1681,7 +1681,10 @@ ${
                 >
 
                     ${
-                        athleteFeedback
+                        (
+                           athleteFeedback ||
+                           detailedFeedback
+                        )
                         ?
                         "Edit Feedback"
                         :
