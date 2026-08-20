@@ -2896,6 +2896,8 @@
     align-items: flex-end;
     justify-content: center;
 
+   overflow: visible;
+
     z-index: 2;
 }
 
@@ -2928,8 +2930,11 @@
 
     z-index: 2;
 
-    width: 180%;
-    max-width: 520px;
+    width: 520px;
+    max-width: none;
+
+   left: 50%;
+   bottom: 0;
 
     object-fit: contain;
 
