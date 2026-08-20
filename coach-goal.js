@@ -1319,85 +1319,184 @@ function createSessionCard(
 
 
                 ${
-                    athleteFeedback
-                    ?
-                    `
-                    <div class="coach-athlete-feedback">
 
-                        <div class="coach-athlete-feedback-label">
-                            ATHLETE FEEDBACK
-                        </div>
+    athleteFeedback
+    ?
+    `
+    <div class="coach-athlete-feedback">
 
-
-                        <div class="coach-feedback-summary">
-
-                            ${
-                                athleteFeedback.feeling
-                                ?
-                                `
-                                <span>
-
-                                    ${getCoachFeelingEmoji(
-                                        athleteFeedback.feeling
-                                    )}
-
-                                    ${escapeHtml(
-                                        athleteFeedback.feeling
-                                            .charAt(0)
-                                            .toUpperCase() +
-                                        athleteFeedback.feeling
-                                            .slice(1)
-                                    )}
-
-                                </span>
-                                `
-                                :
-                                ""
-                            }
+        <div class="coach-athlete-feedback-label">
+            ATHLETE FEEDBACK
+        </div>
 
 
-                            ${
-                                athleteFeedback.effort
-                                ?
-                                `
-                                <span>
-                                    RPE
-                                    ${escapeHtml(
-                                        athleteFeedback.effort
-                                    )}/10
-                                </span>
-                                `
-                                :
-                                ""
-                            }
+        ${
+            athleteFeedback.comment
+            ?
+            `
+            <div class="coach-feedback-comment">
 
-                        </div>
+                ${escapeHtml(
+                    athleteFeedback.comment
+                ).replaceAll(
+                    "\n",
+                    "<br>"
+                )}
+
+            </div>
+            `
+            :
+            ""
+        }
 
 
-                        ${
-                            athleteFeedback.comment
-                            ?
-                            `
-                            <div class="coach-feedback-comment">
+        <div class="coach-feedback-summary">
 
-                                ${escapeHtml(
-                                    athleteFeedback.comment
-                                ).replaceAll(
-                                    "\n",
-                                    "<br>"
-                                )}
+            ${
+                athleteFeedback.feeling
+                ?
+                `
+                <span>
 
-                            </div>
-                            `
+                    ${getCoachFeelingEmoji(
+                        athleteFeedback.feeling
+                    )}
+
+                    ${escapeHtml(
+                        athleteFeedback.feeling
+                            .charAt(0)
+                            .toUpperCase() +
+                        athleteFeedback.feeling
+                            .slice(1)
+                    )}
+
+                </span>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                athleteFeedback.effort
+                ?
+                `
+                <span>
+                    RPE
+                    ${escapeHtml(
+                        athleteFeedback.effort
+                    )}/10
+                </span>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                athleteFeedback.legs
+                ?
+                `
+                <span>
+
+                    ${
+                        athleteFeedback.legs === "fresh"
+                            ? "⚡"
                             :
-                            ""
-                        }
+                        athleteFeedback.legs === "heavy"
+                            ? "🪨"
+                            :
+                            "🙂"
+                    }
 
-                    </div>
-                    `
-                    :
-                    ""
-                }
+                    ${escapeHtml(
+                        athleteFeedback.legs
+                            .charAt(0)
+                            .toUpperCase() +
+                        athleteFeedback.legs
+                            .slice(1)
+                    )}
+                    legs
+
+                </span>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                athleteFeedback.temperature
+                ?
+                `
+                <span>
+
+                    🌡️
+                    ${escapeHtml(
+                        getCoachTemperatureLabel(
+                            athleteFeedback.temperature
+                        )
+                    )}
+
+                </span>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                athleteFeedback.wind
+                ?
+                `
+                <span>
+
+                    💨
+                    ${escapeHtml(
+                        getCoachWindLabel(
+                            athleteFeedback.wind
+                        )
+                    )}
+
+                </span>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                athleteFeedback.terrain
+                ?
+                `
+                <span>
+
+                    ${getCoachTerrainEmoji(
+                        athleteFeedback.terrain
+                    )}
+
+                    ${escapeHtml(
+                        athleteFeedback.terrain
+                            .charAt(0)
+                            .toUpperCase() +
+                        athleteFeedback.terrain
+                            .slice(1)
+                    )}
+
+                </span>
+                `
+                :
+                ""
+            }
+
+        </div>
+
+    </div>
+    `
+    :
+    ""
+
+}
 
             </div>
 
