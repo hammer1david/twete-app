@@ -346,7 +346,207 @@ textarea {
 
   cursor: default;
 }
+/* =========================================
+   AI ACTION CARD
+========================================= */
 
+.ai-action-card {
+  width: min(100%, 520px);
+
+  align-self: flex-start;
+
+  padding: 16px;
+
+  border:
+    1px solid rgba(198, 255, 0, 0.35);
+
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(198, 255, 0, 0.08),
+      transparent 38%
+    ),
+    #11151a;
+
+  box-shadow:
+    0 0 26px
+    rgba(198, 255, 0, 0.06);
+}
+
+
+.ai-action-label {
+  margin-bottom: 7px;
+
+  color: #c6ff00;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: 1.1px;
+}
+
+
+.ai-action-title {
+  margin-bottom: 15px;
+
+  color: #ffffff;
+
+  font-size: 18px;
+
+  font-weight: 850;
+}
+
+
+.ai-action-changes {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.ai-action-row {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 11px 12px;
+
+  border-radius: 13px;
+
+  background: #0b0e12;
+
+  border:
+    1px solid #252a31;
+}
+
+
+.ai-action-field {
+  color: #9299a4;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+
+.ai-action-values {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  font-weight: 800;
+}
+
+
+.ai-action-old {
+  color: #777f89;
+
+  text-decoration:
+    line-through;
+}
+
+
+.ai-action-arrow {
+  color: #c6ff00;
+}
+
+
+.ai-action-new {
+  color: #ffffff;
+}
+
+
+.ai-action-buttons {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+
+.ai-action-buttons button {
+  min-height: 46px;
+
+  border-radius: 14px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.ai-action-cancel {
+  border:
+    1px solid #30363e;
+
+  background: #171b21;
+
+  color: #ffffff;
+}
+
+
+.ai-action-confirm {
+  border: 0;
+
+  background: #c6ff00;
+
+  color: #07090b;
+}
+
+
+.ai-action-buttons button:disabled {
+  opacity: 0.5;
+
+  cursor: default;
+}
+
+
+.ai-action-card.confirmed {
+  border-color:
+    rgba(198, 255, 0, 0.55);
+}
+
+
+.ai-action-card.cancelled {
+  opacity: 0.7;
+}
+
+
+.ai-action-result {
+  grid-column: 1 / -1;
+
+  padding: 12px;
+
+  border-radius: 13px;
+
+  text-align: center;
+
+  background: #171b21;
+
+  color: #a6adb7;
+
+  font-weight: 800;
+}
+
+
+.ai-action-result.success {
+  color: #c6ff00;
+}
 
 /* MOBILE */
 
