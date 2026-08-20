@@ -406,55 +406,105 @@ function appendFitnessFocusSelector() {
     messages.scrollHeight;
 
 
-  card
-    .querySelectorAll(
-      "[data-fitness-focus]"
-    )
-    .forEach((button) => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const fitnessFocus =
-            button.dataset.fitnessFocus;
-
-          const currentPerformance =
-            card
-              .querySelector(
-                "[data-fitness-performance]"
-              )
-              .value
-              .trim();
+  let selectedFitnessFocus = null;
 
 
-          pendingGoalSetup = {
-  goal_type:
-    "general_fitness",
-
-  fitness_focus:
-    fitnessFocus,
-
-  current_performance:
-    currentPerformance || null
-};
+const focusButtons =
+  card.querySelectorAll(
+    "[data-fitness-focus]"
+  );
 
 
-console.log(
-  "Pending general fitness goal:",
-  pendingGoalSetup
+focusButtons.forEach(
+  (button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        selectedFitnessFocus =
+          button.dataset.fitnessFocus;
+
+
+        focusButtons.forEach(
+          (item) => {
+            item.classList.remove(
+              "active"
+            );
+          }
+        );
+
+
+        button.classList.add(
+          "active"
+        );
+
+      }
+    );
+
+  }
 );
 
 
-card.remove();
+const continueButton =
+  card.querySelector(
+    "[data-fitness-continue]"
+  );
 
 
-appendTrainingSetupForm();
+continueButton.addEventListener(
+  "click",
+  () => {
 
-        }
+    const errorBox =
+      card.querySelector(
+        ".ai-goal-form-error"
       );
 
-    });
+
+    if (!selectedFitnessFocus) {
+
+      errorBox.textContent =
+        "Please choose your fitness focus.";
+
+      return;
+
+    }
+
+
+    errorBox.textContent = "";
+
+
+    const currentPerformance =
+      card
+        .querySelector(
+          "[data-fitness-performance]"
+        )
+        .value
+        .trim();
+
+
+    pendingGoalSetup = {
+
+      goal_type:
+        "general_fitness",
+
+      fitness_focus:
+        selectedFitnessFocus,
+
+      current_performance:
+        currentPerformance || null
+
+    };
+
+
+    card.remove();
+
+
+    appendTrainingSetupForm();
+
+  }
+);
 
 }
 /* =========================================
