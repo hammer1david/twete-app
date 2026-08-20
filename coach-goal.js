@@ -3193,7 +3193,105 @@ function getCoachFeelingEmoji(
 /* =========================================
    HELPERS
 ========================================= */
+function getCoachTemperatureLabel(
+    value
+) {
 
+    switch (
+        Number(value)
+    ) {
+
+        case 1:
+            return "Very cold";
+
+        case 2:
+            return "Cold";
+
+        case 3:
+            return "Neutral";
+
+        case 4:
+            return "Hot";
+
+        case 5:
+            return "Very hot";
+
+        default:
+            return "";
+
+    }
+
+}
+
+
+function getCoachWindLabel(
+    value
+) {
+
+    switch (
+        Number(value)
+    ) {
+
+        case 1:
+            return "Calm";
+
+        case 2:
+            return "Light";
+
+        case 3:
+            return "Moderate";
+
+        case 4:
+            return "Windy";
+
+        case 5:
+            return "Very windy";
+
+        default:
+            return "";
+
+    }
+
+}
+
+
+function getCoachTerrainEmoji(
+    terrain
+) {
+
+    switch (
+        String(
+            terrain || ""
+        ).toLowerCase()
+    ) {
+
+        case "track":
+            return "🏟";
+
+        case "flat":
+            return "━";
+
+        case "rolling":
+            return "〰";
+
+        case "hilly":
+            return "⛰";
+
+        case "trail":
+            return "🌲";
+
+        case "grass":
+            return "🌱";
+
+        case "treadmill":
+            return "🏃";
+
+        default:
+            return "";
+
+    }
+
+}
 function formatDate(
     value
 ) {
