@@ -648,6 +648,262 @@ if (isCreate) {
   );
 
 }
+
+/* =========================================
+   TRAINING SETUP REVIEW
+========================================= */
+
+function appendTrainingSetupReview(
+  trainingData,
+  formCard
+) {
+
+  const reviewCard =
+    document.createElement("div");
+
+  reviewCard.className =
+    "ai-training-review-card";
+
+
+  const rows = [
+    [
+      "Sessions per week",
+      trainingData.sessions_per_week
+    ],
+    [
+      "Training days",
+      trainingData.preferred_weekdays
+        .map(day =>
+          day.charAt(0).toUpperCase() +
+          day.slice(1)
+        )
+        .join(", ")
+    ],
+    [
+      "Hard sessions per week",
+      trainingData.intense_sessions_per_week
+    ],
+    [
+      "Weekly volume",
+      `${trainingData.current_weekly_km} km`
+    ],
+    [
+      "Current longest run",
+      `${trainingData.current_long_run_km} km`
+    ],
+    [
+      "Long-run day",
+      trainingData.preferred_long_run_day
+        .charAt(0).toUpperCase() +
+      trainingData.preferred_long_run_day
+        .slice(1)
+    ],
+    [
+      "Double days",
+      trainingData.double_days_allowed === "true"
+        ? "Yes"
+        : "No"
+    ],
+    [
+      "Max normal day",
+      `${trainingData.max_normal_day_km} km`
+    ],
+    [
+      "Max long run",
+      `${trainingData.max_long_run_km} km`
+    ]
+  ];
+
+
+  if (trainingData.notes) {
+
+    rows.push([
+      "Notes",
+      trainingData.notes
+    ]);
+
+  }
+
+
+  const label =
+    document.createElement("div");
+
+  label.className =
+    "ai-goal-form-label";
+
+  label.textContent =
+    "REVIEW TRAINING SETUP";
+
+
+  const title =
+    document.createElement("div");
+
+  title.className =
+    "ai-goal-form-title";
+
+  title.textContent =
+    "Confirm your training preferences";
+
+
+  const subtitle =
+    document.createElement("div");
+
+  subtitle.className =
+    "ai-goal-form-subtitle";
+
+  subtitle.textContent =
+    "Puri will use these preferences when building your training plan.";
+
+
+  const values =
+    document.createElement("div");
+
+  values.className =
+    "ai-training-review-values";
+
+
+  rows.forEach(
+    ([name, value]) => {
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "ai-training-review-row";
+
+
+      const rowLabel =
+        document.createElement("span");
+
+      rowLabel.className =
+        "ai-training-review-label";
+
+      rowLabel.textContent =
+        name;
+
+
+      const rowValue =
+        document.createElement("span");
+
+      rowValue.className =
+        "ai-training-review-value";
+
+      rowValue.textContent =
+        value;
+
+
+      row.append(
+        rowLabel,
+        rowValue
+      );
+
+
+      values.appendChild(row);
+
+    }
+  );
+
+
+  const buttons =
+    document.createElement("div");
+
+  buttons.className =
+    "ai-training-review-actions";
+
+
+  const cancelButton =
+    document.createElement("button");
+
+  cancelButton.type =
+    "button";
+
+  cancelButton.className =
+    "ai-training-review-cancel";
+
+  cancelButton.textContent =
+    "Cancel";
+
+
+  const confirmButton =
+    document.createElement("button");
+
+  confirmButton.type =
+    "button";
+
+  confirmButton.className =
+    "ai-training-review-confirm";
+
+  confirmButton.textContent =
+    "✓ Confirm";
+
+
+  buttons.append(
+    cancelButton,
+    confirmButton
+  );
+
+
+  reviewCard.append(
+    label,
+    title,
+    subtitle,
+    values,
+    buttons
+  );
+
+
+  formCard.style.display =
+    "none";
+
+
+  messages.appendChild(
+    reviewCard
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  cancelButton.addEventListener(
+    "click",
+    () => {
+
+      reviewCard.remove();
+
+      formCard.style.display =
+        "";
+
+      messages.scrollTop =
+        messages.scrollHeight;
+
+    }
+  );
+
+
+  confirmButton.addEventListener(
+    "click",
+    () => {
+
+      /*
+       * Next step:
+       * save athlete training preferences
+       * to Supabase.
+       */
+
+      confirmButton.disabled =
+        true;
+
+      cancelButton.disabled =
+        true;
+
+      confirmButton.textContent =
+        "Preferences ready ✓";
+
+    }
+  );
+
+}
 /* =========================================
    TRAINING SETUP FORM
 ========================================= */
@@ -942,16 +1198,15 @@ function appendTrainingSetupForm() {
 
 
       console.log(
-        "Training setup:",
-        trainingData
-      );
+  "Training setup:",
+  trainingData
+);
 
 
-      reviewButton.textContent =
-        "Training setup ready ✓";
-
-      reviewButton.disabled =
-        true;
+appendTrainingSetupReview(
+  trainingData,
+  card
+);
 
     }
   );
