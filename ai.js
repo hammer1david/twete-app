@@ -2124,7 +2124,15 @@ if (
   }
 
 }
-       
+       appendCreateFirstTrainingWeekButton();
+
+
+    } catch (error) {
+
+      console.error(
+        "Training preferences save error:",
+        error
+      );
 
       confirmButton.disabled =
         false;
