@@ -294,6 +294,153 @@ function appendGoalTypeSelector() {
     });
 
 }
+
+/* =========================================
+   GENERAL FITNESS FOCUS
+========================================= */
+
+function appendFitnessFocusSelector() {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-goal-form";
+
+
+  card.innerHTML = `
+
+    <div class="ai-goal-form-label">
+      GENERAL FITNESS
+    </div>
+
+    <div class="ai-goal-form-title">
+      What do you want to improve?
+    </div>
+
+    <div class="ai-goal-form-subtitle">
+      Choose your main training focus.
+    </div>
+
+
+    <div class="ai-goal-type-options">
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-fitness-focus="stay_fit"
+      >
+        <div class="ai-goal-type-content">
+          <strong>Stay fit</strong>
+          <span>
+            Maintain your current fitness and stay active.
+          </span>
+        </div>
+      </button>
+
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-fitness-focus="build_endurance"
+      >
+        <div class="ai-goal-type-content">
+          <strong>Build endurance</strong>
+          <span>
+            Improve your aerobic fitness and endurance.
+          </span>
+        </div>
+      </button>
+
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-fitness-focus="improve_speed"
+      >
+        <div class="ai-goal-type-content">
+          <strong>Improve speed</strong>
+          <span>
+            Become faster without training for a specific race.
+          </span>
+        </div>
+      </button>
+
+    </div>
+
+
+    <label class="ai-goal-field">
+
+      <span>
+        Recent performance or PBs
+        <small>(optional)</small>
+      </span>
+
+      <textarea
+        data-fitness-performance
+        rows="3"
+        placeholder="e.g. 5 km in 22:30, recent race results, test results..."
+      ></textarea>
+
+    </label>
+
+
+    <div class="ai-goal-form-error"></div>
+
+  `;
+
+
+  messages.appendChild(card);
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  card
+    .querySelectorAll(
+      "[data-fitness-focus]"
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const fitnessFocus =
+            button.dataset.fitnessFocus;
+
+          const currentPerformance =
+            card
+              .querySelector(
+                "[data-fitness-performance]"
+              )
+              .value
+              .trim();
+
+
+          console.log(
+            "General fitness goal:",
+            {
+              goal_type:
+                "general_fitness",
+
+              fitness_focus:
+                fitnessFocus,
+
+              current_performance:
+                currentPerformance
+            }
+          );
+
+
+          card.remove();
+
+        }
+      );
+
+    });
+
+}
 /* =========================================
    CREATE GOAL FORM
 ========================================= */
