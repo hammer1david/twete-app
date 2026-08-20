@@ -155,6 +155,145 @@ function appendMessage(
 
   return wrapper;
 }
+
+/* =========================================
+   GOAL TYPE SELECTOR
+========================================= */
+
+function appendGoalTypeSelector() {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-goal-form";
+
+
+  card.innerHTML = `
+
+    <div class="ai-goal-form-label">
+      CREATE NEW GOAL
+    </div>
+
+    <div class="ai-goal-form-title">
+      What is your goal?
+    </div>
+
+    <div class="ai-goal-form-subtitle">
+      Choose the type of training you want Puri to build for you.
+    </div>
+
+
+    <div class="ai-goal-type-options">
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-goal-type="performance"
+      >
+
+        <div class="ai-goal-type-icon">
+          🏁
+        </div>
+
+        <div class="ai-goal-type-content">
+
+          <strong>
+            Performance
+          </strong>
+
+          <span>
+            Train for a race distance or a specific target time.
+          </span>
+
+        </div>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-goal-type="general_fitness"
+      >
+
+        <div class="ai-goal-type-icon">
+          🏃
+        </div>
+
+        <div class="ai-goal-type-content">
+
+          <strong>
+            General fitness
+          </strong>
+
+          <span>
+            Stay fit, build endurance or improve your general performance.
+          </span>
+
+        </div>
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  messages.appendChild(card);
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  card
+    .querySelectorAll(
+      ".ai-goal-type-option"
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const goalType =
+            button.dataset.goalType;
+
+
+          card.remove();
+
+
+          if (
+            goalType ===
+            "performance"
+          ) {
+
+            appendGoalForm(
+              "performance"
+            );
+
+            return;
+          }
+
+
+          if (
+            goalType ===
+            "general_fitness"
+          ) {
+
+            console.log(
+              "General fitness selected"
+            );
+
+          }
+
+        }
+      );
+
+    });
+
+}
 /* =========================================
    CREATE GOAL FORM
 ========================================= */
