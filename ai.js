@@ -396,7 +396,7 @@ if (isCreate) {
 ========================================= */
 
 async function handlePendingAction(
-  actionId,
+  action,
   decision,
   card,
   confirmButton,
