@@ -1442,14 +1442,50 @@ createPlanButton.addEventListener(
     await generateNextTrainingWeek();
 
 
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.functions.invoke(
+      "twete-ai",
+      {
+        body: {
+          action:
+            "generate_training_week",
+
+          week_number:
+            weekContext.nextWeekNumber
+        }
+      }
+    );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  if (!data?.training_week) {
+    throw new Error(
+      "No training week returned."
+    );
+  }
+
+
   console.log(
-    "Training week context:",
-    weekContext
+    "Generated training week:",
+    data.training_week
   );
 
 
   createPlanButton.textContent =
-    `Week ${weekContext.nextWeekNumber} context ready ✓`;
+    `Week ${weekContext.nextWeekNumber} ready ✓`;
+
+
+  appendTrainingWeekPreview(
+    data.training_week,
+    weekContext
+  );
 
 
 } catch (error) {
