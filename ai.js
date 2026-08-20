@@ -2784,14 +2784,24 @@ if (result.pendingAction) {
 
 }
 
-       if (
+ if (
+  result.uiAction ===
+  "show_goal_type_selector"
+) {
+
+  appendGoalTypeSelector();
+
+}
+
+
+if (
   result.uiAction ===
   "show_goal_form"
 ) {
 
   appendGoalForm();
 
-       }
+}
 
     } catch (error) {
 
