@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Twete AI</title>
+
+  <link rel="stylesheet" href="ai.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <main class="ai-page">
+
+    <header class="ai-header">
+
+      <button
+        class="back-button"
+        type="button"
+        onclick="history.back()"
+      >
+        ←
+      </button>
+
+      <div class="ai-title-wrap">
+
+        <div class="ai-badge">
+          AI
+        </div>
+
+        <div>
+          <h1>Twete AI</h1>
+          <p>Basic Training Assistant</p>
+        </div>
+
+      </div>
+
+      <div class="status-dot"></div>
+
+    </header>
+
+
+    <section class="intro-card">
+
+      <span class="intro-label">
+        TWETE BASIC
+      </span>
+
+      <h2>Your AI training assistant</h2>
+
+      <p>
+        Ask about your training, recovery,
+        pacing, workouts or race preparation.
+      </p>
+
+      <p class="disclaimer">
+        Twete AI provides training guidance,
+        not medical diagnosis or treatment.
+      </p>
+
+    </section>
+
+
+    <section class="chat-shell">
+
+      <div
+        id="aiMessages"
+        class="messages"
+      >
+
+        <div class="message assistant-message">
+
+          <div class="message-label">
+            TWETE AI
+          </div>
+
+          <div class="bubble">
+            Hi! Tell me what you want help
+            with in your training.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <form
+        id="aiForm"
+        class="composer"
+      >
+
+        <textarea
+          id="aiInput"
+          rows="1"
+          maxlength="4000"
+          placeholder="Ask Twete AI..."
+        ></textarea>
+
+        <button
+          id="sendAiButton"
+          type="submit"
+        >
+          Send
+        </button>
+
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="ai.js"></script>
+
+</body>
+</html>
