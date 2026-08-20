@@ -1085,23 +1085,20 @@ if (decision === "confirm") {
 
 
     planButton.addEventListener(
-      "click",
-      () => {
+  "click",
+  () => {
 
-        planButton.disabled =
-          true;
+    planButton.disabled =
+      true;
 
-        planButton.textContent =
-          "Opening training setup...";
+    planButton.textContent =
+      "Training setup opened ✓";
 
 
-        /*
-         * Next step:
-         * open Training Setup Form here.
-         */
+    appendTrainingSetupForm();
 
-      }
-    );
+  }
+);
 
 
   } else {
