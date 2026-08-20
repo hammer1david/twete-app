@@ -1481,43 +1481,143 @@ function createSessionCard(
             `
             <div class="feedback-summary">
 
-                ${
+    ${
+        detailedFeedback.feeling
+        ?
+        `
+        <span class="feedback-feeling">
+
+            ${getFeelingEmoji(
+                detailedFeedback.feeling
+            )}
+
+            ${escapeHtml(
+                capitalizeFeeling(
                     detailedFeedback.feeling
-                    ?
-                    `
-                    <span class="feedback-feeling">
-                        ${getFeelingEmoji(
-                            detailedFeedback.feeling
-                        )}
+                )
+            )}
 
-                        ${escapeHtml(
-                            capitalizeFeeling(
-                                detailedFeedback.feeling
-                            )
-                        )}
-                    </span>
-                    `
+        </span>
+        `
+        :
+        ""
+    }
+
+
+    ${
+        detailedFeedback.effort
+        ?
+        `
+        <span class="feedback-rpe">
+
+            RPE
+            ${escapeHtml(
+                detailedFeedback.effort
+            )}/10
+
+        </span>
+        `
+        :
+        ""
+    }
+
+
+    ${
+        detailedFeedback.legs
+        ?
+        `
+        <span class="feedback-detail">
+
+            ${
+                detailedFeedback.legs === "fresh"
+                    ? "⚡"
                     :
-                    ""
-                }
-
-
-                ${
-                    detailedFeedback.effort
-                    ?
-                    `
-                    <span class="feedback-rpe">
-                        RPE
-                        ${escapeHtml(
-                            detailedFeedback.effort
-                        )}/10
-                    </span>
-                    `
+                detailedFeedback.legs === "heavy"
+                    ? "🪨"
                     :
-                    ""
-                }
+                    "🙂"
+            }
 
-            </div>
+            ${escapeHtml(
+                capitalizeFeeling(
+                    detailedFeedback.legs
+                )
+            )}
+
+            legs
+
+        </span>
+        `
+        :
+        ""
+    }
+
+
+    ${
+        detailedFeedback.temperature
+        ?
+        `
+        <span class="feedback-detail">
+
+            🌡️
+
+            ${escapeHtml(
+                getTemperatureLabel(
+                    detailedFeedback.temperature
+                )
+            )}
+
+        </span>
+        `
+        :
+        ""
+    }
+
+
+    ${
+        detailedFeedback.wind
+        ?
+        `
+        <span class="feedback-detail">
+
+            💨
+
+            ${escapeHtml(
+                getWindLabel(
+                    detailedFeedback.wind
+                )
+            )}
+
+        </span>
+        `
+        :
+        ""
+    }
+
+
+    ${
+        detailedFeedback.terrain
+        ?
+        `
+        <span class="feedback-detail">
+
+            ${getTerrainEmoji(
+                detailedFeedback.terrain
+            )}
+
+            ${escapeHtml(
+                capitalizeFeeling(
+                    detailedFeedback.terrain
+                )
+            )}
+
+        </span>
+        `
+        :
+        ""
+    }
+
+</div>
             `
             :
             ""
