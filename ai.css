@@ -771,3 +771,221 @@ textarea {
   }
 
 }
+
+/* =========================================
+   TRAINING SETUP FORM
+========================================= */
+
+.ai-training-setup-form {
+  margin: 18px 24px 24px;
+  padding: 24px;
+  max-width: 720px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #11151a 0%,
+      #11151a 70%,
+      rgba(198, 255, 0, 0.08) 100%
+    );
+
+  border: 1px solid rgba(198, 255, 0, 0.3);
+  border-radius: 22px;
+}
+
+
+/* SELECT FIELDS */
+
+.ai-training-setup-form select {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 14px 16px;
+
+  background: #0b0f13;
+  color: #ffffff;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 13px;
+
+  font-family: inherit;
+  font-size: 16px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ai-training-setup-form select:focus {
+  border-color: #c6ff00;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(198, 255, 0, 0.08);
+}
+
+
+/* TRAINING DAYS */
+
+.ai-training-days {
+  display: grid;
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  gap: 8px;
+}
+
+.ai-training-days label {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 44px;
+
+  background: #0b0f13;
+  color: #8d939d;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.ai-training-days label:has(input:checked) {
+  background:
+    rgba(198, 255, 0, 0.1);
+
+  border-color: #c6ff00;
+
+  color: #c6ff00;
+}
+
+.ai-training-days input {
+  position: absolute;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+/* ERROR */
+
+.ai-training-setup-error {
+  min-height: 20px;
+
+  margin: 4px 0 10px;
+
+  color: #ff6b6b;
+
+  font-size: 13px;
+}
+
+
+/* REVIEW BUTTON */
+
+.ai-training-review-button {
+  width: 100%;
+
+  padding: 15px 18px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #c6ff00;
+  color: #10130c;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.ai-training-review-button:active {
+  transform: scale(0.985);
+}
+
+.ai-training-review-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+
+/* CREATE TRAINING PLAN BUTTON */
+
+.ai-create-plan-button {
+  display: block;
+
+  width:
+    calc(100% - 48px);
+
+  max-width: 720px;
+
+  margin:
+    10px 24px 24px;
+
+  padding: 15px 18px;
+
+  background: #c6ff00;
+  color: #10130c;
+
+  border: none;
+  border-radius: 14px;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.ai-create-plan-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .ai-training-setup-form {
+    margin: 14px 12px 20px;
+    padding: 18px;
+
+    border-radius: 18px;
+  }
+
+  .ai-training-days {
+    grid-template-columns:
+      repeat(4, 1fr);
+  }
+
+  .ai-create-plan-button {
+    width:
+      calc(100% - 24px);
+
+    margin:
+      10px 12px 20px;
+  }
+
+}
