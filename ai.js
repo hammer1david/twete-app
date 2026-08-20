@@ -362,7 +362,7 @@ if (isCreate) {
     async () => {
 
       await handlePendingAction(
-        action.id,
+        action,
         "cancel",
         wrapper,
         confirmButton,
@@ -378,7 +378,7 @@ if (isCreate) {
     async () => {
 
       await handlePendingAction(
-        action.id,
+        action,
         "confirm",
         wrapper,
         confirmButton,
