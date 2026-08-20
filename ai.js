@@ -37,6 +37,8 @@ const messages =
 const sendButton =
   document.getElementById("sendAiButton");
 
+let pendingGoalSetup = null;
+
 function renderAiText(element, text) {
 
   element.textContent = "";
