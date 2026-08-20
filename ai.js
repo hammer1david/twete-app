@@ -571,8 +571,10 @@ function appendGoalForm(
     "click",
     async () => {
 
-      const goalData = {};
-
+      const goalData = {
+  goal_type: goalType
+};
+       
       card
         .querySelectorAll(
           "[data-goal-field]"
@@ -588,12 +590,11 @@ function appendGoalForm(
 
 
       const requiredFields = [
-        "goal_name",
-        "distance",
-        "target_time",
-        "target_date",
-        "current_performance"
-      ];
+  "goal_name",
+  "distance",
+  "target_time",
+  "target_date"
+];
 
 
       const missing =
