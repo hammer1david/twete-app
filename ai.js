@@ -298,7 +298,9 @@ function appendGoalTypeSelector() {
    CREATE GOAL FORM
 ========================================= */
 
-function appendGoalForm() {
+function appendGoalForm(
+   goalType = "performance"
+) {
 
   const card =
     document.createElement("div");
