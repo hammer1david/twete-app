@@ -648,7 +648,315 @@ if (isCreate) {
   );
 
 }
+/* =========================================
+   TRAINING SETUP FORM
+========================================= */
 
+function appendTrainingSetupForm() {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-training-setup-form";
+
+
+  card.innerHTML = `
+    <div class="ai-goal-form-label">
+      TRAINING SETUP
+    </div>
+
+    <div class="ai-goal-form-title">
+      Tell Puri how you train
+    </div>
+
+    <div class="ai-goal-form-subtitle">
+      These preferences will be used to build your training plan.
+    </div>
+
+
+    <label class="ai-goal-field">
+      <span>Sessions per week</span>
+
+      <input
+        type="number"
+        min="1"
+        max="14"
+        data-training-field="sessions_per_week"
+        placeholder="e.g. 7"
+      >
+    </label>
+
+
+    <div class="ai-goal-field">
+
+      <span>Training days</span>
+
+      <div class="ai-training-days">
+
+        <label>
+          <input type="checkbox" value="monday">
+          Mon
+        </label>
+
+        <label>
+          <input type="checkbox" value="tuesday">
+          Tue
+        </label>
+
+        <label>
+          <input type="checkbox" value="wednesday">
+          Wed
+        </label>
+
+        <label>
+          <input type="checkbox" value="thursday">
+          Thu
+        </label>
+
+        <label>
+          <input type="checkbox" value="friday">
+          Fri
+        </label>
+
+        <label>
+          <input type="checkbox" value="saturday">
+          Sat
+        </label>
+
+        <label>
+          <input type="checkbox" value="sunday">
+          Sun
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <label class="ai-goal-field">
+      <span>Hard sessions per week</span>
+
+      <input
+        type="number"
+        min="0"
+        max="5"
+        data-training-field="intense_sessions_per_week"
+        placeholder="e.g. 2"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Current weekly volume</span>
+
+      <input
+        type="number"
+        min="0"
+        step="1"
+        data-training-field="current_weekly_km"
+        placeholder="e.g. 90"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Current longest run</span>
+
+      <input
+        type="number"
+        min="0"
+        step="0.5"
+        data-training-field="current_long_run_km"
+        placeholder="e.g. 20"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Preferred long-run day</span>
+
+      <select
+        data-training-field="preferred_long_run_day"
+      >
+        <option value="">Select day</option>
+        <option value="monday">Monday</option>
+        <option value="tuesday">Tuesday</option>
+        <option value="wednesday">Wednesday</option>
+        <option value="thursday">Thursday</option>
+        <option value="friday">Friday</option>
+        <option value="saturday">Saturday</option>
+        <option value="sunday">Sunday</option>
+      </select>
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Double days allowed?</span>
+
+      <select
+        data-training-field="double_days_allowed"
+      >
+        <option value="">Select</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Maximum distance — normal training day</span>
+
+      <input
+        type="number"
+        min="0"
+        step="0.5"
+        data-training-field="max_normal_day_km"
+        placeholder="e.g. 16"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Maximum distance — long run</span>
+
+      <input
+        type="number"
+        min="0"
+        step="0.5"
+        data-training-field="max_long_run_km"
+        placeholder="e.g. 25"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Notes <small>(optional)</small></span>
+
+      <textarea
+        data-training-field="notes"
+        rows="3"
+        placeholder="Anything Puri should consider when building your plan..."
+      ></textarea>
+    </label>
+
+
+    <div class="ai-training-setup-error"></div>
+
+
+    <button
+      type="button"
+      class="ai-training-review-button"
+    >
+      Review training setup →
+    </button>
+  `;
+
+
+  messages.appendChild(card);
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  const reviewButton =
+    card.querySelector(
+      ".ai-training-review-button"
+    );
+
+
+  reviewButton.addEventListener(
+    "click",
+    () => {
+
+      const trainingData = {};
+
+
+      card
+        .querySelectorAll(
+          "[data-training-field]"
+        )
+        .forEach((field) => {
+
+          trainingData[
+            field.dataset.trainingField
+          ] =
+            field.value.trim();
+
+        });
+
+
+      const selectedDays =
+        Array.from(
+          card.querySelectorAll(
+            ".ai-training-days input:checked"
+          )
+        ).map(
+          (checkbox) =>
+            checkbox.value
+        );
+
+
+      trainingData.preferred_weekdays =
+        selectedDays;
+
+
+      const requiredFields = [
+        "sessions_per_week",
+        "intense_sessions_per_week",
+        "current_weekly_km",
+        "current_long_run_km",
+        "preferred_long_run_day",
+        "double_days_allowed",
+        "max_normal_day_km",
+        "max_long_run_km"
+      ];
+
+
+      const missing =
+        requiredFields.filter(
+          (field) =>
+            !trainingData[field]
+        );
+
+
+      const errorBox =
+        card.querySelector(
+          ".ai-training-setup-error"
+        );
+
+
+      if (
+        missing.length ||
+        selectedDays.length === 0
+      ) {
+
+        errorBox.textContent =
+          "Please complete all required fields.";
+
+        return;
+      }
+
+
+      errorBox.textContent = "";
+
+
+      console.log(
+        "Training setup:",
+        trainingData
+      );
+
+
+      reviewButton.textContent =
+        "Training setup ready ✓";
+
+      reviewButton.disabled =
+        true;
+
+    }
+  );
+
+}
 
 /* =========================================
    CONFIRM / CANCEL ACTION
