@@ -1179,3 +1179,243 @@ textarea {
   }
 
 }
+
+/* =========================================
+   PURI TRAINING WEEK PREVIEW
+========================================= */
+
+.ai-training-week-preview {
+  margin: 28px 24px 32px;
+  padding: 26px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #12161a 0%,
+      #101419 70%,
+      rgba(198, 255, 0, 0.07) 100%
+    );
+
+  border: 1px solid rgba(198, 255, 0, 0.25);
+  border-radius: 24px;
+}
+
+
+/* WEEK HEADER */
+
+.ai-training-week-preview .ai-goal-form-title {
+  margin-bottom: 6px;
+
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.ai-training-week-preview .ai-goal-form-subtitle {
+  margin-bottom: 24px;
+
+  font-size: 15px;
+  line-height: 1.5;
+  color: #9ca3af;
+}
+
+
+/* SESSION LIST */
+
+.ai-training-week-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+/* INDIVIDUAL SESSION */
+
+.ai-training-week-session {
+  position: relative;
+
+  padding: 18px 18px 18px 22px;
+
+  background: #0b0f13;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 17px;
+
+  overflow: hidden;
+}
+
+.ai-training-week-session::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 4px;
+
+  background: #c6ff00;
+}
+
+
+/* DAY */
+
+.ai-training-week-day {
+  margin-bottom: 7px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  color: #c6ff00;
+}
+
+
+/* WORKOUT TITLE */
+
+.ai-training-week-title {
+  margin-bottom: 7px;
+
+  font-size: 18px;
+  font-weight: 800;
+
+  color: #ffffff;
+}
+
+
+/* DISTANCE / TYPE / REST */
+
+.ai-training-week-details {
+  margin-bottom: 8px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: #d6d9dd;
+}
+
+
+/* SESSION NOTES */
+
+.ai-training-week-notes {
+  font-size: 14px;
+  line-height: 1.55;
+
+  color: #8f969e;
+}
+
+
+/* PURI COACH NOTE */
+
+.ai-training-week-coach-note {
+  position: relative;
+
+  margin-top: 18px;
+  padding: 16px 18px 16px 45px;
+
+  background: rgba(198, 255, 0, 0.06);
+
+  border: 1px solid rgba(198, 255, 0, 0.15);
+  border-radius: 16px;
+
+  font-size: 14px;
+  line-height: 1.55;
+
+  color: #d8dce0;
+}
+
+.ai-training-week-coach-note::before {
+  content: "AI";
+
+  position: absolute;
+  left: 14px;
+  top: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 23px;
+  height: 23px;
+
+  background: #c6ff00;
+  color: #0b0d0f;
+
+  border-radius: 7px;
+
+  font-size: 9px;
+  font-weight: 900;
+}
+
+
+/* ACTION BUTTONS */
+
+.ai-training-week-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+.ai-training-week-actions button {
+  min-height: 52px;
+
+  border-radius: 14px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.ai-training-week-actions
+.ai-training-review-cancel {
+  background: #15191f;
+  color: #d3d6da;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ai-training-week-actions
+.ai-training-review-confirm {
+  background: #c6ff00;
+  color: #10130c;
+
+  border: none;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .ai-training-week-preview {
+    margin: 20px 12px 26px;
+    padding: 18px;
+
+    border-radius: 20px;
+  }
+
+  .ai-training-week-preview
+  .ai-goal-form-title {
+    font-size: 24px;
+  }
+
+  .ai-training-week-session {
+    padding: 16px 15px 16px 19px;
+  }
+
+  .ai-training-week-title {
+    font-size: 17px;
+  }
+
+  .ai-training-week-actions {
+    grid-template-columns: 1fr;
+  }
+
+}
