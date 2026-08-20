@@ -1104,11 +1104,76 @@ function renderSelectedWeek() {
         );
 
 
+    const overview =
+        document.getElementById(
+            "weekOverview"
+        );
+
+
     if (!week) {
+
+        if (overview) {
+            overview.innerHTML = "";
+        }
 
         renderSessions([]);
 
         return;
+    }
+
+
+    if (overview) {
+
+        overview.innerHTML = `
+
+            <div class="week-overview-card">
+
+                <div class="week-overview-label">
+                    WEEK ${escapeHtml(
+                        week.week_number
+                    )}
+                </div>
+
+                ${
+                    week.focus
+                    ?
+                    `
+                    <h3 class="week-overview-focus">
+                        ${escapeHtml(
+                            week.focus
+                        )}
+                    </h3>
+                    `
+                    :
+                    ""
+                }
+
+                ${
+                    week.coach_note
+                    ?
+                    `
+                    <div class="week-overview-coach-note">
+
+                        <span>
+                            PURI COACH NOTE
+                        </span>
+
+                        <p>
+                            ${escapeHtml(
+                                week.coach_note
+                            )}
+                        </p>
+
+                    </div>
+                    `
+                    :
+                    ""
+                }
+
+            </div>
+
+        `;
+
     }
 
 
@@ -1130,7 +1195,6 @@ function renderSelectedWeek() {
     );
 
 }
-
 
 /* =========================================
    WEEK INDICATOR
