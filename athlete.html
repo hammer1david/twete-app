@@ -2117,7 +2117,178 @@ async function loadCurrentGoalImage(
 
     setupMessageNotifications();
 
+/* =========================================================
+   PURI LIVE MOTIVATION
+========================================================= */
 
+const puriMessages = [
+
+    "Small steps every day lead to big results. Keep going — I believe in you. 💚",
+
+    "Consistency matters more than perfection. Show up today and let the results follow.",
+
+    "Your next breakthrough is built in the sessions nobody sees. Keep working. 💪",
+
+    "Remember: recovery is part of training. Smart athletes know when to push and when to recover.",
+
+    "One workout at a time. One week at a time. Stay patient and trust your training."
+
+];
+
+
+let puriMessageIndex = 0;
+
+let puriTypingTimer = null;
+
+
+/* TYPE MESSAGE */
+
+function typePuriMessage(
+    message
+) {
+
+    const messageElement =
+        document.getElementById(
+            "puriLiveMessage"
+        );
+
+    const statusElement =
+        document.getElementById(
+            "puriTypingStatus"
+        );
+
+
+    if (
+        !messageElement ||
+        !statusElement
+    ) {
+        return;
+    }
+
+
+    if (puriTypingTimer) {
+
+        clearTimeout(
+            puriTypingTimer
+        );
+
+    }
+
+
+    messageElement.textContent =
+        "";
+
+    statusElement.style.opacity =
+        "1";
+
+
+    let index = 0;
+
+
+    function typeLetter() {
+
+        if (
+            index <
+            message.length
+        ) {
+
+            messageElement.textContent +=
+                message.charAt(
+                    index
+                );
+
+            index++;
+
+
+            puriTypingTimer =
+                setTimeout(
+                    typeLetter,
+                    24
+                );
+
+        } else {
+
+            setTimeout(
+                () => {
+
+                    statusElement.style.opacity =
+                        "0.45";
+
+                },
+                700
+            );
+
+        }
+
+    }
+
+
+    setTimeout(
+        typeLetter,
+        650
+    );
+
+}
+
+
+/* LOAD NEXT MESSAGE */
+
+function showNextPuriMessage() {
+
+    const message =
+        puriMessages[
+            puriMessageIndex
+        ];
+
+
+    typePuriMessage(
+        message
+    );
+
+
+    puriMessageIndex++;
+
+
+    if (
+        puriMessageIndex >=
+        puriMessages.length
+    ) {
+
+        puriMessageIndex =
+            0;
+
+    }
+
+}
+
+
+/* START PURI */
+
+function startPuriMotivation() {
+
+    showNextPuriMessage();
+
+
+    /*
+        For testing the live effect,
+        Puri changes message every 30 seconds.
+
+        Later we replace this with
+        a real AI generated message.
+    */
+
+    setInterval(
+        showNextPuriMessage,
+        30000
+    );
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    startPuriMotivation
+);
 </script>
 
 
