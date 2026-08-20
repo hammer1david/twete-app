@@ -743,12 +743,64 @@ buttons.innerHTML =
 
 if (decision === "confirm") {
 
-  appendMessage(
-    isCreate
-      ? "Done — your new goal has been created. Would you like me to create a training plan for this goal?"
-      : "Done — your current goal has been updated.",
-    "assistant"
-  );
+  if (isCreate) {
+
+    appendMessage(
+      "Done — your new goal has been created. Would you like me to create a training plan for this goal?",
+      "assistant"
+    );
+
+
+    const planButton =
+      document.createElement("button");
+
+    planButton.type =
+      "button";
+
+    planButton.className =
+      "ai-create-plan-button";
+
+    planButton.textContent =
+      "Create training plan →";
+
+
+    messages.appendChild(
+      planButton
+    );
+
+
+    messages.scrollTop =
+      messages.scrollHeight;
+
+
+    planButton.addEventListener(
+      "click",
+      () => {
+
+        planButton.disabled =
+          true;
+
+        planButton.textContent =
+          "Opening training setup...";
+
+
+        /*
+         * Next step:
+         * open Training Setup Form here.
+         */
+
+      }
+    );
+
+
+  } else {
+
+    appendMessage(
+      "Done — your current goal has been updated.",
+      "assistant"
+    );
+
+  }
 
 }
 
