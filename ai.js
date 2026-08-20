@@ -649,6 +649,167 @@ if (isCreate) {
 
 }
 
+
+async function generateNextTrainingWeek() {
+
+  const {
+    data: { user },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (userError || !user) {
+    throw new Error(
+      "No logged-in athlete found."
+    );
+  }
+
+
+  /* CURRENT GOAL */
+
+  const {
+    data: goal,
+    error: goalError
+  } =
+    await supabaseClient
+      .from("goals")
+      .select("*")
+      .eq("athlete_id", user.id)
+      .order("created_at", {
+        ascending: false
+      })
+      .limit(1)
+      .single();
+
+
+  if (goalError || !goal) {
+    throw new Error(
+      "No current goal found."
+    );
+  }
+
+
+  /* TRAINING PREFERENCES */
+
+  const {
+    data: preferences,
+    error: preferencesError
+  } =
+    await supabaseClient
+      .from(
+        "athlete_training_preferences"
+      )
+      .select("*")
+      .eq("athlete_id", user.id)
+      .single();
+
+
+  if (
+    preferencesError ||
+    !preferences
+  ) {
+    throw new Error(
+      "No training preferences found."
+    );
+  }
+
+
+  /* EXISTING PROGRAM */
+
+  let program = null;
+
+  if (goal.program_id) {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("programs")
+        .select("*")
+        .eq(
+          "id",
+          goal.program_id
+        )
+        .single();
+
+
+    if (!error) {
+      program = data;
+    }
+
+  }
+
+
+  /* EXISTING WEEKS */
+
+  let existingWeeks = [];
+
+  if (program) {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("training_weeks")
+        .select("*")
+        .eq(
+          "program_id",
+          program.id
+        )
+        .order(
+          "week_number",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    existingWeeks =
+      data || [];
+
+  }
+
+
+  const nextWeekNumber =
+    existingWeeks.length
+      ? Math.max(
+          ...existingWeeks.map(
+            week =>
+              week.week_number
+          )
+        ) + 1
+      : 1;
+
+
+  console.log(
+    "Generate next training week",
+    {
+      goal,
+      preferences,
+      program,
+      existingWeeks,
+      nextWeekNumber
+    }
+  );
+
+
+  return {
+    goal,
+    preferences,
+    program,
+    existingWeeks,
+    nextWeekNumber
+  };
+
+}
 /* =========================================
    TRAINING SETUP REVIEW
 ========================================= */
