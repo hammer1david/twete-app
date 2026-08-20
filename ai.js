@@ -889,9 +889,11 @@ async function askTweteAI(
 
   return {
   answer: data.answer,
-  pendingAction: data.pending_action || null
+  pendingAction:
+    data.pending_action || null,
+  uiAction:
+    data.ui_action || null
 };
-}
 
 
 /* =========================================
@@ -961,6 +963,15 @@ if (result.pendingAction) {
   );
 
 }
+
+       if (
+  result.uiAction ===
+  "show_goal_form"
+) {
+
+  appendGoalForm();
+
+       }
 
     } catch (error) {
 
