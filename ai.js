@@ -134,27 +134,7 @@ function resizeInput() {
 }
 
 
-/* =========================================
-   ATHLETE CONTEXT
-========================================= */
 
-function getAthleteContext() {
-
-  /*
-    Later we will load:
-
-    - athlete profile
-    - current goal
-    - PBs
-    - training program
-    - recent workouts
-    - workout feedback
-
-    directly from Supabase.
-  */
-
-  return {};
-}
 
 
 /* =========================================
@@ -203,15 +183,8 @@ async function askTweteAI(
         {
 
           body: {
-
-            message:
-              message,
-
-            athlete:
-              getAthleteContext()
-
+  message: message
           }
-
         }
       );
 
