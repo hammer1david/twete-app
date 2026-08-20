@@ -882,26 +882,144 @@ function appendTrainingSetupReview(
 
 
   confirmButton.addEventListener(
-    "click",
-    () => {
+  "click",
+  async () => {
 
-      /*
-       * Next step:
-       * save athlete training preferences
-       * to Supabase.
-       */
+    confirmButton.disabled = true;
+    cancelButton.disabled = true;
 
-      confirmButton.disabled =
-        true;
+    confirmButton.textContent =
+      "Saving...";
 
-      cancelButton.disabled =
-        true;
+
+    try {
+
+      const {
+        data: { user },
+        error: userError
+      } =
+        await supabase.auth.getUser();
+
+
+      if (userError || !user) {
+        throw new Error(
+          "No logged-in athlete found."
+        );
+      }
+
+
+      const preferenceData = {
+
+        athlete_id:
+          user.id,
+
+        sessions_per_week:
+          Number(
+            trainingData.sessions_per_week
+          ),
+
+        preferred_weekdays:
+          trainingData.preferred_weekdays,
+
+        intense_sessions_per_week:
+          Number(
+            trainingData.intense_sessions_per_week
+          ),
+
+        current_weekly_km:
+          Number(
+            trainingData.current_weekly_km
+          ),
+
+        current_long_run_km:
+          Number(
+            trainingData.current_long_run_km
+          ),
+
+        preferred_long_run_day:
+          trainingData.preferred_long_run_day,
+
+        double_days_allowed:
+          trainingData.double_days_allowed ===
+          "true",
+
+        max_normal_day_km:
+          Number(
+            trainingData.max_normal_day_km
+          ),
+
+        max_long_run_km:
+          Number(
+            trainingData.max_long_run_km
+          ),
+
+        notes:
+          trainingData.notes || null,
+
+        updated_at:
+          new Date().toISOString()
+
+      };
+
+
+      const {
+        error
+      } =
+        await supabase
+          .from(
+            "athlete_training_preferences"
+          )
+          .upsert(
+            preferenceData,
+            {
+              onConflict:
+                "athlete_id"
+            }
+          );
+
+
+      if (error) {
+        throw error;
+      }
+
 
       confirmButton.textContent =
-        "Preferences ready ✓";
+        "✓ Training preferences saved";
+
+
+      appendMessage(
+        "Your training preferences are saved. I have everything I need to build your training plan.",
+        "assistant"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Training preferences save error:",
+        error
+      );
+
+
+      confirmButton.disabled =
+        false;
+
+      cancelButton.disabled =
+        false;
+
+      confirmButton.textContent =
+        "✓ Confirm";
+
+
+      appendMessage(
+        "I couldn't save your training preferences. Please try again.",
+        "assistant"
+      );
 
     }
-  );
+
+  }
+);
 
 }
 /* =========================================
