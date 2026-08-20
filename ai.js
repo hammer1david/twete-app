@@ -1504,16 +1504,117 @@ if (generatedWeeks.length === 2) {
 }
 
 
-generatedWeeks.forEach(
-  (trainingWeek) => {
+if (generatedWeeks.length === 2) {
 
-    appendTrainingWeekPreview(
-      trainingWeek,
-      weekContext
-    );
+  generatedWeeks.forEach(
+    (trainingWeek) => {
 
-  }
-);
+      appendTrainingWeekPreview(
+        trainingWeek,
+        weekContext,
+        false
+      );
+
+    }
+  );
+
+
+  const planActions =
+    document.createElement("div");
+
+  planActions.className =
+    "ai-training-week-actions";
+
+
+  const changePlanButton =
+    document.createElement("button");
+
+  changePlanButton.type =
+    "button";
+
+  changePlanButton.className =
+    "ai-training-review-cancel";
+
+  changePlanButton.textContent =
+    "Request changes";
+
+
+  const confirmPlanButton =
+    document.createElement("button");
+
+  confirmPlanButton.type =
+    "button";
+
+  confirmPlanButton.className =
+    "ai-training-review-confirm";
+
+  confirmPlanButton.textContent =
+    "✓ Confirm plan";
+
+
+  planActions.append(
+    changePlanButton,
+    confirmPlanButton
+  );
+
+
+  messages.appendChild(
+    planActions
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  changePlanButton.addEventListener(
+    "click",
+    () => {
+
+      appendMessage(
+        "Tell me what you would like to change in Week 1 or Week 2.",
+        "assistant"
+      );
+
+    }
+  );
+
+
+  confirmPlanButton.addEventListener(
+    "click",
+    () => {
+
+      confirmPlanButton.disabled =
+        true;
+
+      changePlanButton.disabled =
+        true;
+
+      confirmPlanButton.textContent =
+        "Plan ready to save ✓";
+
+
+      console.log(
+        "Confirmed training plan preview:",
+        {
+          generatedWeeks,
+          weekContext
+        }
+      );
+
+    }
+  );
+
+
+} else {
+
+  appendTrainingWeekPreview(
+    generatedWeeks[0],
+    weekContext,
+    true
+  );
+
+}
 
 
 } catch (error) {
