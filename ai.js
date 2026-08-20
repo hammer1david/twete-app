@@ -443,6 +443,9 @@ function appendPendingAction(action) {
   const label =
     document.createElement("div");
 
+   label.className =
+  "ai-action-label";
+
   const isCreate =
   action.action_type === "create_goal";
 
