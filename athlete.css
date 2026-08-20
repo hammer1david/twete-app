@@ -2720,3 +2720,668 @@
     }
 
 }
+
+/* =========================================================
+   PURI AI MOTIVATION CARD
+========================================================= */
+
+.puri-motivation-card {
+    position: relative;
+
+    width: 100%;
+    min-height: 340px;
+
+    display: grid;
+    grid-template-columns: 1fr 1.05fr 1.35fr;
+
+    align-items: center;
+
+    gap: 10px;
+
+    overflow: hidden;
+
+    padding:
+        28px
+        26px;
+
+    border:
+        1px solid
+        rgba(198, 255, 0, 0.42);
+
+    border-radius:
+        var(--twete-radius-large);
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(198, 255, 0, 0.08),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 92% 20%,
+            rgba(198, 255, 0, 0.06),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #090b09,
+            #070807
+        );
+
+    box-shadow:
+        0 20px 55px
+        rgba(0, 0, 0, 0.34),
+        inset
+        0 1px 0
+        rgba(255, 255, 255, 0.03);
+}
+
+
+/* BACKGROUND GLOW */
+
+.puri-card-glow {
+    position: absolute;
+
+    width: 380px;
+    height: 380px;
+
+    left: 32%;
+    top: -60px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(198, 255, 0, 0.15),
+            transparent 66%
+        );
+
+    filter: blur(18px);
+
+    pointer-events: none;
+}
+
+
+/* INTRO */
+
+.puri-intro {
+    position: relative;
+    z-index: 3;
+}
+
+.puri-label {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 17px;
+
+    color: var(--twete-green);
+
+    font-size: 11px;
+    font-weight: 850;
+
+    letter-spacing: 1.4px;
+}
+
+.puri-online-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--twete-green);
+
+    box-shadow:
+        0 0 12px
+        rgba(198, 255, 0, 0.8);
+}
+
+.puri-intro h2 {
+    margin:
+        0 0 12px;
+
+    color: #FFFFFF;
+
+    font-size:
+        clamp(
+            25px,
+            4vw,
+            34px
+        );
+
+    line-height: 1.05;
+
+    letter-spacing: -0.8px;
+}
+
+.puri-intro p {
+    max-width: 220px;
+
+    margin: 0;
+
+    color: #A6AAA6;
+
+    font-size: 14px;
+
+    line-height: 1.55;
+}
+
+.puri-signature {
+    margin-top: 23px;
+
+    color: var(--twete-green);
+
+    font-size: 22px;
+
+    font-style: italic;
+
+    transform: rotate(-4deg);
+
+    opacity: 0.9;
+}
+
+
+/* CHARACTER */
+
+.puri-character {
+    position: relative;
+
+    height: 290px;
+
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: center;
+
+    z-index: 2;
+}
+
+.puri-character-glow {
+    position: absolute;
+
+    width: 230px;
+    height: 230px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(198, 255, 0, 0.18),
+            transparent 66%
+        );
+
+    filter: blur(15px);
+
+    animation:
+        puriGlowPulse
+        4s
+        ease-in-out
+        infinite;
+}
+
+.puri-image {
+    position: relative;
+
+    z-index: 2;
+
+    width: 116%;
+    max-width: 330px;
+
+    object-fit: contain;
+
+    transform-origin: center bottom;
+
+    filter:
+        drop-shadow(
+            0 14px 20px
+            rgba(0, 0, 0, 0.34)
+        );
+
+    animation:
+        puriBreathing
+        4.2s
+        ease-in-out
+        infinite;
+}
+
+
+/* LIVE AREA */
+
+.puri-live-area {
+    position: relative;
+
+    z-index: 4;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+/* SPEECH BUBBLE */
+
+.puri-speech-bubble {
+    position: relative;
+
+    min-height: 175px;
+
+    padding:
+        22px
+        22px
+        21px;
+
+    border:
+        1px solid
+        rgba(198, 255, 0, 0.58);
+
+    border-radius:
+        28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(14, 18, 12, 0.96),
+            rgba(7, 10, 7, 0.97)
+        );
+
+    box-shadow:
+        0 0 35px
+        rgba(198, 255, 0, 0.055),
+        inset
+        0 1px 0
+        rgba(255, 255, 255, 0.025);
+}
+
+
+/* SPEECH POINTER */
+
+.puri-speech-bubble::before {
+    content: "";
+
+    position: absolute;
+
+    left: -14px;
+    top: 54%;
+
+    width: 27px;
+    height: 27px;
+
+    background: #0A0D09;
+
+    border-left:
+        1px solid
+        rgba(198, 255, 0, 0.58);
+
+    border-bottom:
+        1px solid
+        rgba(198, 255, 0, 0.58);
+
+    transform:
+        translateY(-50%)
+        rotate(45deg);
+}
+
+
+/* TYPING HEADER */
+
+.puri-typing-status {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 15px;
+
+    color:
+        rgba(198, 255, 0, 0.75);
+
+    font-size: 9px;
+    font-weight: 850;
+
+    letter-spacing: 1.05px;
+}
+
+.puri-live-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: var(--twete-green);
+
+    box-shadow:
+        0 0 8px
+        rgba(198, 255, 0, 0.8);
+}
+
+
+/* TYPING DOT ANIMATION */
+
+.typing-dots {
+    display: inline-flex;
+
+    gap: 3px;
+}
+
+.typing-dots span {
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background:
+        var(--twete-green);
+
+    animation:
+        puriTypingDot
+        1.1s
+        infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay:
+        0.16s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay:
+        0.32s;
+}
+
+
+/* LIVE MESSAGE */
+
+.puri-live-message {
+    color: #F1F3F1;
+
+    font-size:
+        clamp(
+            15px,
+            2.2vw,
+            18px
+        );
+
+    font-weight: 520;
+
+    line-height: 1.48;
+}
+
+
+/* TYPE CURSOR */
+
+.puri-cursor {
+    display: inline-block;
+
+    width: 2px;
+    height: 17px;
+
+    margin-left: 4px;
+
+    vertical-align: middle;
+
+    background:
+        var(--twete-green);
+
+    animation:
+        puriCursorBlink
+        0.85s
+        infinite;
+}
+
+
+/* CHAT BUTTON */
+
+.puri-chat-button {
+    width: 100%;
+
+    min-height: 58px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    padding:
+        11px
+        18px;
+
+    border: none;
+
+    border-radius: 999px;
+
+    background:
+        var(--twete-green);
+
+    color: #050505;
+
+    font-weight: 850;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 28px
+        rgba(198, 255, 0, 0.16);
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.puri-chat-button:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 0 38px
+        rgba(198, 255, 0, 0.25);
+}
+
+.puri-chat-button:active {
+    transform:
+        scale(0.98);
+}
+
+.puri-chat-icon {
+    width: 35px;
+    height: 35px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: #090B09;
+
+    color:
+        var(--twete-green);
+}
+
+.puri-chat-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.puri-chat-arrow {
+    width: 21px;
+    height: 21px;
+
+    margin-left: auto;
+}
+
+
+/* =========================================================
+   PURI ANIMATIONS
+========================================================= */
+
+@keyframes puriBreathing {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translateY(-7px)
+            scale(1.008);
+    }
+
+}
+
+
+@keyframes puriGlowPulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(0.96);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+}
+
+
+@keyframes puriTypingDot {
+
+    0%,
+    60%,
+    100% {
+        opacity: 0.25;
+        transform:
+            translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform:
+            translateY(-3px);
+    }
+
+}
+
+
+@keyframes puriCursorBlink {
+
+    0%,
+    48% {
+        opacity: 1;
+    }
+
+    49%,
+    100% {
+        opacity: 0;
+    }
+
+}
+
+
+/* =========================================================
+   TABLET / MOBILE
+========================================================= */
+
+@media (max-width: 760px) {
+
+    .puri-motivation-card {
+
+        grid-template-columns:
+            1fr
+            0.8fr;
+
+        padding:
+            21px
+            18px;
+
+        min-height: 450px;
+    }
+
+    .puri-intro {
+        align-self: start;
+    }
+
+    .puri-character {
+        height: 220px;
+
+        align-self: start;
+    }
+
+    .puri-image {
+        width: 150%;
+    }
+
+    .puri-live-area {
+        grid-column:
+            1 / -1;
+    }
+
+    .puri-speech-bubble {
+        min-height: 145px;
+    }
+
+    .puri-speech-bubble::before {
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .puri-motivation-card {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+        gap: 3px;
+
+        padding:
+            20px
+            16px
+            18px;
+
+        min-height: 470px;
+    }
+
+    .puri-intro h2 {
+        font-size: 23px;
+    }
+
+    .puri-intro p {
+        font-size: 12px;
+    }
+
+    .puri-character {
+        height: 190px;
+    }
+
+    .puri-image {
+        width: 165%;
+    }
+
+    .puri-speech-bubble {
+        padding:
+            18px;
+
+        border-radius: 21px;
+    }
+
+    .puri-chat-button {
+        min-height: 54px;
+
+        font-size: 13px;
+    }
+
+}
