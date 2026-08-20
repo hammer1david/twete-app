@@ -1197,9 +1197,43 @@ createPlanButton.addEventListener(
  */
 
 
-    console.log(
-      "Generate training plan requested"
-    );
+    try {
+
+  const weekContext =
+    await generateNextTrainingWeek();
+
+
+  console.log(
+    "Training week context:",
+    weekContext
+  );
+
+
+  createPlanButton.textContent =
+    `Week ${weekContext.nextWeekNumber} context ready ✓`;
+
+
+} catch (error) {
+
+  console.error(
+    "Training week generation error:",
+    error
+  );
+
+
+  createPlanButton.disabled =
+    false;
+
+  createPlanButton.textContent =
+    "Create my first training week →";
+
+
+  appendMessage(
+    "I couldn't prepare your next training week. Please try again.",
+    "assistant"
+  );
+
+}
 
   }
 );
