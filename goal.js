@@ -3033,7 +3033,43 @@ function getWindLabel(
 
        }
 
+function getTerrainEmoji(
+    terrain
+) {
 
+    switch (
+        String(
+            terrain || ""
+        ).toLowerCase()
+    ) {
+
+        case "track":
+            return "🏟";
+
+        case "flat":
+            return "━";
+
+        case "rolling":
+            return "〰";
+
+        case "hilly":
+            return "⛰";
+
+        case "trail":
+            return "🌲";
+
+        case "grass":
+            return "🌱";
+
+        case "treadmill":
+            return "🏃";
+
+        default:
+            return "";
+
+    }
+
+}
 /* =========================================
    NOTES FORMAT
 ========================================= */
