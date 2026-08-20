@@ -1581,29 +1581,82 @@ if (generatedWeeks.length === 2) {
 
 
   confirmPlanButton.addEventListener(
-    "click",
-    () => {
+  "click",
+  async () => {
 
-      confirmPlanButton.disabled =
-        true;
+    confirmPlanButton.disabled = true;
+    changePlanButton.disabled = true;
 
-      changePlanButton.disabled =
-        true;
+    confirmPlanButton.textContent =
+      "Saving plan...";
 
-      confirmPlanButton.textContent =
-        "Plan ready to save ✓";
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.rpc(
+          "save_ai_training_plan",
+          {
+            p_goal_id:
+              weekContext.goal.id,
+
+            p_weeks:
+              generatedWeeks
+          }
+        );
+
+
+      if (error) {
+        throw error;
+      }
 
 
       console.log(
-        "Confirmed training plan preview:",
-        {
-          generatedWeeks,
-          weekContext
-        }
+        "Training plan saved:",
+        data
+      );
+
+
+      confirmPlanButton.textContent =
+        "✓ Plan saved";
+
+
+      appendMessage(
+        "Your first training plan is saved. Week 1 and Week 2 are now part of your training program.",
+        "assistant"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Save training plan error:",
+        error
+      );
+
+
+      confirmPlanButton.disabled =
+        false;
+
+      changePlanButton.disabled =
+        false;
+
+      confirmPlanButton.textContent =
+        "✓ Confirm plan";
+
+
+      appendMessage(
+        "I couldn't save the plan yet. Please try again.",
+        "assistant"
       );
 
     }
-  );
+
+  }
+);
 
 
 } else {
