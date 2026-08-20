@@ -463,28 +463,38 @@ async function handlePendingAction(
       );
 
 
-    buttons.innerHTML =
-      decision === "confirm"
-        ? `
-          <div class="ai-action-result success">
-            ✓ Goal updated
-          </div>
-        `
-        : `
-          <div class="ai-action-result">
-            Change cancelled
-          </div>
-        `;
+    const isCreate =
+  action.action_type === "create_goal";
 
 
-    if (decision === "confirm") {
+buttons.innerHTML =
+  decision === "confirm"
+    ? `
+      <div class="ai-action-result success">
+        ✓ ${isCreate
+          ? "Goal created"
+          : "Goal updated"}
+      </div>
+    `
+    : `
+      <div class="ai-action-result">
+        ${isCreate
+          ? "Goal creation cancelled"
+          : "Change cancelled"}
+      </div>
+    `;
 
-      appendMessage(
-        "Done — your current goal has been updated.",
-        "assistant"
-      );
 
-    }
+if (decision === "confirm") {
+
+  appendMessage(
+    isCreate
+      ? "Done — your new goal has been created. Would you like me to create a training plan for this goal?"
+      : "Done — your current goal has been updated.",
+    "assistant"
+  );
+
+}
 
   } catch (error) {
 
