@@ -251,41 +251,51 @@ label.textContent =
         "ai-action-values";
 
 
-      const oldValue =
-        document.createElement("span");
-
-      oldValue.className =
-        "ai-action-old";
-
-      oldValue.textContent =
-        before[field] ?? "—";
-
-
-      const arrow =
-        document.createElement("span");
-
-      arrow.className =
-        "ai-action-arrow";
-
-      arrow.textContent =
-        "→";
-
-
       const newValue =
-        document.createElement("span");
+  document.createElement("span");
 
-      newValue.className =
-        "ai-action-new";
+newValue.className =
+  "ai-action-new";
 
-      newValue.textContent =
-        after[field] ?? "—";
+newValue.textContent =
+  after[field] ?? "—";
 
 
-      values.append(
-        oldValue,
-        arrow,
-        newValue
-      );
+if (isCreate) {
+
+  values.appendChild(
+    newValue
+  );
+
+} else {
+
+  const oldValue =
+    document.createElement("span");
+
+  oldValue.className =
+    "ai-action-old";
+
+  oldValue.textContent =
+    before[field] ?? "—";
+
+
+  const arrow =
+    document.createElement("span");
+
+  arrow.className =
+    "ai-action-arrow";
+
+  arrow.textContent =
+    "→";
+
+
+  values.append(
+    oldValue,
+    arrow,
+    newValue
+  );
+
+}
 
 
       row.append(
