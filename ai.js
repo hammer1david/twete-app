@@ -282,9 +282,9 @@ function appendGoalTypeSelector() {
             "general_fitness"
           ) {
 
-            console.log(
-              "General fitness selected"
-            );
+            appendFitnessFocusSelector();
+
+return;
 
           }
 
