@@ -1697,7 +1697,88 @@ function appendTrainingSetupReview(
         "Your training preferences are saved. I have everything I need to build your training plan.",
         "assistant"
       );
+if (
+  pendingGoalSetup?.goal_type ===
+  "general_fitness"
+) {
 
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.functions
+        .invoke(
+          "twete-ai",
+          {
+            body: {
+              message:
+                "Review my new general fitness goal.",
+
+              goal_form: {
+                goal_type:
+                  pendingGoalSetup.goal_type,
+
+                fitness_focus:
+                  pendingGoalSetup.fitness_focus,
+
+                current_performance:
+                  pendingGoalSetup.current_performance
+              }
+            }
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data?.answer) {
+      throw new Error(
+        data?.error ||
+        "Could not review general fitness goal."
+      );
+    }
+
+
+    appendMessage(
+      data.answer,
+      "assistant"
+    );
+
+
+    if (data.pending_action) {
+
+      appendPendingAction(
+        data.pending_action
+      );
+
+    }
+
+
+    return;
+
+  } catch (error) {
+
+    console.error(
+      "General fitness goal review error:",
+      error
+    );
+
+
+    appendMessage(
+      "I couldn't prepare your general fitness goal. Please try again.",
+      "assistant"
+    );
+
+    return;
+
+  }
+
+}
        const createPlanButton =
   document.createElement("button");
 
