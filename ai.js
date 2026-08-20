@@ -2598,17 +2598,17 @@ if (decision === "confirm") {
 
 
     if (
-      action.payload?.goal_type ===
-      "general_fitness"
-    ) {
+  action.preview?.after?.goal_type ===
+  "general_fitness"
+) {
 
-      planButton.textContent =
-        "Creating training plan...";
+  planButton.textContent =
+    "Training plan ready to create ✓";
 
-      appendCreateFirstTrainingWeekButton();
+  appendCreateFirstTrainingWeekButton();
 
-      return;
-    }
+  return;
+}
 
 
     planButton.textContent =
