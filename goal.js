@@ -1781,6 +1781,21 @@ function formatSessionDetails(
     const parts = [];
 
 
+    // AM / PM for double-session days
+    if (
+        session.session_slot !== null &&
+        session.session_slot !== undefined
+    ) {
+
+        parts.push(
+            Number(session.session_slot) === 2
+                ? "PM"
+                : "AM"
+        );
+
+    }
+
+
     if (
         session.distance_km !== null &&
         session.distance_km !== undefined &&
@@ -1815,6 +1830,19 @@ function formatSessionDetails(
 
         parts.push(
             `${session.pace} /km`
+        );
+
+    }
+
+
+    if (
+        session.rest !== null &&
+        session.rest !== undefined &&
+        session.rest !== ""
+    ) {
+
+        parts.push(
+            `Rest: ${session.rest}`
         );
 
     }
