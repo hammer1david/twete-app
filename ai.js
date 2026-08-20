@@ -186,8 +186,13 @@ function appendPendingAction(action) {
   const label =
     document.createElement("div");
 
-  label.className =
-    "ai-action-label";
+  const isCreate =
+  action.action_type === "create_goal";
+
+label.textContent =
+  isCreate
+    ? "CREATE NEW GOAL"
+    : "UPDATE CURRENT GOAL";
 
   label.textContent =
     "UPDATE CURRENT GOAL";
@@ -200,7 +205,9 @@ function appendPendingAction(action) {
     "ai-action-title";
 
   title.textContent =
-    "Confirm this change";
+  isCreate
+    ? "Confirm your new goal"
+    : "Confirm this change";
 
 
   const changes =
