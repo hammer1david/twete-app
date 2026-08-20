@@ -1622,3 +1622,95 @@ body {
     line-height:
         1.5;
 }
+/* =========================================
+   ATHLETE FEEDBACK – COACH VIEW
+========================================= */
+
+.coach-athlete-feedback {
+    margin-top: 14px;
+    padding: 13px 14px;
+
+    border: 1px solid rgba(198, 255, 0, 0.10);
+    border-radius: 12px;
+
+    background: rgba(198, 255, 0, 0.025);
+}
+
+
+.coach-athlete-feedback-label {
+    margin-bottom: 9px;
+
+    color: #C6FF00;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+}
+
+
+/* TEXT FIRST */
+
+.coach-feedback-comment {
+    margin-bottom: 11px;
+
+    color: #D6DAD6;
+
+    font-size: 12px;
+    line-height: 1.55;
+
+    white-space: normal;
+}
+
+
+/* SUMMARY CHIPS */
+
+.coach-feedback-summary {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 6px;
+}
+
+
+.coach-feedback-summary span {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 27px;
+
+    padding: 0 9px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    color: #D0D4D0;
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .coach-athlete-feedback {
+        padding: 12px;
+    }
+
+    .coach-feedback-summary {
+        gap: 5px;
+    }
+
+    .coach-feedback-summary span {
+        min-height: 26px;
+
+        padding: 0 8px;
+
+        font-size: 9px;
+    }
+
+}
