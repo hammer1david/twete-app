@@ -3312,14 +3312,14 @@
     }
 
     .puri-character {
-        height: 330px;
+        height: 250px;
 
         align-self: start;
     }
 
     .puri-image {
-        width: 175%;
-       max-width: 430px;
+        width: 240%;
+       max-width: 520px;
        
     }
 
@@ -3366,12 +3366,12 @@
     }
 
     .puri-character {
-        height: 270px;
+        height: 230px;
     }
 
     .puri-image {
-        width: 175%;
-       max-width: 350px;
+        width: 220%;
+       max-width: 430px;
     }
 
     .puri-speech-bubble {
