@@ -810,6 +810,245 @@ async function generateNextTrainingWeek() {
   };
 
 }
+
+function appendTrainingWeekPreview(
+  trainingWeek,
+  weekContext
+) {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-training-week-preview";
+
+
+  const title =
+    document.createElement("div");
+
+  title.className =
+    "ai-goal-form-title";
+
+  title.textContent =
+    `Week ${trainingWeek.week_number}`;
+
+
+  const focus =
+    document.createElement("div");
+
+  focus.className =
+    "ai-goal-form-subtitle";
+
+  focus.textContent =
+    trainingWeek.focus || "";
+
+
+  const sessions =
+    document.createElement("div");
+
+  sessions.className =
+    "ai-training-week-sessions";
+
+
+  trainingWeek.sessions.forEach(
+    (session) => {
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "ai-training-week-session";
+
+
+      const day =
+        document.createElement("div");
+
+      day.className =
+        "ai-training-week-day";
+
+      day.textContent =
+        `${session.day} · ${
+          session.session_slot === 2
+            ? "PM"
+            : "AM"
+        }`;
+
+
+      const sessionTitle =
+        document.createElement("div");
+
+      sessionTitle.className =
+        "ai-training-week-title";
+
+      sessionTitle.textContent =
+        session.title;
+
+
+      const details =
+        document.createElement("div");
+
+      details.className =
+        "ai-training-week-details";
+
+
+      const parts = [];
+
+
+      if (
+        session.distance_km !== null &&
+        session.distance_km !== undefined
+      ) {
+        parts.push(
+          `${session.distance_km} km`
+        );
+      }
+
+
+      if (session.pace_type) {
+        parts.push(
+          session.pace_type
+        );
+      }
+
+
+      if (session.rest) {
+        parts.push(
+          `Rest: ${session.rest}`
+        );
+      }
+
+
+      details.textContent =
+        parts.join(" · ");
+
+
+      const notes =
+        document.createElement("div");
+
+      notes.className =
+        "ai-training-week-notes";
+
+      notes.textContent =
+        session.notes || "";
+
+
+      row.append(
+        day,
+        sessionTitle,
+        details,
+        notes
+      );
+
+
+      sessions.appendChild(row);
+
+    }
+  );
+
+
+  const coachNote =
+    document.createElement("div");
+
+  coachNote.className =
+    "ai-training-week-coach-note";
+
+  coachNote.textContent =
+    trainingWeek.coach_note || "";
+
+
+  const buttons =
+    document.createElement("div");
+
+  buttons.className =
+    "ai-training-week-actions";
+
+
+  const changeButton =
+    document.createElement("button");
+
+  changeButton.type =
+    "button";
+
+  changeButton.className =
+    "ai-training-review-cancel";
+
+  changeButton.textContent =
+    "Request changes";
+
+
+  const confirmButton =
+    document.createElement("button");
+
+  confirmButton.type =
+    "button";
+
+  confirmButton.className =
+    "ai-training-review-confirm";
+
+  confirmButton.textContent =
+    "✓ Confirm week";
+
+
+  buttons.append(
+    changeButton,
+    confirmButton
+  );
+
+
+  card.append(
+    title,
+    focus,
+    sessions,
+    coachNote,
+    buttons
+  );
+
+
+  messages.appendChild(card);
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  changeButton.addEventListener(
+    "click",
+    () => {
+
+      appendMessage(
+        "Tell me what you would like to change in this week.",
+        "assistant"
+      );
+
+    }
+  );
+
+
+  confirmButton.addEventListener(
+    "click",
+    () => {
+
+      confirmButton.disabled =
+        true;
+
+      changeButton.disabled =
+        true;
+
+      confirmButton.textContent =
+        "Week ready to save ✓";
+
+
+      console.log(
+        "Confirmed week preview:",
+        {
+          trainingWeek,
+          weekContext
+        }
+      );
+
+    }
+  );
+
+}
 /* =========================================
    TRAINING SETUP REVIEW
 ========================================= */
