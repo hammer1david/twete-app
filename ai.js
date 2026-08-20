@@ -153,7 +153,258 @@ function appendMessage(
 
   return wrapper;
 }
+/* =========================================
+   CREATE GOAL FORM
+========================================= */
 
+function appendGoalForm() {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-goal-form";
+
+
+  card.innerHTML = `
+    <div class="ai-goal-form-label">
+      CREATE NEW GOAL
+    </div>
+
+    <div class="ai-goal-form-title">
+      Tell Puri about your goal
+    </div>
+
+    <div class="ai-goal-form-subtitle">
+      Fill in the details below so Puri can prepare your goal.
+    </div>
+
+
+    <label class="ai-goal-field">
+      <span>Goal / Race name</span>
+
+      <input
+        type="text"
+        data-goal-field="goal_name"
+        placeholder="e.g. Valencia Half Marathon"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Distance</span>
+
+      <input
+        type="text"
+        data-goal-field="distance"
+        placeholder="e.g. 21.1 km"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Target time</span>
+
+      <input
+        type="text"
+        data-goal-field="target_time"
+        placeholder="e.g. 1:05:00"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Target date</span>
+
+      <input
+        type="date"
+        data-goal-field="target_date"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Current performance</span>
+
+      <input
+        type="text"
+        data-goal-field="current_performance"
+        placeholder="e.g. 5 km in 15:00"
+      >
+    </label>
+
+
+    <label class="ai-goal-field">
+      <span>Notes <small>(optional)</small></span>
+
+      <textarea
+        data-goal-field="notes"
+        placeholder="Anything Puri should know about this goal..."
+        rows="3"
+      ></textarea>
+    </label>
+
+
+    <div class="ai-goal-form-error"></div>
+
+
+    <button
+      type="button"
+      class="ai-goal-review-button"
+    >
+      Review goal →
+    </button>
+  `;
+
+
+  messages.appendChild(card);
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  const reviewButton =
+    card.querySelector(
+      ".ai-goal-review-button"
+    );
+
+
+  reviewButton.addEventListener(
+    "click",
+    async () => {
+
+      const goalData = {};
+
+      card
+        .querySelectorAll(
+          "[data-goal-field]"
+        )
+        .forEach((field) => {
+
+          goalData[
+            field.dataset.goalField
+          ] =
+            field.value.trim();
+
+        });
+
+
+      const requiredFields = [
+        "goal_name",
+        "distance",
+        "target_time",
+        "target_date",
+        "current_performance"
+      ];
+
+
+      const missing =
+        requiredFields.filter(
+          (field) =>
+            !goalData[field]
+        );
+
+
+      const errorBox =
+        card.querySelector(
+          ".ai-goal-form-error"
+        );
+
+
+      if (missing.length) {
+
+        errorBox.textContent =
+          "Please complete all required fields.";
+
+        return;
+      }
+
+
+      errorBox.textContent = "";
+
+      reviewButton.disabled = true;
+
+      reviewButton.textContent =
+        "Preparing goal...";
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.functions
+            .invoke(
+              "twete-ai",
+              {
+                body: {
+                  message:
+                    "Review my new goal.",
+                  goal_form:
+                    goalData
+                }
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (!data?.answer) {
+
+          throw new Error(
+            data?.error ||
+            "Could not review goal."
+          );
+
+        }
+
+
+        card.remove();
+
+
+        appendMessage(
+          data.answer,
+          "assistant"
+        );
+
+
+        if (data.pending_action) {
+
+          appendPendingAction(
+            data.pending_action
+          );
+
+        }
+
+
+      } catch (error) {
+
+        console.error(
+          "Goal form error:",
+          error
+        );
+
+
+        errorBox.textContent =
+          "Puri couldn't prepare the goal. Please try again.";
+
+
+        reviewButton.disabled =
+          false;
+
+        reviewButton.textContent =
+          "Review goal →";
+
+      }
+
+    }
+  );
+
+}
 /* =========================================
    PENDING ACTION CARD
 ========================================= */
