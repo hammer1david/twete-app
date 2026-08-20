@@ -420,22 +420,28 @@ function appendFitnessFocusSelector() {
               .trim();
 
 
-          console.log(
-            "General fitness goal:",
-            {
-              goal_type:
-                "general_fitness",
+          pendingGoalSetup = {
+  goal_type:
+    "general_fitness",
 
-              fitness_focus:
-                fitnessFocus,
+  fitness_focus:
+    fitnessFocus,
 
-              current_performance:
-                currentPerformance
-            }
-          );
+  current_performance:
+    currentPerformance || null
+};
 
 
-          card.remove();
+console.log(
+  "Pending general fitness goal:",
+  pendingGoalSetup
+);
+
+
+card.remove();
+
+
+appendTrainingSetupForm();
 
         }
       );
