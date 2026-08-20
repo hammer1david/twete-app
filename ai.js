@@ -997,12 +997,16 @@ function appendTrainingWeekPreview(
 
 
   card.append(
-    title,
-    focus,
-    sessions,
-    coachNote,
-    buttons
-  );
+  title,
+  focus,
+  sessions,
+  coachNote
+);
+
+
+if (showActions) {
+  card.appendChild(buttons);
+}
 
 
   messages.appendChild(card);
