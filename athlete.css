@@ -2889,7 +2889,7 @@
 .puri-character {
     position: relative;
 
-    height: 290px;
+    height: 420px;
 
     display: flex;
 
@@ -2928,8 +2928,8 @@
 
     z-index: 2;
 
-    width: 116%;
-    max-width: 330px;
+    width: 180%;
+    max-width: 520px;
 
     object-fit: contain;
 
