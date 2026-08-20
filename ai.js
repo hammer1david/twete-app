@@ -2604,12 +2604,25 @@ if (decision === "confirm") {
   "click",
   () => {
 
-    planButton.disabled =
-      true;
+    planButton.disabled = true;
+
+
+    if (
+      action.payload?.goal_type ===
+      "general_fitness"
+    ) {
+
+      planButton.textContent =
+        "Creating training plan...";
+
+      appendCreateFirstTrainingWeekButton();
+
+      return;
+    }
+
 
     planButton.textContent =
       "Training setup opened ✓";
-
 
     appendTrainingSetupForm();
 
