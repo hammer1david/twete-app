@@ -3369,6 +3369,8 @@
     .puri-character {
         grid-area: character;
 
+       position: relative;
+
         height: 330px;
 
         align-self: center;
@@ -3387,7 +3389,7 @@
 
     object-fit: contain;
     }
-    }
+    
 
 
     /* SPEECH + CHAT BELOW */
