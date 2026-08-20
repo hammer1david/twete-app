@@ -710,11 +710,12 @@ async function loadAthleteProfilePicture() {
 
 loadAthleteProfilePicture();
 
-async function loadAthleteHeaderName() {
+
+async function loadPuriAthleteName() {
 
     const nameElement =
         document.getElementById(
-            "athleteHeaderName"
+            "puriAthleteName"
         );
 
     if (!nameElement) {
@@ -756,21 +757,30 @@ async function loadAthleteHeaderName() {
 
         if (data?.full_name) {
 
+            /*
+               Use only the first name
+               for a more natural greeting.
+            */
+
+            const firstName =
+                data.full_name
+                    .trim()
+                    .split(/\s+/)[0];
+
             nameElement.textContent =
-                data.full_name;
+                firstName;
         }
 
     } catch (error) {
 
         console.error(
-            "Athlete name error:",
+            "Puri athlete name error:",
             error
         );
     }
 }
 
-loadAthleteHeaderName();
-
+loadPuriAthleteName();
 /* =========================================
    MOTIVATIONAL QUOTES
 ========================================= */
