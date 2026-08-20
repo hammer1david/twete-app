@@ -898,7 +898,7 @@ function appendTrainingSetupReview(
         data: { user },
         error: userError
       } =
-        await supabase.auth.getUser();
+        await supabaseClient.auth.getUser();
 
 
       if (userError || !user) {
