@@ -1002,7 +1002,7 @@ createPlanButton.className =
   "ai-generate-training-plan-button";
 
 createPlanButton.textContent =
-  "Create my training plan →";
+  "Create my first training week →";
 
 
 messages.appendChild(
@@ -1022,17 +1022,18 @@ createPlanButton.addEventListener(
       true;
 
     createPlanButton.textContent =
-      "Preparing your training plan...";
+      "Preparing your first training week...";
 
 
     /*
-     * NEXT STEP:
-     * 1. Load current goal
-     * 2. Load athlete training preferences
-     * 3. Send both to Puri
-     * 4. Generate weeks + sessions
-     * 5. Save plan to Supabase
-     */
+ * NEXT STEP:
+ * 1. Load current goal
+ * 2. Load athlete training preferences
+ * 3. Load relevant athlete memory/current state
+ * 4. Generate exactly ONE training week
+ * 5. Show week preview
+ * 6. Save only after athlete confirms
+ */
 
 
     console.log(
