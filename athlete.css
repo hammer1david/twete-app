@@ -3225,12 +3225,14 @@
     0%,
     100% {
         transform:
+            translateX(-50%)
             translateY(0)
             scale(1);
     }
 
     50% {
         transform:
+            translateX(-50%)
             translateY(-7px)
             scale(1.008);
     }
@@ -3312,16 +3314,28 @@
     }
 
     .puri-character {
-        height: 250px;
+    position: relative;
 
-        align-self: start;
-    }
+    height: 250px;
 
-    .puri-image {
-        width: 240%;
-       max-width: 520px;
-       
-    }
+    align-self: start;
+
+    overflow: visible;
+}
+
+.puri-image {
+    position: absolute;
+
+    width: 430px;
+    max-width: none;
+
+    left: 50%;
+    bottom: -5px;
+
+    transform: translateX(-50%);
+
+    object-fit: contain;
+}
 
     .puri-live-area {
         grid-column:
@@ -3366,13 +3380,26 @@
     }
 
     .puri-character {
-        height: 230px;
-    }
+    position: relative;
 
-    .puri-image {
-        width: 220%;
-       max-width: 430px;
-    }
+    height: 220px;
+
+    overflow: visible;
+}
+
+.puri-image {
+    position: absolute;
+
+    width: 360px;
+    max-width: none;
+
+    left: 50%;
+    bottom: -5px;
+
+    transform: translateX(-50%);
+
+    object-fit: contain;
+}
 
     .puri-speech-bubble {
         padding:
