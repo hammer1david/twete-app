@@ -37,7 +37,51 @@ const messages =
 const sendButton =
   document.getElementById("sendAiButton");
 
+function renderAiText(element, text) {
 
+  element.textContent = "";
+
+  const lines = text.split("\n");
+
+  lines.forEach((line, lineIndex) => {
+
+    const parts =
+      line.split(/(\*\*.*?\*\*)/g);
+
+    parts.forEach((part) => {
+
+      if (
+        part.startsWith("**") &&
+        part.endsWith("**")
+      ) {
+
+        const strong =
+          document.createElement("strong");
+
+        strong.textContent =
+          part.slice(2, -2);
+
+        element.appendChild(strong);
+
+      } else {
+
+        element.appendChild(
+          document.createTextNode(part)
+        );
+
+      }
+
+    });
+
+    if (lineIndex < lines.length - 1) {
+      element.appendChild(
+        document.createElement("br")
+      );
+    }
+
+  });
+
+}
 /* =========================================
    ADD MESSAGE
 ========================================= */
@@ -80,8 +124,19 @@ function appendMessage(
   bubble.className =
     "bubble";
 
+  if (role === "user") {
+
   bubble.textContent =
     text;
+
+} else {
+
+  renderAiText(
+    bubble,
+    text
+  );
+
+}
 
 
   wrapper.appendChild(bubble);
