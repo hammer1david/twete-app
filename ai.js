@@ -1598,7 +1598,7 @@ if (generatedWeeks.length === 2) {
         error
       } =
         await supabaseClient.rpc(
-          "save_ai_training_plan",
+  "confirm_ai_training_plan",
           {
             p_goal_id:
               weekContext.goal.id,
