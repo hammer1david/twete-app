@@ -195,8 +195,7 @@ label.textContent =
     ? "CREATE NEW GOAL"
     : "UPDATE CURRENT GOAL";
 
-  label.textContent =
-    "UPDATE CURRENT GOAL";
+
 
 
   const title =
