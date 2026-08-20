@@ -294,15 +294,17 @@ async function loadWeeks() {
         await goalSupabase
             .from("training_weeks")
             .select(`
-                id,
-                program_id,
-                week_number,
-                start_date,
-                end_date,
-                weekly_km,
-                week_label,
-                created_at
-            `)
+    id,
+    program_id,
+    week_number,
+    start_date,
+    end_date,
+    weekly_km,
+    week_label,
+    focus,
+    coach_note,
+    created_at
+`)
             .eq(
                 "program_id",
                 currentGoal.program_id
@@ -356,18 +358,20 @@ async function loadWeeks() {
         await goalSupabase
             .from("workouts")
             .select(`
-                id,
-                athlete_id,
-                week_id,
-                workout_date,
-                workout_type,
-                title,
-                distance_km,
-                duration_minutes,
-                pace,
-                notes,
-                completed
-            `)
+    id,
+    athlete_id,
+    week_id,
+    workout_date,
+    workout_type,
+    title,
+    distance_km,
+    duration_minutes,
+    pace,
+    rest,
+    notes,
+    completed,
+    session_slot
+`)
             .in(
                 "week_id",
                 weekIds
