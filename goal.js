@@ -1474,7 +1474,41 @@ function createSessionCard(
             YOUR FEEDBACK
         </span>
 
+${
+            athleteFeedback
+            ?
+            `
+            <div class="athlete-feedback-text">
 
+                ${escapeHtml(
+                    athleteFeedback
+                ).replaceAll(
+                    "\n",
+                    "<br>"
+                )}
+
+            </div>
+            `
+            :
+            (
+                detailedFeedback?.comment
+                ?
+                `
+                <div class="athlete-feedback-text">
+
+                    ${escapeHtml(
+                        detailedFeedback.comment
+                    ).replaceAll(
+                        "\n",
+                        "<br>"
+                    )}
+
+                </div>
+                `
+                :
+                ""
+            )
+}
         ${
             detailedFeedback
             ?
@@ -1624,41 +1658,7 @@ function createSessionCard(
         }
 
 
-        ${
-            athleteFeedback
-            ?
-            `
-            <div class="athlete-feedback-text">
-
-                ${escapeHtml(
-                    athleteFeedback
-                ).replaceAll(
-                    "\n",
-                    "<br>"
-                )}
-
-            </div>
-            `
-            :
-            (
-                detailedFeedback?.comment
-                ?
-                `
-                <div class="athlete-feedback-text">
-
-                    ${escapeHtml(
-                        detailedFeedback.comment
-                    ).replaceAll(
-                        "\n",
-                        "<br>"
-                    )}
-
-                </div>
-                `
-                :
-                ""
-            )
-        }
+        
 
     </div>
     `
