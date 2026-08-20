@@ -522,7 +522,11 @@ function appendGoalForm(
 
 
     <label class="ai-goal-field">
-      <span>Current performance</span>
+      <span>
+      Current performance
+      <small>(optional)</small>
+      </span>
+
 
       <input
         type="text"
