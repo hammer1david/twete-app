@@ -1129,3 +1129,53 @@ textarea {
   }
 
 }
+
+
+/* =========================================
+   GENERATE TRAINING PLAN BUTTON
+========================================= */
+
+.ai-generate-training-plan-button {
+  display: block;
+
+  width: calc(100% - 48px);
+  max-width: 720px;
+
+  margin: 10px 24px 24px;
+  padding: 16px 18px;
+
+  background: #c6ff00;
+  color: #10130c;
+
+  border: none;
+  border-radius: 14px;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.ai-generate-training-plan-button:active {
+  transform: scale(0.985);
+}
+
+.ai-generate-training-plan-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+
+@media (max-width: 600px) {
+
+  .ai-generate-training-plan-button {
+    width: calc(100% - 24px);
+    margin: 10px 12px 20px;
+  }
+
+}
