@@ -1419,3 +1419,85 @@ textarea {
   }
 
 }
+
+/* =========================================
+   GOAL TYPE / FITNESS SELECTION CARDS
+========================================= */
+
+.ai-goal-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 22px 0;
+}
+
+
+.ai-goal-type-option {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  padding: 17px 18px;
+
+  color: #ffffff;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.ai-goal-type-option:hover {
+  border-color: rgba(198, 255, 0, 0.45);
+  background: rgba(198, 255, 0, 0.05);
+}
+
+
+.ai-goal-type-option.active {
+  border-color: #c6ff00;
+  background: rgba(198, 255, 0, 0.10);
+
+  box-shadow:
+    0 0 0 1px rgba(198, 255, 0, 0.12);
+}
+
+
+.ai-goal-type-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+
+.ai-goal-type-content strong {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+
+.ai-goal-type-content span {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+
+.ai-goal-type-option.active
+.ai-goal-type-content strong {
+  color: #c6ff00;
+}
+
+
+/* Continue button */
+
+[data-fitness-continue] {
+  width: 100%;
+  margin-top: 18px;
+}
