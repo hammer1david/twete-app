@@ -108,6 +108,9 @@ function appendMessage(
     const label =
       document.createElement("div");
 
+     label.className =
+  "ai-action-label";
+
     label.className =
       "message-label";
 
