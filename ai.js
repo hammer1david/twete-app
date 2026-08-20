@@ -603,20 +603,28 @@ form.addEventListener(
 
     try {
 
-      const answer =
-        await askTweteAI(
-          message
-        );
+      const result =
+  await askTweteAI(
+    message
+  );
 
 
-      typing.remove();
+typing.remove();
 
 
-      appendMessage(
-        answer,
-        "assistant"
-      );
+appendMessage(
+  result.answer,
+  "assistant"
+);
 
+
+if (result.pendingAction) {
+
+  appendPendingAction(
+    result.pendingAction
+  );
+
+}
 
     } catch (error) {
 
