@@ -965,7 +965,7 @@ function appendTrainingSetupReview(
       const {
         error
       } =
-        await supabase
+        await supabaseClient
           .from(
             "athlete_training_preferences"
           )
