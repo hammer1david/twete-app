@@ -989,3 +989,143 @@ textarea {
   }
 
 }
+
+/* =========================================
+   TRAINING SETUP REVIEW
+========================================= */
+
+.ai-training-review-card {
+  margin: 18px 24px 24px;
+  padding: 24px;
+  max-width: 720px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #11151a 0%,
+      #11151a 70%,
+      rgba(198, 255, 0, 0.08) 100%
+    );
+
+  border: 1px solid rgba(198, 255, 0, 0.3);
+  border-radius: 22px;
+}
+
+
+/* VALUES */
+
+.ai-training-review-values {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.ai-training-review-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 14px 16px;
+
+  background: #0b0f13;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 13px;
+}
+
+.ai-training-review-label {
+  color: #8d939d;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-training-review-value {
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  text-align: right;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* BUTTONS */
+
+.ai-training-review-actions {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.ai-training-review-cancel,
+.ai-training-review-confirm {
+  padding: 15px 18px;
+
+  border-radius: 14px;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.ai-training-review-cancel {
+  background: #171b21;
+  color: #ffffff;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+}
+
+.ai-training-review-confirm {
+  background: #c6ff00;
+  color: #10130c;
+
+  border: none;
+}
+
+.ai-training-review-cancel:disabled,
+.ai-training-review-confirm:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .ai-training-review-card {
+    margin: 14px 12px 20px;
+    padding: 18px;
+
+    border-radius: 18px;
+  }
+
+  .ai-training-review-row {
+    gap: 12px;
+  }
+
+  .ai-training-review-actions {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+}
