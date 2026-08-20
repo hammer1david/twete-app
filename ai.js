@@ -813,7 +813,8 @@ async function generateNextTrainingWeek() {
 
 function appendTrainingWeekPreview(
   trainingWeek,
-  weekContext
+  weekContext,
+  showActions = true
 ) {
 
   const card =
