@@ -211,7 +211,10 @@ async function askTweteAI(
   }
 
 
-  return data.answer;
+  return {
+  answer: data.answer,
+  pendingAction: data.pending_action || null
+};
 }
 
 
