@@ -117,14 +117,10 @@ async function loadGoal() {
 
     if (!goal.program_id) {
 
-        const programData =
-            await createProgramForGoal();
+    program = null;
+    programStartDate = null;
 
-        if (!programData) {
-            return;
-        }
-
-    }
+}
 
 
     await loadProgram();
