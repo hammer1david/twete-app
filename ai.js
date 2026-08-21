@@ -1931,8 +1931,23 @@ title.textContent =
 newValue.className =
   "ai-action-new";
 
-newValue.textContent =
-  after[field] ?? "—";
+if (
+  field === "notes"
+) {
+
+  renderAiText(
+    newValue,
+    String(
+      after[field] ?? "—"
+    )
+  );
+
+} else {
+
+  newValue.textContent =
+    after[field] ?? "—";
+
+}
 
 
 if (isCreate) {
