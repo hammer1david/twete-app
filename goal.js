@@ -767,10 +767,8 @@ function renderGoal() {
 function updateGoalProgress() {
 
     if (
-        !currentProgram ||
-        !currentProgram.start_date ||
-        !currentGoal ||
-        !currentGoal.target_date
+        !currentWeeks ||
+        !currentWeeks.length
     ) {
 
         setProgress(0);
@@ -779,15 +777,81 @@ function updateGoalProgress() {
     }
 
 
-    const start =
-        parseDate(
-            currentProgram.start_date
+    /*
+       Use the actual training plan dates:
+       first available week start date
+       →
+       last available week end date
+    */
+
+    const validWeeks =
+        currentWeeks.filter(
+            function (week) {
+
+                return (
+                    week.start_date &&
+                    week.end_date
+                );
+
+            }
         );
 
-    const end =
-        parseDate(
-            currentGoal.target_date
+
+    if (!validWeeks.length) {
+
+        setProgress(0);
+
+        return;
+    }
+
+
+    const startDates =
+        validWeeks.map(
+            function (week) {
+
+                return parseDate(
+                    week.start_date
+                );
+
+            }
         );
+
+
+    const endDates =
+        validWeeks.map(
+            function (week) {
+
+                return parseDate(
+                    week.end_date
+                );
+
+            }
+        );
+
+
+    const start =
+        new Date(
+            Math.min(
+                ...startDates.map(
+                    function (date) {
+                        return date.getTime();
+                    }
+                )
+            )
+        );
+
+
+    const end =
+        new Date(
+            Math.max(
+                ...endDates.map(
+                    function (date) {
+                        return date.getTime();
+                    }
+                )
+            )
+        );
+
 
     const today =
         startOfToday();
@@ -807,10 +871,8 @@ function updateGoalProgress() {
 
         setProgress(
             today >= end
-                ?
-                100
-                :
-                0
+                ? 100
+                : 0
         );
 
         return;
