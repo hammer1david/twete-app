@@ -36,7 +36,145 @@ const avatarInput =
         "avatarInput"
     );
 
+/* =========================================
+   TIMEZONE HELPERS
+========================================= */
 
+function getDeviceTimezone() {
+
+    try {
+
+        return Intl
+            .DateTimeFormat()
+            .resolvedOptions()
+            .timeZone || "UTC";
+
+    } catch (error) {
+
+        console.warn(
+            "Timezone detection failed:",
+            error
+        );
+
+        return "UTC";
+    }
+}
+
+
+function populateTimezoneSelect(
+    selectedTimezone
+) {
+
+    const select =
+        document.getElementById(
+            "timezone"
+        );
+
+    if (!select) {
+        return;
+    }
+
+
+    let timezones = [];
+
+    try {
+
+        if (
+            typeof Intl.supportedValuesOf ===
+            "function"
+        ) {
+
+            timezones =
+                Intl.supportedValuesOf(
+                    "timeZone"
+                );
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Timezone list unavailable:",
+            error
+        );
+
+    }
+
+
+    if (!timezones.length) {
+
+        timezones = [
+            "Europe/Vienna",
+            "Europe/Berlin",
+            "Europe/Zurich",
+            "Europe/London",
+            "Africa/Nairobi",
+            "Africa/Johannesburg",
+            "America/New_York",
+            "America/Chicago",
+            "America/Denver",
+            "America/Los_Angeles",
+            "Asia/Dubai",
+            "Asia/Tokyo",
+            "Australia/Sydney",
+            "UTC"
+        ];
+
+    }
+
+
+    if (
+        selectedTimezone &&
+        !timezones.includes(
+            selectedTimezone
+        )
+    ) {
+
+        timezones.unshift(
+            selectedTimezone
+        );
+
+    }
+
+
+    select.innerHTML = "";
+
+
+    timezones.forEach(
+        timezone => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                timezone;
+
+            option.textContent =
+                timezone.replaceAll(
+                    "_",
+                    " "
+                );
+
+            if (
+                timezone ===
+                selectedTimezone
+            ) {
+
+                option.selected =
+                    true;
+
+            }
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
 /* =========================================
    LOAD PROFILE
 ========================================= */
@@ -461,6 +599,13 @@ form.addEventListener(
                         )
                         .value
                         .trim(),
+
+                timezone:
+    document
+        .getElementById(
+            "timezone"
+        )
+        .value,
 
                 discipline:
                     document
