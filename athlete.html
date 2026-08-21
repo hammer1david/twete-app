@@ -1836,18 +1836,206 @@
         );
 
 
-        modal
+                modal
             .querySelector(
                 ".delete-goal-confirm"
             )
             .addEventListener(
                 "click",
-                function () {
+                async function () {
 
-                    console.log(
-                        "Goal delete confirmed:",
-                        goal.id
-                    );
+                    const confirmButton =
+                        modal.querySelector(
+                            ".delete-goal-confirm"
+                        );
+
+
+                    const cancelButton =
+                        modal.querySelector(
+                            ".delete-goal-cancel"
+                        );
+
+
+                    confirmButton.disabled =
+                        true;
+
+                    cancelButton.disabled =
+                        true;
+
+
+                    confirmButton.textContent =
+                        "Deleting...";
+
+
+                    try {
+
+                        const {
+                            data: {
+                                user
+                            }
+                        } =
+                            await supabaseClient
+                                .auth
+                                .getUser();
+
+
+                        if (!user) {
+
+                            throw new Error(
+                                "User not authenticated."
+                            );
+
+                        }
+
+
+                        const programId =
+                            goal.program_id ||
+                            null;
+
+
+                        /*
+                           Delete the goal first.
+                        */
+
+                        const {
+                            error: goalDeleteError
+                        } =
+                            await supabaseClient
+                                .from("goals")
+                                .delete()
+                                .eq(
+                                    "id",
+                                    goal.id
+                                )
+                                .eq(
+                                    "athlete_id",
+                                    user.id
+                                );
+
+
+                        if (goalDeleteError) {
+                            throw goalDeleteError;
+                        }
+
+
+                        /*
+                           If this goal had a program,
+                           check whether another goal
+                           still uses it.
+                        */
+
+                        if (programId) {
+
+                            const {
+                                data:
+                                    remainingGoals,
+
+                                error:
+                                    remainingGoalsError
+                            } =
+                                await supabaseClient
+                                    .from("goals")
+                                    .select("id")
+                                    .eq(
+                                        "program_id",
+                                        programId
+                                    )
+                                    .limit(1);
+
+
+                            if (
+                                remainingGoalsError
+                            ) {
+
+                                throw remainingGoalsError;
+
+                            }
+
+
+                            if (
+                                !remainingGoals ||
+                                remainingGoals.length === 0
+                            ) {
+
+                                const {
+                                    error:
+                                        programDeleteError
+                                } =
+                                    await supabaseClient
+                                        .from("programs")
+                                        .delete()
+                                        .eq(
+                                            "id",
+                                            programId
+                                        )
+                                        .eq(
+                                            "athlete_id",
+                                            user.id
+                                        );
+
+
+                                if (
+                                    programDeleteError
+                                ) {
+
+                                    throw programDeleteError;
+
+                                }
+
+                            }
+
+                        }
+
+
+                        modal.remove();
+
+
+                        /*
+                           Reload current goals so the
+                           deleted card disappears.
+                        */
+
+                        const container =
+                            document.getElementById(
+                                "currentGoalsContainer"
+                            );
+
+
+                        if (container) {
+
+                            container.innerHTML =
+                                "";
+
+                        }
+
+
+                        await loadCurrentGoals();
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Goal deletion error:",
+                            error
+                        );
+
+
+                        confirmButton.disabled =
+                            false;
+
+                        cancelButton.disabled =
+                            false;
+
+
+                        confirmButton.textContent =
+                            "Delete Goal";
+
+
+                        alert(
+                            "The goal could not be deleted. Please try again."
+                        );
+
+                    }
 
                 }
             );
