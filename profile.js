@@ -74,6 +74,7 @@ async function loadProfile() {
                 full_name,
                 birthday,
                 country,
+                timezone,
                 discipline,
                 preferred_distance,
                 experience_level,
