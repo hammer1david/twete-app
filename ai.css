@@ -1501,3 +1501,48 @@ textarea {
   width: 100%;
   margin-top: 18px;
 }
+
+/* =========================================
+   MOBILE RECOVERY ACTION CARD
+========================================= */
+
+@media (max-width: 520px) {
+
+  .ai-action-card {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .ai-action-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .ai-action-field {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+  }
+
+  .ai-action-values {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+  }
+
+  .ai-action-old,
+  .ai-action-new {
+    display: block;
+    width: 100%;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .ai-action-arrow {
+    transform: rotate(90deg);
+    align-self: flex-start;
+  }
+
+}
