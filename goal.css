@@ -1496,3 +1496,86 @@ button {
 
     font-weight: 750;
 }
+
+/* =========================================
+   NO TRAINING PLAN
+========================================= */
+
+.no-training-plan-card {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 22px;
+
+    border-radius: 20px;
+
+    border: 1px solid
+        rgba(255, 255, 255, 0.10);
+
+    background:
+        rgba(255, 255, 255, 0.035);
+}
+
+
+.no-training-plan-icon {
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background:
+        rgba(198, 255, 0, 0.08);
+
+    color: #c6ff00;
+}
+
+
+.no-training-plan-icon svg {
+    width: 31px;
+    height: 31px;
+}
+
+
+.no-training-plan-text span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #c6ff00;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 0.7px;
+}
+
+
+.no-training-plan-text h3 {
+    margin: 0 0 6px;
+
+    color: #ffffff;
+
+    font-size: 18px;
+}
+
+
+.no-training-plan-text p {
+    margin: 0;
+
+    color:
+        rgba(255, 255, 255, 0.55);
+
+    font-size: 14px;
+
+    line-height: 1.45;
+}
