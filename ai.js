@@ -4035,7 +4035,111 @@ async function getPuriTimeContext() {
   };
 
 }
-7
+/* =========================================
+   SUNDAY WEEKLY REVIEW
+========================================= */
+
+function appendWeeklyReviewOptions() {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-goal-form";
+
+
+  card.innerHTML = `
+
+    <div class="ai-goal-form-label">
+      WEEKLY REVIEW
+    </div>
+
+    <div class="ai-goal-form-title">
+      How are you feeling about your training?
+    </div>
+
+    <div class="ai-goal-form-subtitle">
+      Your answer helps Puri decide how to approach your next training week.
+    </div>
+
+
+    <div class="ai-goal-type-options">
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-weekly-response="more_recovery"
+      >
+        <div class="ai-goal-type-content">
+          <strong>
+            I could use more recovery
+          </strong>
+        </div>
+      </button>
+
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-weekly-response="feels_right"
+      >
+        <div class="ai-goal-type-content">
+          <strong>
+            This feels about right
+          </strong>
+        </div>
+      </button>
+
+
+      <button
+        type="button"
+        class="ai-goal-type-option"
+        data-weekly-response="ready_for_progression"
+      >
+        <div class="ai-goal-type-content">
+          <strong>
+            I'm ready for progression
+          </strong>
+        </div>
+      </button>
+
+    </div>
+
+  `;
+
+
+  messages.appendChild(
+    card
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  card
+    .querySelectorAll(
+      "[data-weekly-response]"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            console.log(
+              "Weekly review response:",
+              button.dataset.weeklyResponse
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
 /* =========================================
    ASK TWETE AI
 ========================================= */
