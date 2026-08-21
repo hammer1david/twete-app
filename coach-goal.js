@@ -2186,11 +2186,20 @@ async function deleteWeek(
     );
 
 
-    const {
-        data: remainingWeeks,
-        error: loadError
-    } =
-        await supabaseClient
+    const reordered =
+    await renumberWeeksByDate();
+
+
+if (!reordered) {
+    return;
+}
+
+
+markUnsynced();
+
+
+await loadWeeks();
+    
             .from("training_weeks")
             .select(
                 "id, week_number"
