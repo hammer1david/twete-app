@@ -86,15 +86,18 @@ async function loadGoalPage() {
                 await goalSupabase
                     .from("goals")
                     .select(`
-                        id,
-                        athlete_id,
-                        program_id,
-                        goal_name,
-                        distance,
-                        target_time,
-                        target_date,
-                        created_at
-                    `)
+    id,
+    athlete_id,
+    program_id,
+    goal_name,
+    goal_type,
+    fitness_focus,
+    current_performance,
+    distance,
+    target_time,
+    target_date,
+    created_at
+`)
                     .eq(
                         "id",
                         goalId
@@ -140,15 +143,18 @@ async function loadGoalPage() {
                 await goalSupabase
                     .from("goals")
                     .select(`
-                        id,
-                        athlete_id,
-                        program_id,
-                        goal_name,
-                        distance,
-                        target_time,
-                        target_date,
-                        created_at
-                    `)
+    id,
+    athlete_id,
+    program_id,
+    goal_name,
+    goal_type,
+    fitness_focus,
+    current_performance,
+    distance,
+    target_time,
+    target_date,
+    created_at
+`)
                     .eq(
                         "athlete_id",
                         user.id
