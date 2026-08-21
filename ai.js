@@ -2348,26 +2348,96 @@ function appendCreateFirstTrainingWeekButton() {
 
               } catch (error) {
 
-                console.error(
-                  "Save training plan error:",
-                  error
-                );
+    console.error(
+        "Save training plan error:",
+        error
+    );
 
 
-                confirmPlanButton.disabled =
-                  false;
+    confirmPlanButton.disabled =
+        false;
 
-                changePlanButton.disabled =
-                  false;
+    changePlanButton.disabled =
+        false;
 
-                confirmPlanButton.textContent =
-                  "✓ Confirm plan";
+    confirmPlanButton.textContent =
+        "✓ Confirm plan";
 
 
-                appendMessage(
-                  "I couldn't save the plan yet. Please try again.",
-                  "assistant"
-                );
+    const errorMessage =
+        String(
+            error?.message ||
+            error?.details ||
+            error ||
+            ""
+        );
+
+
+    /* =====================================
+       WEEK DATE OVERLAP
+    ===================================== */
+
+    if (
+        errorMessage.includes(
+            "TRAINING_WEEK_DATE_OVERLAP"
+        )
+    ) {
+
+        appendMessage(
+            "I found a date overlap with a week that is already in your training plan. I won't overwrite anything. Would you like me to adjust the new week to the next free dates?",
+            "assistant"
+        );
+
+        return;
+    }
+
+
+    /* =====================================
+       WEEK NUMBER ALREADY EXISTS
+    ===================================== */
+
+    if (
+        errorMessage.includes(
+            "WEEK_ALREADY_EXISTS"
+        )
+    ) {
+
+        appendMessage(
+            "That week already exists in your current training plan. I won't replace it. Would you like me to create the next available week instead?",
+            "assistant"
+        );
+
+        return;
+    }
+
+
+    /* =====================================
+       WORKOUT OUTSIDE WEEK
+    ===================================== */
+
+    if (
+        errorMessage.includes(
+            "WORKOUT_OUTSIDE_WEEK"
+        )
+    ) {
+
+        appendMessage(
+            "One of the workouts falls outside the dates of its training week. I haven't saved anything. Would you like me to correct the workout date and prepare the week again?",
+            "assistant"
+        );
+
+        return;
+    }
+
+
+    /* =====================================
+       UNKNOWN ERROR
+    ===================================== */
+
+    appendMessage(
+        "I couldn't save the training plan yet. Nothing was changed. Please try again.",
+        "assistant"
+    );
 
               }
 
