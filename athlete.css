@@ -3798,7 +3798,7 @@
 }
 
 .goal-metrics-row {
-    gap: 9px;
+    gap: 10px;
 }
 
 .goal-metric-item {
@@ -3832,33 +3832,58 @@
 }
 
 
-/* MOBILE */
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media (max-width: 600px) {
+
+    .current-goal-card:not(.no-goal-card) {
+        min-height: 190px;
+
+        padding-bottom: 72px;
+    }
+
+    .current-goal-card:not(.no-goal-card)
+    .goal-main {
+        align-items: flex-start;
+    }
 
     .current-goal-card:not(.no-goal-card)
     .goal-information {
-        padding-right: 118px;
+        padding-right: 0;
     }
 
     .current-goal-card:not(.no-goal-card)
     .goal-pb {
+        width: 100%;
+
         font-size: 12.5px;
         line-height: 1.35;
     }
 
     .current-goal-card:not(.no-goal-card)
     .goal-metrics-row {
-        gap: 7px;
+        gap: 8px;
+    }
+
+    .current-goal-actions {
+        right: 19px;
+        bottom: 18px;
     }
 }
 
 
-/* VERY NARROW PHONES */
+/* =========================================================
+   VERY NARROW PHONES
+========================================================= */
+
 @media (max-width: 390px) {
 
-    .current-goal-card:not(.no-goal-card)
-    .goal-information {
-        padding-right: 110px;
+    .current-goal-card:not(.no-goal-card) {
+        min-height: 205px;
+
+        padding-bottom: 76px;
     }
 
     .current-goal-card:not(.no-goal-card)
@@ -3877,5 +3902,10 @@
     .goal-target-row svg {
         width: 16px;
         height: 16px;
+    }
+
+    .current-goal-actions {
+        right: 16px;
+        bottom: 16px;
     }
 }
