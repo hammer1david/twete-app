@@ -1536,30 +1536,43 @@
                     </div>
 
 
-                    <div class="current-goal-button">
+                                      <div class="current-goal-actions">
 
-                        <span>
-                            Open Goal
-                        </span>
-
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2.2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                        <button
+                            type="button"
+                            class="delete-goal-button"
+                            data-goal-id="${goal.id}"
                         >
-                            <path
-                                d="M5 12h14"
-                            ></path>
+                            Delete Goal
+                        </button>
 
-                            <path
-                                d="m13 6 6 6-6 6"
-                            ></path>
-                        </svg>
 
-                    </div>
+                        <div class="current-goal-button">
+
+                            <span>
+                                Open Goal
+                            </span>
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path
+                                    d="M5 12h14"
+                                ></path>
+
+                                <path
+                                    d="m13 6 6 6-6 6"
+                                ></path>
+                            </svg>
+
+                        </div>
+
+                    </div> 
 
                 `;
 
