@@ -4036,6 +4036,235 @@ async function getPuriTimeContext() {
 
 }
 /* =========================================
+   SAVE WEEKLY REVIEW RESPONSE
+========================================= */
+
+async function saveWeeklyReviewResponse(
+  response
+) {
+
+  const {
+    data: { user },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (
+    userError ||
+    !user
+  ) {
+
+    throw new Error(
+      "No logged-in athlete found."
+    );
+
+  }
+
+
+  const timeContext =
+    await getPuriTimeContext();
+
+
+  const localDate =
+    timeContext.local_date;
+
+
+  const {
+    data: goals,
+    error: goalError
+  } =
+    await supabaseClient
+      .from("goals")
+      .select(`
+        id,
+        program_id,
+        target_date
+      `)
+      .eq(
+        "athlete_id",
+        user.id
+      )
+      .not(
+        "program_id",
+        "is",
+        null
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1);
+
+
+  if (goalError) {
+    throw goalError;
+  }
+
+
+  const goal =
+    goals?.[0] || null;
+
+
+  if (!goal?.program_id) {
+
+    throw new Error(
+      "No active training program found."
+    );
+
+  }
+
+
+  const {
+    data: weeks,
+    error: weekError
+  } =
+    await supabaseClient
+      .from("training_weeks")
+      .select(`
+        id,
+        program_id,
+        week_number,
+        start_date,
+        end_date
+      `)
+      .eq(
+        "program_id",
+        goal.program_id
+      )
+      .lte(
+        "start_date",
+        localDate
+      )
+      .gte(
+        "end_date",
+        localDate
+      )
+      .limit(1);
+
+
+  if (weekError) {
+    throw weekError;
+  }
+
+
+  const currentWeek =
+    weeks?.[0] || null;
+
+
+  if (!currentWeek) {
+
+    throw new Error(
+      "No current training week found."
+    );
+
+  }
+
+
+  const {
+    data: existingReviews,
+    error: reviewLoadError
+  } =
+    await supabaseClient
+      .from("ai_weekly_reviews")
+      .select("id")
+      .eq(
+        "athlete_id",
+        user.id
+      )
+      .eq(
+        "week_start_date",
+        currentWeek.start_date
+      )
+      .eq(
+        "week_end_date",
+        currentWeek.end_date
+      )
+      .limit(1);
+
+
+  if (reviewLoadError) {
+    throw reviewLoadError;
+  }
+
+
+  const existingReview =
+    existingReviews?.[0] || null;
+
+
+  const reviewData = {
+
+    athlete_id:
+      user.id,
+
+    program_id:
+      currentWeek.program_id,
+
+    training_week_id:
+      currentWeek.id,
+
+    week_number:
+      currentWeek.week_number,
+
+    week_start_date:
+      currentWeek.start_date,
+
+    week_end_date:
+      currentWeek.end_date,
+
+    athlete_response:
+      response,
+
+    status:
+      "ready"
+  };
+
+
+  if (existingReview?.id) {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("ai_weekly_reviews")
+        .update(reviewData)
+        .eq(
+          "id",
+          existingReview.id
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+  } else {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("ai_weekly_reviews")
+        .insert(reviewData);
+
+
+    if (error) {
+      throw error;
+    }
+
+  }
+
+
+  return {
+    response,
+    currentWeek,
+    timeContext
+  };
+
+}
+/* =========================================
    SUNDAY WEEKLY REVIEW
 ========================================= */
 
