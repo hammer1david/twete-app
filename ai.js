@@ -39,6 +39,206 @@ const sendButton =
 
 let pendingGoalSetup = null;
 
+let pendingTrainingCorrection = null;
+function isPositiveAnswer(
+    message
+) {
+
+    const text =
+        String(message || "")
+            .trim()
+            .toLowerCase();
+
+
+    return [
+        "yes",
+        "yeah",
+        "yep",
+        "sure",
+        "ok",
+        "okay",
+        "ja",
+        "gerne",
+        "mach",
+        "please"
+    ].includes(text);
+
+}
+
+
+function addDaysToDate(
+    dateString,
+    days
+) {
+
+    const date =
+        new Date(
+            dateString +
+            "T00:00:00"
+        );
+
+
+    date.setDate(
+        date.getDate() +
+        days
+    );
+
+
+    return date
+        .toISOString()
+        .split("T")[0];
+
+}
+
+
+function daysBetweenDates(
+    fromDate,
+    toDate
+) {
+
+    const from =
+        new Date(
+            fromDate +
+            "T00:00:00"
+        );
+
+    const to =
+        new Date(
+            toDate +
+            "T00:00:00"
+        );
+
+
+    return Math.round(
+        (
+            to -
+            from
+        ) /
+        86400000
+    );
+
+}
+
+
+function moveGeneratedWeeksToNextFreeDates(
+    generatedWeeks,
+    existingWeeks
+) {
+
+    if (
+        !generatedWeeks?.length
+    ) {
+        return null;
+    }
+
+
+    const occupiedWeeks =
+        (existingWeeks || [])
+            .filter(
+                week =>
+                    week.start_date &&
+                    week.end_date
+            );
+
+
+    if (!occupiedWeeks.length) {
+
+        return generatedWeeks;
+    }
+
+
+    const latestEndDate =
+        occupiedWeeks
+            .map(
+                week =>
+                    week.end_date
+            )
+            .sort()
+            .at(-1);
+
+
+    const firstGeneratedStart =
+        generatedWeeks[0]
+            .start_date;
+
+
+    const nextFreeStart =
+        addDaysToDate(
+            latestEndDate,
+            1
+        );
+
+
+    const shiftDays =
+        daysBetweenDates(
+            firstGeneratedStart,
+            nextFreeStart
+        );
+
+
+    generatedWeeks.forEach(
+        week => {
+
+            week.start_date =
+                addDaysToDate(
+                    week.start_date,
+                    shiftDays
+                );
+
+
+            week.end_date =
+                addDaysToDate(
+                    week.end_date,
+                    shiftDays
+                );
+
+
+            if (
+                Array.isArray(
+                    week.sessions
+                )
+            ) {
+
+                week.sessions.forEach(
+                    session => {
+
+                        if (
+                            session.workout_date
+                        ) {
+
+                            session.workout_date =
+                                addDaysToDate(
+                                    session.workout_date,
+                                    shiftDays
+                                );
+
+                        }
+
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    return {
+        weeks:
+            generatedWeeks,
+
+        startDate:
+            generatedWeeks[0]
+                .start_date,
+
+        endDate:
+            generatedWeeks[
+                generatedWeeks.length - 1
+            ].end_date
+    };
+
+}
+
 function renderAiText(element, text) {
 
   element.textContent = "";
