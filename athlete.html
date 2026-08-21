@@ -1679,10 +1679,192 @@
     }
 
     /* =========================================================
+       DELETE GOAL CONFIRMATION
+    ========================================================== */
+
+    function openDeleteGoalConfirmation(
+        goal
+    ) {
+
+        const existingModal =
+            document.getElementById(
+                "deleteGoalModal"
+            );
+
+
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+
+        const modal =
+            document.createElement(
+                "div"
+            );
+
+
+        modal.id =
+            "deleteGoalModal";
+
+        modal.className =
+            "delete-goal-modal";
+
+
+        const goalTitle =
+            goal.goal_name ||
+            (
+                goal.goal_type ===
+                "general_fitness"
+                    ?
+                    "General Fitness"
+                    :
+                    "Training Goal"
+            );
+
+
+        modal.innerHTML = `
+
+            <div class="delete-goal-modal-box">
+
+                <div class="delete-goal-modal-icon">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path
+                            d="M3 6h18"
+                        ></path>
+
+                        <path
+                            d="M8 6V4h8v2"
+                        ></path>
+
+                        <path
+                            d="M19 6l-1 14H6L5 6"
+                        ></path>
+
+                        <path
+                            d="M10 11v5"
+                        ></path>
+
+                        <path
+                            d="M14 11v5"
+                        ></path>
+
+                    </svg>
+
+                </div>
+
+
+                <span class="delete-goal-modal-label">
+                    DELETE GOAL
+                </span>
+
+
+                <h3></h3>
+
+
+                <p>
+                    This will permanently remove
+                    this goal and its training plan.
+                    This action cannot be undone.
+                </p>
+
+
+                <div class="delete-goal-modal-actions">
+
+                    <button
+                        type="button"
+                        class="delete-goal-cancel"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="delete-goal-confirm"
+                    >
+                        Delete Goal
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        modal
+            .querySelector("h3")
+            .textContent =
+                `Delete "${goalTitle}"?`;
+
+
+        modal
+            .querySelector(
+                ".delete-goal-cancel"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    modal.remove();
+
+                }
+            );
+
+
+        modal.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target === modal
+                ) {
+
+                    modal.remove();
+
+                }
+
+            }
+        );
+
+
+        modal
+            .querySelector(
+                ".delete-goal-confirm"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    console.log(
+                        "Goal delete confirmed:",
+                        goal.id
+                    );
+
+                }
+            );
+
+
+        document.body.appendChild(
+            modal
+        );
+
+    }
+
+
+    /* =========================================================
        LOAD PAST GOALS
     ========================================================== */
 
-    async function loadPastGoals() {
+    async function loadPastGoals() {{
 
         const container =
             document.getElementById(
