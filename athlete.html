@@ -1218,248 +1218,20 @@
        LOAD CURRENT GOAL
     ========================================================== */
 
-    async function loadCurrentGoal() {
+    async function loadCurrentGoals() {
 
-        const card =
-            document.getElementById(
-                "currentGoalCard"
-            );
-
-
-        const title =
-            document.getElementById(
-                "currentGoalTitle"
-            );
-
-
-        const details =
-            document.getElementById(
-                "currentGoalDetails"
-            );
-
-
-        if (
-            !card ||
-            !title ||
-            !details
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                data: {
-                    user
-                }
-            } =
-                await supabaseClient
-                    .auth
-                    .getUser();
-
-
-            if (!user) {
-
-                return;
-
-            }
-
-
-            const {
-                data: goal,
-                error
-            } =
-                await supabaseClient
-                    .from("goals")
-                    .select(`
-    id,
-    athlete_id,
-    program_id,
-    goal_name,
-    distance,
-    target_time,
-    target_date,
-    goal_image_id,
-    created_at
-`)
-                    .eq(
-                        "athlete_id",
-                        user.id
-                    )
-                    .gte(
-                        "target_date",
-                        new Date()
-                            .toISOString()
-                            .split("T")[0]
-                    )
-                    .order(
-                        "target_date",
-                        {
-                            ascending: true
-                        }
-                    )
-                    .limit(1)
-                    .maybeSingle();
-
-
-            if (error) {
-
-                console.error(
-                    "Goal loading error:",
-                    error
-                );
-
-                return;
-
-            }
-
-
-            if (!goal) {
-
-                /*
-                   No current goal:
-                   keep existing placeholder.
-                */
-
-                return;
-
-            }
-
-
-            title.textContent =
-                goal.goal_name ||
-                "Current Goal";
-
-
-            const parts = [];
-
-
-            if (goal.distance) {
-
-                parts.push(
-                    goal.distance
-                );
-
-            }
-
-
-            if (goal.target_time) {
-
-                parts.push(
-                    goal.target_time
-                );
-
-            }
-
-
-            if (goal.target_date) {
-
-                parts.push(
-                    "Target: " +
-                    new Date(
-                        goal.target_date +
-                        "T00:00:00"
-                    )
-                    .toLocaleDateString(
-                        "en-US",
-                        {
-
-                            month:
-                                "short",
-
-                            day:
-                                "numeric",
-
-                            year:
-                                "numeric"
-
-                        }
-                    )
-                );
-
-            }
-
-
-            details.textContent =
-                parts.length
-                    ?
-                    parts.join(
-                        " • "
-                    )
-                    :
-                    "Training goal assigned by your coach.";
-
-
-            card.classList.remove(
-                "no-goal-card"
-            );
-await loadCurrentGoalImage(
-    goal.goal_image_id
-);
-
-            card.style.cursor =
-                "pointer";
-
-
-            card.onclick =
-                function () {
-
-                    window.location.href =
-                        "goal.html?goal_id=" +
-                        encodeURIComponent(
-                            goal.id
-                        );
-
-                };
-
-
-        } catch (error) {
-
-            console.error(
-                "Current goal error:",
-                error
-            );
-
-        }
-
-    }
-
-async function loadCurrentGoalImage(
-    goalImageId
-) {
-
-    const visual =
+    const container =
         document.getElementById(
-            "currentGoalVisual"
+            "currentGoalsContainer"
         );
 
-    const imageElement =
+    const placeholder =
         document.getElementById(
-            "currentGoalImage"
+            "noCurrentGoalCard"
         );
 
 
-    if (
-        !visual ||
-        !imageElement
-    ) {
-        return;
-    }
-
-
-    if (!goalImageId) {
-
-        visual.classList.remove(
-            "visible"
-        );
-
-        imageElement.removeAttribute(
-            "src"
-        );
-
+    if (!container) {
         return;
     }
 
@@ -1467,107 +1239,410 @@ async function loadCurrentGoalImage(
     try {
 
         const {
-            data: image,
+            data: {
+                user
+            }
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        if (!user) {
+            return;
+        }
+
+
+        const today =
+            new Date()
+                .toISOString()
+                .split("T")[0];
+
+
+        const {
+            data: goals,
             error
         } =
             await supabaseClient
-                .from("goal_images")
+                .from("goals")
                 .select(`
                     id,
-                    name,
-                    storage_path,
-                    alt_text
+                    athlete_id,
+                    program_id,
+                    goal_name,
+                    goal_type,
+                    fitness_focus,
+                    distance,
+                    target_time,
+                    target_date,
+                    current_performance,
+                    goal_image_id,
+                    created_at
                 `)
                 .eq(
-                    "id",
-                    goalImageId
+                    "athlete_id",
+                    user.id
                 )
-                .eq(
-                    "active",
-                    true
-                )
-                .maybeSingle();
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Current goals loading error:",
+                error
+            );
+
+            return;
+        }
+
+
+        const activeGoals =
+            (goals || []).filter(
+                function (goal) {
+
+                    if (
+                        goal.goal_type ===
+                        "general_fitness"
+                    ) {
+                        return true;
+                    }
+
+
+                    if (!goal.target_date) {
+                        return true;
+                    }
+
+
+                    return (
+                        goal.target_date >= today
+                    );
+
+                }
+            );
 
 
         if (
-            error ||
-            !image
+            activeGoals.length === 0
         ) {
 
-            if (error) {
-
-                console.error(
-                    "Goal image error:",
-                    error
-                );
-
+            if (placeholder) {
+                placeholder.style.display = "";
             }
 
             return;
         }
 
 
-        const {
-            data
-        } =
-            supabaseClient
-                .storage
-                .from(
-                    "goal-images"
-                )
-                .getPublicUrl(
-                    image.storage_path
-                );
-
-
-        if (
-            !data ||
-            !data.publicUrl
-        ) {
-            return;
+        if (placeholder) {
+            placeholder.remove();
         }
 
 
-        imageElement.onload =
-            function () {
+        activeGoals.forEach(
+            function (
+                goal,
+                index
+            ) {
 
-                visual.classList.add(
-                    "visible"
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "current-goal-card";
+
+
+                card.style.cursor =
+                    "pointer";
+
+
+                card.style.opacity =
+                    "0";
+
+                card.style.transform =
+                    "translateY(8px)";
+
+
+                const details = [];
+
+
+                if (
+                    goal.goal_type ===
+                    "general_fitness"
+                ) {
+
+                    const focusNames = {
+                        stay_fit:
+                            "Stay fit",
+
+                        build_endurance:
+                            "Build endurance",
+
+                        improve_speed:
+                            "Improve speed"
+                    };
+
+
+                    details.push(
+                        "General Fitness"
+                    );
+
+
+                    if (
+                        goal.fitness_focus
+                    ) {
+
+                        details.push(
+                            focusNames[
+                                goal.fitness_focus
+                            ] ||
+                            goal.fitness_focus
+                        );
+
+                    }
+
+
+                    if (
+                        goal.current_performance
+                    ) {
+
+                        details.push(
+                            goal.current_performance
+                        );
+
+                    }
+
+                } else {
+
+                    if (goal.distance) {
+
+                        details.push(
+                            goal.distance
+                        );
+
+                    }
+
+
+                    if (goal.target_time) {
+
+                        details.push(
+                            goal.target_time
+                        );
+
+                    }
+
+
+                    if (goal.target_date) {
+
+                        const targetDate =
+                            new Date(
+                                goal.target_date +
+                                "T00:00:00"
+                            );
+
+
+                        details.push(
+                            "Target: " +
+                            targetDate
+                                .toLocaleDateString(
+                                    "en-US",
+                                    {
+                                        month:
+                                            "short",
+
+                                        day:
+                                            "numeric",
+
+                                        year:
+                                            "numeric"
+                                    }
+                                )
+                        );
+
+                    }
+
+                }
+
+
+                card.innerHTML = `
+
+                    <div class="goal-main">
+
+                        <div class="goal-icon target-icon">
+
+                            <svg
+                                width="48"
+                                height="48"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="8"
+                                ></circle>
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="4"
+                                ></circle>
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="1"
+                                ></circle>
+
+                            </svg>
+
+                        </div>
+
+
+                        <div class="goal-information">
+
+                            <span class="goal-status">
+
+                                ${
+                                    goal.goal_type ===
+                                    "general_fitness"
+                                        ?
+                                        "GENERAL FITNESS"
+                                        :
+                                        "PERFORMANCE GOAL"
+                                }
+
+                            </span>
+
+                            <h3></h3>
+
+                            <p class="goal-pb"></p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="current-goal-button">
+
+                        <span>
+                            Open Goal
+                        </span>
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path
+                                d="M5 12h14"
+                            ></path>
+
+                            <path
+                                d="m13 6 6 6-6 6"
+                            ></path>
+                        </svg>
+
+                    </div>
+
+                `;
+
+
+                card
+                    .querySelector("h3")
+                    .textContent =
+                        goal.goal_name ||
+                        (
+                            goal.goal_type ===
+                            "general_fitness"
+                                ?
+                                "General Fitness"
+                                :
+                                "Training Goal"
+                        );
+
+
+                card
+                    .querySelector(
+                        ".goal-pb"
+                    )
+                    .textContent =
+                        details.length
+                            ?
+                            details.join(
+                                " • "
+                            )
+                            :
+                            "Training goal";
+
+
+                card.addEventListener(
+                    "click",
+                    function () {
+
+                        window.location.href =
+                            "goal.html?goal_id=" +
+                            encodeURIComponent(
+                                goal.id
+                            );
+
+                    }
                 );
 
-            };
 
-
-        imageElement.onerror =
-            function () {
-
-                visual.classList.remove(
-                    "visible"
+                container.appendChild(
+                    card
                 );
 
-            };
 
+                window.setTimeout(
+                    function () {
 
-        imageElement.src =
-            data.publicUrl;
+                        card.style.transition =
+                            "opacity 0.4s ease, " +
+                            "transform 0.4s ease";
 
+                        card.style.opacity =
+                            "1";
 
-        imageElement.alt =
-            image.alt_text ||
-            image.name ||
-            "Goal visual";
+                        card.style.transform =
+                            "translateY(0)";
+
+                    },
+
+                    60 * index
+                );
+
+            }
+        );
 
 
     } catch (error) {
 
         console.error(
-            "Current goal visual error:",
+            "Current goals error:",
             error
         );
 
     }
 
-}
+    }
 
     /* =========================================================
        LOAD PAST GOALS
