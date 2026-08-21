@@ -1580,7 +1580,207 @@ function addWeek() {
 
 }
 
+/* =========================================
+   CHECK WEEK DATE OVERLAP
+========================================= */
 
+function findWeekOverlap(
+    startDate,
+    endDate,
+    ignoreWeekId = null
+) {
+
+    const newStart =
+        new Date(
+            startDate +
+            "T00:00:00"
+        );
+
+    const newEnd =
+        new Date(
+            endDate +
+            "T23:59:59"
+        );
+
+
+    return weeks.find(
+        function (week) {
+
+            if (
+                ignoreWeekId &&
+                week.id === ignoreWeekId
+            ) {
+                return false;
+            }
+
+
+            if (
+                !week.start_date ||
+                !week.end_date
+            ) {
+                return false;
+            }
+
+
+            const existingStart =
+                new Date(
+                    week.start_date +
+                    "T00:00:00"
+                );
+
+            const existingEnd =
+                new Date(
+                    week.end_date +
+                    "T23:59:59"
+                );
+
+
+            return (
+                newStart <= existingEnd &&
+                newEnd >= existingStart
+            );
+
+        }
+    ) || null;
+
+}
+
+
+/* =========================================
+   RENUMBER WEEKS BY DATE
+========================================= */
+
+async function renumberWeeksByDate() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("training_weeks")
+            .select(`
+                id,
+                start_date,
+                created_at,
+                week_number
+            `)
+            .eq(
+                "program_id",
+                goal.program_id
+            )
+            .order(
+                "start_date",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        alert(
+            "Could not reorder weeks:\n\n" +
+            error.message
+        );
+
+        return false;
+    }
+
+
+    const orderedWeeks =
+        data || [];
+
+
+    /*
+       First move all numbers temporarily
+       out of the normal range.
+
+       This prevents duplicate week_number
+       conflicts while reordering.
+    */
+
+    for (
+        let i = 0;
+        i < orderedWeeks.length;
+        i++
+    ) {
+
+        const {
+            error: temporaryError
+        } =
+            await supabaseClient
+                .from("training_weeks")
+                .update({
+                    week_number:
+                        1000 + i
+                })
+                .eq(
+                    "id",
+                    orderedWeeks[i].id
+                );
+
+
+        if (temporaryError) {
+
+            alert(
+                "Could not reorder weeks:\n\n" +
+                temporaryError.message
+            );
+
+            return false;
+        }
+
+    }
+
+
+    /*
+       Now assign the real numbers
+       according to chronological order.
+    */
+
+    for (
+        let i = 0;
+        i < orderedWeeks.length;
+        i++
+    ) {
+
+        const {
+            error: numberingError
+        } =
+            await supabaseClient
+                .from("training_weeks")
+                .update({
+                    week_number:
+                        i + 1
+                })
+                .eq(
+                    "id",
+                    orderedWeeks[i].id
+                );
+
+
+        if (numberingError) {
+
+            alert(
+                "Could not renumber weeks:\n\n" +
+                numberingError.message
+            );
+
+            return false;
+        }
+
+    }
+
+
+    return true;
+
+}
 /* =========================================
    SAVE WEEK
 ========================================= */
@@ -1643,6 +1843,35 @@ async function saveWeek() {
 
         return;
     }
+
+    const overlappingWeek =
+    findWeekOverlap(
+        startDate,
+        endDate,
+        currentEditingWeekId
+    );
+
+
+if (overlappingWeek) {
+
+    alert(
+        "This week overlaps with Week " +
+        overlappingWeek.week_number +
+        ".\n\n" +
+
+        formatDate(
+            overlappingWeek.start_date
+        ) +
+        " – " +
+        formatDate(
+            overlappingWeek.end_date
+        ) +
+
+        "\n\nPlease choose dates that do not overlap."
+    );
+
+    return;
+}
 
 
     const weekData = {
