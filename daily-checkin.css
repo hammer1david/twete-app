@@ -1,0 +1,182 @@
+/* =========================================
+   TWETE DAILY FEEDBACK CHECK-IN
+========================================= */
+
+.daily-checkin-card {
+  margin: 18px 0;
+  padding: 20px;
+  border: 1px solid rgba(198, 255, 0, 0.22);
+  border-radius: 22px;
+  background: rgba(16, 18, 20, 0.98);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+}
+
+.daily-checkin-header {
+  margin-bottom: 18px;
+}
+
+.daily-checkin-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #c6ff00;
+}
+
+.daily-checkin-header h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.daily-checkin-header p {
+  margin: 0;
+  opacity: 0.68;
+  font-size: 14px;
+}
+
+.daily-checkin-section {
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.daily-checkin-section h3,
+.daily-checkin-pain h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.daily-checkin-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.daily-checkin-option {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: 0.16s ease;
+}
+
+.daily-checkin-option:hover {
+  border-color: rgba(198, 255, 0, 0.45);
+}
+
+.daily-checkin-option.selected {
+  border-color: #c6ff00;
+  background: rgba(198, 255, 0, 0.12);
+  font-weight: 700;
+}
+
+.daily-checkin-section.muted {
+  opacity: 0.42;
+}
+
+.daily-checkin-pain {
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.daily-checkin-pain.hidden {
+  display: none;
+}
+
+.daily-checkin-pain label,
+.daily-checkin-comment {
+  display: block;
+  margin-top: 12px;
+}
+
+.daily-checkin-pain label > span,
+.daily-checkin-comment > span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.daily-checkin-pain input[type="text"],
+.daily-checkin-comment textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.daily-checkin-pain input[type="text"]:focus,
+.daily-checkin-comment textarea:focus {
+  border-color: rgba(198, 255, 0, 0.6);
+}
+
+.daily-checkin-pain input[type="range"] {
+  width: 100%;
+}
+
+.daily-checkin-comment {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.daily-checkin-comment small {
+  opacity: 0.55;
+  font-weight: 500;
+}
+
+.daily-checkin-error {
+  min-height: 18px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ff8c8c;
+}
+
+.daily-checkin-submit {
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: #c6ff00;
+  color: #0a0b0d;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.daily-checkin-submit:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.daily-checkin-card.submitted {
+  border-color: rgba(198, 255, 0, 0.5);
+}
+
+@media (max-width: 520px) {
+
+  .daily-checkin-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .daily-checkin-options {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .daily-checkin-header h2 {
+    font-size: 20px;
+  }
+
+  }
