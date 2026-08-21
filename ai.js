@@ -3919,7 +3919,122 @@ async function requireLogin() {
   return true;
 }
 
+/* =========================================
+   PURI LOCAL TIME CONTEXT
+========================================= */
 
+async function getPuriTimeContext() {
+
+  const {
+    data: { user },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (userError || !user) {
+
+    throw new Error(
+      "No logged-in athlete found."
+    );
+
+  }
+
+
+  const {
+    data: profile,
+    error: profileError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(`
+        country,
+        timezone
+      `)
+      .eq(
+        "id",
+        user.id
+      )
+      .single();
+
+
+  if (profileError) {
+
+    console.error(
+      "Could not load athlete timezone:",
+      profileError
+    );
+
+  }
+
+
+  const timezone =
+    profile?.timezone ||
+    Intl.DateTimeFormat()
+      .resolvedOptions()
+      .timeZone ||
+    "UTC";
+
+
+  const now =
+    new Date();
+
+
+  const dateFormatter =
+    new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone: timezone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }
+    );
+
+
+  const timeFormatter =
+    new Intl.DateTimeFormat(
+      "en-GB",
+      {
+        timeZone: timezone,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }
+    );
+
+
+  const weekdayFormatter =
+    new Intl.DateTimeFormat(
+      "en-US",
+      {
+        timeZone: timezone,
+        weekday: "long"
+      }
+    );
+
+
+  return {
+
+    country:
+      profile?.country || null,
+
+    timezone:
+      timezone,
+
+    local_date:
+      dateFormatter.format(now),
+
+    local_time:
+      timeFormatter.format(now),
+
+    weekday:
+      weekdayFormatter.format(now)
+
+  };
+
+}
 /* =========================================
    ASK TWETE AI
 ========================================= */
