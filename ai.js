@@ -4530,7 +4530,28 @@ form.addEventListener(
 
 
     try {
+/* =====================================
+   MANUAL WEEKLY REVIEW TEST
+===================================== */
 
+if (
+  message
+    .trim()
+    .toLowerCase() ===
+  "send me weekly review"
+) {
+
+  typing.remove();
+
+  appendMessage(
+    "Let's review your training week.",
+    "assistant"
+  );
+
+  appendWeeklyReviewOptions();
+
+  return;
+}
       if (
     isGoalDeleteRequest(
         message
