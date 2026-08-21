@@ -478,7 +478,6 @@ if (workoutIds.length) {
 /* =========================================
    RENDER GOAL
 ========================================= */
-
 function renderGoal() {
 
     if (!currentGoal) {
@@ -491,20 +490,173 @@ function renderGoal() {
             ".goal-main-info h2"
         );
 
-
-    if (title) {
-
-        title.textContent =
-            currentGoal.goal_name ||
-            "Current Goal";
-
-    }
-
-
     const description =
         document.querySelector(
             ".goal-main-info p"
         );
+
+    const date =
+        document.querySelector(
+            ".goal-date"
+        );
+
+    const label =
+        document.querySelector(
+            ".goal-label"
+        );
+
+    const progress =
+        document.querySelector(
+            ".goal-progress"
+        );
+
+
+    const isGeneralFitness =
+        currentGoal.goal_type ===
+        "general_fitness";
+
+
+    /* =========================================
+       TITLE
+    ========================================= */
+
+    if (title) {
+
+        if (isGeneralFitness) {
+
+            const focusNames = {
+                stay_fit:
+                    "Stay Fit",
+
+                build_endurance:
+                    "Build Endurance",
+
+                improve_speed:
+                    "Improve Speed"
+            };
+
+
+            title.textContent =
+                focusNames[
+                    currentGoal.fitness_focus
+                ] ||
+                currentGoal.goal_name ||
+                "General Fitness";
+
+        } else {
+
+            title.textContent =
+                currentGoal.goal_name ||
+                "Performance Goal";
+
+        }
+
+    }
+
+
+    /* =========================================
+       LABEL
+    ========================================= */
+
+    if (label) {
+
+        label.textContent =
+            isGeneralFitness
+                ?
+                "GENERAL FITNESS"
+                :
+                "PERFORMANCE GOAL";
+
+    }
+
+
+    /* =========================================
+       GENERAL FITNESS
+    ========================================= */
+
+    if (isGeneralFitness) {
+
+        if (date) {
+
+            date.innerHTML = `
+
+                <svg viewBox="0 0 24 24">
+
+                    <path
+                        d="M12 2v20"
+                    ></path>
+
+                    <path
+                        d="M2 12h20"
+                    ></path>
+
+                </svg>
+
+                Flexible training goal
+
+            `;
+
+        }
+
+
+        if (description) {
+
+            const parts = [];
+
+
+            if (
+                currentGoal.current_performance
+            ) {
+
+                parts.push(
+                    "Current performance: " +
+                    currentGoal.current_performance
+                );
+
+            }
+
+
+            if (!parts.length) {
+
+                parts.push(
+                    "Training focused on improving your overall fitness."
+                );
+
+            }
+
+
+            description.textContent =
+                parts.join(" • ");
+
+        }
+
+
+        /*
+           General fitness goals do not
+           have a fixed target date,
+           so percentage progress
+           would be misleading.
+        */
+
+        if (progress) {
+            progress.style.display =
+                "none";
+        }
+
+
+        return;
+
+    }
+
+
+    /* =========================================
+       PERFORMANCE GOAL
+    ========================================= */
+
+    if (progress) {
+        progress.style.display =
+            "";
+    }
 
 
     if (description) {
@@ -536,7 +688,7 @@ function renderGoal() {
             parts.push(
                 String(
                     currentGoal.target_time
-                ) + " min"
+                )
             );
 
         }
@@ -547,15 +699,9 @@ function renderGoal() {
                 ?
                 parts.join(" — ")
                 :
-                "Training goal assigned by your coach.";
+                "Performance training goal.";
 
     }
-
-
-    const date =
-        document.querySelector(
-            ".goal-date"
-        );
 
 
     if (date) {
@@ -614,8 +760,6 @@ function renderGoal() {
     updateGoalProgress();
 
 }
-
-
 /* =========================================
    GOAL PROGRESS
 ========================================= */
