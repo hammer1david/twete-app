@@ -888,43 +888,92 @@
         submit.textContent =
           "✓ Feedback saved";
 
-        if (
-          typeof appendMessage ===
-          "function"
-        ) {
 
-          let reply =
-            "Thanks — I've saved your check-in.";
 
-          if (painPresent) {
+         if (
+  typeof appendMessage ===
+  "function"
+) {
 
-            reply =
-              "Thanks — I've saved that. Because you reported pain, I'll treat this as a recovery signal and review the next training days carefully.";
+  appendMessage(
+    "Thanks — I've saved your check-in. I'm reviewing your next training days now.",
+    "assistant"
+  );
 
-          } else if (
-            feeling ===
-            "very_tired"
-          ) {
+}
 
-            reply =
-              "Thanks — I've saved that. You're very tired, so I'll treat this as a fatigue signal when reviewing the next sessions.";
 
-          } else if (
-            completionStatus ===
-            "skipped"
-          ) {
+try {
 
-            reply =
-              "Thanks — I've saved that the training was skipped. I won't simply move it to tomorrow; I'll consider the rest of the plan first.";
-
+  const {
+    data: recoveryData,
+    error: recoveryError
+  } =
+    await supabaseClient.functions
+      .invoke(
+        "twete-daily-recovery",
+        {
+          body: {
+            checkin_id:
+              checkin.id
           }
-
-          appendMessage(
-            reply,
-            "assistant"
-          );
-
         }
+      );
+
+
+  if (recoveryError) {
+    throw recoveryError;
+  }
+
+
+  if (
+    recoveryData?.answer &&
+    typeof appendMessage ===
+      "function"
+  ) {
+
+    appendMessage(
+      recoveryData.answer,
+      "assistant"
+    );
+
+  }
+
+
+  if (
+    recoveryData?.pending_action &&
+    typeof appendPendingAction ===
+      "function"
+  ) {
+
+    appendPendingAction(
+      recoveryData.pending_action
+    );
+
+  }
+
+
+} catch (recoveryError) {
+
+  console.error(
+    "Daily recovery analysis error:",
+    recoveryError
+  );
+
+
+  if (
+    typeof appendMessage ===
+    "function"
+  ) {
+
+    appendMessage(
+      "Your feedback was saved, but I couldn't review the upcoming training right now.",
+      "assistant"
+    );
+
+  }
+
+}
 
       }
     );
