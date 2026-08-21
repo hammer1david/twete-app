@@ -804,60 +804,153 @@ button {
         padding-right: 14px;
     }
 
+
+
+        /* =========================================
+       MOBILE GOAL CARD
+    ========================================= */
+
     .goal-card {
-        padding: 19px 14px 15px;
+        padding:
+            20px
+            18px
+            17px;
+
+        border-radius: 22px;
     }
 
     .goal-card-top {
-        gap: 11px;
+        display: grid;
+
+        grid-template-columns:
+            78px
+            minmax(0, 1fr)
+            72px;
+
+        align-items: center;
+
+        gap: 14px;
     }
 
+
+    /* TARGET ICON */
+
     .target-icon {
-        width: 92px;
-        height: 92px;
+        width: 78px;
+        height: 78px;
     }
 
     .target-icon svg {
-        width: 60px;
-        height: 60px;
+        width: 49px;
+        height: 49px;
+    }
+
+
+    /* MAIN INFO */
+
+    .goal-main-info {
+        min-width: 0;
+    }
+
+    .goal-label {
+        padding:
+            5px
+            8px;
+
+        margin-bottom: 9px;
+
+        font-size: 9px;
+
+        letter-spacing: .45px;
     }
 
     .goal-main-info h2 {
-        font-size: 21px;
+        margin-bottom: 10px;
+
+        font-size:
+            clamp(
+                20px,
+                5.8vw,
+                24px
+            );
+
+        line-height: 1.08;
+
+        overflow-wrap: anywhere;
     }
 
     .goal-date {
-        font-size: 11px;
+        gap: 6px;
+
+        margin-bottom: 7px;
+
+        font-size: 12px;
+
+        line-height: 1.3;
+    }
+
+    .goal-date svg {
+        width: 18px;
+        height: 18px;
+
+        flex-shrink: 0;
     }
 
     .goal-main-info p {
         font-size: 12px;
+
+        line-height: 1.35;
     }
 
+
+    /* PROGRESS */
+
     .goal-progress {
-        width: 82px;
+        width: 72px;
     }
 
     .progress-circle {
-        width: 76px;
-        height: 76px;
+        width: 68px;
+        height: 68px;
     }
 
     .progress-number {
-        top: 20px;
+        top: 18px;
     }
 
     .progress-number strong {
-        font-size: 18px;
+        font-size: 17px;
     }
 
     .goal-progress > span {
-        font-size: 11px;
+        margin-top: 1px;
+
+        font-size: 10px;
+    }
+
+
+    /* BOTTOM MOTIVATION */
+
+    .goal-divider {
+        margin-top: 20px;
     }
 
     .goal-motivation {
-        font-size: 11px;
+        justify-content: flex-start;
+
+        padding-top: 14px;
+
+        font-size: 11.5px;
+
+        line-height: 1.4;
+
+        text-align: left;
     }
+
+    .goal-motivation svg {
+        flex-shrink: 0;
+    }
+    
 
     .week-selector {
         gap: 10px;
