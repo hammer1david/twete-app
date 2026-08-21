@@ -159,6 +159,719 @@ function appendMessage(
 }
 
 /* =========================================
+   PURI GOAL DELETE
+========================================= */
+
+function isGoalDeleteRequest(
+  message
+) {
+
+  const text =
+    String(message || "")
+      .toLowerCase()
+      .trim();
+
+
+  const deleteWords = [
+    "delete",
+    "remove",
+    "löschen",
+    "loeschen",
+    "entfernen"
+  ];
+
+
+  const goalWords = [
+    "goal",
+    "ziel"
+  ];
+
+
+  const hasDeleteWord =
+    deleteWords.some(
+      word =>
+        text.includes(word)
+    );
+
+
+  const hasGoalWord =
+    goalWords.some(
+      word =>
+        text.includes(word)
+    );
+
+
+  return (
+    hasDeleteWord &&
+    hasGoalWord
+  );
+
+}
+
+
+/* =========================================
+   FIND ATHLETE GOALS
+========================================= */
+
+async function loadGoalsForDelete() {
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient
+      .auth
+      .getUser();
+
+
+  if (
+    userError ||
+    !user
+  ) {
+
+    throw new Error(
+      "No logged-in athlete found."
+    );
+
+  }
+
+
+  const {
+    data: goals,
+    error
+  } =
+    await supabaseClient
+      .from("goals")
+      .select(`
+        id,
+        athlete_id,
+        program_id,
+        goal_name,
+        goal_type,
+        fitness_focus,
+        distance,
+        target_time,
+        target_date,
+        created_at
+      `)
+      .eq(
+        "athlete_id",
+        user.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  return goals || [];
+
+}
+
+
+/* =========================================
+   DELETE GOAL SELECTOR
+========================================= */
+
+function appendGoalDeleteSelector(
+  goals
+) {
+
+  const card =
+    document.createElement(
+      "div"
+    );
+
+
+  card.className =
+    "ai-goal-form";
+
+
+  card.innerHTML = `
+
+    <div class="ai-goal-form-label">
+      DELETE GOAL
+    </div>
+
+    <div class="ai-goal-form-title">
+      Which goal do you want to delete?
+    </div>
+
+    <div class="ai-goal-form-subtitle">
+      Choose carefully. Puri will ask for confirmation before anything is deleted.
+    </div>
+
+    <div
+      class="ai-goal-type-options"
+      data-delete-goal-options
+    ></div>
+
+  `;
+
+
+  const options =
+    card.querySelector(
+      "[data-delete-goal-options]"
+    );
+
+
+  goals.forEach(
+    goal => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.type =
+        "button";
+
+      button.className =
+        "ai-goal-type-option";
+
+
+      const title =
+        goal.goal_name ||
+        (
+          goal.goal_type ===
+          "general_fitness"
+            ?
+            "General Fitness"
+            :
+            "Training Goal"
+        );
+
+
+      const details = [];
+
+
+      if (goal.distance) {
+        details.push(
+          goal.distance
+        );
+      }
+
+
+      if (goal.target_time) {
+        details.push(
+          goal.target_time
+        );
+      }
+
+
+      if (
+        goal.goal_type ===
+        "general_fitness"
+      ) {
+
+        const focusNames = {
+          stay_fit:
+            "Stay fit",
+
+          build_endurance:
+            "Build endurance",
+
+          improve_speed:
+            "Improve speed"
+        };
+
+
+        if (
+          goal.fitness_focus
+        ) {
+
+          details.push(
+            focusNames[
+              goal.fitness_focus
+            ] ||
+            goal.fitness_focus
+          );
+
+        }
+
+      }
+
+
+      button.innerHTML = `
+
+        <div class="ai-goal-type-content">
+
+          <strong></strong>
+
+          <span></span>
+
+        </div>
+
+      `;
+
+
+      button
+        .querySelector("strong")
+        .textContent =
+          title;
+
+
+      button
+        .querySelector("span")
+        .textContent =
+          details.length
+            ?
+            details.join(" • ")
+            :
+            "Training goal";
+
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          card.remove();
+
+          appendGoalDeleteConfirmation(
+            goal
+          );
+
+        }
+      );
+
+
+      options.appendChild(
+        button
+      );
+
+    }
+  );
+
+
+  messages.appendChild(
+    card
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+}
+
+
+/* =========================================
+   DELETE GOAL CONFIRMATION
+========================================= */
+
+function appendGoalDeleteConfirmation(
+  goal
+) {
+
+  const card =
+    document.createElement(
+      "div"
+    );
+
+
+  card.className =
+    "ai-action-card";
+
+
+  const title =
+    goal.goal_name ||
+    (
+      goal.goal_type ===
+      "general_fitness"
+        ?
+        "General Fitness"
+        :
+        "Training Goal"
+    );
+
+
+  card.innerHTML = `
+
+    <div class="ai-action-label">
+      DELETE GOAL
+    </div>
+
+    <div class="ai-action-title">
+      Delete this goal?
+    </div>
+
+    <div class="ai-action-changes">
+
+      <div class="ai-action-row">
+
+        <span class="ai-action-field">
+          Goal
+        </span>
+
+        <div class="ai-action-values">
+
+          <span
+            class="ai-action-new"
+            data-delete-goal-name
+          ></span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="ai-goal-form-subtitle">
+
+      This will permanently remove
+      the goal and its training plan.
+      This action cannot be undone.
+
+    </div>
+
+
+    <div class="ai-action-buttons">
+
+      <button
+        type="button"
+        class="ai-action-cancel"
+        data-delete-goal-cancel
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="ai-action-confirm"
+        data-delete-goal-confirm
+      >
+        Delete Goal
+      </button>
+
+    </div>
+
+  `;
+
+
+  card
+    .querySelector(
+      "[data-delete-goal-name]"
+    )
+    .textContent =
+      title;
+
+
+  const cancelButton =
+    card.querySelector(
+      "[data-delete-goal-cancel]"
+    );
+
+
+  const confirmButton =
+    card.querySelector(
+      "[data-delete-goal-confirm]"
+    );
+
+
+  cancelButton.addEventListener(
+    "click",
+    () => {
+
+      card.classList.add(
+        "cancelled"
+      );
+
+
+      card
+        .querySelector(
+          ".ai-action-buttons"
+        )
+        .innerHTML = `
+
+          <div class="ai-action-result">
+            Goal deletion cancelled
+          </div>
+
+        `;
+
+
+      appendMessage(
+        "No problem — I won't delete this goal.",
+        "assistant"
+      );
+
+    }
+  );
+
+
+  confirmButton.addEventListener(
+    "click",
+    async () => {
+
+      confirmButton.disabled =
+        true;
+
+      cancelButton.disabled =
+        true;
+
+
+      confirmButton.textContent =
+        "Deleting...";
+
+
+      try {
+
+        await deleteGoalFromPuri(
+          goal
+        );
+
+
+        card.classList.add(
+          "confirmed"
+        );
+
+
+        card
+          .querySelector(
+            ".ai-action-buttons"
+          )
+          .innerHTML = `
+
+            <div class="ai-action-result success">
+              ✓ Goal deleted
+            </div>
+
+          `;
+
+
+        appendMessage(
+          `Done — "${title}" and its training plan have been deleted.`,
+          "assistant"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Puri goal deletion error:",
+          error
+        );
+
+
+        confirmButton.disabled =
+          false;
+
+        cancelButton.disabled =
+          false;
+
+
+        confirmButton.textContent =
+          "Delete Goal";
+
+
+        appendMessage(
+          "I couldn't delete that goal. Please try again.",
+          "assistant"
+        );
+
+      }
+
+    }
+  );
+
+
+  messages.appendChild(
+    card
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+}
+
+
+/* =========================================
+   DELETE GOAL FROM DATABASE
+========================================= */
+
+async function deleteGoalFromPuri(
+  goal
+) {
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await supabaseClient
+      .auth
+      .getUser();
+
+
+  if (
+    userError ||
+    !user
+  ) {
+
+    throw new Error(
+      "No logged-in athlete found."
+    );
+
+  }
+
+
+  const programId =
+    goal.program_id ||
+    null;
+
+
+  const {
+    error: goalDeleteError
+  } =
+    await supabaseClient
+      .from("goals")
+      .delete()
+      .eq(
+        "id",
+        goal.id
+      )
+      .eq(
+        "athlete_id",
+        user.id
+      );
+
+
+  if (goalDeleteError) {
+    throw goalDeleteError;
+  }
+
+
+  if (!programId) {
+    return;
+  }
+
+
+  const {
+    data: remainingGoals,
+    error:
+      remainingGoalsError
+  } =
+    await supabaseClient
+      .from("goals")
+      .select("id")
+      .eq(
+        "program_id",
+        programId
+      )
+      .limit(1);
+
+
+  if (
+    remainingGoalsError
+  ) {
+
+    throw remainingGoalsError;
+
+  }
+
+
+  if (
+    remainingGoals &&
+    remainingGoals.length > 0
+  ) {
+
+    return;
+
+  }
+
+
+  const {
+    error: programDeleteError
+  } =
+    await supabaseClient
+      .from("programs")
+      .delete()
+      .eq(
+        "id",
+        programId
+      )
+      .eq(
+        "athlete_id",
+        user.id
+      );
+
+
+  if (
+    programDeleteError
+  ) {
+
+    throw programDeleteError;
+
+  }
+
+}
+
+
+/* =========================================
+   HANDLE PURI DELETE REQUEST
+========================================= */
+
+async function handlePuriGoalDeleteRequest() {
+
+  const goals =
+    await loadGoalsForDelete();
+
+
+  if (!goals.length) {
+
+    appendMessage(
+      "You don't currently have any goals to delete.",
+      "assistant"
+    );
+
+    return;
+
+  }
+
+
+  appendMessage(
+    goals.length === 1
+      ?
+      "I found your goal. Please confirm before I delete anything."
+      :
+      "Sure — choose the goal you want to delete.",
+    "assistant"
+  );
+
+
+  if (
+    goals.length === 1
+  ) {
+
+    appendGoalDeleteConfirmation(
+      goals[0]
+    );
+
+    return;
+
+  }
+
+
+  appendGoalDeleteSelector(
+    goals
+  );
+
+}
+
+
+/* =========================================
    GOAL TYPE SELECTOR
 ========================================= */
 
