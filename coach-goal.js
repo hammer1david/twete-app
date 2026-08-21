@@ -2200,84 +2200,9 @@ markUnsynced();
 
 await loadWeeks();
     
-            .from("training_weeks")
-            .select(
-                "id, week_number"
-            )
-            .eq(
-                "program_id",
-                goal.program_id
-            )
-            .order(
-                "week_number",
-                {
-                    ascending: true
-                }
-            );
+                                
 
-
-    if (loadError) {
-
-        alert(
-            loadError.message
-        );
-
-        return;
-    }
-
-
-    for (
-        let i = 0;
-        i < remainingWeeks.length;
-        i++
-    ) {
-
-        const newNumber =
-            i + 1;
-
-
-        if (
-            Number(
-                remainingWeeks[i]
-                    .week_number
-            ) !==
-            newNumber
-        ) {
-
-            const {
-                error:
-                    renameError
-            } =
-                await supabaseClient
-                    .from(
-                        "training_weeks"
-                    )
-                    .update({
-
-                        week_number:
-                            newNumber
-
-                    })
-                    .eq(
-                        "id",
-                        remainingWeeks[i]
-                            .id
-                    );
-
-
-            if (renameError) {
-
-                alert(
-                    renameError.message
-                );
-
-                return;
-            }
-
-        }
-
-    }
-
+                
 
     markUnsynced();
 
