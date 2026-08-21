@@ -3,10 +3,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:allowBackup="true"
-        android:label="TWETE"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+<application
+    android:allowBackup="true"
+    android:label="TWETE"
+    android:icon="@drawable/file_000000000720822f8a9f8c9e98190324"
+    android:roundIcon="@drawable/file_000000000720822f8a9f8c9e98190324"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <activity
             android:name=".MainActivity"
