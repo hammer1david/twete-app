@@ -223,21 +223,7 @@ function moveGeneratedWeeksToNextFreeDates(
     );
 
 
-    return {
-        weeks:
-            generatedWeeks,
-
-        startDate:
-            generatedWeeks[0]
-                .start_date,
-
-        endDate:
-            generatedWeeks[
-                generatedWeeks.length - 1
-            ].end_date
-    };
-
-}
+   
     return {
         weeks:
             generatedWeeks,
