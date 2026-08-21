@@ -4374,20 +4374,74 @@ function appendWeeklyReviewOptions() {
     );
 
 
-    try {
+try {
 
-      await saveWeeklyReviewResponse(
-        response
-      );
-
-
-      card.remove();
+  const savedReview =
+    await saveWeeklyReviewResponse(
+      response
+    );
 
 
-      appendMessage(
-        "Thanks — I’ll use that together with your training and recovery data when I review your week.",
-        "assistant"
-      );
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.functions.invoke(
+      "twete-weekly-review",
+      {
+        body: {
+          week_number:
+            savedReview.currentWeek.week_number,
+
+          week_start_date:
+            savedReview.currentWeek.start_date,
+
+          week_end_date:
+            savedReview.currentWeek.end_date
+        }
+      }
+    );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  if (!data?.decision) {
+
+    throw new Error(
+      data?.error ||
+      "Puri could not complete the weekly review."
+    );
+
+  }
+
+
+  card.remove();
+
+
+  appendMessage(
+    data.assessment ||
+    "I reviewed your training week.",
+    "assistant"
+  );
+
+
+  appendMessage(
+    `My decision for next week: ${data.decision}.`,
+    "assistant"
+  );
+
+
+  if (data.reasoning) {
+
+    appendMessage(
+      data.reasoning,
+      "assistant"
+    );
+
+  }
 
 
     } catch (error) {
