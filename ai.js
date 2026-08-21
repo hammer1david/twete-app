@@ -3535,6 +3535,21 @@ form.addEventListener(
 
     try {
 
+      if (
+        isGoalDeleteRequest(
+          message
+        )
+      ) {
+
+        typing.remove();
+
+        await handlePuriGoalDeleteRequest();
+
+        return;
+
+      }
+
+
       const result =
   await askTweteAI(
     message
