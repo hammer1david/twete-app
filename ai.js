@@ -4354,16 +4354,66 @@ function appendWeeklyReviewOptions() {
       button => {
 
         button.addEventListener(
-          "click",
-          () => {
+  "click",
+  async () => {
 
-            console.log(
-              "Weekly review response:",
-              button.dataset.weeklyResponse
-            );
+    const response =
+      button.dataset.weeklyResponse;
 
-          }
-        );
+
+    const allButtons =
+      card.querySelectorAll(
+        "[data-weekly-response]"
+      );
+
+
+    allButtons.forEach(
+      item => {
+        item.disabled = true;
+      }
+    );
+
+
+    try {
+
+      await saveWeeklyReviewResponse(
+        response
+      );
+
+
+      card.remove();
+
+
+      appendMessage(
+        "Thanks — I’ll use that together with your training and recovery data when I review your week.",
+        "assistant"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Weekly review save error:",
+        error
+      );
+
+
+      allButtons.forEach(
+        item => {
+          item.disabled = false;
+        }
+      );
+
+
+      appendMessage(
+        "I couldn't save your weekly review response. Please try again.",
+        "assistant"
+      );
+
+    }
+
+  }
+);
 
       }
     );
