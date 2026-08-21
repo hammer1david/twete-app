@@ -2092,8 +2092,11 @@ function appendTrainingWeekPreview(
   const card =
     document.createElement("div");
 
-  card.className =
+card.className =
     "ai-training-week-preview";
+
+card.dataset.weekNumber =
+    trainingWeek.week_number;
 
 
   const title =
