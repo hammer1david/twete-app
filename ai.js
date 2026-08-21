@@ -4035,6 +4035,7 @@ async function getPuriTimeContext() {
   };
 
 }
+
 /* =========================================
    ASK TWETE AI
 ========================================= */
@@ -4042,6 +4043,10 @@ async function getPuriTimeContext() {
 async function askTweteAI(
   message
 ) {
+
+  const timeContext =
+    await getPuriTimeContext();
+
 
   const {
     data,
@@ -4053,8 +4058,12 @@ async function askTweteAI(
         {
 
           body: {
-  message: message
+            message: message,
+
+            time_context:
+              timeContext
           }
+
         }
       );
 
@@ -4082,14 +4091,18 @@ async function askTweteAI(
 
 
   return {
-  answer: data.answer,
-  pendingAction:
-    data.pending_action || null,
-  uiAction:
-    data.ui_action || null
-};
+    answer:
+      data.answer,
+
+    pendingAction:
+      data.pending_action || null,
+
+    uiAction:
+      data.ui_action || null
+  };
 
 }
+
 /* =========================================
    SEND MESSAGE
 ========================================= */
