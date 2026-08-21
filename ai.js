@@ -2611,19 +2611,33 @@ function appendCreateFirstTrainingWeekButton() {
        WEEK NUMBER ALREADY EXISTS
     ===================================== */
 
-    if (
-        errorMessage.includes(
-            "WEEK_ALREADY_EXISTS"
-        )
-    ) {
+   if (
+    errorMessage.includes(
+        "WEEK_ALREADY_EXISTS"
+    )
+) {
 
-        appendMessage(
-            "That week already exists in your current training plan. I won't replace it. Would you like me to create the next available week instead?",
-            "assistant"
-        );
+    pendingTrainingCorrection = {
 
-        return;
-    }
+        type:
+            "move_to_next_free_dates",
+
+        generatedWeeks:
+            generatedWeeks,
+
+        existingWeeks:
+            weekContext.existingWeeks
+
+    };
+
+
+    appendMessage(
+        "That week already exists in your current training plan. I won't replace it. Would you like me to move the new training to the next free dates?",
+        "assistant"
+    );
+
+    return;
+   }
 
 
     /* =====================================
