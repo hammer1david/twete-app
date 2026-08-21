@@ -198,6 +198,20 @@ async function loadProgram() {
 
 async function createProgramForGoal() {
 
+    /*
+       SAFETY:
+       Never create a second program
+       if this goal already has one.
+    */
+
+    if (goal.program_id) {
+
+        await loadProgram();
+
+        return program;
+    }
+
+
     const today =
         new Date()
             .toISOString()
