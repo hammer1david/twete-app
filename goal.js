@@ -1225,7 +1225,14 @@ function selectWeek(
 
     renderWeeksOnly();
 
-    renderSelectedWeek();
+renderSelectedWeek();
+
+/* Center newly selected week */
+requestAnimationFrame(
+    function () {
+        centerSelectedWeek(true);
+    }
+);
 
 }
 
@@ -1288,7 +1295,83 @@ function renderWeeksOnly() {
 
 }
 
+/* =========================================
+   CENTER ACTIVE WEEK
+========================================= */
 
+function centerSelectedWeek(
+    smooth = true
+) {
+
+    const selector =
+        document.querySelector(
+            ".week-selector"
+        );
+
+    if (
+        !selector ||
+        currentWeeks.length < 3
+    ) {
+        return;
+    }
+
+
+    const buttons =
+        Array.from(
+            selector.querySelectorAll(
+                ".week-button"
+            )
+        );
+
+
+    const index =
+        currentWeeks.findIndex(
+            function (week) {
+
+                return (
+                    week.id ===
+                    selectedWeekId
+                );
+
+            }
+        );
+
+
+    if (
+        index < 0 ||
+        !buttons[index]
+    ) {
+        return;
+    }
+
+
+    const activeButton =
+        buttons[index];
+
+
+    const targetScroll =
+        activeButton.offsetLeft
+        -
+        (
+            selector.clientWidth
+            -
+            activeButton.offsetWidth
+        ) / 2;
+
+
+    selector.scrollTo({
+        left: Math.max(
+            0,
+            targetScroll
+        ),
+
+        behavior:
+            smooth
+                ? "smooth"
+                : "auto"
+    });
+
+}
 /* =========================================
    SELECTED WEEK
 ========================================= */
