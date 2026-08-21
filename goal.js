@@ -1025,18 +1025,25 @@ function renderWeeks() {
                             </span>
 
                             ${
-                                week.week_label
-                                ?
-                                `
-                                <small>
-                                    ${escapeHtml(
-                                        week.week_label
-                                    )}
-                                </small>
-                                `
-                                :
-                                ""
-                            }
+    week.week_label &&
+    week.week_label
+        .trim()
+        .toUpperCase() !==
+        (
+            "WEEK " +
+            week.week_number
+        ).toUpperCase()
+    ?
+    `
+    <small>
+        ${escapeHtml(
+            week.week_label
+        )}
+    </small>
+    `
+    :
+    ""
+}
 
                             ${
                                 week.weekly_km !== null &&
