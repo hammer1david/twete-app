@@ -2284,6 +2284,7 @@ dates.textContent =
 
   card.append(
   title,
+  dates,
   focus,
   sessions,
   coachNote
