@@ -2118,6 +2118,17 @@ card.dataset.weekNumber =
   focus.textContent =
     trainingWeek.focus || "";
 
+   const dates =
+    document.createElement("div");
+
+dates.className =
+    "ai-training-week-dates";
+
+dates.textContent =
+    trainingWeek.start_date +
+    " – " +
+    trainingWeek.end_date;
+
 
   const sessions =
     document.createElement("div");
