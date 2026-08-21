@@ -1672,3 +1672,122 @@ button {
 
     line-height: 1.45;
 }
+
+/* =========================================================
+   TRAINING PLAN - MOBILE CLEANUP
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .training-section {
+        margin-top: 30px;
+    }
+
+    .section-heading {
+        font-size: 27px;
+        line-height: 1.1;
+        margin-bottom: 18px;
+    }
+
+    /* WEEK CONTENT */
+
+    .week-content {
+        padding-top: 8px;
+    }
+
+    .week-content > h2,
+    .week-content > h3 {
+        font-size: 20px;
+        line-height: 1.2;
+        margin-bottom: 6px;
+    }
+
+    /* WORKOUT CARDS */
+
+    .workout-card {
+        min-height: 0;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+        padding: 14px 10px;
+
+        margin-bottom: 10px;
+
+        border-radius: 14px;
+    }
+
+    .workout-day {
+        width: 40px;
+
+        padding-top: 3px;
+    }
+
+    .workout-day strong {
+        font-size: 11px;
+    }
+
+    .workout-day span {
+        font-size: 10px;
+    }
+
+    .workout-icon {
+        width: 43px;
+        height: 43px;
+    }
+
+    .workout-icon svg {
+        width: 21px;
+        height: 21px;
+    }
+
+    .workout-info h3 {
+        font-size: 15px;
+        line-height: 1.25;
+
+        margin-bottom: 5px;
+    }
+
+    .workout-details {
+        font-size: 11.5px;
+        line-height: 1.4;
+
+        margin-bottom: 5px;
+    }
+
+    .workout-description {
+        font-size: 11px;
+        line-height: 1.45;
+    }
+
+    /* COACH NOTE */
+
+    .coach-note {
+        margin-top: 9px;
+
+        padding: 10px;
+
+        border-radius: 7px;
+    }
+
+    .coach-note-label {
+        font-size: 8px;
+        margin-bottom: 5px;
+    }
+
+    .coach-note-text {
+        font-size: 10.5px;
+        line-height: 1.45;
+    }
+
+    /* FEEDBACK */
+
+    .feedback-button {
+        margin-top: 9px;
+
+        padding: 7px 10px;
+
+        font-size: 10px;
+    }
+}
