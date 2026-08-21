@@ -931,17 +931,52 @@ function renderWeeks() {
 
     if (!currentWeeks.length) {
 
-        selector.innerHTML = `
-            <div class="athlete-empty">
-                No training weeks yet.
+    selector.innerHTML = `
+        <div class="no-training-plan-card">
+
+            <div class="no-training-plan-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M4 19h16"></path>
+                    <path d="M6 17V7"></path>
+                    <path d="M12 17V4"></path>
+                    <path d="M18 17v-6"></path>
+                </svg>
+
             </div>
-        `;
+
+            <div class="no-training-plan-text">
+
+                <span>
+                    TRAINING PLAN
+                </span>
+
+                <h3>
+                    No training plan yet
+                </h3>
+
+                <p>
+                    A training plan has not been created
+                    for this goal yet.
+                </p>
+
+            </div>
+
+        </div>
+    `;
 
 
-        renderSessions([]);
+    renderSessions([]);
 
-        return;
-    }
+    return;
+}
 
 
     selectedWeekId =
