@@ -372,7 +372,7 @@ programStartDate =
 
 
 return data;
-
+}
 
 /* =========================================
    GOAL PROGRESS
