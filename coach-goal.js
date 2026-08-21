@@ -2200,14 +2200,6 @@ markUnsynced();
 
 await loadWeeks();
     
-                                
-
-                
-
-    markUnsynced();
-
-
-    await loadWeeks();
 
 }
 
