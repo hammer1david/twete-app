@@ -284,6 +284,44 @@ function renderAiText(element, text) {
   });
 
 }
+
+function refreshTrainingWeekPreviewDates(
+    generatedWeeks
+) {
+
+    generatedWeeks.forEach(
+        week => {
+
+            const card =
+                document.querySelector(
+                    `.ai-training-week-preview[data-week-number="${week.week_number}"]`
+                );
+
+
+            if (!card) {
+                return;
+            }
+
+
+            const dates =
+                card.querySelector(
+                    ".ai-training-week-dates"
+                );
+
+
+            if (dates) {
+
+                dates.textContent =
+                    week.start_date +
+                    " – " +
+                    week.end_date;
+
+            }
+
+        }
+    );
+
+}
 /* =========================================
    ADD MESSAGE
 ========================================= */
