@@ -241,7 +241,6 @@ function moveGeneratedWeeksToNextFreeDates(
 }
 
 
-/* HIER EINFÜGEN */
 
 function refreshTrainingWeekPreviewDates(
     generatedWeeks
