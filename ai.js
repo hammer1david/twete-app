@@ -1842,12 +1842,31 @@ function appendPendingAction(action) {
   "ai-action-label";
 
   const isCreate =
-  action.action_type === "create_goal";
+  action.action_type ===
+  "create_goal";
 
-label.textContent =
-  isCreate
-    ? "CREATE NEW GOAL"
-    : "UPDATE CURRENT GOAL";
+
+const isWorkoutUpdate =
+  action.action_type ===
+  "update_workout";
+
+
+if (isCreate) {
+
+  label.textContent =
+    "CREATE NEW GOAL";
+
+} else if (isWorkoutUpdate) {
+
+  label.textContent =
+    "UPDATE WORKOUT";
+
+} else {
+
+  label.textContent =
+    "UPDATE CURRENT GOAL";
+
+}
 
 
 
@@ -1857,12 +1876,13 @@ label.textContent =
 
   title.className =
     "ai-action-title";
-
-  title.textContent =
+   
+title.textContent =
   isCreate
     ? "Confirm your new goal"
-    : "Confirm this change";
-
+    : isWorkoutUpdate
+      ? "Confirm workout change"
+      : "Confirm this change";
 
   const changes =
     document.createElement("div");
