@@ -1097,7 +1097,14 @@ function renderWeeks() {
 
     updateWeekIndicator();
 
-    renderSelectedWeek();
+renderSelectedWeek();
+
+/* Center current week when there are 3+ weeks */
+requestAnimationFrame(
+    function () {
+        centerSelectedWeek(false);
+    }
+);
 
 }
 
