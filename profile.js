@@ -127,6 +127,11 @@ async function loadProfile() {
     ).value =
         data?.country || "";
 
+    populateTimezoneSelect(
+    data?.timezone ||
+    getDeviceTimezone()
+);
+
 
     document.getElementById(
         "discipline"
