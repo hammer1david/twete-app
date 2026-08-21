@@ -1762,16 +1762,63 @@ function appendGoalForm(
 function formatActionField(field) {
 
   const names = {
-    target_time: "Target time",
-    target_date: "Target date",
-    goal_name: "Goal name",
-    distance: "Distance",
-    current_pb: "Current PB",
-    current_performance: "Current performance",
-    progress: "Progress"
+
+    target_time:
+      "Target time",
+
+    target_date:
+      "Target date",
+
+    goal_name:
+      "Goal name",
+
+    distance:
+      "Distance",
+
+    current_pb:
+      "Current PB",
+
+    current_performance:
+      "Current performance",
+
+    progress:
+      "Progress",
+
+
+    /* WORKOUT */
+
+    workout_date:
+      "Date",
+
+    workout_type:
+      "Workout type",
+
+    title:
+      "Workout",
+
+    distance_km:
+      "Distance (km)",
+
+    duration_minutes:
+      "Duration (min)",
+
+    pace:
+      "Pace",
+
+    rest:
+      "Recovery",
+
+    notes:
+      "Notes",
+
+    session_slot:
+      "Session"
+
   };
 
+
   return names[field] || field;
+
 }
 
 
