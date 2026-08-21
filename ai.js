@@ -3796,14 +3796,21 @@ if (decision === "confirm") {
 );
 
 
-  } else {
+  } else if (isWorkoutUpdate) {
 
-    appendMessage(
-      "Done — your current goal has been updated.",
-      "assistant"
-    );
+  appendMessage(
+    "Done — I've updated that workout in your training plan.",
+    "assistant"
+  );
 
-  }
+} else {
+
+  appendMessage(
+    "Done — your current goal has been updated.",
+    "assistant"
+  );
+
+}
 
 }
 
