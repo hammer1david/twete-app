@@ -3920,15 +3920,23 @@ if (
     pendingTrainingCorrection =
         null;
 
+const result =
+    moveGeneratedWeeksToNextFreeDates(
+        correction.generatedWeeks,
+        correction.existingWeeks
+    );
 
-    const result =
-        moveGeneratedWeeksToNextFreeDates(
-            correction.generatedWeeks,
-            correction.existingWeeks
-        );
+
+if (result) {
+
+    refreshTrainingWeekPreviewDates(
+        correction.generatedWeeks
+    );
+
+}
 
 
-    typing.remove();
+typing.remove();
 
 
     if (!result) {
