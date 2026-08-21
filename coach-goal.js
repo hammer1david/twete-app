@@ -2004,7 +2004,16 @@ if (overlappingWeek) {
     markUnsynced();
 
 
-    await loadWeeks();
+const reordered =
+    await renumberWeeksByDate();
+
+
+if (!reordered) {
+    return;
+}
+
+
+await loadWeeks();
 
 }
 
