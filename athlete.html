@@ -1603,7 +1603,28 @@
                             )
                             :
                             "Training goal";
+                const deleteButton =
+                    card.querySelector(
+                        ".delete-goal-button"
+                    );
 
+
+                if (deleteButton) {
+
+                    deleteButton.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.stopPropagation();
+
+                            openDeleteGoalConfirmation(
+                                goal
+                            );
+
+                        }
+                    );
+
+                }
 
                 card.addEventListener(
                     "click",
