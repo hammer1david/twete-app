@@ -2577,19 +2577,34 @@ function appendCreateFirstTrainingWeekButton() {
        WEEK DATE OVERLAP
     ===================================== */
 
-    if (
-        errorMessage.includes(
-            "TRAINING_WEEK_DATE_OVERLAP"
-        )
-    ) {
+   if (
+    errorMessage.includes(
+        "TRAINING_WEEK_DATE_OVERLAP"
+    )
+) {
 
-        appendMessage(
-            "I found a date overlap with a week that is already in your training plan. I won't overwrite anything. Would you like me to adjust the new week to the next free dates?",
-            "assistant"
-        );
+    pendingTrainingCorrection = {
 
-        return;
-    }
+        type:
+            "move_to_next_free_dates",
+
+        generatedWeeks:
+            generatedWeeks,
+
+        existingWeeks:
+            weekContext.existingWeeks
+
+    };
+
+
+    appendMessage(
+        "I found a date overlap with a week that is already in your training plan. I won't overwrite anything. Would you like me to move the new training to the next free dates?",
+        "assistant"
+    );
+
+    return;
+}
+        
 
 
     /* =====================================
