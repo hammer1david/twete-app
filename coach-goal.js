@@ -258,25 +258,85 @@ async function createProgramForGoal() {
     }
 
 
+    /*
+   SAFETY:
+   Only connect this new program
+   if the goal STILL has no program.
+
+   This prevents Coach and Puri
+   from overwriting each other.
+*/
+
+const {
+    data: updatedGoal,
+    error: updateError
+} =
+    await supabaseClient
+        .from("goals")
+        .update({
+            program_id:
+                data.id
+        })
+        .eq(
+            "id",
+            goal.id
+        )
+        .is(
+            "program_id",
+            null
+        )
+        .select(
+            "id, program_id"
+        )
+        .maybeSingle();
+
+
+if (updateError) {
+
+    showError(
+        updateError.message
+    );
+
+    return null;
+}
+
+
+/*
+   If no row was updated,
+   another process already connected
+   a program to this goal.
+
+   Never overwrite it.
+*/
+
+if (!updatedGoal) {
+
     const {
-        error: updateError
+        data: latestGoal,
+        error: latestGoalError
     } =
         await supabaseClient
             .from("goals")
-            .update({
-                program_id:
-                    data.id
-            })
+            .select(
+                "program_id"
+            )
             .eq(
                 "id",
                 goal.id
-            );
+            )
+            .maybeSingle();
 
 
-    if (updateError) {
+    if (
+        latestGoalError ||
+        !latestGoal ||
+        !latestGoal.program_id
+    ) {
 
         showError(
-            updateError.message
+            latestGoalError
+                ? latestGoalError.message
+                : "Could not connect the training program."
         );
 
         return null;
@@ -284,20 +344,34 @@ async function createProgramForGoal() {
 
 
     goal.program_id =
-        data.id;
+        latestGoal.program_id;
 
 
-    program =
-        data;
+    await loadProgram();
 
 
-    programStartDate =
-        data.start_date;
-
-
-    return data;
-
+    return program;
 }
+
+
+/*
+   This process successfully connected
+   the new program.
+*/
+
+goal.program_id =
+    updatedGoal.program_id;
+
+
+program =
+    data;
+
+
+programStartDate =
+    data.start_date;
+
+
+return data;
 
 
 /* =========================================
