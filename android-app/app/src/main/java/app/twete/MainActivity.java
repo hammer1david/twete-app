@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         webView.setWebViewClient(new WebViewClient());
 
-        webView.loadUrl("https://twete.app");
+        webView.loadUrl("https://hammer1david.github.io/twete-app/");
     }
 
     @Override
