@@ -3709,6 +3709,10 @@ async function handlePendingAction(
     const isCreate =
   action.action_type === "create_goal";
 
+     const isWorkoutUpdate =
+  action.action_type ===
+  "update_workout";
+
 
 buttons.innerHTML =
   decision === "confirm"
@@ -3716,7 +3720,9 @@ buttons.innerHTML =
       <div class="ai-action-result success">
         ✓ ${isCreate
           ? "Goal created"
-          : "Goal updated"}
+          : isWorkoutUpdate
+            ? "Workout updated"
+            : "Goal updated"}
       </div>
     `
     : `
