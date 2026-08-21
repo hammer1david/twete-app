@@ -3835,24 +3835,78 @@ form.addEventListener(
     try {
 
       if (
-        isGoalDeleteRequest(
-          message
-        )
-      ) {
+    isGoalDeleteRequest(
+        message
+    )
+) {
 
-        typing.remove();
+    typing.remove();
 
-        await handlePuriGoalDeleteRequest();
+    await handlePuriGoalDeleteRequest();
+
+    return;
+
+}
+
+
+/* =====================================
+   HANDLE TRAINING CORRECTION
+===================================== */
+
+if (
+    pendingTrainingCorrection &&
+    isPositiveAnswer(
+        message
+    )
+) {
+
+    const correction =
+        pendingTrainingCorrection;
+
+
+    pendingTrainingCorrection =
+        null;
+
+
+    const result =
+        moveGeneratedWeeksToNextFreeDates(
+            correction.generatedWeeks,
+            correction.existingWeeks
+        );
+
+
+    typing.remove();
+
+
+    if (!result) {
+
+        appendMessage(
+            "I couldn't calculate the new dates. Nothing was changed.",
+            "assistant"
+        );
 
         return;
+    }
 
-      }
+
+    appendMessage(
+        "Done — I moved the training to the next free period: " +
+        result.startDate +
+        " to " +
+        result.endDate +
+        ". Nothing in your existing plan was overwritten. Please confirm the plan again when you're ready.",
+        "assistant"
+    );
 
 
-      const result =
-  await askTweteAI(
-    message
-  );
+    return;
+}
+
+
+const result =
+    await askTweteAI(
+        message
+    );
 
 
 typing.remove();
