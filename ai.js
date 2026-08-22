@@ -2573,29 +2573,90 @@ if (showActions) {
 
 
   confirmButton.addEventListener(
-    "click",
-    () => {
+  "click",
+  async () => {
 
-      confirmButton.disabled =
-        true;
+    confirmButton.disabled =
+      true;
 
-      changeButton.disabled =
-        true;
+    changeButton.disabled =
+      true;
+
+    confirmButton.textContent =
+      "Saving week...";
+
+
+    try {
+
+      await saveAdaptiveTrainingWeek(
+        trainingWeek
+      );
+
 
       confirmButton.textContent =
-        "Week ready to save ✓";
+        "✓ Week saved";
 
 
-      console.log(
-        "Confirmed week preview:",
-        {
-          trainingWeek,
-          weekContext
-        }
+      appendMessage(
+        `Week ${trainingWeek.week_number} has been saved to your training plan.`,
+        "assistant"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Adaptive week save error:",
+        error
+      );
+
+
+      confirmButton.disabled =
+        false;
+
+      changeButton.disabled =
+        false;
+
+      confirmButton.textContent =
+        "✓ Confirm week";
+
+
+      const errorMessage =
+        String(
+          error?.message ||
+          error?.details ||
+          error ||
+          ""
+        );
+
+
+      if (
+        errorMessage.includes(
+          "TRAINING_WEEK_DATE_OVERLAP"
+        ) ||
+        errorMessage.includes(
+          "WEEK_ALREADY_EXISTS"
+        )
+      ) {
+
+        appendMessage(
+          "I couldn't save this week because it overlaps with training that already exists. Nothing was overwritten.",
+          "assistant"
+        );
+
+        return;
+      }
+
+
+      appendMessage(
+        "I couldn't save the new training week. Nothing was changed.",
+        "assistant"
       );
 
     }
-  );
+
+  }
+);
 
 }
 function appendCreateFirstTrainingWeekButton() {
