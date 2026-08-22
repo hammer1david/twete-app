@@ -2240,6 +2240,417 @@ async function generateNextTrainingWeek() {
   };
 
 }
+
+/* =========================================
+   TRAINING WEEK PREVIEW
+========================================= */
+
+function appendTrainingWeekPreview(
+  trainingWeek,
+  weekContext,
+  showActions = true
+) {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-training-week-preview";
+
+  card.dataset.weekNumber =
+    trainingWeek.week_number;
+
+
+  /* HEADER */
+
+  const label =
+    document.createElement("div");
+
+  label.className =
+    "ai-action-label";
+
+  label.textContent =
+    `WEEK ${trainingWeek.week_number}`;
+
+
+  const title =
+    document.createElement("div");
+
+  title.className =
+    "ai-action-title";
+
+  title.textContent =
+    trainingWeek.focus ||
+    `Training Week ${trainingWeek.week_number}`;
+
+
+  const dates =
+    document.createElement("div");
+
+  dates.className =
+    "ai-training-week-dates";
+
+  dates.textContent =
+    `${trainingWeek.start_date} – ${trainingWeek.end_date}`;
+
+
+  card.append(
+    label,
+    title,
+    dates
+  );
+
+
+  /* COACH NOTE */
+
+  if (trainingWeek.coach_note) {
+
+    const coachNote =
+      document.createElement("div");
+
+    coachNote.className =
+      "ai-training-week-note";
+
+    renderAiText(
+      coachNote,
+      trainingWeek.coach_note
+    );
+
+    card.appendChild(
+      coachNote
+    );
+
+  }
+
+
+  /* SESSIONS */
+
+  const sessions =
+    Array.isArray(
+      trainingWeek.sessions
+    )
+      ? trainingWeek.sessions
+      : [];
+
+
+  const sessionList =
+    document.createElement("div");
+
+  sessionList.className =
+    "ai-training-week-sessions";
+
+
+  sessions.forEach(
+    session => {
+
+      const sessionCard =
+        document.createElement("div");
+
+      sessionCard.className =
+        "ai-training-session-preview";
+
+
+      const sessionDate =
+        document.createElement("div");
+
+      sessionDate.className =
+        "ai-training-session-date";
+
+      sessionDate.textContent =
+        session.workout_date ||
+        "Date not set";
+
+
+      const sessionTitle =
+        document.createElement("div");
+
+      sessionTitle.className =
+        "ai-training-session-title";
+
+      sessionTitle.textContent =
+        session.title ||
+        "Training session";
+
+
+      const details = [];
+
+
+      if (session.distance_km != null) {
+
+        details.push(
+          `${session.distance_km} km`
+        );
+
+      }
+
+
+      if (
+        session.duration_minutes != null
+      ) {
+
+        details.push(
+          `${session.duration_minutes} min`
+        );
+
+      }
+
+
+      if (session.pace) {
+
+        details.push(
+          session.pace
+        );
+
+      }
+
+
+      if (session.rest) {
+
+        details.push(
+          `Recovery: ${session.rest}`
+        );
+
+      }
+
+
+      const sessionDetails =
+        document.createElement("div");
+
+      sessionDetails.className =
+        "ai-training-session-details";
+
+      sessionDetails.textContent =
+        details.join(" • ");
+
+
+      sessionCard.append(
+        sessionDate,
+        sessionTitle
+      );
+
+
+      if (details.length) {
+
+        sessionCard.appendChild(
+          sessionDetails
+        );
+
+      }
+
+
+      if (session.notes) {
+
+        const notes =
+          document.createElement("div");
+
+        notes.className =
+          "ai-training-session-notes";
+
+        renderAiText(
+          notes,
+          session.notes
+        );
+
+        sessionCard.appendChild(
+          notes
+        );
+
+      }
+
+
+      sessionList.appendChild(
+        sessionCard
+      );
+
+    }
+  );
+
+
+  card.appendChild(
+    sessionList
+  );
+
+
+  /* NO SESSIONS SAFETY */
+
+  if (!sessions.length) {
+
+    const emptyMessage =
+      document.createElement("div");
+
+    emptyMessage.className =
+      "ai-training-session-notes";
+
+    emptyMessage.textContent =
+      "No sessions were returned for this week.";
+
+    card.appendChild(
+      emptyMessage
+    );
+
+  }
+
+
+  /* ACTION BUTTONS */
+
+  if (showActions) {
+
+    const actions =
+      document.createElement("div");
+
+    actions.className =
+      "ai-training-week-actions";
+
+
+    const changeButton =
+      document.createElement("button");
+
+    changeButton.type =
+      "button";
+
+    changeButton.className =
+      "ai-training-review-cancel";
+
+    changeButton.textContent =
+      "Request changes";
+
+
+    const confirmButton =
+      document.createElement("button");
+
+    confirmButton.type =
+      "button";
+
+    confirmButton.className =
+      "ai-training-review-confirm";
+
+    confirmButton.textContent =
+      "✓ Confirm week";
+
+
+    actions.append(
+      changeButton,
+      confirmButton
+    );
+
+
+    card.appendChild(
+      actions
+    );
+
+
+    /* REQUEST CHANGES */
+
+    changeButton.addEventListener(
+      "click",
+      () => {
+
+        appendMessage(
+          `Tell me what you would like to change in Week ${trainingWeek.week_number}.`,
+          "assistant"
+        );
+
+        input.focus();
+
+      }
+    );
+
+
+    /* CONFIRM WEEK */
+
+    confirmButton.addEventListener(
+      "click",
+      async () => {
+
+        confirmButton.disabled =
+          true;
+
+        changeButton.disabled =
+          true;
+
+        confirmButton.textContent =
+          "Saving week...";
+
+
+        try {
+
+          await saveAdaptiveTrainingWeek(
+            trainingWeek
+          );
+
+
+          confirmButton.textContent =
+            "✓ Week saved";
+
+
+          appendMessage(
+            `Week ${trainingWeek.week_number} has been saved to your training plan.`,
+            "assistant"
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Save adaptive training week error:",
+            error
+          );
+
+
+          confirmButton.disabled =
+            false;
+
+          changeButton.disabled =
+            false;
+
+          confirmButton.textContent =
+            "✓ Confirm week";
+
+
+          if (
+            String(
+              error?.message ||
+              error ||
+              ""
+            ).includes(
+              "WEEK_ALREADY_EXISTS"
+            )
+          ) {
+
+            appendMessage(
+              "I couldn't save this week because it already contains training. Nothing was overwritten.",
+              "assistant"
+            );
+
+            return;
+
+          }
+
+
+          appendMessage(
+            "I couldn't save this training week. Nothing was changed. Please try again.",
+            "assistant"
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+
+  messages.appendChild(
+    card
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  return card;
+}
 /* =========================================
    SAVE ADAPTIVE TRAINING WEEK
 ========================================= */
