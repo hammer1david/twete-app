@@ -2240,7 +2240,106 @@ async function generateNextTrainingWeek() {
   };
 
 }
+/* =========================================
+   SAVE ADAPTIVE TRAINING WEEK
+========================================= */
 
+async function saveAdaptiveTrainingWeek(
+  trainingWeek
+) {
+
+  const {
+    data: { user },
+    error: userError
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (
+    userError ||
+    !user
+  ) {
+
+    throw new Error(
+      "No logged-in athlete found."
+    );
+
+  }
+
+
+  const {
+    data: goals,
+    error: goalError
+  } =
+    await supabaseClient
+      .from("goals")
+      .select(`
+        id,
+        program_id
+      `)
+      .eq(
+        "athlete_id",
+        user.id
+      )
+      .not(
+        "program_id",
+        "is",
+        null
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1);
+
+
+  if (goalError) {
+    throw goalError;
+  }
+
+
+  const goal =
+    goals?.[0] || null;
+
+
+  if (!goal) {
+
+    throw new Error(
+      "No active goal found."
+    );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.rpc(
+      "confirm_ai_training_plan",
+      {
+
+        p_goal_id:
+          goal.id,
+
+        p_weeks: [
+          trainingWeek
+        ]
+
+      }
+    );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  return data;
+
+}
 function appendTrainingWeekPreview(
   trainingWeek,
   weekContext,
