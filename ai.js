@@ -2341,129 +2341,176 @@ function appendTrainingWeekPreview(
 
 
   sessions.forEach(
-    session => {
+  session => {
 
-      const sessionCard =
-        document.createElement("div");
+    const sessionCard =
+      document.createElement("div");
 
-      sessionCard.className =
-        "ai-training-session-preview";
-
-
-      const sessionDate =
-        document.createElement("div");
-
-      sessionDate.className =
-        "ai-training-session-date";
-
-      sessionDate.textContent =
-        session.workout_date ||
-        "Date not set";
+    sessionCard.className =
+      "ai-training-session-preview";
 
 
-      const sessionTitle =
-        document.createElement("div");
+    /* DAY + SESSION SLOT */
 
-      sessionTitle.className =
-        "ai-training-session-title";
+    const sessionDay =
+      document.createElement("div");
 
-      sessionTitle.textContent =
-        session.title ||
-        "Training session";
+    sessionDay.className =
+      "ai-training-session-day";
 
 
-      const details = [];
+    let dayName = "";
 
+    if (session.workout_date) {
 
-      if (session.distance_km != null) {
-
-        details.push(
-          `${session.distance_km} km`
+      const date =
+        new Date(
+          session.workout_date +
+          "T00:00:00"
         );
 
-      }
+      dayName =
+        date
+          .toLocaleDateString(
+            "en-US",
+            {
+              weekday: "long"
+            }
+          )
+          .toUpperCase();
+
+    }
 
 
-      if (
-        session.duration_minutes != null
-      ) {
-
-        details.push(
-          `${session.duration_minutes} min`
-        );
-
-      }
+    const slot =
+      Number(
+        session.session_slot || 1
+      ) === 2
+        ? "PM"
+        : "AM";
 
 
-      if (session.pace) {
-
-        details.push(
-          session.pace
-        );
-
-      }
+    sessionDay.textContent =
+      dayName
+        ? `${dayName} · ${slot}`
+        : slot;
 
 
-      if (session.rest) {
+    /* TITLE */
 
-        details.push(
-          `Recovery: ${session.rest}`
-        );
+    const sessionTitle =
+      document.createElement("div");
 
-      }
+    sessionTitle.className =
+      "ai-training-session-title";
 
-
-      const sessionDetails =
-        document.createElement("div");
-
-      sessionDetails.className =
-        "ai-training-session-details";
-
-      sessionDetails.textContent =
-        details.join(" • ");
+    sessionTitle.textContent =
+      session.title ||
+      "Training session";
 
 
-      sessionCard.append(
-        sessionDate,
-        sessionTitle
-      );
+    /* DETAILS */
+
+    const details = [];
 
 
-      if (details.length) {
+    if (
+      session.distance_km != null
+    ) {
 
-        sessionCard.appendChild(
-          sessionDetails
-        );
-
-      }
-
-
-      if (session.notes) {
-
-        const notes =
-          document.createElement("div");
-
-        notes.className =
-          "ai-training-session-notes";
-
-        renderAiText(
-          notes,
-          session.notes
-        );
-
-        sessionCard.appendChild(
-          notes
-        );
-
-      }
-
-
-      sessionList.appendChild(
-        sessionCard
+      details.push(
+        `${session.distance_km} km`
       );
 
     }
-  );
+
+
+    if (
+      session.duration_minutes != null
+    ) {
+
+      details.push(
+        `${session.duration_minutes} min`
+      );
+
+    }
+
+
+    if (session.pace) {
+
+      details.push(
+        session.pace
+      );
+
+    }
+
+
+    if (session.rest) {
+
+      details.push(
+        `Recovery: ${session.rest}`
+      );
+
+    }
+
+
+    const sessionDetails =
+      document.createElement("div");
+
+    sessionDetails.className =
+      "ai-training-session-details";
+
+    sessionDetails.textContent =
+      details.join(" · ");
+
+
+    /* ADD CONTENT */
+
+    sessionCard.append(
+      sessionDay,
+      sessionTitle
+    );
+
+
+    if (details.length) {
+
+      sessionCard.appendChild(
+        sessionDetails
+      );
+
+    }
+
+
+    /* NOTES */
+
+    if (session.notes) {
+
+      const notes =
+        document.createElement("div");
+
+      notes.className =
+        "ai-training-session-notes";
+
+
+      renderAiText(
+        notes,
+        session.notes
+      );
+
+
+      sessionCard.appendChild(
+        notes
+      );
+
+    }
+
+
+    sessionList.appendChild(
+      sessionCard
+    );
+
+  }
+);
 
 
   card.appendChild(
