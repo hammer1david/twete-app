@@ -4134,7 +4134,6 @@ async function getPuriTimeContext() {
 /* =========================================
    SAVE WEEKLY REVIEW RESPONSE
 ========================================= */
-
 async function saveWeeklyReviewResponse(
   response
 ) {
@@ -4146,45 +4145,30 @@ async function saveWeeklyReviewResponse(
     await supabaseClient.auth.getUser();
 
 
-  if (
-    userError ||
-    !user
-  ) {
-
+  if (userError || !user) {
     throw new Error(
       "No logged-in athlete found."
     );
-
   }
 
 
-  const timeContext =
-    await getPuriTimeContext();
-
-
-  const localDate =
-    timeContext.local_date;
-
+  /* =====================================
+     FIND CURRENT GOAL
+  ===================================== */
 
   const {
-    data: goals,
+    data: goal,
     error: goalError
   } =
     await supabaseClient
       .from("goals")
       .select(`
         id,
-        program_id,
-        target_date
+        program_id
       `)
       .eq(
         "athlete_id",
         user.id
-      )
-      .not(
-        "program_id",
-        "is",
-        null
       )
       .order(
         "created_at",
@@ -4192,29 +4176,32 @@ async function saveWeeklyReviewResponse(
           ascending: false
         }
       )
-      .limit(1);
+      .limit(1)
+      .single();
 
 
-  if (goalError) {
-    throw goalError;
-  }
-
-
-  const goal =
-    goals?.[0] || null;
-
-
-  if (!goal?.program_id) {
-
+  if (
+    goalError ||
+    !goal?.program_id
+  ) {
     throw new Error(
       "No active training program found."
     );
-
   }
 
 
+  /* =====================================
+     FIND CURRENT TRAINING WEEK
+  ===================================== */
+
+  const today =
+    new Date()
+      .toISOString()
+      .split("T")[0];
+
+
   const {
-    data: weeks,
+    data: currentWeeks,
     error: weekError
   } =
     await supabaseClient
@@ -4232,11 +4219,11 @@ async function saveWeeklyReviewResponse(
       )
       .lte(
         "start_date",
-        localDate
+        today
       )
       .gte(
         "end_date",
-        localDate
+        today
       )
       .limit(1);
 
@@ -4247,56 +4234,127 @@ async function saveWeeklyReviewResponse(
 
 
   const currentWeek =
-    weeks?.[0] || null;
+    currentWeeks?.[0];
 
 
   if (!currentWeek) {
-
     throw new Error(
       "No current training week found."
     );
-
   }
 
 
+  /* =====================================
+     CHECK FOR EXISTING REVIEW
+  ===================================== */
+
   const {
     data: existingReviews,
-    error: reviewLoadError
+    error: reviewCheckError
   } =
     await supabaseClient
       .from("ai_weekly_reviews")
-      .select("id")
+      .select(`
+        id,
+        training_week_id,
+        status
+      `)
       .eq(
         "athlete_id",
         user.id
       )
       .eq(
-        "week_start_date",
-        currentWeek.start_date
-      )
-      .eq(
-        "week_end_date",
-        currentWeek.end_date
+        "training_week_id",
+        currentWeek.id
       )
       .limit(1);
 
 
-  if (reviewLoadError) {
-    throw reviewLoadError;
+  if (reviewCheckError) {
+    throw reviewCheckError;
   }
 
 
   const existingReview =
-    existingReviews?.[0] || null;
+    existingReviews?.[0];
 
 
-  const reviewData = {
+  /* =====================================
+     REVIEW ALREADY EXISTS
+     -> REUSE IT
+  ===================================== */
+
+  if (existingReview) {
+
+    const {
+      data: updatedReview,
+      error: updateError
+    } =
+      await supabaseClient
+        .from("ai_weekly_reviews")
+        .update({
+
+          athlete_response:
+            response,
+
+          status:
+            "ready",
+
+          puri_assessment:
+            null,
+
+          puri_decision:
+            null,
+
+          puri_reasoning:
+            null,
+
+          reviewed_at:
+            null,
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq(
+          "id",
+          existingReview.id
+        )
+        .eq(
+          "athlete_id",
+          user.id
+        )
+        .select()
+        .single();
+
+
+    if (updateError) {
+      throw updateError;
+    }
+
+
+    console.log(
+      "Existing weekly review reset:",
+      updatedReview
+    );
+
+
+    return updatedReview;
+  }
+
+
+  /* =====================================
+     NO REVIEW EXISTS
+     -> CREATE ONE
+  ===================================== */
+
+  const reviewPayload = {
 
     athlete_id:
       user.id,
 
     program_id:
-      currentWeek.program_id,
+      goal.program_id,
 
     training_week_id:
       currentWeek.id,
@@ -4315,51 +4373,37 @@ async function saveWeeklyReviewResponse(
 
     status:
       "ready"
+
   };
 
 
-  if (existingReview?.id) {
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("ai_weekly_reviews")
-        .update(reviewData)
-        .eq(
-          "id",
-          existingReview.id
-        );
-
-
-    if (error) {
-      throw error;
-    }
-
-  } else {
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("ai_weekly_reviews")
-        .insert(reviewData);
+  const {
+    data: newReview,
+    error: insertError
+  } =
+    await supabaseClient
+      .from("ai_weekly_reviews")
+      .insert(
+        reviewPayload
+      )
+      .select()
+      .single();
 
 
-    if (error) {
-      throw error;
-    }
-
+  if (insertError) {
+    throw insertError;
   }
 
 
-  return {
-    response,
-    currentWeek,
-    timeContext
-  };
+  console.log(
+    "New weekly review created:",
+    newReview
+  );
 
-}
+
+  return newReview;
+  }
+
 /* =========================================
    SUNDAY WEEKLY REVIEW
 ========================================= */
