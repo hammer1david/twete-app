@@ -4407,7 +4407,13 @@ async function saveWeeklyReviewResponse(
   );
 
 
-  return newReview;
+  return {
+  review:
+    newReview,
+
+  currentWeek:
+    currentWeek
+};
   }
 
 /* =========================================
