@@ -4643,13 +4643,28 @@ buttons.innerHTML =
   decision === "confirm"
     ? `
       <div class="ai-action-result success">
-        ✓ ${isCreate
-          ? "Goal created"
-          : isWorkoutUpdate
-            ? "Workout updated"
-            : "Goal updated"}
+        ✓ ${
+          isCreate
+            ? "Goal created"
+            : isWorkoutUpdate
+              ? "Workout updated"
+              : isTrainingWeekUpdate
+                ? "Training week updated"
+                : "Goal updated"
+        }
       </div>
     `
+    : `
+      <div class="ai-action-result">
+        ${
+          isCreate
+            ? "Goal creation cancelled"
+            : isTrainingWeekUpdate
+              ? "Training week update cancelled"
+              : "Change cancelled"
+        }
+      </div>
+    `;
     : `
       <div class="ai-action-result">
         ${isCreate
