@@ -4898,7 +4898,101 @@ typing.remove();
     return;
 }
 
+/* =====================================
+   TEST NEXT WEEK DETECTION
+===================================== */
 
+if (
+  message
+    .trim()
+    .toLowerCase() ===
+  "check next week"
+) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.functions.invoke(
+      "twete-adaptive-week",
+      {
+        body: {
+          action:
+            "detect_next_week"
+        }
+      }
+    );
+
+
+  typing.remove();
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  if (data?.error) {
+
+    appendMessage(
+      data.error,
+      "assistant"
+    );
+
+    return;
+  }
+
+
+  const startDate =
+    data.next_week?.start_date ||
+    "unknown";
+
+  const endDate =
+    data.next_week?.end_date ||
+    "unknown";
+
+
+  let statusText = "";
+
+
+  if (
+    data.mode ===
+    "existing_week_with_workouts"
+  ) {
+
+    statusText =
+      "I found an existing training week and it already contains workouts.";
+
+  } else if (
+    data.mode ===
+    "existing_empty_week"
+  ) {
+
+    statusText =
+      "I found an existing training week, but it does not contain any workouts yet.";
+
+  } else {
+
+    statusText =
+      "There is no training week for this period yet.";
+
+  }
+
+
+  appendMessage(
+    `Next week: **${startDate} – ${endDate}**\n\n${statusText}`,
+    "assistant"
+  );
+
+
+  console.log(
+    "Puri next week detection:",
+    data
+  );
+
+
+  return;
+}
 const result =
     await askTweteAI(
         message
