@@ -40,6 +40,9 @@ const sendButton =
 let pendingGoalSetup = null;
 
 let pendingTrainingCorrection = null;
+let pendingTrainingWeekRevision = null;
+
+
 function isPositiveAnswer(
     message
 ) {
