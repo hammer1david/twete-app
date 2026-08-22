@@ -5682,6 +5682,136 @@ const endDate =
 
   return;
 }
+/* =====================================
+   REVISE UNSAVED TRAINING WEEK
+===================================== */
+
+if (
+  pendingTrainingWeekRevision
+) {
+
+  const revision =
+    pendingTrainingWeekRevision;
+
+
+  typing.remove();
+
+
+  appendMessage(
+    "I'm revising the training week based on your request...",
+    "assistant"
+  );
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.functions.invoke(
+        "twete-adaptive-week",
+        {
+          body: {
+            action:
+              "revise_training_week",
+
+            current_week:
+              revision.trainingWeek,
+
+            change_request:
+              message
+          }
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (
+      !data?.training_week
+    ) {
+
+      throw new Error(
+        data?.error ||
+        "Puri could not revise the training week."
+      );
+
+    }
+
+
+    pendingTrainingWeekRevision =
+      null;
+
+
+    if (
+      revision.card
+    ) {
+
+      revision.card.remove();
+
+    }
+
+
+    appendMessage(
+      data.answer ||
+      `I revised Week ${data.training_week.week_number}.`,
+      "assistant"
+    );
+
+
+    appendTrainingWeekPreview(
+      data.training_week,
+      revision.weekContext,
+      true
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Training week revision error:",
+      error
+    );
+
+
+    appendMessage(
+      "I couldn't revise the training week. Nothing was changed. Please try again.",
+      "assistant"
+    );
+
+
+    if (
+      revision.card
+    ) {
+
+      const buttons =
+        revision.card.querySelectorAll(
+          "button"
+        );
+
+
+      buttons.forEach(
+        button => {
+          button.disabled = false;
+        }
+      );
+
+    }
+
+
+    pendingTrainingWeekRevision =
+      null;
+
+  }
+
+
+  return;
+     }
+       
 const result =
     await askTweteAI(
         message
