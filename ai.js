@@ -4743,6 +4743,18 @@ if (decision === "confirm") {
     "assistant"
   );
 
+} else if (isTrainingWeekUpdate) {
+
+  const weekNumber =
+    action.preview?.week_number;
+
+  appendMessage(
+    weekNumber
+      ? `Done — I've updated Week ${weekNumber} in your training plan.`
+      : "Done — I've updated that training week.",
+    "assistant"
+  );
+
 } else {
 
   appendMessage(
