@@ -4339,7 +4339,13 @@ async function saveWeeklyReviewResponse(
     );
 
 
-    return updatedReview;
+    return {
+  review:
+    updatedReview,
+
+  currentWeek:
+    currentWeek
+};
   }
 
 
