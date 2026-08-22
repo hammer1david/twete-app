@@ -2243,7 +2243,6 @@ async function generateNextTrainingWeek() {
 /* =========================================
    SAVE ADAPTIVE TRAINING WEEK
 ========================================= */
-
 async function saveAdaptiveTrainingWeek(
   trainingWeek
 ) {
@@ -2255,10 +2254,7 @@ async function saveAdaptiveTrainingWeek(
     await supabaseClient.auth.getUser();
 
 
-  if (
-    userError ||
-    !user
-  ) {
+  if (userError || !user) {
 
     throw new Error(
       "No logged-in athlete found."
@@ -2267,8 +2263,12 @@ async function saveAdaptiveTrainingWeek(
   }
 
 
+  /* =====================================
+     FIND CURRENT GOAL
+  ===================================== */
+
   const {
-    data: goals,
+    data: goal,
     error: goalError
   } =
     await supabaseClient
@@ -2281,384 +2281,320 @@ async function saveAdaptiveTrainingWeek(
         "athlete_id",
         user.id
       )
-      .not(
-        "program_id",
-        "is",
-        null
-      )
       .order(
         "created_at",
         {
           ascending: false
         }
       )
+      .limit(1)
+      .single();
+
+
+  if (
+    goalError ||
+    !goal?.program_id
+  ) {
+
+    throw new Error(
+      "No active training program found."
+    );
+
+  }
+
+
+  /* =====================================
+     CHECK WHETHER WEEK ALREADY EXISTS
+  ===================================== */
+
+  const {
+    data: existingWeeks,
+    error: weekCheckError
+  } =
+    await supabaseClient
+      .from("training_weeks")
+      .select(`
+        id,
+        week_number,
+        start_date,
+        end_date
+      `)
+      .eq(
+        "program_id",
+        goal.program_id
+      )
+      .eq(
+        "start_date",
+        trainingWeek.start_date
+      )
+      .eq(
+        "end_date",
+        trainingWeek.end_date
+      )
       .limit(1);
 
 
-  if (goalError) {
-    throw goalError;
+  if (weekCheckError) {
+    throw weekCheckError;
   }
 
 
-  const goal =
-    goals?.[0] || null;
+  let weekId = null;
 
 
-  if (!goal) {
+  /* =====================================
+     EXISTING WEEK
+  ===================================== */
 
-    throw new Error(
-      "No active goal found."
-    );
+  if (
+    existingWeeks &&
+    existingWeeks.length > 0
+  ) {
+
+    const existingWeek =
+      existingWeeks[0];
+
+
+    /* CHECK WHETHER IT ALREADY
+       CONTAINS WORKOUTS */
+
+    const {
+      data: existingWorkouts,
+      error: workoutCheckError
+    } =
+      await supabaseClient
+        .from("workouts")
+        .select("id")
+        .eq(
+          "week_id",
+          existingWeek.id
+        )
+        .limit(1);
+
+
+    if (workoutCheckError) {
+      throw workoutCheckError;
+    }
+
+
+    if (
+      existingWorkouts &&
+      existingWorkouts.length > 0
+    ) {
+
+      throw new Error(
+        "WEEK_ALREADY_EXISTS"
+      );
+
+    }
+
+
+    /*
+      IMPORTANT:
+      The week exists but is empty.
+
+      Reuse it instead of creating
+      another training_weeks row.
+    */
+
+    weekId =
+      existingWeek.id;
+
+
+    const {
+      error: updateWeekError
+    } =
+      await supabaseClient
+        .from("training_weeks")
+        .update({
+
+          week_number:
+            trainingWeek.week_number,
+
+          focus:
+            trainingWeek.focus || null,
+
+          coach_note:
+            trainingWeek.coach_note || null
+
+        })
+        .eq(
+          "id",
+          weekId
+        );
+
+
+    if (updateWeekError) {
+      throw updateWeekError;
+    }
 
   }
 
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.rpc(
-      "confirm_ai_training_plan",
-      {
+  /* =====================================
+     WEEK DOES NOT EXIST
+  ===================================== */
 
-        p_goal_id:
-          goal.id,
+  else {
 
-        p_weeks: [
-          trainingWeek
-        ]
+    const {
+      data: newWeek,
+      error: insertWeekError
+    } =
+      await supabaseClient
+        .from("training_weeks")
+        .insert({
 
-      }
-    );
+          program_id:
+            goal.program_id,
+
+          week_number:
+            trainingWeek.week_number,
+
+          start_date:
+            trainingWeek.start_date,
+
+          end_date:
+            trainingWeek.end_date,
+
+          focus:
+            trainingWeek.focus || null,
+
+          coach_note:
+            trainingWeek.coach_note || null
+
+        })
+        .select("id")
+        .single();
 
 
-  if (error) {
-    throw error;
+    if (
+      insertWeekError ||
+      !newWeek
+    ) {
+
+      throw (
+        insertWeekError ||
+        new Error(
+          "Could not create training week."
+        )
+      );
+
+    }
+
+
+    weekId =
+      newWeek.id;
+
   }
 
 
-  return data;
-
-}
-function appendTrainingWeekPreview(
-  trainingWeek,
-  weekContext,
-  showActions = true
-) {
-
-  const card =
-    document.createElement("div");
-
-card.className =
-    "ai-training-week-preview";
-
-card.dataset.weekNumber =
-    trainingWeek.week_number;
-
-
-  const title =
-    document.createElement("div");
-
-  title.className =
-    "ai-goal-form-title";
-
-  title.textContent =
-    `Week ${trainingWeek.week_number}`;
-
-
-  const focus =
-    document.createElement("div");
-
-  focus.className =
-    "ai-goal-form-subtitle";
-
-  focus.textContent =
-    trainingWeek.focus || "";
-
-   const dates =
-    document.createElement("div");
-
-dates.className =
-    "ai-training-week-dates";
-
-dates.textContent =
-    trainingWeek.start_date +
-    " – " +
-    trainingWeek.end_date;
-
+  /* =====================================
+     PREPARE WORKOUTS
+  ===================================== */
 
   const sessions =
-    document.createElement("div");
+    Array.isArray(
+      trainingWeek.sessions
+    )
+      ? trainingWeek.sessions
+      : [];
 
-  sessions.className =
-    "ai-training-week-sessions";
 
+  if (!sessions.length) {
 
-  trainingWeek.sessions.forEach(
-    (session) => {
-
-      const row =
-        document.createElement("div");
-
-      row.className =
-        "ai-training-week-session";
-
-
-      const day =
-        document.createElement("div");
-
-      day.className =
-        "ai-training-week-day";
-
-      day.textContent =
-        `${session.day} · ${
-          session.session_slot === 2
-            ? "PM"
-            : "AM"
-        }`;
-
-
-      const sessionTitle =
-        document.createElement("div");
-
-      sessionTitle.className =
-        "ai-training-week-title";
-
-      sessionTitle.textContent =
-        session.title;
-
-
-      const details =
-        document.createElement("div");
-
-      details.className =
-        "ai-training-week-details";
-
-
-      const parts = [];
-
-
-      if (
-        session.distance_km !== null &&
-        session.distance_km !== undefined
-      ) {
-        parts.push(
-          `${session.distance_km} km`
-        );
-      }
-
-
-      if (session.pace_type) {
-        parts.push(
-          session.pace_type
-        );
-      }
-
-
-      if (session.rest) {
-        parts.push(
-          `Rest: ${session.rest}`
-        );
-      }
-
-
-      details.textContent =
-        parts.join(" · ");
-
-
-      const notes =
-        document.createElement("div");
-
-      notes.className =
-        "ai-training-week-notes";
-
-      notes.textContent =
-        session.notes || "";
-
-
-      row.append(
-        day,
-        sessionTitle,
-        details,
-        notes
-      );
-
-
-      sessions.appendChild(row);
-
-    }
-  );
-
-
-  const coachNote =
-    document.createElement("div");
-
-  coachNote.className =
-    "ai-training-week-coach-note";
-
-  coachNote.textContent =
-    trainingWeek.coach_note || "";
-
-
-  const buttons =
-    document.createElement("div");
-
-  buttons.className =
-    "ai-training-week-actions";
-
-
-  const changeButton =
-    document.createElement("button");
-
-  changeButton.type =
-    "button";
-
-  changeButton.className =
-    "ai-training-review-cancel";
-
-  changeButton.textContent =
-    "Request changes";
-
-
-  const confirmButton =
-    document.createElement("button");
-
-  confirmButton.type =
-    "button";
-
-  confirmButton.className =
-    "ai-training-review-confirm";
-
-  confirmButton.textContent =
-    "✓ Confirm week";
-
-
-  buttons.append(
-    changeButton,
-    confirmButton
-  );
-
-
-  card.append(
-  title,
-  dates,
-  focus,
-  sessions,
-  coachNote
-);
-
-
-if (showActions) {
-  card.appendChild(buttons);
-}
-
-
-  messages.appendChild(card);
-
-  messages.scrollTop =
-    messages.scrollHeight;
-
-
-  changeButton.addEventListener(
-    "click",
-    () => {
-
-      appendMessage(
-        "Tell me what you would like to change in this week.",
-        "assistant"
-      );
-
-    }
-  );
-
-
-  confirmButton.addEventListener(
-  "click",
-  async () => {
-
-    confirmButton.disabled =
-      true;
-
-    changeButton.disabled =
-      true;
-
-    confirmButton.textContent =
-      "Saving week...";
-
-
-    try {
-
-      await saveAdaptiveTrainingWeek(
-        trainingWeek
-      );
-
-
-      confirmButton.textContent =
-        "✓ Week saved";
-
-
-      appendMessage(
-        `Week ${trainingWeek.week_number} has been saved to your training plan.`,
-        "assistant"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Adaptive week save error:",
-        error
-      );
-
-
-      confirmButton.disabled =
-        false;
-
-      changeButton.disabled =
-        false;
-
-      confirmButton.textContent =
-        "✓ Confirm week";
-
-
-      const errorMessage =
-        String(
-          error?.message ||
-          error?.details ||
-          error ||
-          ""
-        );
-
-
-      if (
-        errorMessage.includes(
-          "TRAINING_WEEK_DATE_OVERLAP"
-        ) ||
-        errorMessage.includes(
-          "WEEK_ALREADY_EXISTS"
-        )
-      ) {
-
-        appendMessage(
-          "I couldn't save this week because it overlaps with training that already exists. Nothing was overwritten.",
-          "assistant"
-        );
-
-        return;
-      }
-
-
-      appendMessage(
-        "I couldn't save the new training week. Nothing was changed.",
-        "assistant"
-      );
-
-    }
+    throw new Error(
+      "Training week contains no sessions."
+    );
 
   }
-);
+
+
+  const workouts =
+    sessions.map(
+      session => ({
+
+        athlete_id:
+          user.id,
+
+        week_id:
+          weekId,
+
+        workout_date:
+          session.workout_date,
+
+        workout_type:
+          session.workout_type || null,
+
+        title:
+          session.title,
+
+        distance_km:
+          session.distance_km ?? null,
+
+        duration_minutes:
+          session.duration_minutes ?? null,
+
+        pace:
+          session.pace || null,
+
+        rest:
+          session.rest || null,
+
+        notes:
+          session.notes || null,
+
+        session_slot:
+          session.session_slot || 1,
+
+        completed:
+          null,
+
+        completion_status:
+          null
+
+      })
+    );
+
+
+  /* =====================================
+     SAVE WORKOUTS
+  ===================================== */
+
+  const {
+    error: workoutInsertError
+  } =
+    await supabaseClient
+      .from("workouts")
+      .insert(
+        workouts
+      );
+
+
+  if (workoutInsertError) {
+    throw workoutInsertError;
+  }
+
+
+  console.log(
+    "Adaptive training week saved:",
+    {
+      weekId,
+      reusedExistingWeek:
+        existingWeeks?.length > 0,
+      workouts:
+        workouts.length
+    }
+  );
+
+
+  return {
+    ok: true,
+    week_id: weekId
+  };
 
 }
+
 function appendCreateFirstTrainingWeekButton() {
 
   const createPlanButton =
