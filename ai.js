@@ -2591,19 +2591,39 @@ function appendTrainingWeekPreview(
 
     /* REQUEST CHANGES */
 
-    changeButton.addEventListener(
-      "click",
-      () => {
+ changeButton.addEventListener(
+  "click",
+  () => {
 
-        appendMessage(
-          `Tell me what you would like to change in Week ${trainingWeek.week_number}.`,
-          "assistant"
-        );
+    pendingTrainingWeekRevision = {
+      trainingWeek:
+        trainingWeek,
 
-        input.focus();
+      weekContext:
+        weekContext,
 
-      }
+      card:
+        card
+    };
+
+
+    confirmButton.disabled =
+      true;
+
+    changeButton.disabled =
+      true;
+
+
+    appendMessage(
+      `Tell me what you would like to change in Week ${trainingWeek.week_number}. I won't save anything until you confirm the revised week.`,
+      "assistant"
     );
+
+
+    input.focus();
+
+  }
+);
 
 
     /* CONFIRM WEEK */
