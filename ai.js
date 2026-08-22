@@ -2347,7 +2347,7 @@ function appendTrainingWeekPreview(
       document.createElement("div");
 
     sessionCard.className =
-      "ai-training-session-preview";
+      "ai-training-week-session";
 
 
     /* DAY + SESSION SLOT */
@@ -2356,7 +2356,7 @@ function appendTrainingWeekPreview(
       document.createElement("div");
 
     sessionDay.className =
-      "ai-training-session-day";
+      "ai-training-week-day";
 
 
     let dayName = "";
@@ -2402,7 +2402,7 @@ function appendTrainingWeekPreview(
       document.createElement("div");
 
     sessionTitle.className =
-      "ai-training-session-title";
+      "ai-training-week-title";
 
     sessionTitle.textContent =
       session.title ||
@@ -2458,7 +2458,7 @@ function appendTrainingWeekPreview(
       document.createElement("div");
 
     sessionDetails.className =
-      "ai-training-session-details";
+      "ai-training-week-details";
 
     sessionDetails.textContent =
       details.join(" · ");
@@ -2489,7 +2489,7 @@ function appendTrainingWeekPreview(
         document.createElement("div");
 
       notes.className =
-        "ai-training-session-notes";
+        "ai-training-week-notes";
 
 
       renderAiText(
