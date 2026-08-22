@@ -4443,7 +4443,63 @@ try {
 
   }
 
+const {
+  data: adaptiveData,
+  error: adaptiveError
+} =
+  await supabaseClient.functions.invoke(
+    "twete-adaptive-week",
+    {
+      body: {}
+    }
+  );
 
+
+if (adaptiveError) {
+  throw adaptiveError;
+}
+
+
+const adaptiveWeek =
+  adaptiveData?.training_week ||
+  null;
+
+
+if (!adaptiveWeek) {
+
+  throw new Error(
+    adaptiveData?.error ||
+    "Puri could not prepare the next training week."
+  );
+
+}
+
+
+appendMessage(
+  adaptiveData.answer ||
+  "Your next training week is ready for review.",
+  "assistant"
+);
+
+
+const adaptiveWeekContext = {
+  goal: null,
+  preferences: null,
+  program: {
+    id:
+      savedReview.currentWeek.program_id
+  },
+  existingWeeks: [],
+  nextWeekNumber:
+    adaptiveWeek.week_number
+};
+
+
+appendTrainingWeekPreview(
+  adaptiveWeek,
+  adaptiveWeekContext,
+  true
+);
     } catch (error) {
 
       console.error(
