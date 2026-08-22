@@ -1832,6 +1832,7 @@ function appendPendingAction(action) {
     return;
   }
 
+
   const wrapper =
     document.createElement("div");
 
@@ -1842,37 +1843,49 @@ function appendPendingAction(action) {
   const label =
     document.createElement("div");
 
-   label.className =
-  "ai-action-label";
+  label.className =
+    "ai-action-label";
+
 
   const isCreate =
-  action.action_type ===
-  "create_goal";
+    action.action_type ===
+    "create_goal";
+
+  const isWorkoutUpdate =
+    action.action_type ===
+    "update_workout";
+
+  const isTrainingWeekUpdate =
+    action.action_type ===
+    "update_training_week_workouts";
 
 
-const isWorkoutUpdate =
-  action.action_type ===
-  "update_workout";
+  if (isCreate) {
 
+    label.textContent =
+      "CREATE NEW GOAL";
 
-if (isCreate) {
+  } else if (isWorkoutUpdate) {
 
-  label.textContent =
-    "CREATE NEW GOAL";
+    label.textContent =
+      "UPDATE WORKOUT";
 
-} else if (isWorkoutUpdate) {
+  } else if (isTrainingWeekUpdate) {
 
-  label.textContent =
-    "UPDATE WORKOUT";
+    const weekNumber =
+      action.preview?.week_number;
 
-} else {
+    label.textContent =
+      weekNumber
+        ? `UPDATE TRAINING WEEK ${weekNumber}`
+        : "UPDATE TRAINING WEEK";
 
-  label.textContent =
-    "UPDATE CURRENT GOAL";
+  } else {
 
-}
+    label.textContent =
+      "UPDATE CURRENT GOAL";
 
-
+  }
 
 
   const title =
@@ -1880,13 +1893,17 @@ if (isCreate) {
 
   title.className =
     "ai-action-title";
-   
-title.textContent =
-  isCreate
-    ? "Confirm your new goal"
-    : isWorkoutUpdate
-      ? "Confirm workout change"
-      : "Confirm this change";
+
+
+  title.textContent =
+    isCreate
+      ? "Confirm your new goal"
+      : isWorkoutUpdate
+        ? "Confirm workout change"
+        : isTrainingWeekUpdate
+          ? "Confirm full week update"
+          : "Confirm this change";
+
 
   const changes =
     document.createElement("div");
@@ -1895,111 +1912,404 @@ title.textContent =
     "ai-action-changes";
 
 
-  const before =
-    action.preview?.before || {};
+  /* =====================================
+     FULL TRAINING WEEK UPDATE
+  ===================================== */
 
-  const after =
-    action.preview?.after || {};
+  if (isTrainingWeekUpdate) {
+
+    const weekNumber =
+      action.preview?.week_number;
+
+    const startDate =
+      action.preview?.start_date;
+
+    const endDate =
+      action.preview?.end_date;
+
+    const workouts =
+      Array.isArray(
+        action.preview?.workouts
+      )
+        ? action.preview.workouts
+        : [];
 
 
-  Object.keys(after)
-    .forEach((field) => {
+    if (
+      startDate &&
+      endDate
+    ) {
 
-      const row =
+      const dateRow =
         document.createElement("div");
 
-      row.className =
+      dateRow.className =
         "ai-action-row";
 
 
-      const fieldName =
+      const dateLabel =
         document.createElement("span");
 
-      fieldName.className =
+      dateLabel.className =
         "ai-action-field";
 
-      fieldName.textContent =
-        formatActionField(field);
+      dateLabel.textContent =
+        weekNumber
+          ? `Week ${weekNumber}`
+          : "Training week";
 
 
-      const values =
+      const dateValues =
         document.createElement("div");
 
-      values.className =
+      dateValues.className =
         "ai-action-values";
 
 
-      const newValue =
-  document.createElement("span");
+      const dateText =
+        document.createElement("span");
 
-newValue.className =
-  "ai-action-new";
+      dateText.className =
+        "ai-action-new";
 
-if (
-  field === "notes"
-) {
-
-  renderAiText(
-    newValue,
-    String(
-      after[field] ?? "—"
-    )
-  );
-
-} else {
-
-  newValue.textContent =
-    after[field] ?? "—";
-
-}
+      dateText.textContent =
+        `${startDate} – ${endDate}`;
 
 
-if (isCreate) {
-
-  values.appendChild(
-    newValue
-  );
-
-} else {
-
-  const oldValue =
-    document.createElement("span");
-
-  oldValue.className =
-    "ai-action-old";
-
-  oldValue.textContent =
-    before[field] ?? "—";
-
-
-  const arrow =
-    document.createElement("span");
-
-  arrow.className =
-    "ai-action-arrow";
-
-  arrow.textContent =
-    "→";
-
-
-  values.append(
-    oldValue,
-    arrow,
-    newValue
-  );
-
-}
-
-
-      row.append(
-        fieldName,
-        values
+      dateValues.appendChild(
+        dateText
       );
 
 
-      changes.appendChild(row);
+      dateRow.append(
+        dateLabel,
+        dateValues
+      );
 
-    });
+
+      changes.appendChild(
+        dateRow
+      );
+
+    }
+
+
+    workouts.forEach(
+      workout => {
+
+        const workoutBlock =
+          document.createElement("div");
+
+        workoutBlock.className =
+          "ai-action-week-workout";
+
+
+        const workoutHeading =
+          document.createElement("div");
+
+        workoutHeading.className =
+          "ai-action-week-workout-title";
+
+
+        const workoutDate =
+          workout.date
+            ? ` · ${workout.date}`
+            : "";
+
+
+        workoutHeading.textContent =
+          `${workout.title || "Workout"}${workoutDate}`;
+
+
+        workoutBlock.appendChild(
+          workoutHeading
+        );
+
+
+        const before =
+          workout.before || {};
+
+        const after =
+          workout.after || {};
+
+
+        Object.keys(after)
+          .forEach(
+            field => {
+
+              const row =
+                document.createElement(
+                  "div"
+                );
+
+              row.className =
+                "ai-action-row";
+
+
+              const fieldName =
+                document.createElement(
+                  "span"
+                );
+
+              fieldName.className =
+                "ai-action-field";
+
+              fieldName.textContent =
+                formatActionField(
+                  field
+                );
+
+
+              const values =
+                document.createElement(
+                  "div"
+                );
+
+              values.className =
+                "ai-action-values";
+
+
+              const oldValue =
+                document.createElement(
+                  "span"
+                );
+
+              oldValue.className =
+                "ai-action-old";
+
+              oldValue.textContent =
+                before[field] ??
+                "—";
+
+
+              const arrow =
+                document.createElement(
+                  "span"
+                );
+
+              arrow.className =
+                "ai-action-arrow";
+
+              arrow.textContent =
+                "→";
+
+
+              const newValue =
+                document.createElement(
+                  "span"
+                );
+
+              newValue.className =
+                "ai-action-new";
+
+
+              if (
+                field === "notes"
+              ) {
+
+                renderAiText(
+                  newValue,
+                  String(
+                    after[field] ??
+                    "—"
+                  )
+                );
+
+              } else {
+
+                newValue.textContent =
+                  after[field] ??
+                  "—";
+
+              }
+
+
+              values.append(
+                oldValue,
+                arrow,
+                newValue
+              );
+
+
+              row.append(
+                fieldName,
+                values
+              );
+
+
+              workoutBlock.appendChild(
+                row
+              );
+
+            }
+          );
+
+
+        changes.appendChild(
+          workoutBlock
+        );
+
+      }
+    );
+
+
+    if (!workouts.length) {
+
+      const empty =
+        document.createElement(
+          "div"
+        );
+
+      empty.className =
+        "ai-goal-form-subtitle";
+
+      empty.textContent =
+        "No workout changes were included in this preview.";
+
+
+      changes.appendChild(
+        empty
+      );
+
+    }
+
+  }
+
+  /* =====================================
+     NORMAL GOAL / WORKOUT ACTION
+  ===================================== */
+
+  else {
+
+    const before =
+      action.preview?.before || {};
+
+    const after =
+      action.preview?.after || {};
+
+
+    Object.keys(after)
+      .forEach(
+        field => {
+
+          const row =
+            document.createElement(
+              "div"
+            );
+
+          row.className =
+            "ai-action-row";
+
+
+          const fieldName =
+            document.createElement(
+              "span"
+            );
+
+          fieldName.className =
+            "ai-action-field";
+
+          fieldName.textContent =
+            formatActionField(
+              field
+            );
+
+
+          const values =
+            document.createElement(
+              "div"
+            );
+
+          values.className =
+            "ai-action-values";
+
+
+          const newValue =
+            document.createElement(
+              "span"
+            );
+
+          newValue.className =
+            "ai-action-new";
+
+
+          if (
+            field === "notes"
+          ) {
+
+            renderAiText(
+              newValue,
+              String(
+                after[field] ??
+                "—"
+              )
+            );
+
+          } else {
+
+            newValue.textContent =
+              after[field] ??
+              "—";
+
+          }
+
+
+          if (isCreate) {
+
+            values.appendChild(
+              newValue
+            );
+
+          } else {
+
+            const oldValue =
+              document.createElement(
+                "span"
+              );
+
+            oldValue.className =
+              "ai-action-old";
+
+            oldValue.textContent =
+              before[field] ??
+              "—";
+
+
+            const arrow =
+              document.createElement(
+                "span"
+              );
+
+            arrow.className =
+              "ai-action-arrow";
+
+            arrow.textContent =
+              "→";
+
+
+            values.append(
+              oldValue,
+              arrow,
+              newValue
+            );
+
+          }
+
+
+          row.append(
+            fieldName,
+            values
+          );
+
+
+          changes.appendChild(
+            row
+          );
+
+        }
+      );
+
+  }
 
 
   const buttons =
@@ -2043,7 +2353,9 @@ if (isCreate) {
   );
 
 
-  messages.appendChild(wrapper);
+  messages.appendChild(
+    wrapper
+  );
 
 
   messages.scrollTop =
@@ -2082,7 +2394,6 @@ if (isCreate) {
   );
 
 }
-
 
 async function generateNextTrainingWeek() {
 
