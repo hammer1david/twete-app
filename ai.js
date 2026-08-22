@@ -1848,12 +1848,16 @@ function appendPendingAction(action) {
 
 
   const isCreate =
-    action.action_type ===
-    "create_goal";
+  action.action_type ===
+  "create_goal";
 
-  const isWorkoutUpdate =
-    action.action_type ===
-    "update_workout";
+const isWorkoutUpdate =
+  action.action_type ===
+  "update_workout";
+
+const isTrainingWeekUpdate =
+  action.action_type ===
+  "update_training_week_workouts";
 
   const isTrainingWeekUpdate =
     action.action_type ===
