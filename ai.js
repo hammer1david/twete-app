@@ -41,6 +41,7 @@ let pendingGoalSetup = null;
 
 let pendingTrainingCorrection = null;
 let pendingTrainingWeekRevision = null;
+let pendingTrainingDayException = null;
 
 
 function isPositiveAnswer(
