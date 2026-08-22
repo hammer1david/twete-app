@@ -5683,6 +5683,179 @@ const endDate =
 
   return;
 }
+
+/* =====================================
+   CONFIRM ONE-TIME TRAINING DAY
+   EXCEPTION
+===================================== */
+
+if (
+  pendingTrainingDayException
+) {
+
+  const exception =
+    pendingTrainingDayException;
+
+
+  typing.remove();
+
+
+  if (
+    !isPositiveAnswer(
+      message
+    )
+  ) {
+
+    pendingTrainingDayException =
+      null;
+
+
+    appendMessage(
+      "No problem — I'll keep the session on one of your usual training days.",
+      "assistant"
+    );
+
+
+    if (
+      exception.card
+    ) {
+
+      exception.card
+        .querySelectorAll(
+          "button"
+        )
+        .forEach(
+          button => {
+            button.disabled = false;
+          }
+        );
+
+    }
+
+
+    return;
+  }
+
+
+  appendMessage(
+    `Okay — I'll use ${exception.exceptionDay || "that day"} as a one-time exception and re-check the week.`,
+    "assistant"
+  );
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.functions.invoke(
+        "twete-adaptive-week",
+        {
+          body: {
+
+            action:
+              "revise_training_week",
+
+            current_week:
+              exception.trainingWeek,
+
+            change_request:
+              exception.changeRequest,
+
+            allow_day_exception:
+              true
+
+          }
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (
+      !data?.training_week
+    ) {
+
+      throw new Error(
+        data?.error ||
+        "Puri could not revise the training week."
+      );
+
+    }
+
+
+    pendingTrainingDayException =
+      null;
+
+
+    if (
+      exception.card
+    ) {
+
+      exception.card.remove();
+
+    }
+
+
+    appendMessage(
+      data.answer ||
+      `I revised Week ${data.training_week.week_number}.`,
+      "assistant"
+    );
+
+
+    appendTrainingWeekPreview(
+      data.training_week,
+      exception.weekContext,
+      true
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Training day exception error:",
+      error
+    );
+
+
+    pendingTrainingDayException =
+      null;
+
+
+    appendMessage(
+      "I couldn't apply that one-time training-day exception. Nothing was changed.",
+      "assistant"
+    );
+
+
+    if (
+      exception.card
+    ) {
+
+      exception.card
+        .querySelectorAll(
+          "button"
+        )
+        .forEach(
+          button => {
+            button.disabled = false;
+          }
+        );
+
+    }
+
+  }
+
+
+  return;
+}
+
+
 /* =====================================
    REVISE UNSAVED TRAINING WEEK
 ===================================== */
@@ -5699,7 +5872,7 @@ if (
 
 
   appendMessage(
-    "I'm revising the training week based on your request...",
+    "I'm reviewing your requested changes...",
     "assistant"
   );
 
@@ -5714,6 +5887,7 @@ if (
         "twete-adaptive-week",
         {
           body: {
+
             action:
               "revise_training_week",
 
@@ -5721,7 +5895,11 @@ if (
               revision.trainingWeek,
 
             change_request:
-              message
+              message,
+
+            allow_day_exception:
+              false
+
           }
         }
       );
@@ -5731,6 +5909,68 @@ if (
       throw error;
     }
 
+
+    /* =====================================
+       NON-STANDARD TRAINING DAY
+       NEEDS CONFIRMATION
+    ===================================== */
+
+    if (
+      data
+        ?.requires_day_exception_confirmation ===
+      true
+    ) {
+
+      pendingTrainingDayException = {
+
+        trainingWeek:
+          revision.trainingWeek,
+
+        weekContext:
+          revision.weekContext,
+
+        card:
+          revision.card,
+
+        changeRequest:
+          message,
+
+        exceptionDay:
+          data.requested_exception_day ||
+          null
+
+      };
+
+
+      pendingTrainingWeekRevision =
+        null;
+
+
+      const day =
+        data.requested_exception_day
+          ?
+          data.requested_exception_day
+              .charAt(0)
+              .toUpperCase() +
+            data.requested_exception_day
+              .slice(1)
+          :
+          "That day";
+
+
+      appendMessage(
+        `${day} isn't one of your usual training days. I can use it as a one-time exception without changing your regular training preferences. Would you like me to do that?`,
+        "assistant"
+      );
+
+
+      return;
+    }
+
+
+    /* =====================================
+       NORMAL REVISION
+    ===================================== */
 
     if (
       !data?.training_week
@@ -5789,17 +6029,15 @@ if (
       revision.card
     ) {
 
-      const buttons =
-        revision.card.querySelectorAll(
+      revision.card
+        .querySelectorAll(
           "button"
+        )
+        .forEach(
+          button => {
+            button.disabled = false;
+          }
         );
-
-
-      buttons.forEach(
-        button => {
-          button.disabled = false;
-        }
-      );
 
     }
 
@@ -5811,7 +6049,8 @@ if (
 
 
   return;
-     }
+}
+
        
 const result =
     await askTweteAI(
