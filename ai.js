@@ -5272,9 +5272,15 @@ appendTrainingWeekPreview(
 
 
       appendMessage(
-        "I couldn't save your weekly review response. Please try again.",
-        "assistant"
-      );
+  "DEBUG ERROR: " +
+  String(
+    error?.message ||
+    error?.details ||
+    error ||
+    "Unknown error"
+  ),
+  "assistant"
+);
 
     }
 
