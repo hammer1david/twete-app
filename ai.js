@@ -2588,51 +2588,68 @@ function appendTrainingWeekPreview(
             "assistant"
           );
 
+} catch (error) {
 
-        } catch (error) {
+  console.error(
+    "Save adaptive training week error:",
+    error
+  );
 
-          console.error(
-            "Save adaptive training week error:",
-            error
-          );
-
-
-          confirmButton.disabled =
-            false;
-
-          changeButton.disabled =
-            false;
-
-          confirmButton.textContent =
-            "✓ Confirm week";
+  console.error(
+    "Full Supabase error:",
+    JSON.stringify(
+      error,
+      null,
+      2
+    )
+  );
 
 
-          if (
-            String(
-              error?.message ||
-              error ||
-              ""
-            ).includes(
-              "WEEK_ALREADY_EXISTS"
-            )
-          ) {
+  confirmButton.disabled =
+    false;
 
-            appendMessage(
-              "I couldn't save this week because it already contains training. Nothing was overwritten.",
-              "assistant"
-            );
+  changeButton.disabled =
+    false;
 
-            return;
-
-          }
+  confirmButton.textContent =
+    "✓ Confirm week";
 
 
-          appendMessage(
-            "I couldn't save this training week. Nothing was changed. Please try again.",
-            "assistant"
-          );
+  const errorMessage =
+    String(
+      error?.message ||
+      error?.details ||
+      error?.hint ||
+      error?.code ||
+      error ||
+      "Unknown error"
+    );
+
+
+  if (
+    errorMessage.includes(
+      "WEEK_ALREADY_EXISTS"
+    )
+  ) {
+
+    appendMessage(
+      "I couldn't save this week because it already contains training. Nothing was overwritten.",
+      "assistant"
+    );
+
+    return;
+
+  }
+
+
+  appendMessage(
+    "DEBUG SAVE ERROR:\n\n" +
+    errorMessage,
+    "assistant"
+  );
 
         }
+           
 
       }
     );
