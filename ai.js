@@ -4944,12 +4944,12 @@ if (
 
 
   const startDate =
-    data.next_week?.start_date ||
-    "unknown";
+  data.next_week_period?.start_date ||
+  "unknown";
 
-  const endDate =
-    data.next_week?.end_date ||
-    "unknown";
+const endDate =
+  data.next_week_period?.end_date ||
+  "unknown";
 
 
   let statusText = "";
