@@ -2976,7 +2976,7 @@ async function saveAdaptiveTrainingWeek(
           session.session_slot || 1,
 
         completed:
-          null,
+          false,
 
         completion_status:
           null
