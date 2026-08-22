@@ -4619,6 +4619,199 @@ if (adaptiveError) {
   throw adaptiveError;
 }
 
+/* =====================================
+   EXISTING NEXT WEEK REVIEW
+===================================== */
+
+if (
+  adaptiveData?.ui_action ===
+  "show_existing_week_review"
+) {
+
+  appendMessage(
+    adaptiveData.answer ||
+    "I reviewed your already planned next week.",
+    "assistant"
+  );
+
+
+  if (adaptiveData.assessment) {
+
+    appendMessage(
+      adaptiveData.assessment,
+      "assistant"
+    );
+
+  }
+
+
+  if (adaptiveData.reasoning) {
+
+    appendMessage(
+      adaptiveData.reasoning,
+      "assistant"
+    );
+
+  }
+
+
+  if (
+    adaptiveData.keep_as_is === true
+  ) {
+
+    appendMessage(
+      "I recommend keeping the upcoming week exactly as it is.",
+      "assistant"
+    );
+
+    return;
+  }
+
+
+  const changes =
+    Array.isArray(
+      adaptiveData.proposed_changes
+    )
+      ? adaptiveData.proposed_changes
+      : [];
+
+
+  if (!changes.length) {
+
+    appendMessage(
+      "I don't recommend any specific changes to the upcoming week.",
+      "assistant"
+    );
+
+    return;
+  }
+
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "ai-action-card";
+
+
+  const label =
+    document.createElement("div");
+
+  label.className =
+    "ai-action-label";
+
+  label.textContent =
+    "NEXT WEEK REVIEW";
+
+
+  const title =
+    document.createElement("div");
+
+  title.className =
+    "ai-action-title";
+
+  title.textContent =
+    "Puri recommends these changes";
+
+
+  const changeList =
+    document.createElement("div");
+
+  changeList.className =
+    "ai-action-changes";
+
+
+  changes.forEach(
+    (change) => {
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "ai-action-row";
+
+
+      const workout =
+        adaptiveData.existing_workouts
+          ?.find(
+            item =>
+              item.id ===
+              change.workout_id
+          );
+
+
+      const field =
+        document.createElement("span");
+
+      field.className =
+        "ai-action-field";
+
+      field.textContent =
+        workout?.title ||
+        "Workout";
+
+
+      const values =
+        document.createElement("div");
+
+      values.className =
+        "ai-action-values";
+
+
+      const reason =
+        document.createElement("span");
+
+      reason.className =
+        "ai-action-new";
+
+      reason.textContent =
+        change.reason ||
+        "Puri recommends an adjustment.";
+
+
+      values.appendChild(
+        reason
+      );
+
+
+      row.append(
+        field,
+        values
+      );
+
+
+      changeList.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  card.append(
+    label,
+    title,
+    changeList
+  );
+
+
+  messages.appendChild(
+    card
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+
+  console.log(
+    "Puri existing week review:",
+    adaptiveData
+  );
+
+
+  return;
+}
 
 const adaptiveWeek =
   adaptiveData?.training_week ||
